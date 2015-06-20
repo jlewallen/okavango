@@ -71,7 +71,7 @@ String d_o_final;
 String orp_final;
 
 // we are going to send two floats of 4 bytes each
-uint8_t payload[4 * 4] = {};
+uint8_t payload[4 * 4 + 1] = {};
 
 union u_tag {
     uint8_t b[4];
@@ -430,6 +430,7 @@ void loop(){
   logfile.flush();
 
   memset(payload, 0, sizeof(payload));
+  payload[sizeof(payload) - 1] = 0; // This determines the contents of the packet. Receiver looks at this to tell which floats are in the packet.
   addToPayload(0, 0.0f);
   addToPayload(1, 1.0f);
   addToPayload(2, 2.0f);
