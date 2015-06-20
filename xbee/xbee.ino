@@ -71,7 +71,12 @@ String d_o_final;
 String orp_final;
 
 // we are going to send two floats of 4 bytes each
-uint8_t payload[8] = { 0, 0, 0, 0, 0, 0, 0, 0};
+uint8_t payload[4 * 4] = {};
+
+union u_tag {
+    uint8_t b[4];
+    float fval;
+} u;
 
 // SH + SL Address of receiving XBee
 XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x406F4973); //this needs to be updated for the correct XBee
@@ -85,7 +90,8 @@ void error(char *str)
   while(1);
 }
 
-void setup(){                   
+void setup(){             
+      
     Serial.begin(115200);      //Can we change this to 9600 for XBee sake?
     xbee.setSerial(Serial);
     RTC.begin();
@@ -350,6 +356,13 @@ void loopAltitude()
 //  }
 }
 
+void addToPayload(int position, float value) {
+  u.fval = value;
+  for (int i=0;i<4;i++){
+    payload[position * 4 + i] = u.b[i];
+  }
+}
+
 void loop(){                   
   Serial.println("Starting new loop...");
 
@@ -415,5 +428,23 @@ void loop(){
   Serial.print("\n");
   
   logfile.flush();
+
+  memset(payload, 0, sizeof(payload));
+  addToPayload(0, 0.0f);
+  addToPayload(1, 1.0f);
+  addToPayload(2, 2.0f);
+  addToPayload(3, 3.0f);
+  xbee.send(zbTx);
+  
+  if (xbee.readPacket(500)) {
+      if (xbee.getResponse().getApiId() == ZB_TX_STATUS_RESPONSE) {
+        xbee.getResponse().getZBTxStatusResponse(txStatus);
+        if (txStatus.getDeliveryStatus() == SUCCESS) {
+        } else {
+        }
+      }
+    } else if (xbee.getResponse().isError()) {
+    } else {
+    }
   //delay(10000); // delay for 10 seconds but ultimately 
 }
