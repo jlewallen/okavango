@@ -65,6 +65,8 @@ void setup(){
     xbeeSerial.begin(9600);
     Serial.begin(115200);      //Can we change this to 9600 for XBee sake?
     xbee.setSerial(xbeeSerial);
+    
+    Wire.begin();
     RTC.begin();
     
     Serial.println(RTC.now().unixtime());
