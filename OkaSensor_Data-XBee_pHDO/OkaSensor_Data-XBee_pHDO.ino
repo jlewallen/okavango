@@ -18,6 +18,7 @@ uint32_t syncTime = 0; // time of last sync()
 // Create an instance of the softwareSerial class for each sensor 
 SoftwareSerial pH(pH_rxpin, pH_txpin);
 SoftwareSerial d_o(d_o_rxpin, d_o_txpin); 
+SoftwareSerial xbeeSerial(2, 3); 
 
 RTC_DS1307 RTC; // define the Real Time Clock object
 const int chipSelect = 10;
@@ -63,7 +64,7 @@ void error(char *str)
 void setup(){             
       
     Serial.begin(115200);      //Can we change this to 9600 for XBee sake?
-    xbee.setSerial(Serial);
+    xbee.setSerial(xbeeSerial);
     RTC.begin();
 
     pinMode(10, OUTPUT);
