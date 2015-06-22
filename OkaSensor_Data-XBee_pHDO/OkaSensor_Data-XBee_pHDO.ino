@@ -226,7 +226,7 @@ void loop(){
   addToPayload(3, 3.0f);
   xbee.send(zbTx);
   
-  if (xbee.readPacket(500)) {
+  if (xbee.readPacket(5000)) {
       if (xbee.getResponse().getApiId() == ZB_TX_STATUS_RESPONSE) {
         xbee.getResponse().getZBTxStatusResponse(txStatus);
         if (txStatus.getDeliveryStatus() == SUCCESS) {
@@ -238,7 +238,7 @@ void loop(){
     } else if (xbee.getResponse().isError()) {
       Serial.println("Got error response.");          
     } else {
-      Serial.println("Got unknown response.");          
+      Serial.println("No response packet.");          
     }
   //delay(10000); // delay for 10 seconds but ultimately 
 }
