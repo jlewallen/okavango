@@ -15,7 +15,7 @@
 uint32_t syncTime = 0; // time of last sync()
 #define ECHO_TO_SERIAL   0 // echo data to serial port
 #define WAIT_TO_START    0 // Wait for serial input in setup()
-#define ONE_WIRE_BUS 2             // Water temp wire is plugged into pin 2 on the Arduino
+#define ONE_WIRE_BUS 6             // Water temp wire is plugged into pin 2 on the Arduino
 #define DHTPIN 7                 // what pin we're connected to
 #define DHTTYPE DHT22             // set type of sensor to DHT 22  (AM2302)
 
