@@ -66,6 +66,8 @@ void setup(){
     Serial.begin(115200);      //Can we change this to 9600 for XBee sake?
     xbee.setSerial(xbeeSerial);
     RTC.begin();
+    
+    Serial.println(RTC.now().unixtime());
 
     pinMode(10, OUTPUT);
   
@@ -226,11 +228,15 @@ void loop(){
       if (xbee.getResponse().getApiId() == ZB_TX_STATUS_RESPONSE) {
         xbee.getResponse().getZBTxStatusResponse(txStatus);
         if (txStatus.getDeliveryStatus() == SUCCESS) {
+          Serial.println("Message deliveried.");
         } else {
+          Serial.println("Message NOT deliveried.");          
         }
       }
     } else if (xbee.getResponse().isError()) {
+      Serial.println("Got error response.");          
     } else {
+      Serial.println("Got unknown response.");          
     }
   //delay(10000); // delay for 10 seconds but ultimately 
 }
