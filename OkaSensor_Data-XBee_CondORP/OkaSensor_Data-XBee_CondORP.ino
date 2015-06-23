@@ -18,6 +18,7 @@ uint32_t syncTime = 0; // time of last sync()
 // Create an instance of the softwareSerial class for each sensor
 SoftwareSerial cond(cond_rxpin, cond_txpin);  
 SoftwareSerial orp(orp_rxpin, orp_txpin);
+SoftwareSerial xbeeSerial(2, 3); 
 
 RTC_DS1307 RTC; // define the Real Time Clock object
 const int chipSelect = 10;
@@ -61,11 +62,15 @@ void error(char *str)
 }
 
 void setup(){             
-      
-    Serial.begin(115200);      //Can we change this to 9600 for XBee sake?
-    xbee.setSerial(Serial);
+    xbeeSerial.begin(9600);  
+    Serial.begin(115200);      
+    xbee.setSerial(xbeeSerial);
+    
+    Wire.begin();
     RTC.begin();
-
+    
+    Serial.println(RTC.now().unixtime());
+    
     pinMode(10, OUTPUT);
   
     // see if the card is present and can be initialized:
@@ -223,15 +228,19 @@ void loop(){
   addToPayload(3, 3.0f);
   xbee.send(zbTx);
   
-  if (xbee.readPacket(500)) {
+  if (xbee.readPacket(5000)) {
       if (xbee.getResponse().getApiId() == ZB_TX_STATUS_RESPONSE) {
         xbee.getResponse().getZBTxStatusResponse(txStatus);
         if (txStatus.getDeliveryStatus() == SUCCESS) {
+          Serial.println("Message deliveried.");
         } else {
+          Serial.println("Message NOT deliveried.");          
         }
       }
     } else if (xbee.getResponse().isError()) {
+      Serial.println("Got error response.");          
     } else {
+      Serial.println("No response packet.");          
     }
   //delay(10000); // delay for 10 seconds but ultimately 
 }
