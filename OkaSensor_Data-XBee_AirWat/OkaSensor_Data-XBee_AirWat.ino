@@ -20,7 +20,7 @@ uint32_t syncTime = 0; // time of last sync()
 #define DHTTYPE DHT22             // set type of sensor to DHT 22  (AM2302)
 
 // Create an instance of the softwareSerial class for each sensor
-//SoftwareSerial XBee(orp_rxpin, orp_txpin); // NEED TO CHANGE THIS FOR THE SD SHIELD AND XBEE
+SoftwareSerial xbeeSerial(2, 3); 
 
 // Setup a oneWire instance to communicate with any OneWire devices 
 OneWire oneWire(ONE_WIRE_BUS);
@@ -68,13 +68,18 @@ void error(char *str)
 }
 
 void setup(){             
-      
-    Serial.begin(115200);      //Can we change this to 9600 for XBee sake?
-    xbee.setSerial(Serial);
+    xbeeSerial.begin(9600);  
+    Serial.begin(115200);      
+    xbee.setSerial(xbeeSerial);
+    
+    Wire.begin();
     RTC.begin();
+
     sensors.begin();             // Start up the library for water sensor
     dht.begin();                 // Start up the library for air temp/humidity sensor
 //    bmp.begin();      // Start up the library for the altitude sensor
+
+    Serial.println(RTC.now().unixtime());
 
     pinMode(10, OUTPUT);
   
@@ -235,15 +240,19 @@ void loop(){
   addToPayload(3, 3.0f);
   xbee.send(zbTx);
   
-  if (xbee.readPacket(500)) {
+  if (xbee.readPacket(5000)) {
       if (xbee.getResponse().getApiId() == ZB_TX_STATUS_RESPONSE) {
         xbee.getResponse().getZBTxStatusResponse(txStatus);
         if (txStatus.getDeliveryStatus() == SUCCESS) {
+          Serial.println("Message deliveried.");
         } else {
+          Serial.println("Message NOT deliveried.");          
         }
       }
     } else if (xbee.getResponse().isError()) {
+      Serial.println("Got error response.");          
     } else {
+      Serial.println("No response packet.");          
     }
   //delay(10000); // delay for 10 seconds but ultimately 
 }
