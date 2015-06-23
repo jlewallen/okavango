@@ -56,12 +56,12 @@ while True:
     kind = payload[4]
     dictionary = deserializers[kind](payload)
     print payload, dictionary
+    timestamp = str(int(time.time()))
     sample = {
       "t_local": timestamp,
       "data": dictionary
     }
     uploader = SampleUploader(sys.argv[1], None)
-    timestamp = str(int(time.time()))
     samples = uploader.save(timestamp, None, sample)
     uploader.upload(samples)
   except KeyboardInterrupt:
