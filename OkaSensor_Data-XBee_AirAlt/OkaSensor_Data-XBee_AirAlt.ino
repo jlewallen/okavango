@@ -28,6 +28,8 @@ RTC_DS1307 RTC; // define the Real Time Clock object
 File logfile;
 XBee xbee = XBee();
 
+#pragma pack(push, 1)
+
 typedef struct {
   float v1;
   float v2;
@@ -37,6 +39,8 @@ typedef struct {
 } packet_t;
 
 packet_t payload;
+
+#pragma pack(push, 4)
 
 float h, t, f;
 
