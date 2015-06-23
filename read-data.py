@@ -1,22 +1,52 @@
-"""
-Continuously read the serial port and process IO data received from a remote XBee.
-"""
+#!/usr/bin/python
 
 from xbee import ZigBee
 import serial
 import struct
 
-ser = serial.Serial('/dev/ttyUSB0', 9600)
+def doPH(raw):
+    return {
+      'disolvedOxygen' : raw[0],
+      'ph' : raw[1]
+    }
 
-xbee = ZigBee(ser)
+def altAir(raw):
+    return {
+      'altitude' : raw[0],
+      'air' : raw[1]
+    }
 
-# Continuously read and print packets
+def airWat(raw):
+    return {
+      'disolvedOxygen' : raw[0],
+      'ph' : raw[1]
+    }
+
+def condOrp(raw):
+    return {
+      'disolvedOxygen' : raw[0],
+      'ph' : raw[1]
+    }
+
+deserializers = {
+  0: doPH,
+  1: altAir
+  2: airWat,
+  3: condOrp
+}
+
+serial = serial.Serial('/dev/ttyUSB0', 9600)
+xbee = ZigBee(serial)
+
 while True:
-    try:
-        response = xbee.wait_read_frame()
-	data =  response['rf_data']
-        print struct.unpack('ffffc', data)
-    except KeyboardInterrupt:
-        break
+  try:
+    response = xbee.wait_read_frame()
+    data =  response['rf_data']
+    payload = struct.unpack('ffffc', data)
+    kind = int(payload[3])
+    dictionary = deserializers[kind](payload)
+    print dictionary
+  except KeyboardInterrupt:
+    break
         
-ser.close()
+serial.close()
