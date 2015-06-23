@@ -2,12 +2,12 @@
 Continuously read the serial port and process IO data received from a remote XBee.
 """
 
-from xbee import XBee
+from xbee import ZigBee
 import serial
 
 ser = serial.Serial('/dev/ttyUSB0', 9600)
 
-xbee = XBee(ser)
+xbee = ZigBee(ser)
 
 # Continuously read and print packets
 while True:
