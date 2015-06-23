@@ -8,10 +8,10 @@ import time
 from xbee import ZigBee
 from okavango import SampleUploader
 
-def doPH(raw):
+def phDO(raw):
     return {
-      'disolvedOxygen' : raw[0],
-      'ph' : raw[1]
+      'ph' : raw[0],
+      'do' : raw[1]
     }
 
 def altAir(raw):
@@ -33,7 +33,7 @@ def condOrp(raw):
     }
 
 deserializers = {
-  0: doPH,
+  0: phDO,
   1: altAir,
   2: airWat,
   3: condOrp
