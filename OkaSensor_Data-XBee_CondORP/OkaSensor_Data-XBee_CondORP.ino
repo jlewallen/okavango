@@ -27,19 +27,9 @@ File logfile;
 
 XBee xbee = XBee();
 
-// Set variables
-String sensorstring_cond = "";               
-boolean sensor_stringcomplete_cond = false; 
-String sensorstring_orp = "";               
-boolean sensor_stringcomplete_orp = false; 
-String gotcha;
-int i;
-int j;
-int k;
-int m;
-int n;
-String cond_final;
-String orp_final;
+float tdsValue;
+float salinityValue;
+float orpValue;
 
 // we are going to send two floats of 4 bytes each
 uint8_t payload[4 * 4 + 1] = {};
@@ -102,43 +92,36 @@ void setup(){
 
 void loopConductivity()
 {
-   // conductivity sensor outputs 3 numbers separated by commas
-   cond.begin(9600);         // baud rate for cond sensor = 9600 (known)
+  String rawSensor = "";               
+  boolean gotEnd = false; 
+
+   cond.begin(9600);          // baud rate for cond sensor = 9600 (known)
    delay(1000);               // allow for sensor to start communicating
    cond.print("r \r");        // send string "r" with a carriage return "\r" to take one reading
    delay(1000);               // wait for reading to be read and sent
    
-   while (cond.available() > 0) {                                   // message is being sent                      
-      char inchar_cond = (char)cond.read();                         // string msg is read as individual characters           
-      sensorstring_cond += inchar_cond;      // adding each individual character to whole "sentence"  
-      if (inchar_cond == '\r') {sensor_stringcomplete_cond = true;} // if carriage return is sensed then complete string
+   while (cond.available() > 0) {
+      char c = (char)cond.read();
+      rawSensor += c;
+      if (c == '\r') {
+        gotEnd = true;
+      }
       delay(50);
    }            
    cond.end();   
 
-   if (sensor_stringcomplete_cond) {
-      int i = sensorstring_cond.indexOf(',');      // Find location of first ","
-      int j = sensorstring_cond.indexOf(',', i+1); // Find location of second ","
-      int n = sensorstring_cond.indexOf('*', j+1); // Find end 
-      for(k=i+1; k<=n-1; k++) {                    // for middle number (TDS) and second to last (salinity)
-//         m=k-i;
-         gotcha += sensorstring_cond[k];           // Build up "gotcha" variable with TDS reading
-         cond_final = gotcha;
-      }
-      //Serial.print("Conductivity (PPM): ");      // Use if printing to screen, not databoat
-      //Serial.println(gotcha);                    // Print out just the TDS reading (PPM)
-      //Serial.print(gotcha);
-      //Serial.print(",");
-      sensorstring_cond = "";                      // Reset the sensorstring, gotcha and _cond variables for next run
-      gotcha = "";
-      sensor_stringcomplete_cond = false;
+   if (gotEnd) {
+      int delim1 = rawSensor.indexOf(',');
+      int delim2 = rawSensor.indexOf(',', delim1 + 1);
+      int delim3 = rawSensor.indexOf('*', delim2 + 1);
+      String tdsString = rawSensor.substring(delim1, delim2 - delim1);
+      String salinityString = rawSensor.substring(delim2, delim3 - delim2);
+      tdsValue = tdsString.toFloat();
+      salinityValue = salinityString.toFloat();
    }   
    else{                                           // if no variables are found within the pickup call = set variable to 9999
-     //Serial.println("Conductivity (PPM): 9999");
-     //Serial.print("9999,");
-     cond_final = "9999,9999";                     // Input two 9999s for TDS, Salinity if sensor is giving incorrect values
-     sensorstring_cond = "";                       // Reset the sensorstring variable for next run
-     sensor_stringcomplete_cond = false;
+      tdsValue = 9999;
+      salinityValue = 9999;
    }   
 }
 
@@ -149,35 +132,26 @@ void loopOrp()
    orp.print("r \r");          // send string "r" with a carriage return "\r" to take one reading
    delay(3000);               // it takes a while for the sensor to respond
 
+   String rawSensor = "";               
+   boolean gotEnd = false; 
+
    while (orp.available() > 0) {     
-      char inchar_orp = (char)orp.read();                 
-      sensorstring_orp += inchar_orp;                              
-      if (inchar_orp == '\r') {sensor_stringcomplete_orp = true;}
+      char c = (char)orp.read();                 
+      rawSensor += c;                              
+      if (c == '\r') {
+        gotEnd = true;
+      }
       delay(50);
    }         
    orp.end();
    
-   if (sensor_stringcomplete_orp){
-      //Serial.print("orp: ");
-      //Serial.println(sensorstring_orp);
-      int n = sensorstring_orp.indexOf('*'); // Find end 
- //     Serial.println(n);
-      for(k=0; k<=n-1; k++) {                    // for pH value
-//         m=k-i;
-        gotcha += sensorstring_orp[k];           // Build up "gotcha" variable with TDS reading
-        orp_final = gotcha;
-      }
-//      orp_final = sensorstring_orp;
-      sensorstring_orp = "";
-      gotcha = "";
-      sensor_stringcomplete_orp = false;
+   if (gotEnd){
+      int n = rawSensor.indexOf('*'); // Find end 
+      String orpString = rawSensor.substring(0, n);
+      orpValue = orpString.toFloat();
    }
    else{
-     //Serial.println("orp: 9999");
-     //Serial.print("9999,");
-     orp_final = "9999";
-     sensorstring_orp = "";
-     sensor_stringcomplete_orp = false;
+      orpValue = 9999;
    }
 }
 
@@ -198,36 +172,38 @@ void loop(){
   loopConductivity();
   loopOrp();
   
-  // delay(1000); This may not be necessary 
-
   /////////////////////////////////////////////////////////////////////
   //  Send all data to serial output 
   /////////////////////////////////////////////////////////////////////
   logfile.print(now.unixtime());
   logfile.print(",");
-  logfile.print(cond_final);
-  logfile.print(orp_final);
+  logfile.print(tdsValue);
+  logfile.print(",");
+  logfile.print(salinityValue);
+  logfile.print(",");
+  logfile.print(orpValue);
   logfile.print(",");       
   logfile.print("\n");
 
   Serial.print(now.unixtime());
   Serial.print(",");
-  Serial.print(cond_final);
+  Serial.print(tdsValue);
   Serial.print(",");
-  Serial.print(orp_final);
+  Serial.print(salinityValue);
+  Serial.print(",");
+  Serial.print(orpValue);
   Serial.print(",");       
   Serial.print("\n");
   
   logfile.flush();
 
   memset(payload, 0, sizeof(payload));
-  payload[sizeof(payload) - 1] = 0; // This determines the contents of the packet. Receiver looks at this to tell which floats are in the packet.
-  addToPayload(0, 0.0f);
-  addToPayload(1, 1.0f);
-  addToPayload(2, 2.0f);
-  addToPayload(3, 3.0f);
+  payload[sizeof(payload) - 1] = 3; // This determines the contents of the packet. Receiver looks at this to tell which floats are in the packet.
+  addToPayload(0, tdsValue);
+  addToPayload(1, salinityValue);
+  addToPayload(2, orpValue);
   xbee.send(zbTx);
-  
+  /*
   if (xbee.readPacket(5000)) {
       if (xbee.getResponse().getApiId() == ZB_TX_STATUS_RESPONSE) {
         xbee.getResponse().getZBTxStatusResponse(txStatus);
@@ -242,5 +218,5 @@ void loop(){
     } else {
       Serial.println("No response packet.");          
     }
-  //delay(10000); // delay for 10 seconds but ultimately 
+  */
 }
