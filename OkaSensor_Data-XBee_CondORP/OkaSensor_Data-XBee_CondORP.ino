@@ -201,7 +201,7 @@ void loop(){
   logfile.flush();
 
   memset(payload, 0, sizeof(payload));
-  payload[sizeof(payload) - 1] = 3; // This determines the contents of the packet. Receiver looks at this to tell which floats are in the packet.
+  payload[sizeof(payload) - 1] = 1; // This determines the contents of the packet. Receiver looks at this to tell which floats are in the packet.
   addToPayload(0, tdsValue);
   addToPayload(1, salinityValue);
   addToPayload(2, orpValue);

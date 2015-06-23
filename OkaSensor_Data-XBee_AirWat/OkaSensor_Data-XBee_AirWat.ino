@@ -124,46 +124,6 @@ void loopAirTemperatureAndHumidity()
     }
 }
 
-//sensors_event_t event;
-//  
-//float seaLevelPressure = SENSORS_PRESSURE_SEALEVELHPA;
-//
-//void loopAltitude()
-//{
-//  bmp.getEvent(&event);
-//  float temperature;
-//  bmp.getTemperature(&temperature);
-  
-/* Display the results (barometric pressure is measure in hPa) */
-//  if (event.pressure)
-//  {
-//    /* Display atmospheric pressue in hPa */
-//    Serial.print("Pressure:    ");
-//    Serial.print(event.pressure);
-//    Serial.println(" hPa");
-//     
-//    /* First we get the current temperature from the BMP085 */
-//    float temperature;
-//    bmp.getTemperature(&temperature);
-//    Serial.print("Temperature: ");
-//    Serial.print(temperature);
-//    Serial.println(" C");
-//
-//    /* Then convert the atmospheric pressure, and SLP to altitude         */
-//    /* Update this next line with the current SLP for better results      */
-//    float seaLevelPressure = SENSORS_PRESSURE_SEALEVELHPA;
-//    Serial.print("Altitude:    "); 
-//    Serial.print(bmp.pressureToAltitude(seaLevelPressure,
-//                                        event.pressure)); 
-//    Serial.println(" m");
-//    Serial.println("");
-//  }
-//  else
-//  {
-//    Serial.println("9999");
-//  }
-//}
-
 void addToPayload(int position, float value) {
   u.fval = value;
   for (int i=0;i<4;i++){
@@ -180,9 +140,6 @@ void loop(){
   DateTime now = RTC.now();
   loopWaterTemperature();
   loopAirTemperatureAndHumidity();
-//  loopAltitude();
-  
-  // delay(1000); This may not be necessary 
 
   /////////////////////////////////////////////////////////////////////
   //  Send all data to serial output 
@@ -195,10 +152,6 @@ void loop(){
   logfile.print(",");
   logfile.print(t);
   logfile.print(",");
-//  logfile.print(bmp.pressureToAltitude(seaLevelPressure, event.pressure));
-//  logfile.print(",");
-//  logfile.print(event.pressure);
-//  logfile.print(",");
   logfile.print("\n");
 
   Serial.print(now.unixtime());
@@ -209,19 +162,14 @@ void loop(){
   Serial.print(",");
   Serial.print(t);
   Serial.print(",");
-//  Serial.print(bmp.pressureToAltitude(seaLevelPressure, event.pressure));
-//  Serial.print(",");
-//  Serial.print(event.pressure);
-//  Serial.print(",");
   Serial.print("\n");
   
   logfile.flush();
 
   memset(payload, 0, sizeof(payload));
-  payload[sizeof(payload) - 1] = 0; // This determines the contents of the packet. Receiver looks at this to tell which floats are in the packet.
-  addToPayload(0, 0.0f);
-  addToPayload(1, 1.0f);
-  addToPayload(2, 2.0f);
-  addToPayload(3, 3.0f);
+  payload[sizeof(payload) - 1] = 2; // This determines the contents of the packet. Receiver looks at this to tell which floats are in the packet.
+  addToPayload(0, sensors.getTempCByIndex(0));
+  addToPayload(1, h);
+  addToPayload(2, t);
   xbee.send(zbTx);
 }

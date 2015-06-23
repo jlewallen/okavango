@@ -221,10 +221,9 @@ void loop(){
   logfile.flush();
 
   memset(payload, 0, sizeof(payload));
-  payload[sizeof(payload) - 1] = 0; // This determines the contents of the packet. Receiver looks at this to tell which floats are in the packet.
-  addToPayload(0, 0.0f);
-  addToPayload(1, 1.0f);
-  addToPayload(2, 2.0f);
-  addToPayload(3, 3.0f);
+  payload[sizeof(payload) - 1] = 3; // This determines the contents of the packet. Receiver looks at this to tell which floats are in the packet.
+  addToPayload(0, h);
+  addToPayload(1, t);
+  addToPayload(2, event.pressure);
   xbee.send(zbTx);
 }

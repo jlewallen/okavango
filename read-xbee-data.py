@@ -14,29 +14,32 @@ def phDO(raw):
       'do' : raw[1]
     }
 
-def altAir(raw):
+def airAlt(raw):
     return {
-      'altitude' : raw[0],
-      'air' : raw[1]
+      'humidity' : raw[0],
+      'airTemp' : raw[1],
+      'pressure' : raw[2]
     }
 
 def airWat(raw):
     return {
-      'disolvedOxygen' : raw[0],
-      'ph' : raw[1]
+      'waterTemp' : raw[0],
+      'humidity' : raw[1],
+      'airTemp' : raw[2]
     }
 
 def condOrp(raw):
     return {
-      'disolvedOxygen' : raw[0],
-      'ph' : raw[1]
+      'tds' : raw[0],
+      'salinity' : raw[1],
+      'orp' : raw[2]
     }
 
 deserializers = {
   0: phDO,
-  1: altAir,
+  1: condOrp,
   2: airWat,
-  3: condOrp
+  3: airAlt
 }
 
 serial = serial.Serial('/dev/ttyUSB0', 9600)
