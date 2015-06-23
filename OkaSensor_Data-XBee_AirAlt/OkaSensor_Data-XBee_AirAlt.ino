@@ -28,19 +28,21 @@ RTC_DS1307 RTC; // define the Real Time Clock object
 File logfile;
 XBee xbee = XBee();
 
-// we are going to send two floats of 4 bytes each
-uint8_t payload[4 * 4 + 1] = {};
+typedef struct {
+  float v1;
+  float v2;
+  float v3;
+  float v4;
+  char kind;
+} packet_t;
 
-union u_tag {
-    uint8_t b[4];
-    float fval;
-} u;
+packet_t payload;
 
 float h, t, f;
 
 // SH + SL Address of receiving XBee
 XBeeAddress64 addr64 = XBeeAddress64(0x0013A200, 0x40C6746A); //this needs to be updated for the correct XBee Test configuration: 13A200  40C6746A
-ZBTxRequest zbTx = ZBTxRequest(addr64, payload, sizeof(payload));
+ZBTxRequest zbTx = ZBTxRequest(addr64, (uint8_t *)&payload, sizeof(payload));
 ZBTxStatusResponse txStatus = ZBTxStatusResponse();
 
 void error(char *str)
@@ -136,13 +138,6 @@ void loopAltitude()
   bmp.getTemperature(&temperature);
 }
 
-void addToPayload(int position, float value) {
-  u.fval = value;
-  for (int i=0;i<4;i++){
-    payload[position * 4 + i] = u.b[i];
-  }
-}
-
 void loop(){                   
   Serial.println("Starting new loop...");
 
@@ -178,10 +173,10 @@ void loop(){
   
   logfile.flush();
 
-  memset(payload, 0, sizeof(payload));
-  payload[sizeof(payload) - 1] = 3; // This determines the contents of the packet. Receiver looks at this to tell which floats are in the packet.
-  addToPayload(0, h);
-  addToPayload(1, t);
-  addToPayload(2, event.pressure);
+  memset((void *)&payload, 0, sizeof(payload));
+  payload.kind = 3;
+  payload.v1 = h;
+  payload.v2 = t;
+  payload.v3 = event.pressure;
   xbee.send(zbTx);
 }
