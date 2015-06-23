@@ -220,12 +220,14 @@ void loop(){
 
   memset(payload, 0, sizeof(payload));
   payload[sizeof(payload) - 1] = 0; // This determines the contents of the packet. Receiver looks at this to tell which floats are in the packet.
-  addToPayload(0, 0.0f);
-  addToPayload(1, 1.0f);
-  addToPayload(2, 2.0f);
-  addToPayload(3, 3.0f);
-  xbee.send(zbTx);
+  addToPayload(0, pH_final.toFloat());
+  addToPayload(1, d_o_final.toFloat());
+  addToPayload(2, 0.0f);
+  addToPayload(3, 0.0f);
   
+  Serial.println("Sending...");
+  xbee.send(zbTx);
+  /*
   if (xbee.readPacket(5000)) {
       if (xbee.getResponse().getApiId() == ZB_TX_STATUS_RESPONSE) {
         xbee.getResponse().getZBTxStatusResponse(txStatus);
@@ -240,5 +242,6 @@ void loop(){
     } else {
       Serial.println("No response packet.");          
     }
+    */
   //delay(10000); // delay for 10 seconds but ultimately 
 }
