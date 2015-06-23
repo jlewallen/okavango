@@ -12,7 +12,7 @@
 #include <SoftwareSerial.h>        // include the software serial library to add an aditional serial ports to talk to the Atlas units
 #define LOG_INTERVAL  5000 // mills between entries (reduce to take more/faster data)
 #define SYNC_INTERVAL 5000 // mills between calls to flush() - to write data to the card
-uint32_t syncTime = 0; // time of last sync()
+uint32_t syncTime = 0; // time off last sync()
 #define ECHO_TO_SERIAL   0 // echo data to serial port
 #define WAIT_TO_START    0 // Wait for serial input in setup()
 #define ONE_WIRE_BUS 6             // Water temp wire is plugged into pin 2 on the Arduino
@@ -27,12 +27,9 @@ OneWire oneWire(ONE_WIRE_BUS);
 // Pass our oneWire reference to Dallas Temperature.
 DallasTemperature sensors(&oneWire);
 
-// Initialize DHT sensor for normal 16mhz Arduino
 DHT dht(DHTPIN, DHTTYPE);
 
-//Adafruit_BMP085_Unified bmp = Adafruit_BMP085_Unified(10085);
-
-RTC_DS1307 RTC; // define the Real Time Clock object
+RTC_DS1307 RTC;
 const int chipSelect = 10;
 
 File logfile;

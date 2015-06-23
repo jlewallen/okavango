@@ -2,7 +2,7 @@
 #include <SD.h>
 #include <SPI.h>
 #include <Wire.h>
-#include "RTClib.h"
+#include <RTClib.h>
 #include <Adafruit_Sensor.h>
 #include <SoftwareSerial.h>        // include the software serial library to add an aditional serial ports to talk to the Atlas units
 #define LOG_INTERVAL  5000 // mills between entries (reduce to take more/faster data)
@@ -124,7 +124,7 @@ void loopConductivity()
       tdsValue = tdsString.toFloat();
       salinityValue = salinityString.toFloat();
    }   
-   else{                                           // if no variables are found within the pickup call = set variable to 9999
+   else {                                           // if no variables are found within the pickup call = set variable to 9999
       tdsValue = 9999;
       salinityValue = 9999;
    }   
@@ -134,7 +134,7 @@ void loopOrp()
 {
    orp.begin(9600);           // baud rate for sensor = 9600 (known)
    delay(1000);
-   orp.print("r \r");          // send string "r" with a carriage return "\r" to take one reading
+   orp.print("r \r");         // send string "r" with a carriage return "\r" to take one reading
    delay(3000);               // it takes a while for the sensor to respond
 
    String rawSensor = "";               
