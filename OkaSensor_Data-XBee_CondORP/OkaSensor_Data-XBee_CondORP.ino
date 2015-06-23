@@ -4,24 +4,24 @@
 #include <Wire.h>
 #include <RTClib.h>
 #include <Adafruit_Sensor.h>
-#include <SoftwareSerial.h>        // include the software serial library to add an aditional serial ports to talk to the Atlas units
+#include <SoftwareSerial.h>
+
 #define LOG_INTERVAL  5000 // mills between entries (reduce to take more/faster data)
 #define SYNC_INTERVAL 5000 // mills between calls to flush() - to write data to the card
-uint32_t syncTime = 0; // time of last sync()
 #define ECHO_TO_SERIAL   0 // echo data to serial port
 #define WAIT_TO_START    0 // Wait for serial input in setup()
-#define cond_rxpin 4               // set the conductivity (EC sensor) RX pin (labeled "TX" on EC board)
-#define cond_txpin 5               // set the conductivity (EC sensor) TX pin (labeled "RX" on EC board)
-#define orp_rxpin 6              // set the ORP RX pin (labeled "TX" on ORP board) - NEED TO CHANGE THIS FOR THE SD SHIELD
-#define orp_txpin 7              // set the ORP TX pin (labeled "RX" on ORP board) - NEED TO CHANGE THIS FOR THE SD SHIELD
+#define COND_RXPIN       4 // set the conductivity (EC sensor) RX pin (labeled "TX" on EC board)
+#define COND_TXPIN       5 // set the conductivity (EC sensor) TX pin (labeled "RX" on EC board)
+#define ORP_RXPIN        6 // set the ORP RX pin (labeled "TX" on ORP board) - NEED TO CHANGE THIS FOR THE SD SHIELD
+#define ORP_TXPIN        7 // set the ORP TX pin (labeled "RX" on ORP board) - NEED TO CHANGE THIS FOR THE SD SHIELD
+#define SD_BOARD_PIN     10
 
 // Create an instance of the softwareSerial class for each sensor
-SoftwareSerial cond(cond_rxpin, cond_txpin);  
-SoftwareSerial orp(orp_rxpin, orp_txpin);
+SoftwareSerial cond(COND_RXPIN, COND_TXPIN);  
+SoftwareSerial orp(ORP_RXPIN, ORP_TXPIN);
 SoftwareSerial xbeeSerial(2, 3); 
 
 RTC_DS1307 RTC; // define the Real Time Clock object
-const int chipSelect = 10;
 File logfile;
 XBee xbee = XBee();
 
@@ -51,8 +51,10 @@ void error(char *str)
 
 void openLogFile()
 {
+  pinMode(SD_BOARD_PIN, OUTPUT);
+  
   // see if the card is present and can be initialized:
-  if (!SD.begin(chipSelect)) {
+  if (!SD.begin(SD_BOARD_PIN)) {
     error("Card failed, or not present");
   }
   
@@ -88,10 +90,6 @@ void setup(){
   Wire.begin();
   RTC.begin();
   
-  Serial.println(RTC.now().unixtime());
-  
-  pinMode(10, OUTPUT);
-
   openLogFile();
 }
 
@@ -208,20 +206,4 @@ void loop(){
   addToPayload(1, salinityValue);
   addToPayload(2, orpValue);
   xbee.send(zbTx);
-  /*
-  if (xbee.readPacket(5000)) {
-      if (xbee.getResponse().getApiId() == ZB_TX_STATUS_RESPONSE) {
-        xbee.getResponse().getZBTxStatusResponse(txStatus);
-        if (txStatus.getDeliveryStatus() == SUCCESS) {
-          Serial.println("Message deliveried.");
-        } else {
-          Serial.println("Message NOT deliveried.");          
-        }
-      }
-    } else if (xbee.getResponse().isError()) {
-      Serial.println("Got error response.");          
-    } else {
-      Serial.println("No response packet.");          
-    }
-  */
 }

@@ -2,7 +2,7 @@
 #include <SD.h>
 #include <SPI.h>
 #include <Wire.h>
-#include "RTClib.h"
+#include <RTClib.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <DHT.h>
@@ -10,42 +10,27 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BMP085_U.h>
 #include <SoftwareSerial.h>        // include the software serial library to add an aditional serial ports to talk to the Atlas units
-#define LOG_INTERVAL  5000 // mills between entries (reduce to take more/faster data)
-#define SYNC_INTERVAL 5000 // mills between calls to flush() - to write data to the card
-uint32_t syncTime = 0; // time of last sync()
+
+#define LOG_INTERVAL     5000 // mills between entries (reduce to take more/faster data)
+#define SYNC_INTERVAL    5000 // mills between calls to flush() - to write data to the card
 #define ECHO_TO_SERIAL   0 // echo data to serial port
 #define WAIT_TO_START    0 // Wait for serial input in setup()
-#define ONE_WIRE_BUS 6             // Water temp wire is plugged into pin 2 on the Arduino
-#define DHTPIN 7                 // what pin we're connected to
-#define DHTTYPE DHT22             // set type of sensor to DHT 22  (AM2302)
+#define ONE_WIRE_BUS     6 // Water temp wire is plugged into pin 2 on the Arduino
+#define DHTPIN           7 // what pin we're connected to
+#define DHTTYPE          DHT22 // set type of sensor to DHT 22  (AM2302)
+#define SD_BOARD_PIN     10
 
-// Create an instance of the softwareSerial class for each sensor
 SoftwareSerial xbeeSerial(2, 3); 
-
 // Setup a oneWire instance to communicate with any OneWire devices 
 OneWire oneWire(ONE_WIRE_BUS);
 // Pass our oneWire reference to Dallas Temperature.
 DallasTemperature sensors(&oneWire);
-
 // Initialize DHT sensor for normal 16mhz Arduino
 DHT dht(DHTPIN, DHTTYPE);
-
 Adafruit_BMP085_Unified bmp = Adafruit_BMP085_Unified(10085);
-
 RTC_DS1307 RTC; // define the Real Time Clock object
-const int chipSelect = 10;
-
 File logfile;
-
 XBee xbee = XBee();
-
-// Set variables
-String gotcha;
-int i;
-int j;
-int k;
-int m;
-int n;
 
 // we are going to send two floats of 4 bytes each
 uint8_t payload[4 * 4 + 1] = {};
@@ -67,6 +52,39 @@ void error(char *str)
   while(1);
 }
 
+void openLogFile()
+{
+  pinMode(SD_BOARD_PIN, OUTPUT);
+  
+  // see if the card is present and can be initialized:
+  if (!SD.begin(SD_BOARD_PIN)) {
+    error("Card failed, or not present");
+  }
+  
+  // create a new file
+  for (uint32_t i = 0; i <= 99999999; i++) {
+    char filename[13];
+    String fn = "" + i;
+    while (fn.length() < 8) {
+      fn = '0' + fn;
+    }
+    fn = fn + ".CSV";
+    fn.toCharArray(filename, sizeof(filename));
+    if (!SD.exists(filename)) {
+      // only open a new file if it doesn't exist
+      Serial.print("Logging to: ");
+      Serial.println(filename);
+      logfile = SD.open(filename, FILE_WRITE); 
+      break;
+    }
+  }
+
+  if (!logfile) {
+    error("couldnt create file");
+  }
+  logfile.flush();
+}
+
 void setup(){             
     xbeeSerial.begin(9600);        
     Serial.begin(115200);      
@@ -79,35 +97,7 @@ void setup(){
     dht.begin();                 // Start up the library for air temp/humidity sensor
     bmp.begin();      // Start up the library for the altitude sensor
 
-    Serial.println(RTC.now().unixtime());
-
-    pinMode(10, OUTPUT);
-  
-    // see if the card is present and can be initialized:
-    if (!SD.begin(chipSelect)) {
-      error("Card failed, or not present");
-    }
-  
-    // create a new file
-    char filename[] = "LOGGER00.CSV";
-    for (uint8_t i = 0; i < 100; i++) {
-      filename[6] = i/10 + '0';
-      filename[7] = i%10 + '0';
-      if (! SD.exists(filename)) {
-        // only open a new file if it doesn't exist
-        logfile = SD.open(filename, FILE_WRITE); 
-        break;  // leave the loop!
-    }
-  }
-  
-  if (! logfile) {
-    error("couldnt create file");
-  }
-  
-  Serial.print("Logging to: ");
-  Serial.println(filename);
-  logfile.println("Ready");
-  logfile.flush();
+    openLogFile();
 }
 
 float h, t, f;
@@ -196,8 +186,6 @@ void loop(){
 //  loopWaterTemperature();
   loopAirTemperatureAndHumidity();
   loopAltitude();
-  
-  // delay(1000); This may not be necessary 
 
   /////////////////////////////////////////////////////////////////////
   //  Send all data to serial output 
@@ -239,20 +227,4 @@ void loop(){
   addToPayload(2, 2.0f);
   addToPayload(3, 3.0f);
   xbee.send(zbTx);
-  
-  if (xbee.readPacket(5000)) {
-      if (xbee.getResponse().getApiId() == ZB_TX_STATUS_RESPONSE) {
-        xbee.getResponse().getZBTxStatusResponse(txStatus);
-        if (txStatus.getDeliveryStatus() == SUCCESS) {
-          Serial.println("Message deliveried.");
-        } else {
-          Serial.println("Message NOT deliveried.");          
-        }
-      }
-    } else if (xbee.getResponse().isError()) {
-      Serial.println("Got error response.");          
-    } else {
-      Serial.println("No response packet.");          
-    }
-  //delay(10000); // delay for 10 seconds but ultimately 
 }
