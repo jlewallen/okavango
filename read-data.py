@@ -1,8 +1,12 @@
 #!/usr/bin/python
 
-from xbee import ZigBee
 import serial
 import struct
+import sys
+import time
+
+from xbee import ZigBee
+from okavango import SampleUploader
 
 def doPH(raw):
     return {
@@ -30,7 +34,7 @@ def condOrp(raw):
 
 deserializers = {
   0: doPH,
-  1: altAir
+  1: altAir,
   2: airWat,
   3: condOrp
 }
@@ -45,7 +49,11 @@ while True:
     payload = struct.unpack('ffffc', data)
     kind = int(payload[3])
     dictionary = deserializers[kind](payload)
-    print dictionary
+    print payload, dictionary
+    uploader = SampleUploader(sys.argv[1], None)
+    timestamp = str(int(time.time()))
+    samples = uploader.save(timestamp, None, dictionary)
+    uploader.upload(samples)
   except KeyboardInterrupt:
     break
         
