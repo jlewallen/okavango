@@ -22,17 +22,23 @@ RTC_DS1307 RTC;
 File logfile;
 XBee xbee = XBee();
 
-// we are going to send two floats of 4 bytes each
-uint8_t payload[4 * 4 + 1] = {};
+#pragma pack(push, 1)
 
-union u_tag {
-    uint8_t b[4];
-    float fval;
-} u;
+typedef struct {
+  float v1;
+  float v2;
+  float v3;
+  float v4;
+  char kind;
+} packet_t;
+
+packet_t payload;
+
+#pragma pack(push, 4)
 
 // SH + SL Address of receiving XBee
 XBeeAddress64 addr64 = XBeeAddress64(0x0013A200, 0x40C6746A); //this needs to be updated for the correct XBee Test configuration: 13A200  40C6746A
-ZBTxRequest zbTx = ZBTxRequest(addr64, payload, sizeof(payload));
+ZBTxRequest zbTx = ZBTxRequest(addr64, (uint8_t *)&payload, sizeof(payload));
 ZBTxStatusResponse txStatus = ZBTxStatusResponse();
 
 void error(char *str)
@@ -146,13 +152,6 @@ void loopDissolvedOxygen()
    } 
 }
 
-void addToPayload(int position, float value) {
-  u.fval = value;
-  for (int i=0;i<4;i++){
-    payload[position * 4 + i] = u.b[i];
-  }
-}
-
 void loop(){                   
   Serial.println("Starting new loop...");
 
@@ -184,13 +183,9 @@ void loop(){
   
   logfile.flush();
 
-  memset(payload, 0, sizeof(payload));
-  payload[sizeof(payload) - 1] = 0; // This determines the contents of the packet. Receiver looks at this to tell which floats are in the packet.
-  addToPayload(0, phValue);
-  addToPayload(1, doValue);
-  addToPayload(2, 0.0f);
-  addToPayload(3, 0.0f);
-  
-  Serial.println("Sending...");
+  memset((void *)&payload, 0, sizeof(payload));
+  payload.kind = 0;
+  payload.v1 = phValue;
+  payload.v2 = doValue;
   xbee.send(zbTx);
 }
