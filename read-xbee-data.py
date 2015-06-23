@@ -4,9 +4,12 @@ import serial
 import struct
 import sys
 import time
+import logging
 
 from xbee import ZigBee
 from okavango import SampleUploader
+
+logging.basicConfig(level=logging.DEBUG)
 
 def phDO(raw):
     return {
@@ -53,9 +56,13 @@ while True:
     kind = payload[4]
     dictionary = deserializers[kind](payload)
     print payload, dictionary
+    sample = {
+      "t_local": timestamp,
+      "data": dictionary
+    }
     uploader = SampleUploader(sys.argv[1], None)
     timestamp = str(int(time.time()))
-    samples = uploader.save(timestamp, None, dictionary)
+    samples = uploader.save(timestamp, None, sample)
     uploader.upload(samples)
   except KeyboardInterrupt:
     break
