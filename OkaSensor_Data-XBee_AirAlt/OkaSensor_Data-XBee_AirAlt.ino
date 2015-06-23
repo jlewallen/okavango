@@ -11,10 +11,6 @@
 #include <Adafruit_BMP085_U.h>
 #include <SoftwareSerial.h>        // include the software serial library to add an aditional serial ports to talk to the Atlas units
 
-#define LOG_INTERVAL     5000 // mills between entries (reduce to take more/faster data)
-#define SYNC_INTERVAL    5000 // mills between calls to flush() - to write data to the card
-#define ECHO_TO_SERIAL   0 // echo data to serial port
-#define WAIT_TO_START    0 // Wait for serial input in setup()
 #define ONE_WIRE_BUS     6 // Water temp wire is plugged into pin 2 on the Arduino
 #define DHTPIN           7 // what pin we're connected to
 #define DHTTYPE          DHT22 // set type of sensor to DHT 22  (AM2302)
@@ -39,6 +35,8 @@ union u_tag {
     uint8_t b[4];
     float fval;
 } u;
+
+float h, t, f;
 
 // SH + SL Address of receiving XBee
 XBeeAddress64 addr64 = XBeeAddress64(0x0013A200, 0x40C6746A); //this needs to be updated for the correct XBee Test configuration: 13A200  40C6746A
@@ -100,8 +98,6 @@ void setup(){
     openLogFile();
 }
 
-float h, t, f;
-
 void loopWaterTemperature()
 {
     // call sensors.requestTemperatures() to issue a global temperature
@@ -138,35 +134,6 @@ void loopAltitude()
   bmp.getEvent(&event);
   float temperature;
   bmp.getTemperature(&temperature);
-  
-/* Display the results (barometric pressure is measure in hPa) */
-//  if (event.pressure)
-//  {
-//    /* Display atmospheric pressue in hPa */
-//    Serial.print("Pressure:    ");
-//    Serial.print(event.pressure);
-//    Serial.println(" hPa");
-//     
-//    /* First we get the current temperature from the BMP085 */
-//    float temperature;
-//    bmp.getTemperature(&temperature);
-//    Serial.print("Temperature: ");
-//    Serial.print(temperature);
-//    Serial.println(" C");
-//
-//    /* Then convert the atmospheric pressure, and SLP to altitude         */
-//    /* Update this next line with the current SLP for better results      */
-//    float seaLevelPressure = SENSORS_PRESSURE_SEALEVELHPA;
-//    Serial.print("Altitude:    "); 
-//    Serial.print(bmp.pressureToAltitude(seaLevelPressure,
-//                                        event.pressure)); 
-//    Serial.println(" m");
-//    Serial.println("");
-//  }
-//  else
-//  {
-//    Serial.println("9999");
-//  }
 }
 
 void addToPayload(int position, float value) {
@@ -183,7 +150,6 @@ void loop(){
   logfile.flush();
 
   DateTime now = RTC.now();
-//  loopWaterTemperature();
   loopAirTemperatureAndHumidity();
   loopAltitude();
 
@@ -192,28 +158,20 @@ void loop(){
   /////////////////////////////////////////////////////////////////////
   logfile.print(now.unixtime());
   logfile.print(",");
-//  logfile.print(sensors.getTempCByIndex(0)); 
-//  logfile.print(",");
   logfile.print(h);
   logfile.print(",");
   logfile.print(t);
   logfile.print(",");
-//  logfile.print(bmp.pressureToAltitude(seaLevelPressure, event.pressure));
-//  logfile.print(",");
   logfile.print(event.pressure);
   logfile.print(",");
   logfile.print("\n");
 
   Serial.print(now.unixtime());
   Serial.print(",");
-//  Serial.print(sensors.getTempCByIndex(0)); 
-//  Serial.print(",");
   Serial.print(h);
   Serial.print(",");
   Serial.print(t);
   Serial.print(",");
-//  Serial.print(bmp.pressureToAltitude(seaLevelPressure, event.pressure));
-//  Serial.print(",");
   Serial.print(event.pressure);
   Serial.print(",");
   Serial.print("\n");

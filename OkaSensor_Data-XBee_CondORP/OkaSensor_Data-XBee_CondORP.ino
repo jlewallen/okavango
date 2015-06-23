@@ -6,10 +6,6 @@
 #include <Adafruit_Sensor.h>
 #include <SoftwareSerial.h>
 
-#define LOG_INTERVAL  5000 // mills between entries (reduce to take more/faster data)
-#define SYNC_INTERVAL 5000 // mills between calls to flush() - to write data to the card
-#define ECHO_TO_SERIAL   0 // echo data to serial port
-#define WAIT_TO_START    0 // Wait for serial input in setup()
 #define COND_RXPIN       4 // set the conductivity (EC sensor) RX pin (labeled "TX" on EC board)
 #define COND_TXPIN       5 // set the conductivity (EC sensor) TX pin (labeled "RX" on EC board)
 #define ORP_RXPIN        6 // set the ORP RX pin (labeled "TX" on ORP board) - NEED TO CHANGE THIS FOR THE SD SHIELD
@@ -21,7 +17,7 @@ SoftwareSerial cond(COND_RXPIN, COND_TXPIN);
 SoftwareSerial orp(ORP_RXPIN, ORP_TXPIN);
 SoftwareSerial xbeeSerial(2, 3); 
 
-RTC_DS1307 RTC; // define the Real Time Clock object
+RTC_DS1307 RTC;
 File logfile;
 XBee xbee = XBee();
 

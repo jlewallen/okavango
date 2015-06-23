@@ -6,10 +6,6 @@
 #include <Adafruit_Sensor.h>
 #include <SoftwareSerial.h>
 
-#define LOG_INTERVAL  5000 // mills between entries (reduce to take more/faster data)
-#define SYNC_INTERVAL 5000 // mills between calls to flush() - to write data to the card
-#define ECHO_TO_SERIAL   0 // echo data to serial port
-#define WAIT_TO_START    0 // Wait for serial input in setup()
 #define PH_RXPIN         4 // set the pH sensor RX pin (labeled "TX" on pH board)
 #define PH_TXPIN         5 // set the pH sensor TX pin (labeled "RX" on pH board)
 #define D_O_RXPIN        6 // set the dissolved oxygen RX pin (labeled "TX" on DO board)

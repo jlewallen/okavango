@@ -10,10 +10,6 @@
 #include <Adafruit_Sensor.h>
 #include <SoftwareSerial.h>
 
-#define LOG_INTERVAL     5000 // mills between entries (reduce to take more/faster data)
-#define SYNC_INTERVAL    5000 // mills between calls to flush() - to write data to the card
-#define ECHO_TO_SERIAL   0 // echo data to serial port
-#define WAIT_TO_START    0 // Wait for serial input in setup()
 #define ONE_WIRE_BUS     6 // Water temp wire is plugged into pin 2 on the Arduino
 #define DHTPIN           7 // what pin we're connected to
 #define DHTTYPE          DHT22 // set type of sensor to DHT 22  (AM2302)
