@@ -22,9 +22,7 @@ SoftwareSerial xbeeSerial(2, 3);
 
 RTC_DS1307 RTC; // define the Real Time Clock object
 const int chipSelect = 10;
-
 File logfile;
-
 XBee xbee = XBee();
 
 float tdsValue;
@@ -51,43 +49,50 @@ void error(char *str)
   while(1);
 }
 
-void setup(){             
-    xbeeSerial.begin(9600);  
-    Serial.begin(115200);      
-    xbee.setSerial(xbeeSerial);
-    
-    Wire.begin();
-    RTC.begin();
-    
-    Serial.println(RTC.now().unixtime());
-    
-    pinMode(10, OUTPUT);
-  
-    // see if the card is present and can be initialized:
-    if (!SD.begin(chipSelect)) {
-      error("Card failed, or not present");
-    }
-  
-    // create a new file
-    char filename[] = "LOGGER00.CSV";
-    for (uint8_t i = 0; i < 100; i++) {
-      filename[6] = i/10 + '0';
-      filename[7] = i%10 + '0';
-      if (! SD.exists(filename)) {
-        // only open a new file if it doesn't exist
-        logfile = SD.open(filename, FILE_WRITE); 
-        break;  // leave the loop!
-    }
+void openLogFile()
+{
+  // see if the card is present and can be initialized:
+  if (!SD.begin(chipSelect)) {
+    error("Card failed, or not present");
   }
   
-  if (! logfile) {
+  // create a new file
+  for (uint32_t i = 0; i <= 99999999; i++) {
+    char filename[13];
+    String fn = "" + i;
+    while (fn.length() < 8) {
+      fn = '0' + fn;
+    }
+    fn = fn + ".CSV";
+    fn.toCharArray(filename, sizeof(filename));
+    if (!SD.exists(filename)) {
+      // only open a new file if it doesn't exist
+      Serial.print("Logging to: ");
+      Serial.println(filename);
+      logfile = SD.open(filename, FILE_WRITE); 
+      break;
+    }
+  }
+
+  if (!logfile) {
     error("couldnt create file");
   }
-  
-  Serial.print("Logging to: ");
-  Serial.println(filename);
-  logfile.println("Ready");
   logfile.flush();
+}
+
+void setup(){             
+  xbeeSerial.begin(9600);  
+  Serial.begin(115200);      
+  xbee.setSerial(xbeeSerial);
+  
+  Wire.begin();
+  RTC.begin();
+  
+  Serial.println(RTC.now().unixtime());
+  
+  pinMode(10, OUTPUT);
+
+  openLogFile();
 }
 
 void loopConductivity()
