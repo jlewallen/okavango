@@ -14,7 +14,7 @@ xbee = ZigBee(ser)
 while True:
     try:
         response = xbee.wait_read_frame()
-	data =  data['rf_data']
+	data =  response['rf_data']
         print struct.unpack('ffffc', data)
     except KeyboardInterrupt:
         break
