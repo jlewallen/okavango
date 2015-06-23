@@ -49,8 +49,8 @@ while True:
   try:
     response = xbee.wait_read_frame()
     data =  response['rf_data']
-    payload = struct.unpack('ffffc', data)
-    kind = int(payload[4])
+    payload = struct.unpack('ffffb', data)
+    kind = payload[4]
     dictionary = deserializers[kind](payload)
     print payload, dictionary
     uploader = SampleUploader(sys.argv[1], None)

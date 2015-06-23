@@ -25,13 +25,19 @@ float tdsValue;
 float salinityValue;
 float orpValue;
 
-// we are going to send two floats of 4 bytes each
-uint8_t payload[4 * 4 + 1] = {};
+#pragma pack(push, 1)
 
-union u_tag {
-    uint8_t b[4];
-    float fval;
-} u;
+typedef struct {
+  float v1;
+  float v2;
+  float v3;
+  float v4;
+  char kind;
+} packet_t;
+
+packet_t payload;
+
+#pragma pack(push, 4)
 
 // SH + SL Address of receiving XBee
 XBeeAddress64 addr64 = XBeeAddress64(0x0013A200, 0x40C6746A); //this needs to be updated for the correct XBee Test configuration: 13A200  40C6746A
