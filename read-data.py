@@ -4,6 +4,7 @@ Continuously read the serial port and process IO data received from a remote XBe
 
 from xbee import ZigBee
 import serial
+import struct
 
 ser = serial.Serial('/dev/ttyUSB0', 9600)
 
@@ -13,7 +14,8 @@ xbee = ZigBee(ser)
 while True:
     try:
         response = xbee.wait_read_frame()
-        print response
+	data =  data['rf_data']
+        print struct.unpack('ffffc', data)
     except KeyboardInterrupt:
         break
         
