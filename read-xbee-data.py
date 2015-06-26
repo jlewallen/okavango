@@ -1,15 +1,20 @@
 #!/usr/bin/python
 
+from __future__ import print_function
+
 import serial
 import struct
 import sys
 import time
 import logging
+import daemon
+import syslog
 
 from xbee import ZigBee
 from okavango import SampleUploader
 
 logging.basicConfig(level=logging.DEBUG)
+syslog.openlog(logoption=syslog.LOG_PID)
 
 def phDO(raw):
     return {
@@ -45,26 +50,52 @@ deserializers = {
   3: airAlt
 }
 
-serial = serial.Serial('/dev/ttyUSB0', 9600)
-xbee = ZigBee(serial)
+def log(*objects):
+  print(*objects)
+  for i in objects:
+    syslog.syslog(str(i))
 
-while True:
-  try:
-    response = xbee.wait_read_frame()
-    data =  response['rf_data']
-    payload = struct.unpack('ffffb', data)
-    kind = payload[4]
-    dictionary = deserializers[kind](payload)
-    print payload, dictionary
-    timestamp = str(int(time.time()))
-    sample = {
-      "t_local": timestamp,
-      "data": dictionary
-    }
-    uploader = SampleUploader(sys.argv[1], None)
-    samples = uploader.save(timestamp, None, sample)
-    uploader.upload(samples)
-  except KeyboardInterrupt:
-    break
-        
-serial.close()
+class XbeeListener(daemon.Daemon):
+  def __init__(self, pidfile, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
+    daemon.Daemon.__init__(self, pidfile, stdin, stdout, stderr)
+
+  def run(self):
+    while True:
+      try:
+        device = serial.Serial('/dev/ttyUSB0', 9600)
+        xbee = ZigBee(device)
+
+        while True:
+          try:
+            response = xbee.wait_read_frame()
+            data =  response['rf_data']
+            payload = struct.unpack('ffffb', data)
+            kind = payload[4]
+            dictionary = deserializers[kind](payload)
+            log(payload, dictionary)
+            timestamp = str(int(time.time()))
+            sample = {
+              "t_local": timestamp,
+              "data": dictionary
+            }
+            uploader = SampleUploader(sys.argv[1], None)
+            samples = uploader.save(timestamp, None, sample)
+            uploader.upload(samples)
+          except KeyboardInterrupt:
+            break
+          except Exception as i:
+            log(i)
+            time.sleep(1)
+                
+        device.close()
+      except Exception as i:
+        log(i)
+        time.sleep(1)
+
+if __name__ == "__main__":
+  log("Starting...")
+  listener = XbeeListener("xbee.pid")
+  if "-d" in sys.argv:
+    listener.start()
+  else:
+    listener.run()
