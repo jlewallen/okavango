@@ -82,7 +82,7 @@ class XbeeListener(daemon.Daemon):
             samples = uploader.save(timestamp, None, sample)
             uploader.upload(samples)
           except KeyboardInterrupt:
-            break
+            sys.exit(0)
           except Exception as i:
             log(i)
             time.sleep(1)
