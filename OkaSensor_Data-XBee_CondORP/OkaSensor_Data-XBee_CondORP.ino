@@ -61,9 +61,9 @@ void openLogFile()
   }
   
   // create a new file
-  for (uint32_t i = 0; i <= 99999999; i++) {
+  for (long i = 0; i <= 99999999; i++) {
     char filename[13];
-    String fn = "" + i;
+    String fn(i);
     while (fn.length() < 8) {
       fn = '0' + fn;
     }
