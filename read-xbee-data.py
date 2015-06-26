@@ -94,8 +94,12 @@ class XbeeListener(daemon.Daemon):
 
 if __name__ == "__main__":
   log("Starting...")
-  listener = XbeeListener("xbee.pid")
-  if "-d" in sys.argv:
+  listener = XbeeListener("/var/run/xbee.pid")
+  if "start" in sys.argv:
     listener.start()
+  if "restart" in sys.argv:
+    listener.restart()
+  if "stop" in sys.argv:
+    listener.stop()
   else:
     listener.run()
