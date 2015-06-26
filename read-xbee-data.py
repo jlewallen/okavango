@@ -74,11 +74,13 @@ class XbeeListener(daemon.Daemon):
             dictionary = deserializers[kind](payload)
             log(payload, dictionary)
             timestamp = str(int(time.time()))
+            uploader = SampleUploader(sys.argv[1], None)
+            dictionary["gps_lat"] = uploader.config.get("databoat", "gps_lat")
+            dictionary["gps_long"] = uploader.config.get("databoat", "gps_long")
             sample = {
               "t_local": timestamp,
               "data": dictionary
             }
-            uploader = SampleUploader(sys.argv[1], None)
             samples = uploader.save(timestamp, None, sample)
             uploader.upload(samples)
           except KeyboardInterrupt:
