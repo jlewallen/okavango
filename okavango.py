@@ -6,10 +6,16 @@ import logging
 import ConfigParser
 import sys
 import os
+import syslog
 
 def fail(message):
   sys.stderr.write(message + "\n")
   sys.exit(2)
+
+def log(*objects):
+  print(*objects)
+  for i in objects:
+    syslog.syslog(str(i))
 
 class SampleUploader:
   def __init__(self, path, header):
@@ -48,7 +54,7 @@ class SampleUploader:
           queue = json.load(f)
       except Exception as i:
         os.rename(queue_path, queue_path + "." + str(int(time.time())))
-        print "Save Error", i
+        log("Save Error", i)
     queue[timestamp] = parsed
     with open(queue_path, "w") as f:
       json.dump(queue, f)
@@ -61,9 +67,9 @@ class SampleUploader:
       queue_path = self.config.get('databoat', 'queue_file')
       headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
       for time, sample in samples.iteritems():
-        print json.dumps(sample)
+        log(json.dumps(sample))
         requests.post(self.config.get('databoat', 'url'), data=json.dumps(sample), headers=headers, timeout=5)
       os.remove(queue_path)
     except Exception as i:
-      print "HTTP Error", i
+      log("HTTP Error", i)
 
