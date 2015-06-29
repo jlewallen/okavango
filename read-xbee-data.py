@@ -61,6 +61,7 @@ class XbeeListener(daemon.Daemon):
     daemon.Daemon.__init__(self, pidfile, stdin, stdout, stderr)
 
   def run(self):
+    log("Daemon running...")
     while True:
       devices = glob.glob("/dev/ttyUSB*")
       log("Devices", devices)
