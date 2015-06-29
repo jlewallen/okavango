@@ -9,6 +9,7 @@ import time
 import logging
 import daemon
 import syslog
+import glob
 
 from xbee import ZigBee
 from okavango import SampleUploader
@@ -61,38 +62,43 @@ class XbeeListener(daemon.Daemon):
 
   def run(self):
     while True:
-      try:
-        device = serial.Serial('/dev/ttyUSB0', 9600, timeout=5, writeTimeout=5)
-        xbee = ZigBee(device)
-
-        while True:
-          try:
-            response = xbee.wait_read_frame()
-            data =  response['rf_data']
-            payload = struct.unpack('ffffb', data)
-            kind = payload[4]
-            dictionary = deserializers[kind](payload)
-            log(payload, dictionary)
-            timestamp = str(int(time.time()))
-            uploader = SampleUploader(sys.argv[1], None)
-            dictionary["gps_lat"] = uploader.config.get("databoat", "gps_lat")
-            dictionary["gps_long"] = uploader.config.get("databoat", "gps_long")
-            sample = {
-              "t_local": timestamp,
-              "data": dictionary
-            }
-            samples = uploader.save(timestamp, None, sample)
-            uploader.upload(samples)
-          except KeyboardInterrupt:
-            sys.exit(0)
-          except Exception as i:
-            log(i)
-            time.sleep(1)
-                
-        device.close()
-      except Exception as i:
-        log(i)
+      devices = glob.glob("/dev/ttyUSB*")
+      log("Devices", devices)
+      if len(devices) == 0:
         time.sleep(1)
+      for deviceName in devices:
+        try:
+          device = serial.Serial(deviceName, 9600, timeout=5, writeTimeout=5)
+          xbee = ZigBee(device)
+
+          while True:
+            try:
+              response = xbee.wait_read_frame()
+              data =  response['rf_data']
+              payload = struct.unpack('ffffb', data)
+              kind = payload[4]
+              dictionary = deserializers[kind](payload)
+              log(payload, dictionary)
+              timestamp = str(int(time.time()))
+              uploader = SampleUploader(sys.argv[1], None)
+              dictionary["gps_lat"] = uploader.config.get("databoat", "gps_lat")
+              dictionary["gps_long"] = uploader.config.get("databoat", "gps_long")
+              sample = {
+                "t_local": timestamp,
+                "data": dictionary
+              }
+              samples = uploader.save(timestamp, None, sample)
+              uploader.upload(samples)
+            except KeyboardInterrupt:
+              sys.exit(0)
+            except Exception as i:
+              log(i)
+              time.sleep(1)
+                  
+          device.close()
+        except Exception as i:
+          log(i)
+          time.sleep(1)
 
 if __name__ == "__main__":
   log("Starting...")
