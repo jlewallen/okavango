@@ -62,7 +62,7 @@ class XbeeListener(daemon.Daemon):
   def run(self):
     while True:
       try:
-        device = serial.Serial('/dev/ttyUSB0', 9600)
+        device = serial.Serial('/dev/ttyUSB0', 9600, timeout=5, writeTimeout=5)
         xbee = ZigBee(device)
 
         while True:
