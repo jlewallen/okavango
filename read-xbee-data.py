@@ -73,7 +73,9 @@ class XbeeListener(daemon.Daemon):
 
           while True:
             try:
+              log("Reading frame...")
               response = xbee.wait_read_frame()
+              log("Got frame...", response)
               data =  response['rf_data']
               payload = struct.unpack('ffffb', data)
               kind = payload[4]
