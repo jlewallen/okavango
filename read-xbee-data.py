@@ -56,6 +56,9 @@ def log(*objects):
   for i in objects:
     syslog.syslog(str(i))
 
+def read_a_frame():
+  pass
+
 class XbeeListener(daemon.Daemon):
   def __init__(self, pidfile, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
     daemon.Daemon.__init__(self, pidfile, stdin, stdout, stderr)
@@ -78,11 +81,11 @@ class XbeeListener(daemon.Daemon):
               response = xbee.wait_read_frame()
               log("Got frame...", response)
               data =  response['rf_data']
-              payload = struct.unpack('ffffb', data)
-              kind = payload[4]
+              payload = struct.unpack('ffffLb', data)
+              kind = payload[5]
               dictionary = deserializers[kind](payload)
               log(payload, dictionary)
-              timestamp = str(int(time.time()))
+              timestamp = str(payload[4])
               uploader = SampleUploader(sys.argv[1], None)
               dictionary["gps_lat"] = uploader.config.get("databoat", "gps_lat")
               dictionary["gps_long"] = uploader.config.get("databoat", "gps_long")
