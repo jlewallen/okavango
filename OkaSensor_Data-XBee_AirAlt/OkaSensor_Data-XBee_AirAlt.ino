@@ -196,6 +196,7 @@ void loop(){
     delay(5000);
     if (now - lastUpdate >= 30 * 1000) {
       Serial.println(elapsed);
+      break;
       lastUpdate = now;
     }
   }
