@@ -1,29 +1,17 @@
 #include <XBee.h>
 #include <SD.h>
 #include <SPI.h>
-#include <Wire.h>
 #include <RTClib.h>
-#include <OneWire.h>
-#include <DallasTemperature.h>
-#include <DHT.h>
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
-#include <Adafruit_BMP085_U.h>
+#include <Adafruit_MPL115A2.h>
 #include <SoftwareSerial.h>        // include the software serial library to add an aditional serial ports to talk to the Atlas units
 
-#define ONE_WIRE_BUS     6 // Water temp wire is plugged into pin 2 on the Arduino
-#define DHTPIN           7 // what pin we're connected to
-#define DHTTYPE          DHT22 // set type of sensor to DHT 22  (AM2302)
 #define SD_BOARD_PIN     10
 
 SoftwareSerial xbeeSerial(2, 3); 
-// Setup a oneWire instance to communicate with any OneWire devices 
-OneWire oneWire(ONE_WIRE_BUS);
-// Pass our oneWire reference to Dallas Temperature.
-DallasTemperature sensors(&oneWire);
 // Initialize DHT sensor for normal 16mhz Arduino
-DHT dht(DHTPIN, DHTTYPE);
-Adafruit_BMP085_Unified bmp = Adafruit_BMP085_Unified(10085);
+Adafruit_MPL115A2 mpl115a2;
 RTC_DS1307 RTC; // define the Real Time Clock object
 File logfile;
 XBee xbee = XBee();
@@ -35,6 +23,7 @@ typedef struct {
   float v2;
   float v3;
   float v4;
+  unsigned long time;
   char kind;
 } packet_t;
 
@@ -96,50 +85,9 @@ void setup(){
 
     Wire.begin();    
     RTC.begin();
-    
-    sensors.begin();             // Start up the library for water sensor
-    dht.begin();                 // Start up the library for air temp/humidity sensor
-    bmp.begin();      // Start up the library for the altitude sensor
+    mpl115a2.begin();
 
     openLogFile();
-}
-
-void loopWaterTemperature()
-{
-    // call sensors.requestTemperatures() to issue a global temperature
-    // request to all devices on the bus
-    sensors.requestTemperatures(); // Send the command to get temperatures
-}
-
-void loopAirTemperatureAndHumidity()
-{
-     // Wait a few seconds between measurements.
-    delay(2000); 
-
-    // Reading temperature or humidity takes about 250 milliseconds!
-    // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
-    h = dht.readHumidity();
-    // Read temperature as Celsius
-    t = dht.readTemperature();
-    // Read temperature as Fahrenheit
-    f = dht.readTemperature(true);
-  
-    // Check if any reads failed and exit early (to try again).
-    if (isnan(h) || isnan(t) || isnan(f)) {
-      Serial.println("9999");
-      return;
-    }
-}
-
-sensors_event_t event;
-  
-float seaLevelPressure = SENSORS_PRESSURE_SEALEVELHPA;
-
-void loopAltitude()
-{
-  bmp.getEvent(&event);
-  float temperature;
-  bmp.getTemperature(&temperature);
 }
 
 void loop(){                   
@@ -149,38 +97,46 @@ void loop(){
   logfile.flush();
 
   DateTime now = RTC.now();
-  loopAirTemperatureAndHumidity();
-  loopAltitude();
+  
+  float pressure = mpl115a2.getPressure(); 
 
   /////////////////////////////////////////////////////////////////////
   //  Send all data to serial output 
   /////////////////////////////////////////////////////////////////////
   logfile.print(now.unixtime());
   logfile.print(",");
-  logfile.print(h);
-  logfile.print(",");
-  logfile.print(t);
-  logfile.print(",");
-  logfile.print(event.pressure);
-  logfile.print(",");
+  logfile.print(pressure);
   logfile.print("\n");
 
   Serial.print(now.unixtime());
   Serial.print(",");
-  Serial.print(h);
-  Serial.print(",");
-  Serial.print(t);
-  Serial.print(",");
-  Serial.print(event.pressure);
-  Serial.print(",");
+  Serial.print(pressure);
   Serial.print("\n");
   
   logfile.flush();
 
   memset((void *)&payload, 0, sizeof(payload));
-  payload.kind = 3;
-  payload.v1 = h;
-  payload.v2 = t;
-  payload.v3 = event.pressure;
+  payload.kind = 4;
+  payload.time = now.unixtime();
+  payload.v1 = pressure;
   xbee.send(zbTx);
+
+  /* Delay for 5 minutes. Watch out for millis() wrapping around and just call that 
+  the end of the delay. This doesn't always need to be 5mins exactly. */
+  unsigned long startMillis = millis();
+  unsigned long lastUpdate = startMillis;
+  unsigned long i = 0;
+  while (true) {
+    unsigned long now = millis();
+    unsigned long elapsed = now - startMillis;
+    if (now - lastUpdate >= 30 * 1000) {
+      Serial.println(elapsed);
+      lastUpdate = now;
+      if (++i == 2 * 5) {
+        break;
+      }
+    }
+    delay(5000);
+  }
+  Serial.println("Done");
 }
