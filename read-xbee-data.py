@@ -44,11 +44,17 @@ def condOrp(raw):
       'orp' : raw[2]
     }
 
+def pressure(raw):
+    return {
+      'pressure' : raw[0]
+    }
+
 deserializers = {
   0: phDO,
   1: condOrp,
   2: airWat,
-  3: airAlt
+  3: airAlt,
+  4: pressure
 }
 
 def log(*objects):
