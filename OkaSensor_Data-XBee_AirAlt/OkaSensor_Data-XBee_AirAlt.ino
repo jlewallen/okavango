@@ -188,7 +188,6 @@ void loop(){
   the end of the delay. This doesn't always need to be 5mins exactly. */
   unsigned long startMillis = millis();
   while (millis() - startMillis < 60 * 1000 * 5 && millis() >= startMillis) {
-    Serial.println(millis() - startMillis);
     delay(5000);
   }
 }
