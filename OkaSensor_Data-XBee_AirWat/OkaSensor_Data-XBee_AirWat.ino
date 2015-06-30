@@ -168,4 +168,10 @@ void loop(){
   payload.v2 = h;
   payload.v3 = t;
   xbee.send(zbTx);
+
+  /* Delay for 5 minutes. Watch out for millis() wrapping around and just call that 
+  the end of the delay. This doesn't always need to be 5mins exactly. */
+  unsigned long startMillis = millis();
+  while (millis() - startMillis < 60 * 1000 * 5 && millis() > startMillis)
+  delay(5000);
 }
