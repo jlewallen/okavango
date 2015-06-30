@@ -32,6 +32,7 @@ typedef struct {
   float v2;
   float v3;
   float v4;
+  unsigned long time;
   char kind;
 } packet_t;
 
@@ -167,6 +168,7 @@ void loop(){
   payload.v1 = sensors.getTempCByIndex(0);
   payload.v2 = h;
   payload.v3 = t;
+  payload.time = now.unixtime();  
   xbee.send(zbTx);
 
   /* Delay for 5 minutes. Watch out for millis() wrapping around and just call that 
