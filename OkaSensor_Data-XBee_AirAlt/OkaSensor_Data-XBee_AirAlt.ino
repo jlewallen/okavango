@@ -190,7 +190,8 @@ void loop(){
   unsigned long lastUpdate = startMillis;
   while (true) {
     unsigned long now = millis();
-    if (now - startMillis >= (60 * 1000 * 5)) break;
+    unsigned long elapsed = now - startMillis;
+    if (elapsed >= (60 * 1000 * 1)) break;
     if (now < startMillis) break;
     delay(5000);
     if (now - lastUpdate >= 30 * 1000) {
