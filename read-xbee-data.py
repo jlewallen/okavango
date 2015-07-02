@@ -46,7 +46,9 @@ def condOrp(raw):
 
 def pressure(raw):
     return {
-      'pressure' : raw[0]
+      'humidity' : raw[0],
+      'airTemp' : raw[1],
+      'pressure' : raw[2]
     }
 
 deserializers = {
