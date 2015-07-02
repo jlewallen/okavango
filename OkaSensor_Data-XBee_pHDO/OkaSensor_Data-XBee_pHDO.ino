@@ -195,17 +195,18 @@ void loop(){
   the end of the delay. This doesn't always need to be 5mins exactly. */
   unsigned long startMillis = millis();
   unsigned long lastUpdate = startMillis;
+  unsigned long i = 0;
   while (true) {
     unsigned long now = millis();
     unsigned long elapsed = now - startMillis;
-    if (elapsed >= (60 * 1000 * 1)) return;
-    if (now < startMillis) return;
-    delay(5000);
     if (now - lastUpdate >= 30 * 1000) {
       Serial.println(elapsed);
-      break;
       lastUpdate = now;
+      if (++i == 2 * 5) {
+        break;
+      }
     }
+    delay(5000);
   }
   Serial.println("Done");
 }
