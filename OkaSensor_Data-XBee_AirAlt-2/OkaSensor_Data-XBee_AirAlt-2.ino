@@ -151,7 +151,9 @@ void loop(){
   memset((void *)&payload, 0, sizeof(payload));
   payload.kind = 4;
   payload.time = now.unixtime();
-  payload.v1 = pressure;
+  payload.v1 = h;
+  payload.v3 = t;
+  payload.v2 = pressure;
   xbee.send(zbTx);
 
   /* Delay for 5 minutes. Watch out for millis() wrapping around and just call that 
