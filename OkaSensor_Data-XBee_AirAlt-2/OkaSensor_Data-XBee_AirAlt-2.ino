@@ -3,14 +3,18 @@
 #include <SPI.h>
 #include <RTClib.h>
 #include <Wire.h>
+#include <DHT.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_MPL115A2.h>
 #include <SoftwareSerial.h>        // include the software serial library to add an aditional serial ports to talk to the Atlas units
 
+#define DHTPIN           7 // what pin we're connected to
+#define DHTTYPE          DHT22 // set type of sensor to DHT 22  (AM2302)
 #define SD_BOARD_PIN     10
 
 SoftwareSerial xbeeSerial(2, 3); 
 // Initialize DHT sensor for normal 16mhz Arduino
+DHT dht(DHTPIN, DHTTYPE);
 Adafruit_MPL115A2 mpl115a2;
 RTC_DS1307 RTC; // define the Real Time Clock object
 File logfile;
@@ -85,9 +89,30 @@ void setup(){
 
     Wire.begin();    
     RTC.begin();
+    dht.begin();                 // Start up the library for air temp/humidity sensor
     mpl115a2.begin();
 
     openLogFile();
+}
+
+void loopAirTemperatureAndHumidity()
+{
+     // Wait a few seconds between measurements.
+    delay(2000); 
+
+    // Reading temperature or humidity takes about 250 milliseconds!
+    // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
+    h = dht.readHumidity();
+    // Read temperature as Celsius
+    t = dht.readTemperature();
+    // Read temperature as Fahrenheit
+    f = dht.readTemperature(true);
+  
+    // Check if any reads failed and exit early (to try again).
+    if (isnan(h) || isnan(t) || isnan(f)) {
+      Serial.println("9999");
+      return;
+    }
 }
 
 void loop(){                   
@@ -97,7 +122,7 @@ void loop(){
   logfile.flush();
 
   DateTime now = RTC.now();
-  
+  loopAirTemperatureAndHumidity();
   float pressure = mpl115a2.getPressure(); 
 
   /////////////////////////////////////////////////////////////////////
@@ -105,10 +130,18 @@ void loop(){
   /////////////////////////////////////////////////////////////////////
   logfile.print(now.unixtime());
   logfile.print(",");
+  logfile.print(h);
+  logfile.print(",");
+  logfile.print(t);
+  logfile.print(",");
   logfile.print(pressure);
   logfile.print("\n");
 
   Serial.print(now.unixtime());
+  Serial.print(",");
+  Serial.print(h);
+  Serial.print(",");
+  Serial.print(t);
   Serial.print(",");
   Serial.print(pressure);
   Serial.print("\n");
