@@ -182,7 +182,7 @@ void loop(){
   payload.kind = 3;
   payload.v1 = h;
   payload.v2 = t;
-  payload.v3 = event.pressure;
+  payload.v3 = event.pressure * 10; /* kPa to hPa */
   payload.time = now.unixtime();
   xbee.send(zbTx);
 
