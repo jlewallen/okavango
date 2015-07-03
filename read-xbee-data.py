@@ -97,6 +97,7 @@ class XbeeListener(daemon.Daemon):
               uploader = SampleUploader(sys.argv[1], None)
               dictionary["gps_lat"] = uploader.config.get("databoat", "gps_lat")
               dictionary["gps_long"] = uploader.config.get("databoat", "gps_long")
+              dictionary["SensorNode"] = uploader.config.get("databoat", "SensorNode")
               sample = {
                 "t_local": timestamp,
                 "data": dictionary
