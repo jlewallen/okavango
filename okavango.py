@@ -70,7 +70,7 @@ class SampleUploader:
       headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
       for time, sample in samples.iteritems():
         log(json.dumps(sample))
-        requests.post(self.config.get('databoat', 'url'), data=json.dumps(sample), headers=headers, timeout=5)
+        requests.post(self.config.get('databoat', 'url'), data=json.dumps(sample), headers=headers, timeout=30)
       os.remove(queue_path)
     except Exception as i:
       log("HTTP Error", i)

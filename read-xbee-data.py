@@ -109,11 +109,11 @@ class XbeeListener(daemon.Daemon):
             except Exception as i:
               log(i)
               time.sleep(1)
-                  
-          device.close()
         except Exception as i:
           log(i)
           time.sleep(1)
+        finally:
+          device.close()
 
 if __name__ == "__main__":
   log("Starting...")
