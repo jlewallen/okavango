@@ -9,19 +9,19 @@
 #include <Adafruit_Sensor.h>
 #include <SoftwareSerial.h>
 
-#define cellRX           2
-#define cellTX           3
+#define DHTPIN           3 // what pin we're connected to
 #define PH_RXPIN         4 // set the pH sensor RX pin (labeled "TX" on pH board)
 #define PH_TXPIN         5 // set the pH sensor TX pin (labeled "RX" on pH board)
 #define ONE_WIRE_BUS     6 // Water temp wire is plugged into pin 6 on the Arduino
-#define DHTPIN           7 // what pin we're connected to
+#define cellRX           7
+#define cellTX           8
 #define DHTTYPE          DHT22 // set type of sensor to DHT 22  (AM2302)
 #define SD_BOARD_PIN     10
 
 String textForSMS;
 float phValue;
 
-SoftwareSerial cellular(cellRX, cellTX);
+SoftwareSerial gprsSerial(cellRX, cellTX);
 SoftwareSerial pH(PH_RXPIN, PH_TXPIN);
 // Setup a oneWire instance to communicate with any OneWire devices 
 OneWire oneWire(ONE_WIRE_BUS);
@@ -75,7 +75,7 @@ void openLogFile()
 
 void setup() {
   Serial.begin(115200);      
-  cellular.begin(19200);      // the GPRS baud rate  
+  gprsSerial.begin(19200);      // the GPRS baud rate  
   
   Wire.begin();
   RTC.begin();
@@ -90,15 +90,15 @@ void setup() {
 ///this function is to send a sms message
 void SendTextMessage(String message)
 {
-  cellular.print("AT+CMGF=1\r");    //Because we want to send the SMS in text mode
+  gprsSerial.print("AT+CMGF=1\r");    //Because we want to send the SMS in text mode
   delay(100);
-  cellular.println("AT + CMGS = \"+13473940024\"");//send sms message, be careful need to add a country code before the cellphone number
+  gprsSerial.println("AT + CMGS = \"+13473940024\"");//send sms message, be careful need to add a country code before the cellphone number
   delay(100);
-  cellular.println(message);//the content of the message
+  gprsSerial.println(message);//the content of the message
   delay(100);
-  cellular.println((char)26);//the ASCII code of the ctrl+z is 26
+  gprsSerial.println((char)26);//the ASCII code of the ctrl+z is 26
   delay(100);
-  cellular.println();
+  gprsSerial.println();
 }
 
 String AppendFloat(String oldString, float num)
