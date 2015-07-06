@@ -18,7 +18,6 @@
 #define DHTTYPE          DHT22 // set type of sensor to DHT 22  (AM2302)
 #define SD_BOARD_PIN     10
 
-String textForSMS;
 float phValue;
 
 SoftwareSerial gprsSerial(cellRX, cellTX);
@@ -99,14 +98,6 @@ void SendTextMessage(String message)
   gprsSerial.println((char)26);//the ASCII code of the ctrl+z is 26
   delay(100);
   gprsSerial.println();
-}
-
-String AppendFloat(String oldString, float num)
-{
-  char buf[20];
-  char* string = dtostrf(num, 4, 2, buf);
-  oldString.concat(string);
-        return oldString;
 }
 
 void loopPh()
@@ -207,9 +198,20 @@ void loop(){
   
   logfile.flush();
 
-/* Need to figure out how to build the message to be "Time,Loc,pH,Wat,Air,Hum" within 140 char */
-  textForSMS = "Time";  
-  textForSMS = AppendFloat(textForSMS, now.unixtime());
+/* Need to figure out how to build the message to be "Time,Loc,TDS,Sal,Wat,Air,Hum" within 140 char */
+  String textForSMS = "";  
+  textForSMS += now.unixtime();
+  textForSMS += ",";
+  textForSMS += "Loc";
+  textForSMS += ",";
+  textForSMS += String(phValue, 3);
+  textForSMS += ",";
+  textForSMS += String(sensors.getTempCByIndex(0), 3);
+  textForSMS += ",";
+  textForSMS += String(t, 3);
+  textForSMS += ",";
+  textForSMS += String(h, 3);
+  
  /* not quite sure how to add in the rest of the data */
   Serial.println("Message:");
   Serial.println(textForSMS);

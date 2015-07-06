@@ -213,15 +213,15 @@ void loop(){
   textForSMS += ",";
   textForSMS += "Loc";
   textForSMS += ",";
-  textForSMS += tdsValue;
+  textForSMS += String(tdsValue, 3);
   textForSMS += ",";
-  textForSMS += salinityValue;
+  textForSMS += String(salinityValue, 3);
   textForSMS += ",";
-  textForSMS += sensors.getTempCByIndex(0);
+  textForSMS += String(sensors.getTempCByIndex(0), 3);
   textForSMS += ",";
-  textForSMS += t;
+  textForSMS += String(t, 3);
   textForSMS += ",";
-  textForSMS += h;
+  textForSMS += String(h, 3);
   
  /* not quite sure how to add in the rest of the data */
   Serial.println("Message:");
