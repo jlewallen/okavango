@@ -18,7 +18,6 @@
 #define DHTTYPE          DHT22 // set type of sensor to DHT 22  (AM2302)
 #define SD_BOARD_PIN     10
 
-String textForSMS;
 float tdsValue;
 float salinityValue;
 
@@ -100,14 +99,6 @@ void SendTextMessage(String message)
   gprsSerial.println((char)26);//the ASCII code of the ctrl+z is 26
   delay(100);
   gprsSerial.println();
-}
-
-String AppendFloat(String oldString, float num)
-{
-  char buf[20];
-  char* string = dtostrf(num, 4, 2, buf);
-  oldString.concat(string);
-        return oldString;
 }
 
 void loopConductivity()
@@ -217,8 +208,21 @@ void loop(){
   logfile.flush();
 
 /* Need to figure out how to build the message to be "Time,Loc,TDS,Sal,Wat,Air,Hum" within 140 char */
-  textForSMS = "Time";  
-  textForSMS = AppendFloat(textForSMS, now.unixtime());
+  String textForSMS = "";  
+  textForSMS += now.unixtime();
+  textForSMS += ",";
+  textForSMS += "Loc";
+  textForSMS += ",";
+  textForSMS += tdsValue;
+  textForSMS += ",";
+  textForSMS += salinityValue;
+  textForSMS += ",";
+  textForSMS += sensors.getTempCByIndex(0);
+  textForSMS += ",";
+  textForSMS += t;
+  textForSMS += ",";
+  textForSMS += h;
+  
  /* not quite sure how to add in the rest of the data */
   Serial.println("Message:");
   Serial.println(textForSMS);
