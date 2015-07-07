@@ -32,6 +32,13 @@ File logfile;
 
 float h, t, f;
 
+void powerUp()
+{
+  pinMode(9, OUTPUT); 
+  digitalWrite(9,HIGH);
+  delay(2000);
+}
+
 void error(char *str)
 {
   Serial.print("error: ");
@@ -73,6 +80,8 @@ void openLogFile()
 }
 
 void setup() {
+  powerUp();
+  
   Serial.begin(115200);      
   gprsSerial.begin(19200);      // the GPRS baud rate  
   
