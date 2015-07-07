@@ -92,7 +92,7 @@ void SendTextMessage(String message)
 {
   gprsSerial.print("AT+CMGF=1\r");    //Because we want to send the SMS in text mode
   delay(100);
-  gprsSerial.println("AT + CMGS = \"+13473940024\"");//send sms message, be careful need to add a country code before the cellphone number
+  gprsSerial.println("AT + CMGS = \"+264816981531\"");//send sms message, be careful need to add a country code before the cellphone number
   delay(100);
   gprsSerial.println(message);//the content of the message
   delay(100);
