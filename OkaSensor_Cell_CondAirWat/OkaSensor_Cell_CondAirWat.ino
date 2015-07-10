@@ -36,8 +36,12 @@ float h, t, f;
 void powerUp()
 {
   pinMode(9, OUTPUT); 
+  digitalWrite(9,LOW);
+  delay(1000);
   digitalWrite(9,HIGH);
-  delay(2000);
+  delay(5000);
+  digitalWrite(9,LOW);
+  delay(3000);
 }
 
 void error(char *str)
@@ -101,7 +105,7 @@ void SendTextMessage(String message)
 {
   gprsSerial.print("AT+CMGF=1\r");    //Because we want to send the SMS in text mode
   delay(100);
-  gprsSerial.println("AT + CMGS = \"+264816981531\"");//send sms message, be careful need to add a country code before the cellphone number
+  gprsSerial.println("AT + CMGS = \"+447903574051\"");//send sms message, be careful need to add a country code before the cellphone number
   delay(100);
   gprsSerial.println(message);//the content of the message
   delay(100);
@@ -220,17 +224,33 @@ void loop(){
   String textForSMS = "";  
   textForSMS += now.unixtime();
   textForSMS += ",";
-  textForSMS += "Loc";
+  textForSMS += "Lat";
+  textForSMS += ",";
+  textForSMS += "-18.111946";
+  textForSMS += ",";
+  textForSMS += "Long";
+  textForSMS += ",";
+  textForSMS += "21.665733";
+  textForSMS += ",";
+  textForSMS += "TDS";
   textForSMS += ",";
   textForSMS += String(tdsValue, 3);
   textForSMS += ",";
+  textForSMS += "Sal";  
+  textForSMS += ",";
   textForSMS += String(salinityValue, 3);
   textForSMS += ",";
-  textForSMS += String(sensors.getTempCByIndex(0), 3);
+  textForSMS += "WatTemp";
   textForSMS += ",";
-  textForSMS += String(t, 3);
+  textForSMS += String(sensors.getTempCByIndex(0), 2);
   textForSMS += ",";
-  textForSMS += String(h, 3);
+  textForSMS += "AirTemp";
+  textForSMS += ",";
+  textForSMS += String(t, 2);
+  textForSMS += ",";
+  textForSMS += "Hum";
+  textForSMS += ",";
+  textForSMS += String(h, 2);
   
  /* not quite sure how to add in the rest of the data */
   Serial.println("Message:");
@@ -250,7 +270,7 @@ void loop(){
     if (now - lastUpdate >= 30 * 1000) {
       Serial.println(elapsed);
       lastUpdate = now;
-      if (++i == 2 * 20) {
+      if (++i == 2 * 360) {
         break;
       }
     }
