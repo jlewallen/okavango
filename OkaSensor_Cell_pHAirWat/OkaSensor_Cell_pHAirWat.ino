@@ -217,11 +217,11 @@ void loop(){
   textForSMS += ",";
   textForSMS += "Lat";
   textForSMS += ",";
-  textForSMS += "-18.111946";
+  textForSMS += "-19.08592";
   textForSMS += ",";
   textForSMS += "Long";
   textForSMS += ",";
-  textForSMS += "21.665733";
+  textForSMS += "22.37519";
   textForSMS += ",";
   textForSMS += "pH";
   textForSMS += ",";
