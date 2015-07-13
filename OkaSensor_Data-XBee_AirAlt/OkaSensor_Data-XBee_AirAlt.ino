@@ -9,7 +9,11 @@
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BMP085_U.h>
-#include <SoftwareSerial.h>        // include the software serial library to add an aditional serial ports to talk to the Atlas units
+#include <SoftwareSerial.h>
+
+#define XBEE_DESTINATION_HIGH 0x0013A200
+#define XBEE_DESTINATION_LOW 0x409F2937
+#include "XBeeUtilities.h"
 
 #define ONE_WIRE_BUS     6 // Water temp wire is plugged into pin 2 on the Arduino
 #define DHTPIN           7 // what pin we're connected to
@@ -26,29 +30,7 @@ DHT dht(DHTPIN, DHTTYPE);
 Adafruit_BMP085_Unified bmp = Adafruit_BMP085_Unified(10085);
 RTC_DS1307 RTC; // define the Real Time Clock object
 File logfile;
-XBee xbee = XBee();
-
-#pragma pack(push, 1)
-
-typedef struct {
-  float v1;
-  float v2;
-  float v3;
-  float v4;
-  unsigned long time;
-  char kind;
-} packet_t;
-
-packet_t payload;
-
-#pragma pack(push, 4)
-
 float h, t, f;
-
-// SH + SL Address of receiving XBee
-XBeeAddress64 addr64 = XBeeAddress64(0x0013A200, 0x40B7AAC4); //this needs to be updated for the correct XBee Test configuration: 13A200  40C6746A
-ZBTxRequest zbTx = ZBTxRequest(addr64, (uint8_t *)&payload, sizeof(payload));
-ZBTxStatusResponse txStatus = ZBTxStatusResponse();
 
 void error(char *str)
 {
@@ -103,6 +85,8 @@ void setup(){
     bmp.begin();      // Start up the library for the altitude sensor
 
     openLogFile();
+
+    configureSleepMode();
 }
 
 void loopWaterTemperature()
@@ -184,24 +168,7 @@ void loop(){
   payload.v2 = t;
   payload.v3 = event.pressure * 10; /* kPa to hPa */
   payload.time = now.unixtime();
-  xbee.send(zbTx);
-
-  /* Delay for 5 minutes. Watch out for millis() wrapping around and just call that 
-  the end of the delay. This doesn't always need to be 5mins exactly. */
-  unsigned long startMillis = millis();
-  unsigned long lastUpdate = startMillis;
-  unsigned long i = 0;
-  while (true) {
-    unsigned long now = millis();
-    unsigned long elapsed = now - startMillis;
-    if (now - lastUpdate >= 30 * 1000) {
-      Serial.println(elapsed);
-      lastUpdate = now;
-      if (++i == 2 * 5) {
-        break;
-      }
-    }
-    delay(5000);
-  }
+  longDelayAndAttemptToSendPacket(60L * 1000L * 60L * 6L);
+  
   Serial.println("Done");
 }

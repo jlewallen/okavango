@@ -6,6 +6,10 @@
 #include <Adafruit_Sensor.h>
 #include <SoftwareSerial.h>
 
+#define XBEE_DESTINATION_HIGH 0x0013A200
+#define XBEE_DESTINATION_LOW 0x409F2937
+#include "XBeeUtilities.h"
+
 #define COND_RXPIN       4 // set the conductivity (EC sensor) RX pin (labeled "TX" on EC board)
 #define COND_TXPIN       5 // set the conductivity (EC sensor) TX pin (labeled "RX" on EC board)
 #define ORP_RXPIN        6 // set the ORP RX pin (labeled "TX" on ORP board) - NEED TO CHANGE THIS FOR THE SD SHIELD
@@ -16,34 +20,11 @@
 SoftwareSerial cond(COND_RXPIN, COND_TXPIN);  
 SoftwareSerial orp(ORP_RXPIN, ORP_TXPIN);
 SoftwareSerial xbeeSerial(2, 3); 
-
 RTC_DS1307 RTC;
 File logfile;
-XBee xbee = XBee();
-
 float tdsValue;
 float salinityValue;
 float orpValue;
-
-#pragma pack(push, 1)
-
-typedef struct {
-  float v1;
-  float v2;
-  float v3;
-  float v4;
-  unsigned long time;
-  char kind;
-} packet_t;
-
-packet_t payload;
-
-#pragma pack(push, 4)
-
-// SH + SL Address of receiving XBee
-XBeeAddress64 addr64 = XBeeAddress64(0x0013A200, 0x409F2937); //this needs to be updated for the correct XBee Test configuration: 13A200  40C6746A
-ZBTxRequest zbTx = ZBTxRequest(addr64, (uint8_t *)&payload, sizeof(payload));
-ZBTxStatusResponse txStatus = ZBTxStatusResponse();
 
 void error(char *str)
 {
@@ -94,6 +75,8 @@ void setup(){
   RTC.begin();
   
   openLogFile();
+
+  configureSleepMode();
 }
 
 void loopConductivity()
@@ -202,24 +185,7 @@ void loop(){
   payload.v2 = salinityValue;
   payload.v3 = orpValue;
   payload.time = now.unixtime();
-  xbee.send(zbTx);
+  longDelayAndAttemptToSendPacket(60L * 1000L * 60L * 6L);
 
-  /* Delay for 5 minutes. Watch out for millis() wrapping around and just call that 
-  the end of the delay. This doesn't always need to be 5mins exactly. */
-  unsigned long startMillis = millis();
-  unsigned long lastUpdate = startMillis;
-  unsigned long i = 0;
-  while (true) {
-    unsigned long now = millis();
-    unsigned long elapsed = now - startMillis;
-    if (now - lastUpdate >= 30 * 1000) {
-      Serial.println(elapsed);
-      lastUpdate = now;
-      if (++i == 2 * 5) {
-        break;
-      }
-    }
-    delay(5000);
-  }
   Serial.println("Done");
 }
