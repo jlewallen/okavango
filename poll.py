@@ -18,15 +18,17 @@ deviceName = devices[0]
 device = serial.Serial(deviceName, 9600, timeout=5, writeTimeout=5)
 xbee = ZigBee(device, callback=on_radio, escaped=False)
 
+xbee.at(command="NT", parameter='\x10')
+time.sleep(5)
+xbee.at(command="ND")
+time.sleep(5)
+# xbee.at(command="MY")
+# time.sleep(5)
+
 # Continuously read and print packets
 while True:
 	try:
 		time.sleep(5)
-		print "ND"
-		xbee.at(command="ND")
-		time.sleep(5)
-		print "MY"
-		xbee.at(command="MY")
 	except KeyboardInterrupt:
 		break
         
