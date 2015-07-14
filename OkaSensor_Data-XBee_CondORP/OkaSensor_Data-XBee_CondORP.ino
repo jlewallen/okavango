@@ -118,12 +118,13 @@ void loopConductivity()
       rawSensor += c;
       if (c == '\r') {
         gotEnd = true;
+        break;
       }
       delay(50);
    }            
    cond.end();   
-
-   if (gotEnd) {
+   
+   if (rawSensor.indexOf("*") < 0 && gotEnd) {
       Serial.println(rawSensor);
       int delim1 = rawSensor.indexOf(',');
       int delim2 = rawSensor.indexOf(',', delim1 + 1);
