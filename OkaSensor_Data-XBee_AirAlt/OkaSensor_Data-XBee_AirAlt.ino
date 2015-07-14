@@ -166,7 +166,7 @@ void loop(){
   payload.kind = 3;
   payload.v1 = h;
   payload.v2 = t;
-  payload.v3 = event.pressure * 10; /* kPa to hPa */
+  payload.v3 = event.pressure; /* kPa to hPa */
   payload.time = now.unixtime();
-  longDelayAndAttemptToSendPacket(60L * 1000L * 5L);
+  longDelayAndAttemptToSendPacket(60L * 1000L * 60L * 6L);
 }
