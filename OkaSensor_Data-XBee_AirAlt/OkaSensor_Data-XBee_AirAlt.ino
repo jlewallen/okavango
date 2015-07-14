@@ -12,7 +12,7 @@
 #include <SoftwareSerial.h>
 
 #define XBEE_DESTINATION_HIGH 0x0013A200
-#define XBEE_DESTINATION_LOW 0x409F2937
+#define XBEE_DESTINATION_LOW 0x40B7AAC4
 #include "XBeeUtilities.h"
 
 #define ONE_WIRE_BUS     6 // Water temp wire is plugged into pin 2 on the Arduino
