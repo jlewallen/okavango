@@ -102,7 +102,9 @@ void loopConductivity()
    echo(cond, 1000);
    
    Serial.println("Configuring 1/2");
-   cond.print("C,0 \r");  
+   cond.print("c,0\r");  
+   echo(cond, 1000);
+   cond.print("c,0\r");  
    echo(cond, 1000);
    
    Serial.println("Configuring 2/2");
