@@ -97,6 +97,8 @@ void loopConductivity()
 
    cond.begin(9600);          // baud rate for cond sensor = 9600 (known)
    echo(cond, 1000);
+   
+   Serial.println("Configuring");
    cond.print("C,0 \r");  
    echo(cond, 1000);
    cond.print("K,0.1 \r");  
