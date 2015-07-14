@@ -86,6 +86,10 @@ void loopConductivity()
 
    cond.begin(9600);          // baud rate for cond sensor = 9600 (known)
    delay(1000);               // allow for sensor to start communicating
+   cond.print("C,0 \r");  
+   delay(1000);               // allow for sensor to start communicating
+   cond.print("K,0.1 \r");  
+   delay(1000);               // allow for sensor to start communicating
    cond.print("r \r");        // send string "r" with a carriage return "\r" to take one reading
    delay(1000);               // wait for reading to be read and sent
    
@@ -117,6 +121,8 @@ void loopConductivity()
 void loopOrp() 
 {
    orp.begin(9600);           // baud rate for sensor = 9600 (known)
+   delay(1000);
+   orp.print("C,0 \r");   
    delay(1000);
    orp.print("r \r");         // send string "r" with a carriage return "\r" to take one reading
    delay(3000);               // it takes a while for the sensor to respond
