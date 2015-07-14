@@ -1,5 +1,7 @@
 void(*resetArduino) (void) = 0;
 
+SoftwareSerial xbeeSerial(2, 3); 
+
 XBee xbee = XBee();
 
 #pragma pack(push, 1)
@@ -70,7 +72,9 @@ void configureSleepMode() {
   #define TEN_MINUTES (10L * 1000L * 60L)
   
   uint32_t startedAt = millis();
-  
+
+  xbeeSerial.begin(9600);
+
   Serial.println("SM");
   uint8_t byteParameter = 0x4;
   request.setCommandValue((uint8_t *)&byteParameter);
@@ -103,11 +107,16 @@ void configureSleepMode() {
       resetArduino();
     }
   }
+
+  xbeeSerial.end();
 }
 
 void longDelayAndAttemptToSendPacket(uint32_t totalDelay) {
   uint32_t delayedSoFar = 0;
   uint8_t sentSuccessful = 0;
+
+  xbeeSerial.begin(9600);
+
   while (delayedSoFar < totalDelay) {
       uint32_t thisPassStarted = millis();
 
@@ -127,6 +136,7 @@ void longDelayAndAttemptToSendPacket(uint32_t totalDelay) {
                 Serial.print("Ok ");
                 Serial.println(delayedSoFar / 1000);
                 sentSuccessful = true;
+                xbeeSerial.end();
              } else {
                 Serial.println("F");
                 delay(100);
@@ -139,4 +149,5 @@ void longDelayAndAttemptToSendPacket(uint32_t totalDelay) {
 
       delayedSoFar += millis() - thisPassStarted;
   }
+  xbeeSerial.end();
 }

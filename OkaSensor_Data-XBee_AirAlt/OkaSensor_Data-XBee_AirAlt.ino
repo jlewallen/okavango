@@ -20,7 +20,6 @@
 #define DHTTYPE          DHT22 // set type of sensor to DHT 22  (AM2302)
 #define SD_BOARD_PIN     10
 
-SoftwareSerial xbeeSerial(2, 3); 
 // Setup a oneWire instance to communicate with any OneWire devices 
 OneWire oneWire(ONE_WIRE_BUS);
 // Pass our oneWire reference to Dallas Temperature.
@@ -73,7 +72,6 @@ void openLogFile()
 }
 
 void setup(){             
-    xbeeSerial.begin(9600);        
     Serial.begin(115200);      
     xbee.setSerial(xbeeSerial);
 

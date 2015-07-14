@@ -19,7 +19,6 @@
 // Create an instance of the softwareSerial class for each sensor
 SoftwareSerial cond(COND_RXPIN, COND_TXPIN);  
 SoftwareSerial orp(ORP_RXPIN, ORP_TXPIN);
-SoftwareSerial xbeeSerial(2, 3); 
 RTC_DS1307 RTC;
 File logfile;
 float tdsValue;
@@ -40,7 +39,8 @@ void openLogFile()
   
   // see if the card is present and can be initialized:
   if (!SD.begin(SD_BOARD_PIN)) {
-    error("No SD");
+    Serial.println("No SD");
+    return;
   }
   
   // create a new file
@@ -70,7 +70,6 @@ void openLogFile()
 }
 
 void setup(){             
-  xbeeSerial.begin(9600);  
   Serial.begin(115200);      
   xbee.setSerial(xbeeSerial);
   

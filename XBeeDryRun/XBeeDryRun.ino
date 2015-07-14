@@ -5,12 +5,9 @@
 #define XBEE_DESTINATION_LOW 0x40E677BF
 #include "XBeeUtilities.h"
 
-SoftwareSerial xbeeSerial(2, 3); 
-
 uint32_t counter = 0;
 
 void setup() {
-  xbeeSerial.begin(9600);
   Serial.begin(115200);
   xbee.setSerial(xbeeSerial);
 

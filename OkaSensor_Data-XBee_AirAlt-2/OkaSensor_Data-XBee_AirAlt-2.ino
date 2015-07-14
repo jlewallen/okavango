@@ -16,7 +16,6 @@
 #define DHTTYPE          DHT22 // set type of sensor to DHT 22  (AM2302)
 #define SD_BOARD_PIN     10
 
-SoftwareSerial xbeeSerial(2, 3); 
 // Initialize DHT sensor for normal 16mhz Arduino
 DHT dht(DHTPIN, DHTTYPE);
 Adafruit_MPL115A2 mpl115a2;
@@ -65,7 +64,6 @@ void openLogFile()
 }
 
 void setup(){             
-    xbeeSerial.begin(9600);        
     Serial.begin(115200);      
     xbee.setSerial(xbeeSerial);
 

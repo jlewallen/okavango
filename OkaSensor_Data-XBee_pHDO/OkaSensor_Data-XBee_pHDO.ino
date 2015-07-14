@@ -21,7 +21,6 @@ float doValue;
 
 SoftwareSerial pH(PH_RXPIN, PH_TXPIN);
 SoftwareSerial d_o(D_O_RXPIN, D_O_TXPIN); 
-SoftwareSerial xbeeSerial(2, 3); 
 RTC_DS1307 RTC;
 File logfile;
 
@@ -65,7 +64,6 @@ void openLogFile()
 }
 
 void setup(){             
-    xbeeSerial.begin(9600);
     Serial.begin(115200);      
     xbee.setSerial(xbeeSerial);
     
