@@ -82,7 +82,7 @@ void setup(){
 void echo(SoftwareSerial &serial, uint32_t delay)
 {
   uint32_t started = millis();
-  while (started - millis() < delay) {
+  while (millis() - started < delay) {
     int c = serial.read();
     if (c >= 0) {
       Serial.print((char)c);
