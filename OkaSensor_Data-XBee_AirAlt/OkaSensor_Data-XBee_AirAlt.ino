@@ -45,7 +45,7 @@ void openLogFile()
   
   // see if the card is present and can be initialized:
   if (!SD.begin(SD_BOARD_PIN)) {
-    error("Card failed, or not present");
+    error("Card failed");
   }
   
   // create a new file
@@ -59,7 +59,7 @@ void openLogFile()
     fn.toCharArray(filename, sizeof(filename));
     if (!SD.exists(filename)) {
       // only open a new file if it doesn't exist
-      Serial.print("Logging to: ");
+      Serial.print("File: ");
       Serial.println(filename);
       logfile = SD.open(filename, FILE_WRITE); 
       break;
@@ -67,7 +67,7 @@ void openLogFile()
   }
 
   if (!logfile) {
-    error("couldnt create file");
+    error("EFILE");
   }
   logfile.flush();
 }
@@ -128,9 +128,9 @@ void loopAltitude()
 }
 
 void loop(){                   
-  Serial.println("Starting new loop...");
+  Serial.println("Loop");
 
-  logfile.println("Starting new loop...");
+  logfile.println("Loop");
   logfile.flush();
 
   DateTime now = RTC.now();
@@ -169,6 +169,4 @@ void loop(){
   payload.v3 = event.pressure * 10; /* kPa to hPa */
   payload.time = now.unixtime();
   longDelayAndAttemptToSendPacket(60L * 1000L * 60L * 6L);
-  
-  Serial.println("Done");
 }

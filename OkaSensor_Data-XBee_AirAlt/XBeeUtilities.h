@@ -32,7 +32,7 @@ bool sendAtCommand() {
       xbee.getResponse().getAtCommandResponse(response);
       
       if (response.isOk()) {
-        Serial.print("Command [");
+        Serial.print("C [");
         Serial.print(response.getCommand()[0]);
         Serial.print(response.getCommand()[1]);
         Serial.println("] OK");
@@ -40,16 +40,16 @@ bool sendAtCommand() {
         success = true;
       } 
       else {
-        Serial.print("Error code: ");
+        Serial.print("Error ");
         Serial.println(response.getStatus(), HEX);
       }
     } else {
-      Serial.print("Unexpected ApiId: ");
+      Serial.print("Error ");
       Serial.println(xbee.getResponse().getApiId(), HEX);
     }   
   } else {
     if (xbee.getResponse().isError()) {
-      Serial.print("Error code: ");  
+      Serial.print("Error ");  
       Serial.println(xbee.getResponse().getErrorCode(), DEC);
     }
     else {
@@ -109,16 +109,16 @@ void longDelayAndAttemptToSendPacket(uint32_t totalDelay) {
           if (xbee.getResponse().getApiId() == ZB_TX_STATUS_RESPONSE) {
              xbee.getResponse().getZBTxStatusResponse(txStatus);
              if (txStatus.getDeliveryStatus() == SUCCESS) {
-                Serial.print("Packet was delivered after ");
+                Serial.print("Ok ");
                 Serial.println(delayedSoFar / 1000);
                 sentSuccessful = true;
              } else {
-                Serial.println("Packet delivery failed");
+                Serial.println("F");
                 delay(100);
              }
           }
         } else {
-          Serial.println("No packet...");
+          Serial.println("No reply");
         }
       }
 
