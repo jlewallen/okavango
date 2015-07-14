@@ -65,12 +65,18 @@ uint8_t SN_CMD[] = {'S','N'};
 uint8_t SP_CMD[] = {'S','P'};
 
 void configureSleepMode() {
+  #define TEN_MINUTES (10L * 1000L * 60L)
+  
+  uint32_t startedAt = millis();
+  
   Serial.println("SM");
   uint8_t byteParameter = 0x4;
   request.setCommandValue((uint8_t *)&byteParameter);
   request.setCommandValueLength(sizeof(byteParameter));
   request.setCommand(SM_CMD);
   while (!sendAtCommand()) {
+    if (millis() - startedAt > TEN_MINUTES) {
+    }
   }
 
   Serial.println("SN");
@@ -79,6 +85,8 @@ void configureSleepMode() {
   request.setCommandValueLength(sizeof(wordParameter));
   request.setCommand(SN_CMD);
   while (!sendAtCommand()) {
+    if (millis() - startedAt > TEN_MINUTES) {
+    }
   }
 
   Serial.println("SP");
@@ -87,6 +95,8 @@ void configureSleepMode() {
   request.setCommandValueLength(sizeof(wordParameter) - 1);
   request.setCommand(SP_CMD);
   while (!sendAtCommand()) {
+    if (millis() - startedAt > TEN_MINUTES) {
+    }
   }
 }
 

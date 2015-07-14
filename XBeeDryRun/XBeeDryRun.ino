@@ -18,12 +18,15 @@ void setup() {
   configureSleepMode();
 }
 
+void(*resetArduino) (void) = 0;
+
 void loop() {
   Serial.print("Sending ");
   Serial.println(counter);
 
   memset((void *)&payload, 0, sizeof(payload));
-  longDelayAndAttemptToSendPacket(60L * 1000L * 60L);
+  longDelayAndAttemptToSendPacket(60L * 1000L * 30L);
+  resetArduino();
   
   counter++;
 }
