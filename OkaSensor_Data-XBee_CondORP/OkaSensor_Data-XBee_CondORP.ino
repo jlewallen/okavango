@@ -79,17 +79,28 @@ void setup(){
   configureSleepMode();
 }
 
+void echo(SoftwareSerial &serial, uint32_t delay)
+{
+  uint32_t started = millis();
+  while (started - millis() < delay) {
+    int c = serial.read();
+    if (c >= 0) {
+      Serial.print((char)c);
+    }
+  }
+}
+
 void loopConductivity()
 {
   String rawSensor = "";               
   boolean gotEnd = false; 
 
    cond.begin(9600);          // baud rate for cond sensor = 9600 (known)
-   delay(1000);               // allow for sensor to start communicating
+   echo(cond, 1000);
    cond.print("C,0 \r");  
-   delay(1000);               // allow for sensor to start communicating
+   echo(cond, 1000);
    cond.print("K,0.1 \r");  
-   delay(1000);               // allow for sensor to start communicating
+   echo(cond, 1000);
    cond.print("r \r");        // send string "r" with a carriage return "\r" to take one reading
    delay(1000);               // wait for reading to be read and sent
    
