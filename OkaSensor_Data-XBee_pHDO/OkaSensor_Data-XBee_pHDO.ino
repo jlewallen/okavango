@@ -7,7 +7,7 @@
 #include <SoftwareSerial.h>
 
 #define XBEE_DESTINATION_HIGH 0x0013A200
-#define XBEE_DESTINATION_LOW 0x409F2937
+#define XBEE_DESTINATION_LOW 0x40B7AAC4
 #include "XBeeUtilities.h"
 
 #define PH_RXPIN         4 // set the pH sensor RX pin (labeled "TX" on pH board)

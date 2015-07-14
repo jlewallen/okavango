@@ -7,7 +7,7 @@
 #include <SoftwareSerial.h>
 
 #define XBEE_DESTINATION_HIGH 0x0013A200
-#define XBEE_DESTINATION_LOW 0x409F2937
+#define XBEE_DESTINATION_LOW 0x40B7AAC4
 #include "XBeeUtilities.h"
 
 #define COND_RXPIN       4 // set the conductivity (EC sensor) RX pin (labeled "TX" on EC board)
