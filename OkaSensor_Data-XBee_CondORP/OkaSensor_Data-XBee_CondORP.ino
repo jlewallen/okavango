@@ -30,7 +30,8 @@ void error(char *str)
 {
   Serial.print("error: ");
   Serial.println(str);
-  while(1);
+  delay(1000L * 60L);
+  resetArduino();
 }
 
 void openLogFile()
@@ -60,10 +61,12 @@ void openLogFile()
     }
   }
 
-  if (!logfile) {
-    error("couldnt create file");
+  if (logfile) {
+    logfile.flush();
   }
-  logfile.flush();
+  else {
+    Serial.println("No log file.");
+  }
 }
 
 void setup(){             
@@ -168,8 +171,10 @@ void loopOrp()
 void loop(){                   
   Serial.println("Starting new loop...");
 
-  logfile.println("Starting new loop...");
-  logfile.flush();
+  if (logfile) {
+    logfile.println("Starting new loop...");
+    logfile.flush();
+  }
 
   DateTime now = RTC.now();
   loopConductivity();
@@ -178,16 +183,18 @@ void loop(){
   /////////////////////////////////////////////////////////////////////
   //  Send all data to serial output 
   /////////////////////////////////////////////////////////////////////
-  logfile.print(now.unixtime());
-  logfile.print(",");
-  logfile.print(tdsValue);
-  logfile.print(",");
-  logfile.print(salinityValue);
-  logfile.print(",");
-  logfile.print(orpValue);
-  logfile.print(",");       
-  logfile.print("\n");
-
+  if (logfile) {
+    logfile.print(now.unixtime());
+    logfile.print(",");
+    logfile.print(tdsValue);
+    logfile.print(",");
+    logfile.print(salinityValue);
+    logfile.print(",");
+    logfile.print(orpValue);
+    logfile.print(",");       
+    logfile.print("\n");
+  }
+  
   Serial.print(now.unixtime());
   Serial.print(",");
   Serial.print(tdsValue);
@@ -198,7 +205,9 @@ void loop(){
   Serial.print(",");       
   Serial.print("\n");
   
-  logfile.flush();
+  if (logfile) {
+    logfile.flush();
+  }
 
   memset((void *)&payload, 0, sizeof(payload));
   payload.kind = 1;
