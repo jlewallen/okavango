@@ -75,6 +75,17 @@ void setup(){
     configureSleepMode();
 }
 
+void echo(SoftwareSerial &serial, uint32_t delay)
+{
+  uint32_t started = millis();
+  while (millis() - started < delay) {
+    int c = serial.read();
+    if (c >= 0) {
+      Serial.print((char)c);
+    }
+  }
+}
+
 void loopPh()
 {
    String rawSensor = "";               
@@ -83,6 +94,13 @@ void loopPh()
    // same code to run conductivity above except pH only outputs 1 number vs 3 for conductivity sensor
    pH.begin(9600);           // baud rate for pH sensor = 9600 (known)
    delay(1000);
+   
+   Serial.println("C 1/2");
+   pH.print("c,0\r");  
+   echo(pH, 1000);
+   pH.print("c,0\r");  
+   echo(pH, 1000);
+
    pH.print("r \r");          // send string "r" with a carriage return "\r" to take one reading
    delay(3000);               // it takes a while for the pH sensor to respond
 
@@ -113,6 +131,13 @@ void loopDissolvedOxygen()
 
    d_o.begin(9600);
    delay(1000);
+   
+   Serial.println("C 1/2");
+   d_o.print("c,0\r");  
+   echo(d_o, 1000);
+   d_o.print("c,0\r");  
+   echo(d_o, 1000);
+
    d_o.print("r \r");          // send string "r" with a carriage return "\r" to take one reading
    delay(3000);                // it takes a while for the pH sensor to respond
 

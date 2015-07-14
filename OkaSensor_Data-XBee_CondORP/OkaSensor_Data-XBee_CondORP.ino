@@ -136,15 +136,20 @@ void loopConductivity()
    else {                                           // if no variables are found within the pickup call = set variable to 9999
       tdsValue = 9999;
       salinityValue = 9999;
-   }   
+   } 
 }
 
 void loopOrp() 
 {
    orp.begin(9600);           // baud rate for sensor = 9600 (known)
    delay(1000);
-   orp.print("C,0 \r");   
-   delay(1000);
+   
+   Serial.println("C 1/2");
+   orp.print("c,0\r");  
+   echo(orp, 1000);
+   orp.print("c,0\r");  
+   echo(orp, 1000);
+   
    orp.print("r \r");         // send string "r" with a carriage return "\r" to take one reading
    delay(3000);               // it takes a while for the sensor to respond
 
