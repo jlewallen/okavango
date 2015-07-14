@@ -1,3 +1,5 @@
+void(*resetArduino) (void) = 0;
+
 XBee xbee = XBee();
 
 #pragma pack(push, 1)
@@ -76,6 +78,7 @@ void configureSleepMode() {
   request.setCommand(SM_CMD);
   while (!sendAtCommand()) {
     if (millis() - startedAt > TEN_MINUTES) {
+      resetArduino();
     }
   }
 
@@ -86,6 +89,7 @@ void configureSleepMode() {
   request.setCommand(SN_CMD);
   while (!sendAtCommand()) {
     if (millis() - startedAt > TEN_MINUTES) {
+      resetArduino();
     }
   }
 
@@ -96,6 +100,7 @@ void configureSleepMode() {
   request.setCommand(SP_CMD);
   while (!sendAtCommand()) {
     if (millis() - startedAt > TEN_MINUTES) {
+      resetArduino();
     }
   }
 }

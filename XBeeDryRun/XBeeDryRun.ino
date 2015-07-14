@@ -18,8 +18,6 @@ void setup() {
   configureSleepMode();
 }
 
-void(*resetArduino) (void) = 0;
-
 void loop() {
   Serial.print("Sending ");
   Serial.println(counter);
