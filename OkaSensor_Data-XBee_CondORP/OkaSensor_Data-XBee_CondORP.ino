@@ -124,6 +124,7 @@ void loopConductivity()
    cond.end();   
 
    if (gotEnd) {
+      Serial.println(rawSensor);
       int delim1 = rawSensor.indexOf(',');
       int delim2 = rawSensor.indexOf(',', delim1 + 1);
       int delim3 = rawSensor.indexOf('*', delim2 + 1);
