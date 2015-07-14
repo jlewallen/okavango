@@ -40,7 +40,7 @@ void openLogFile()
   
   // see if the card is present and can be initialized:
   if (!SD.begin(SD_BOARD_PIN)) {
-    error("Card failed, or not present");
+    error("No SD");
   }
   
   // create a new file
@@ -54,7 +54,7 @@ void openLogFile()
     fn.toCharArray(filename, sizeof(filename));
     if (!SD.exists(filename)) {
       // only open a new file if it doesn't exist
-      Serial.print("Logging to: ");
+      Serial.print("File: ");
       Serial.println(filename);
       logfile = SD.open(filename, FILE_WRITE); 
       break;
@@ -101,13 +101,13 @@ void loopConductivity()
    cond.begin(9600);          // baud rate for cond sensor = 9600 (known)
    echo(cond, 1000);
    
-   Serial.println("Configuring 1/2");
+   Serial.println("C 1/2");
    cond.print("c,0\r");  
    echo(cond, 1000);
    cond.print("c,0\r");  
    echo(cond, 1000);
    
-   Serial.println("Configuring 2/2");
+   Serial.println("C 2/2");
    cond.print("K,0.1 \r");  
    echo(cond, 1000);
    cond.print("r \r");        // send string "r" with a carriage return "\r" to take one reading
@@ -173,10 +173,10 @@ void loopOrp()
 }
 
 void loop(){                   
-  Serial.println("Starting new loop...");
+  Serial.println("Loop");
 
   if (logfile) {
-    logfile.println("Starting new loop...");
+    logfile.println("Loop");
     logfile.flush();
   }
 
