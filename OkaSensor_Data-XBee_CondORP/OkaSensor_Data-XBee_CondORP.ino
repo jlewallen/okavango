@@ -219,6 +219,14 @@ void loop(){
   payload.v2 = salinityValue;
   payload.v3 = orpValue;
   payload.time = now.unixtime();
+
+  uint8_t *p = (uint8_t *)&payload;
+  for (uint8_t i = 0; i < sizeof(payload); ++i) {
+    Serial.print(*p, HEX);
+    ++p;
+  }
+  Serial.println("");
+    
   longDelayAndAttemptToSendPacket(60L * 1000L * 60L * 6L);
 
   Serial.println("Done");
