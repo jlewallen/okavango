@@ -1,0 +1,6 @@
+
+class Something
+{
+    Something();
+};
+
