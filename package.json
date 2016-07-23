@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "lodash": "^4.13.1",
+    "promise": "^7.1.1",
     "serialport": "^4.0.1"
   }
 }
