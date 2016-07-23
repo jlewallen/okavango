@@ -61,7 +61,7 @@ getPorts()
                     return newPorts.first();
                 }
                 else {
-                    throw "Unable to find PORT";
+                    return guessPort(portsAfter, pattern, null);
                 }
             });
         }
