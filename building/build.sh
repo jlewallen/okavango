@@ -30,8 +30,6 @@ function use_feather() {
     PORT_NAME="Adafruit"
 }
 
-use_feather
-
 # No editing should be required below here.
 
 function clean() {
@@ -51,7 +49,8 @@ function upload() {
     # So, avrdude dislikes cygwin style paths.
     BUILD_DIR_WINDOWS=`echo ${BUILD_DIR} | sed -r "s|/([a-zA-Z])/|\1:/|"`
     PORT=`node ../get-upload-port.js $BOARD $PORT_NAME $PORT`
-    ${ARD_HOME}/hardware/tools/avr/bin/avrdude -C${ARD_HOME}/hardware/tools/avr/etc/avrdude.conf -v -p${MCU} -c${AVR_DUDE_PROGRAMMER} -P${PORT} -b${BAUD} -D -Uflash:w:${BUILD_DIR_WINDOWS}/blink.ino.hex:i
+    BINARY=`echo ${BUILD_DIR_WINDOWS}/*.ino.hex`
+    ${ARD_HOME}/hardware/tools/avr/bin/avrdude -C${ARD_HOME}/hardware/tools/avr/etc/avrdude.conf -v -p${MCU} -c${AVR_DUDE_PROGRAMMER} -P${PORT} -b${BAUD} -D -Uflash:w:${BINARY}:i
 }
 
 function showPorts() {
@@ -59,7 +58,9 @@ function showPorts() {
 }
 
 if [ .$1 = . -o .$1 = .-h ]; then
-    echo "usage: `basename $0` [-p] [-c] [-u] [-b] sketch-file.ino <other sources>"
+    echo "usage: `basename $0` [-fa] [-p] [-c] [-u] [-b] sketch-file.ino <other sources>"
+    echo "        -f feather"
+    echo "        -a arduino uno"
     echo "        -p show ports"
     echo "        -c clean"
     echo "        -u build and upload"
@@ -69,6 +70,8 @@ fi
 
 while [ .${1:0:1} = .- ]; do
     if [ .$1 = .-p ]; then showPorts
+    elif [ .$1 = .-f ]; then use_feather
+    elif [ .$1 = .-a ]; then use_uno
     elif [ .$1 = .-b ]; then clean && build
     elif [ .$1 = .-u ]; then clean && build && upload
     elif [ .$1 = .-c ]; then clean
