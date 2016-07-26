@@ -57,6 +57,11 @@ function showPorts() {
     wmic path Win32_SerialPort get deviceid, description
 }
 
+function openSerial() {
+    PORT=`node ../get-upload-port.js $BOARD $PORT_NAME $PORT`
+    ../setup/putty.exe -serial $PORT -sercfg 115200
+}
+
 if [ .$1 = . -o .$1 = .-h ]; then
     echo "usage: `basename $0` [-fa] [-p] [-c] [-u] [-b] sketch-file.ino <other sources>"
     echo "        -f feather"
@@ -75,6 +80,7 @@ while [ .${1:0:1} = .- ]; do
     elif [ .$1 = .-b ]; then clean && build
     elif [ .$1 = .-u ]; then clean && build && upload
     elif [ .$1 = .-c ]; then clean
+    elif [ .$1 = .-s ]; then openSerial
     else
         echo "Unknown option $1"
         exit 1
