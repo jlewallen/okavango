@@ -1,5 +1,9 @@
+#ifndef ATLAS_SCIENTIFIC_H
+#define ATLAS_SCIENTIFIC_H
+
 #include <Arduino.h>
 #include "NonBlockingSerial.h"
+#include "Tickable.h"
 
 enum AtlasScientificBoardState {
     Start,
@@ -14,7 +18,7 @@ enum AtlasScientificBoardState {
     Done
 };
 
-class AtlasScientificBoard : public NonBlockingSerialProtocol {
+class AtlasScientificBoard : public NonBlockingSerialProtocol, public Tickable {
 private:
     AtlasScientificBoardState state = Start;
 
@@ -36,3 +40,5 @@ class PhBoard : public AtlasScientificBoard {
 public:
     PhBoard(byte rx, byte tx);
 };
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef ATLAS_SCIENTIFIC_H
+#define ATLAS_SCIENTIFIC_H
+
 #include <SoftwareSerial.h>
 #include <Arduino.h>
 #include "config.h"
@@ -39,3 +42,5 @@ class ConductivityBoard : public AtlasScientificBoard {
 public:
     ConductivityBoard(byte rx, byte tx);
 };
+
+#endif

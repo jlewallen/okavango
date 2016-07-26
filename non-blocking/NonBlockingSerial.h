@@ -1,5 +1,9 @@
+#ifndef NON_BLOCKING_SERIAL_H
+#define NON_BLOCKING_SERIAL_H
+
 #include <SoftwareSerial.h>
 #include <Arduino.h>
+#include "Tickable.h"
 
 enum NonBlockingSerialProtocolState {
     Reading,
@@ -7,7 +11,7 @@ enum NonBlockingSerialProtocolState {
     Closed
 };
 
-class NonBlockingSerialProtocol {
+class NonBlockingSerialProtocol : public Tickable {
 private:
     SoftwareSerial serial;
     NonBlockingSerialProtocolState state = Idle;
@@ -30,3 +34,4 @@ protected:
     void close();
 };
 
+#endif
