@@ -17,7 +17,6 @@ bool AtlasScientificBoard::tick() {
     }
     switch (state) {
         case Start: {
-            Serial.println("->Status0");
             transition(Status0);
             break;
         }
@@ -85,37 +84,30 @@ void AtlasScientificBoard::handle(String reply) {
     Serial.println(reply);
     switch (state) {
         case Status0: {
-            Serial.println("->Status1");
             transition(Status1);
             break;
         }
         case Status1: {
-            Serial.println("->Leds");
             transition(Leds);
             break;
         }
         case Leds: {
-            Serial.println("->Configure");
             transition(Configure);
             break;
         }
         case Configure: {
-            Serial.println("->Read0");
             transition(Read0);
             break;
         }
         case Read0: {
-            Serial.println("->Read1");
             transition(Read1);
             break;
         }
         case Read1: {
-            Serial.println("->Read2");
             transition(Read2);
             break;
         }
         case Read2: {
-            Serial.println("->Sleeping");
             transition(Sleeping);
             break;
         }
