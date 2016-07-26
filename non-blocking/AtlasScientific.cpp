@@ -61,7 +61,7 @@ bool AtlasScientificBoard::tick() {
     return true;
 }
 
-uint8_t numberOfOccurances(String &str, char chr) {
+uint8_t numberOfOccurences(String &str, char chr) {
     uint8_t number = 0;
     for (uint16_t i = 0; i < str.length(); ++i) {
         if (str[i] == chr) {
@@ -74,7 +74,7 @@ uint8_t numberOfOccurances(String &str, char chr) {
 
 bool AtlasScientificBoard::areWeDoneReading(String &buffer, char newChar) {
     if (state == Read0 || state == Read1 || state == Read2) {
-        return numberOfOccurances(buffer, '\r') == 2;
+        return numberOfOccurences(buffer, '\r') == 2;
     }
 
     return NonBlockingSerialProtocol::areWeDoneReading(buffer, newChar);
