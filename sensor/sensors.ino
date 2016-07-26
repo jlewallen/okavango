@@ -1,5 +1,3 @@
-#define PIN 13
-
 #include <SD.h>
 #include <Arduino.h>
 #include "AtlasScientific.h"
@@ -11,18 +9,14 @@ void setup() {
 
     Serial.begin(115200);      
 
-    pinMode(PIN, OUTPUT);
-    digitalWrite(PIN, LOW);
-
     phBoard.setup();
 
-    Serial.println("\nSample...");
+    Serial.println("Sample...");
 
     phBoard.sample();
-
     phBoard.sleep();
 
-    Serial.println("\nDone");
+    Serial.println("Done!");
 }
 
 void loop() {
