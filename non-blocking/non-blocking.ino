@@ -11,7 +11,7 @@ void setup() {
 
     board.setup();
 
-    Serial.println("Entering loop...");
+    Serial.println("Entering loop.");
 }
 
 void loop() {
