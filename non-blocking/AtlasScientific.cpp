@@ -17,6 +17,7 @@ bool AtlasScientificBoard::tick() {
     }
     switch (state) {
         case Start: {
+            hasValue = false;
             transition(Status0);
             break;
         }
@@ -109,6 +110,15 @@ void AtlasScientificBoard::handle(String reply) {
         }
         case Read2: {
             transition(Sleeping);
+            int16_t first = reply.indexOf('\n');
+            if (first >= 0) {
+                int16_t second = reply.indexOf('\n', first + 1);
+                if (second >= first) {
+                    String part = reply.substring(first, second - first);
+                    value = part.toFloat();
+                    hasValue = true;
+                }
+            }
             break;
         }
     }

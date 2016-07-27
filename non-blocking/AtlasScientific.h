@@ -21,11 +21,21 @@ enum AtlasScientificBoardState {
 class AtlasScientificBoard : public NonBlockingSerialProtocol, public Tickable {
 private:
     AtlasScientificBoardState state = Start;
+    float value;
+    bool hasValue;
 
 public:
     AtlasScientificBoard(byte rx, byte tx);
 
     virtual bool tick();
+
+    float getValue() {
+        return value;
+    }
+
+    bool getHasValue() {
+        return hasValue;
+    }
 
 protected:
     void transition(AtlasScientificBoardState newState) {
