@@ -62,6 +62,12 @@ function openSerial() {
     ../setup/putty.exe -serial $PORT -sercfg 115200
 }
 
+function size() {
+    BINARY=`echo ${BUILD_DIR}/*.ino.hex`
+    ${ARD_HOME}/hardware/tools/avr/bin/avr-size ${BINARY}
+    ${ARD_HOME}/hardware/tools/avr/bin/avr-size -C --mcu=atmega328p ${BINARY}
+}
+
 if [ .$1 = . -o .$1 = .-h ]; then
     echo "usage: `basename $0` [-fa] [-p] [-c] [-u] [-b] sketch-file.ino <other sources>"
     echo "        -f feather"
@@ -81,6 +87,7 @@ while [ .${1:0:1} = .- ]; do
     elif [ .$1 = .-u ]; then clean && build && upload
     elif [ .$1 = .-c ]; then clean
     elif [ .$1 = .-s ]; then openSerial
+    elif [ .$1 = .-z ]; then size
     else
         echo "Unknown option $1"
         exit 1
