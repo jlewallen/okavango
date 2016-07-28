@@ -56,9 +56,4 @@ protected:
     virtual void handle(String reply);
 };
 
-class PhBoard : public AtlasScientificBoard {
-public:
-    PhBoard(byte rx, byte tx);
-};
-
 #endif

@@ -124,6 +124,3 @@ void AtlasScientificBoard::handle(String reply) {
     }
 }
 
-PhBoard::PhBoard(byte rx, byte tx) : AtlasScientificBoard(rx, tx) {
-}
-
