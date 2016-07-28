@@ -73,17 +73,10 @@ uint8_t numberOfOccurences(String &str, char chr) {
     return number;
 }
 
-bool AtlasScientificBoard::areWeDoneReading(String &buffer, char newChar) {
-    if (state == Read0 || state == Read1 || state == Read2) {
-        return numberOfOccurences(buffer, '\r') == 2;
-    }
-
-    return NonBlockingSerialProtocol::areWeDoneReading(buffer, newChar);
-}
-
 bool AtlasScientificBoard::handle(String reply) {
-    Serial.println(reply);
     if (reply.indexOf("*") >= 0) {
+        Serial.println(reply);
+
         switch (state) {
             case Status0: {
                 transition(Status1);
@@ -123,8 +116,8 @@ bool AtlasScientificBoard::handle(String reply) {
                 break;
             }
         }
-        return false;
+        return true;
     }
-    return true;
+    return false;
 }
 

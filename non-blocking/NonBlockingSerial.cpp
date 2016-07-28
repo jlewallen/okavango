@@ -36,17 +36,12 @@ void NonBlockingSerialProtocol::appendToBuffer(char newChar) {
     buffer += (char)newChar;
     if (newChar == '\r') {
         buffer += '\n';
-    }
-    if (areWeDoneReading(buffer, newChar)) {
-        if (!handle(buffer)) {
-            transition(NonBlockingSerialProtocolState::Idle);
-        }
-        buffer = "";
-    }
-}
 
-bool NonBlockingSerialProtocol::areWeDoneReading(String &buffer, char newChar) {
-    return newChar == '\r';
+        if (handle(buffer)) {
+            transition(NonBlockingSerialProtocolState::Idle);
+            buffer = "";
+        }
+    }
 }
 
 void NonBlockingSerialProtocol::sendCommand(const char *cmd, bool expectReply) {
@@ -60,7 +55,7 @@ void NonBlockingSerialProtocol::sendCommand(const char *cmd, bool expectReply) {
 }
 
 bool NonBlockingSerialProtocol::handle(String reply) {
-    return false;
+    return true; // No protocol here.
 }
 
 void NonBlockingSerialProtocol::transition(NonBlockingSerialProtocolState newState) {

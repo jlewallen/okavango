@@ -52,7 +52,6 @@ protected:
         state = newState;
     }
 
-    virtual bool areWeDoneReading(String &buffer, char newChar);
     virtual bool handle(String reply);
 };
 
