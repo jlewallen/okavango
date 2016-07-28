@@ -8,7 +8,7 @@ const char *CMD_CONTINUOUS_OFF = "C,0";
 const char *CMD_SLEEP = "SLEEP";
 const char *CMD_READ = "R";
 
-AtlasScientificBoard::AtlasScientificBoard(byte rx, byte tx) : NonBlockingSerialProtocol(rx, tx) {
+AtlasScientificBoard::AtlasScientificBoard() {
 }
 
 bool AtlasScientificBoard::tick() {

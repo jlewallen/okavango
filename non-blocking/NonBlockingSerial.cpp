@@ -1,19 +1,18 @@
 #include <String.h>
 #include "NonBlockingSerial.h"
 
-NonBlockingSerialProtocol::NonBlockingSerialProtocol(byte rx, byte tx)
-    : serial(rx, tx) {
+NonBlockingSerialProtocol::NonBlockingSerialProtocol() {
 }
 
 void NonBlockingSerialProtocol::setup() {
-    serial.begin(9600);
+    serial->begin(9600);
 }
 
 bool NonBlockingSerialProtocol::tick() {
     switch (state) {
     case Reading: {
-        if (serial.available() > 0) {
-            int16_t c = serial.read();
+        if (serial->available() > 0) {
+            int16_t c = serial->read();
             if (c >= 0) {
                 appendToBuffer((char)c);
             }
@@ -51,8 +50,8 @@ bool NonBlockingSerialProtocol::areWeDoneReading(String &buffer, char newChar) {
 
 void NonBlockingSerialProtocol::sendCommand(const char *cmd, bool expectReply) {
     // Precondition: state == Idle
-    serial.print(cmd);  
-    serial.print('\r');
+    serial->print(cmd);  
+    serial->print('\r');
     if (expectReply) {
         transition(NonBlockingSerialProtocolState::Reading);
     }
@@ -69,6 +68,6 @@ void NonBlockingSerialProtocol::transition(NonBlockingSerialProtocolState newSta
 }
 
 void NonBlockingSerialProtocol::close() {
-    serial.end();
+    serial->end();
     transition(NonBlockingSerialProtocolState::Closed);
 }

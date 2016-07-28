@@ -25,7 +25,7 @@ private:
     bool hasValue;
 
 public:
-    AtlasScientificBoard(byte rx, byte tx);
+    AtlasScientificBoard();
 
     virtual bool tick();
 

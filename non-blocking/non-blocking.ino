@@ -5,12 +5,14 @@
 #include <SPI.h>
 #include <RH_RF95.h>
 
-SerialPortExpander serialPortExpander(5, 6, 7);
-AtlasScientificBoard board(2, 3);
+SerialPortExpander portExpander(6, 7, 8);
+SoftwareSerial portExpanderSerial(2, 3);
+SoftwareSerial conductivitySerial(4, 5);
+AtlasScientificBoard board;
 uint8_t selectedPort = 0;
 
 void finish() {
-    serialPortExpander.select(3);
+    portExpander.select(3);
     while (1) {
         delay(1000);
     }
@@ -22,8 +24,9 @@ void setup() {
     Serial.begin(115200);      
     Serial.println("Begin");
 
-    serialPortExpander.setup();
-    serialPortExpander.select(selectedPort);
+    portExpander.setup();
+    portExpander.select(selectedPort);
+    board.setSerial(&portExpanderSerial);
     board.start();
 }
 
@@ -35,7 +38,12 @@ void loop() {
         selectedPort++;
         if (selectedPort < 3) {
             Serial.println("Next sensor");
-            serialPortExpander.select(selectedPort);
+            portExpander.select(selectedPort);
+            board.start();
+        }
+        else if (selectedPort == 3) {
+            Serial.println("Conductivity");
+            board.setSerial(&conductivitySerial);
             board.start();
         }
         else {

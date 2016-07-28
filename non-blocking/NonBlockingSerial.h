@@ -13,13 +13,17 @@ enum NonBlockingSerialProtocolState {
 
 class NonBlockingSerialProtocol : public Tickable {
 private:
-    SoftwareSerial serial;
+    SoftwareSerial *serial;
     NonBlockingSerialProtocolState state = Idle;
     uint32_t lastStateChangeAt;
     String buffer;
 
 public:
-    NonBlockingSerialProtocol(byte rx, byte tx);
+    NonBlockingSerialProtocol();
+
+    void setSerial(SoftwareSerial *newSerial) {
+        serial = newSerial;
+    }
 
     void setup();
 
