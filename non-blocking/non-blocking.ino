@@ -10,7 +10,10 @@ AtlasScientificBoard board(2, 3);
 uint8_t selectedPort = 0;
 
 void finish() {
-    while (1) { }
+    serialPortExpander.select(3);
+    while (1) {
+        delay(1000);
+    }
 }
 
 void setup() {
