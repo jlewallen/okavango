@@ -59,6 +59,7 @@ function showPorts() {
 
 function openSerial() {
     PORT=`node ../get-upload-port.js $BOARD $PORT_NAME $PORT`
+    rm -f log.txt
     ../setup/putty.exe -serial $PORT -sercfg 115200 -sessionlog log.txt
 }
 
