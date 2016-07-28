@@ -37,6 +37,16 @@ public:
         return hasValue;
     }
 
+    bool isDone() {
+        return state == Done;
+    }
+
+    void start() {
+        state = Start;
+        setup();
+        open();
+    }
+
 protected:
     void transition(AtlasScientificBoardState newState) {
         state = newState;

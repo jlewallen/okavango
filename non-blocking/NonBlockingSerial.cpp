@@ -18,7 +18,7 @@ bool NonBlockingSerialProtocol::tick() {
                 appendToBuffer((char)c);
             }
         }
-        if (millis() - lastStateChangeAt > 3000) {
+        if (millis() - lastStateChangeAt > 5000) {
             transition(NonBlockingSerialProtocolState::Idle);
             buffer = "";
         }

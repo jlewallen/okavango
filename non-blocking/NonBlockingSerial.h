@@ -25,6 +25,10 @@ public:
 
     virtual bool tick();
 
+    void open() {
+        transition(Idle);
+    }
+
 protected:
     void sendCommand(const char *cmd, bool expectReply = true);
     void transition(NonBlockingSerialProtocolState newState);
