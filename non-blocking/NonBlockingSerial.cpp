@@ -38,8 +38,9 @@ void NonBlockingSerialProtocol::appendToBuffer(char newChar) {
         buffer += '\n';
     }
     if (areWeDoneReading(buffer, newChar)) {
-        handle(buffer);
-        transition(NonBlockingSerialProtocolState::Idle);
+        if (!handle(buffer)) {
+            transition(NonBlockingSerialProtocolState::Idle);
+        }
         buffer = "";
     }
 }
@@ -58,8 +59,8 @@ void NonBlockingSerialProtocol::sendCommand(const char *cmd, bool expectReply) {
     Serial.println(cmd);
 }
 
-void NonBlockingSerialProtocol::handle(String reply) {
-
+bool NonBlockingSerialProtocol::handle(String reply) {
+    return false;
 }
 
 void NonBlockingSerialProtocol::transition(NonBlockingSerialProtocolState newState) {

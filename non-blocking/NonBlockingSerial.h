@@ -36,7 +36,7 @@ public:
 protected:
     void sendCommand(const char *cmd, bool expectReply = true);
     void transition(NonBlockingSerialProtocolState newState);
-    virtual void handle(String reply);
+    virtual bool handle(String reply);
     virtual bool areWeDoneReading(String &buffer, char newChar);
     void appendToBuffer(char newChar);
     void close();

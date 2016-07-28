@@ -81,46 +81,50 @@ bool AtlasScientificBoard::areWeDoneReading(String &buffer, char newChar) {
     return NonBlockingSerialProtocol::areWeDoneReading(buffer, newChar);
 }
 
-void AtlasScientificBoard::handle(String reply) {
+bool AtlasScientificBoard::handle(String reply) {
     Serial.println(reply);
-    switch (state) {
-        case Status0: {
-            transition(Status1);
-            break;
-        }
-        case Status1: {
-            transition(Leds);
-            break;
-        }
-        case Leds: {
-            transition(Configure);
-            break;
-        }
-        case Configure: {
-            transition(Read0);
-            break;
-        }
-        case Read0: {
-            transition(Read1);
-            break;
-        }
-        case Read1: {
-            transition(Read2);
-            break;
-        }
-        case Read2: {
-            transition(Sleeping);
-            int16_t first = reply.indexOf('\n');
-            if (first >= 0) {
-                int16_t second = reply.indexOf('\n', first + 1);
-                if (second >= first) {
-                    String part = reply.substring(first, second - first);
-                    value = part.toFloat();
-                    hasValue = true;
-                }
+    if (reply.indexOf("*") >= 0) {
+        switch (state) {
+            case Status0: {
+                transition(Status1);
+                break;
             }
-            break;
+            case Status1: {
+                transition(Leds);
+                break;
+            }
+            case Leds: {
+                transition(Configure);
+                break;
+            }
+            case Configure: {
+                transition(Read0);
+                break;
+            }
+            case Read0: {
+                transition(Read1);
+                break;
+            }
+            case Read1: {
+                transition(Read2);
+                break;
+            }
+            case Read2: {
+                transition(Sleeping);
+                int16_t first = reply.indexOf('\n');
+                if (first >= 0) {
+                    int16_t second = reply.indexOf('\n', first + 1);
+                    if (second >= first) {
+                        String part = reply.substring(first, second - first);
+                        value = part.toFloat();
+                        hasValue = true;
+                    }
+                }
+                break;
+            }
         }
+        return false;
     }
+    return true;
 }
 

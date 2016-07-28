@@ -53,7 +53,7 @@ protected:
     }
 
     virtual bool areWeDoneReading(String &buffer, char newChar);
-    virtual void handle(String reply);
+    virtual bool handle(String reply);
 };
 
 #endif
