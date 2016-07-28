@@ -1,7 +1,8 @@
 #include <String.h>
 #include "NonBlockingSerial.h"
 
-NonBlockingSerialProtocol::NonBlockingSerialProtocol(byte rx, byte tx) : serial(rx, tx) {
+NonBlockingSerialProtocol::NonBlockingSerialProtocol(byte rx, byte tx)
+    : serial(rx, tx) {
 }
 
 void NonBlockingSerialProtocol::setup() {
@@ -12,10 +13,14 @@ bool NonBlockingSerialProtocol::tick() {
     switch (state) {
     case Reading: {
         if (serial.available() > 0) {
-            int32_t c = serial.read();
+            int16_t c = serial.read();
             if (c >= 0) {
                 appendToBuffer((char)c);
             }
+        }
+        if (millis() - lastStateChangeAt > 3000) {
+            transition(NonBlockingSerialProtocolState::Idle);
+            buffer = "";
         }
         return true;
     }
@@ -47,7 +52,7 @@ bool NonBlockingSerialProtocol::areWeDoneReading(String &buffer, char newChar) {
 void NonBlockingSerialProtocol::sendCommand(const char *cmd, bool expectReply) {
     // Precondition: state == Idle
     serial.print(cmd);  
-    serial.print("\r");
+    serial.print('\r');
     if (expectReply) {
         transition(NonBlockingSerialProtocolState::Reading);
     }

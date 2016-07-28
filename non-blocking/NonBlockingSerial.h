@@ -15,7 +15,7 @@ class NonBlockingSerialProtocol : public Tickable {
 private:
     SoftwareSerial serial;
     NonBlockingSerialProtocolState state = Idle;
-    uint32_t lastStateChangeAt = 0;
+    uint32_t lastStateChangeAt;
     String buffer;
 
 public:

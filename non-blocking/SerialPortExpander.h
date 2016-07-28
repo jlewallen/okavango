@@ -11,7 +11,6 @@ public:
 public:
     void setup();
     bool tick();
-
     void select(byte port);
 };
 
