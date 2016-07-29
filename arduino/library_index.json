@@ -2893,6 +2893,46 @@
       "checksum": "SHA-256:9d975c000f23aed8eeac521fcab81743ff9cd1bff52db530107d1f09a82f44b6"
     },
     {
+      "name": "Windows Virtual Shields for Arduino",
+      "version": "1.1.0",
+      "author": "Windows Developer Program for IoT \u003cwdpIoT@microsoft.com\u003e",
+      "maintainer": "Windows Developer Program for IoT \u003cwdpIoT@microsoft.com\u003e",
+      "sentence": "Windows Virtual Shields for Arduino allows an Arduino to communicate and control Windows devices running open-source Windows Universal Application.",
+      "paragraph": "Windows Virtual Shields for Arduino allows an Arduino to communicate with an open-source Windows Universal Application running on all Windows 10 devices, primarily focusing on Windows Phones. The library exposes the Windows Phones's sensors and capabilities to the an Arduino Sketch.",
+      "website": "https://windowsondevices.com",
+      "category": "Device Control",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Partner"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/ms-iot/Windows_Virtual_Shields_for_Arduino-1.1.0.zip",
+      "archiveFileName": "Windows_Virtual_Shields_for_Arduino-1.1.0.zip",
+      "size": 1210024,
+      "checksum": "SHA-256:16bafedd2cad3110f6f42f00710b433d81bb459032e96160baa4553f9b35a780"
+    },
+    {
+      "name": "Windows Virtual Shields for Arduino",
+      "version": "1.2.0",
+      "author": "Windows Developer Program for IoT \u003cwdpIoT@microsoft.com\u003e",
+      "maintainer": "Windows Developer Program for IoT \u003cwdpIoT@microsoft.com\u003e",
+      "sentence": "Windows Virtual Shields for Arduino allows an Arduino to communicate and control Windows devices running open-source Windows Universal Application.",
+      "paragraph": "Windows Virtual Shields for Arduino allows an Arduino to communicate with an open-source Windows Universal Application running on all Windows 10 devices, primarily focusing on Windows Phones. The library exposes the Windows Phones's sensors and capabilities to the an Arduino Sketch.",
+      "website": "https://windowsondevices.com",
+      "category": "Device Control",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Partner"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/ms-iot/Windows_Virtual_Shields_for_Arduino-1.2.0.zip",
+      "archiveFileName": "Windows_Virtual_Shields_for_Arduino-1.2.0.zip",
+      "size": 1212032,
+      "checksum": "SHA-256:cd3e47c71993e52dd4ac6efa16088157cb564d05fd177f21e669eb8804e811d7"
+    },
+    {
       "name": "EducationShield",
       "version": "0.9.2",
       "author": "David Cuartielles",
@@ -4614,6 +4654,66 @@
       "archiveFileName": "Adafruit_Motor_Shield_library-1.0.0.zip",
       "size": 10820,
       "checksum": "SHA-256:341c443de3553fa9368021f64b77097b228b7dde4c00ffc06b31d84e9beb213a"
+    },
+    {
+      "name": "Adafruit Motor Shield V2 Library",
+      "version": "1.0.0",
+      "author": "Adafruit",
+      "maintainer": "Adafruit \u003cinfo@adafruit.com\u003e",
+      "sentence": "Library for the Adafruit Motor Shield V2 for Arduino. It supports DC motors \u0026 stepper motors with microstepping as well as stacking-support.",
+      "paragraph": "Library for the Adafruit Motor Shield V2 for Arduino. It supports DC motors \u0026 stepper motors with microstepping as well as stacking-support.",
+      "website": "https://github.com/adafruit/Adafruit_Motor_Shield_V2_Library",
+      "category": "Device Control",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Recommended"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/adafruit/Adafruit_Motor_Shield_V2_Library-1.0.0.zip",
+      "archiveFileName": "Adafruit_Motor_Shield_V2_Library-1.0.0.zip",
+      "size": 16157,
+      "checksum": "SHA-256:7772d09ce227a24cb887ea867cd46947ab6ff832544d0f201a1020c7d5fcbc8e"
+    },
+    {
+      "name": "Adafruit Motor Shield V2 Library",
+      "version": "1.0.1",
+      "author": "Adafruit",
+      "maintainer": "Adafruit \u003cinfo@adafruit.com\u003e",
+      "sentence": "Library for the Adafruit Motor Shield V2 for Arduino. It supports DC motors \u0026 stepper motors with microstepping as well as stacking-support.",
+      "paragraph": "Library for the Adafruit Motor Shield V2 for Arduino. It supports DC motors \u0026 stepper motors with microstepping as well as stacking-support.",
+      "website": "https://github.com/adafruit/Adafruit_Motor_Shield_V2_Library",
+      "category": "Device Control",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Recommended"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/adafruit/Adafruit_Motor_Shield_V2_Library-1.0.1.zip",
+      "archiveFileName": "Adafruit_Motor_Shield_V2_Library-1.0.1.zip",
+      "size": 16113,
+      "checksum": "SHA-256:9188e211e51f047b95830f20a589de245c7c82717bbbae6363767af991d3959c"
+    },
+    {
+      "name": "Adafruit Motor Shield V2 Library",
+      "version": "1.0.4",
+      "author": "Adafruit",
+      "maintainer": "Adafruit \u003cinfo@adafruit.com\u003e",
+      "sentence": "Library for the Adafruit Motor Shield V2 for Arduino. It supports DC motors \u0026 stepper motors with microstepping as well as stacking-support.",
+      "paragraph": "Library for the Adafruit Motor Shield V2 for Arduino. It supports DC motors \u0026 stepper motors with microstepping as well as stacking-support.",
+      "website": "https://github.com/adafruit/Adafruit_Motor_Shield_V2_Library",
+      "category": "Device Control",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Recommended"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/adafruit/Adafruit_Motor_Shield_V2_Library-1.0.4.zip",
+      "archiveFileName": "Adafruit_Motor_Shield_V2_Library-1.0.4.zip",
+      "size": 16530,
+      "checksum": "SHA-256:769e1b4f4eb8a5b5c63564134d2f1f6eb7ac09191d002789733584fdf5cb5817"
     },
     {
       "name": "Adafruit MPL115A2",
@@ -8156,6 +8256,66 @@
       "checksum": "SHA-256:a0da90e96448d14ea4da0ba4e2d1d0f620f0859c0808b90714116164d7c89fb7"
     },
     {
+      "name": "Adafruit Circuit Playground",
+      "version": "1.4.0",
+      "author": "Adafruit",
+      "maintainer": "Adafruit \u003cinfo@adafruit.com\u003e",
+      "sentence": "All in one library to control Adafruit's Circuit Playground board.",
+      "paragraph": "All in one library to control Adafruit's Circuit Playground board.  Requires no other dependencies and exposes all Circuit Playground components in a simple to use class.",
+      "website": "https://github.com/adafruit/Adafruit_CircuitPlayground",
+      "category": "Other",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Recommended"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/adafruit/Adafruit_Circuit_Playground-1.4.0.zip",
+      "archiveFileName": "Adafruit_Circuit_Playground-1.4.0.zip",
+      "size": 70217,
+      "checksum": "SHA-256:bad9c31eba769bd24b89392e145712c8b2fc75a20b2c7c09413b7a5de6820f07"
+    },
+    {
+      "name": "Adafruit Circuit Playground",
+      "version": "1.5.0",
+      "author": "Adafruit",
+      "maintainer": "Adafruit \u003cinfo@adafruit.com\u003e",
+      "sentence": "All in one library to control Adafruit's Circuit Playground board.",
+      "paragraph": "All in one library to control Adafruit's Circuit Playground board.  Requires no other dependencies and exposes all Circuit Playground components in a simple to use class.",
+      "website": "https://github.com/adafruit/Adafruit_CircuitPlayground",
+      "category": "Other",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Recommended"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/adafruit/Adafruit_Circuit_Playground-1.5.0.zip",
+      "archiveFileName": "Adafruit_Circuit_Playground-1.5.0.zip",
+      "size": 314762,
+      "checksum": "SHA-256:592fbb75682a62c8fdb6b41adf81a44054417cb2aa08ab2c9d29e6500ab1aa1c"
+    },
+    {
+      "name": "Adafruit Circuit Playground",
+      "version": "1.6.0",
+      "author": "Adafruit",
+      "maintainer": "Adafruit \u003cinfo@adafruit.com\u003e",
+      "sentence": "All in one library to control Adafruit's Circuit Playground board.",
+      "paragraph": "All in one library to control Adafruit's Circuit Playground board.  Requires no other dependencies and exposes all Circuit Playground components in a simple to use class.",
+      "website": "https://github.com/adafruit/Adafruit_CircuitPlayground",
+      "category": "Other",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Recommended"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/adafruit/Adafruit_Circuit_Playground-1.6.0.zip",
+      "archiveFileName": "Adafruit_Circuit_Playground-1.6.0.zip",
+      "size": 314764,
+      "checksum": "SHA-256:0b8dfd55b6c2877ecb8411e2d5c0e88ac67eb4d6c9056d890975bd0e73c85661"
+    },
+    {
       "name": "SmartEverything SIGFOX LE51-868",
       "version": "1.0.0",
       "author": "Mik",
@@ -8732,6 +8892,25 @@
       "checksum": "SHA-256:6a868572b155c6ce9124dbda5f68be081e21b2786fa6b1f090ee4c354f61e975"
     },
     {
+      "name": "FrequencyTimer2",
+      "version": "2.1.0",
+      "author": "Jim Studt",
+      "maintainer": "Paul Stoffregen",
+      "sentence": "Generate a frequency using Timer2",
+      "website": "http://playground.arduino.cc/Code/FrequencyTimer2",
+      "category": "Timing",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/PaulStoffregen/FrequencyTimer2-2.1.0.zip",
+      "archiveFileName": "FrequencyTimer2-2.1.0.zip",
+      "size": 5546,
+      "checksum": "SHA-256:7b7a0be03a100a9aef45ff0e00313d0c2205c76ec305f9b8d0716fb55a7138d7"
+    },
+    {
       "name": "ILI9341_t3",
       "version": "1.0.0",
       "author": "Limor Fried, Adafruit, Paul Stoffregen",
@@ -9043,6 +9222,25 @@
       "archiveFileName": "TimerOne-1.1.0.zip",
       "size": 7617,
       "checksum": "SHA-256:41d7794000d7b55de4bac92dd5786cd434aa2788606bdb85cd7d9d055a20edd2"
+    },
+    {
+      "name": "TimerThree",
+      "version": "1.1.0",
+      "author": "Jesse Tane, Jérôme Despatis, Michael Polli, Dan Clemens, Paul Stoffregen",
+      "maintainer": "Paul Stoffregen",
+      "sentence": "Use hardware Timer3 for finer PWM control and/or running an periodic interrupt function",
+      "website": "http://playground.arduino.cc/Code/Timer1",
+      "category": "Timing",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/PaulStoffregen/TimerThree-1.1.0.zip",
+      "archiveFileName": "TimerThree-1.1.0.zip",
+      "size": 7676,
+      "checksum": "SHA-256:57b1dca773af015a209c2d743e1d6502b60444fdf53643bf1757f89513333729"
     },
     {
       "name": "Tlc5940",
@@ -10666,6 +10864,26 @@
       "checksum": "SHA-256:af28cc4cfef1130e91ef4c8a810f4a709ee6546d10928acd6ef18ceb28c069b7"
     },
     {
+      "name": "Akafugu Four Letter Word Library",
+      "version": "1.0.0",
+      "author": "Akafugu",
+      "maintainer": "Akafugu \u003cinfo@akafugu.jp\u003e",
+      "sentence": "Akafugu Four Letter Word Library",
+      "paragraph": "Akafugu Four Letter Word Library",
+      "website": "https://github.com/akafugu/FourLetterWord",
+      "category": "Other",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/akafugu/Akafugu_Four_Letter_Word_Library-1.0.0.zip",
+      "archiveFileName": "Akafugu_Four_Letter_Word_Library-1.0.0.zip",
+      "size": 10418,
+      "checksum": "SHA-256:d04ae00d1220d179988db32b079412d24f7c64d9d26ed6d8d71f8b61d0794ee1"
+    },
+    {
       "name": "Akafugu TWIDisplay Library",
       "version": "1.0.0",
       "author": "Akafugu",
@@ -11804,6 +12022,26 @@
       "archiveFileName": "PrintEx-1.1.9.zip",
       "size": 30407,
       "checksum": "SHA-256:059f084db9da94de62914e9a5e5a3b796325e2ec9260edb1e00f7e56594f2243"
+    },
+    {
+      "name": "PrintEx",
+      "version": "1.2.0",
+      "author": "Christopher Andrews \u003cchris@arduino.land\u003e",
+      "maintainer": "Christopher Andrews \u003cchris@arduino.land\u003e",
+      "sentence": "A printing \u0026 formatting enhancement for Stream \u0026 Print based libraries.",
+      "paragraph": "Enhance your projects with an Arduino tailored set of functionality. Includes streaming (in/out), printf with floating point support, repitition and EEPROM/PROGMEM access.",
+      "website": "https://github.com/Chris--A/PrintEx#printex-library-for-arduino-",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/Chris--A/PrintEx-1.2.0.zip",
+      "archiveFileName": "PrintEx-1.2.0.zip",
+      "size": 53290,
+      "checksum": "SHA-256:46ac836d471c95b579e73d3b4d30b644880594943a3e541d5b0ff0c2e31cd58b"
     },
     {
       "name": "SmallSetup",
@@ -13574,6 +13812,26 @@
       "checksum": "SHA-256:0745b3025ca80b1f0974c42065c9c080d87cf717c7dac21f7d4747d764632a87"
     },
     {
+      "name": "aREST",
+      "version": "2.3.0",
+      "author": "Marco Schwartz",
+      "maintainer": "Marco Schwartz \u003cmarcolivier.schwartz@gmail.com\u003e",
+      "sentence": "RESTful API for the Arduino platform.",
+      "paragraph": "A simple library that implements a REST API for Arduino. It is designed to be universal and currently supports REST calls via HTTP, Serial \u0026 BLE.  See more at: http://arest.io/",
+      "website": "https://github.com/marcoschwartz/aREST",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/marcoschwartz/aREST-2.3.0.zip",
+      "archiveFileName": "aREST-2.3.0.zip",
+      "size": 30721,
+      "checksum": "SHA-256:ede3f9b03414309934eb3e40c16459fd20534a018c1e146f113d37a8466e49d6"
+    },
+    {
       "name": "aREST UI",
       "version": "1.0.1",
       "author": "Marco Schwartz",
@@ -15158,6 +15416,146 @@
       "archiveFileName": "SRAM-1.0.1.zip",
       "size": 6666,
       "checksum": "SHA-256:572f422d52e1254cbfc1c56d4fbe938ea160943b79306f43b90edbe5be3fcf28"
+    },
+    {
+      "name": "SWAP",
+      "version": "1.0.0",
+      "author": "panStamp",
+      "maintainer": "panStamp \u003ccontact@panstamp.com\u003e",
+      "sentence": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
+      "paragraph": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
+      "website": "https://github.com/panStamp/swap.git",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/panStamp/SWAP-1.0.0.zip",
+      "archiveFileName": "SWAP-1.0.0.zip",
+      "size": 29279,
+      "checksum": "SHA-256:569926b017a65d3d43805a391ee85e14ffffc3a6e0a25e8797eb68909d568066"
+    },
+    {
+      "name": "SWAP",
+      "version": "1.0.1",
+      "author": "panStamp",
+      "maintainer": "panStamp \u003ccontact@panstamp.com\u003e",
+      "sentence": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
+      "paragraph": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
+      "website": "https://github.com/panStamp/swap.git",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/panStamp/SWAP-1.0.1.zip",
+      "archiveFileName": "SWAP-1.0.1.zip",
+      "size": 101574,
+      "checksum": "SHA-256:875cf202d123d155fbe0c2700abe250a911ff534c508cfa61e7ab89cd2cba502"
+    },
+    {
+      "name": "SWAP",
+      "version": "1.0.2",
+      "author": "panStamp",
+      "maintainer": "panStamp \u003ccontact@panstamp.com\u003e",
+      "sentence": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
+      "paragraph": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
+      "website": "https://github.com/panStamp/swap.git",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/panStamp/SWAP-1.0.2.zip",
+      "archiveFileName": "SWAP-1.0.2.zip",
+      "size": 100436,
+      "checksum": "SHA-256:63419b1579ed4fd6ebbf8d907478fbd44eda3b3e2bbb0191c72232ee97177d9c"
+    },
+    {
+      "name": "SWAP",
+      "version": "1.0.4",
+      "author": "panStamp",
+      "maintainer": "panStamp \u003ccontact@panstamp.com\u003e",
+      "sentence": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
+      "paragraph": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
+      "website": "https://github.com/panStamp/swap.git",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/panStamp/SWAP-1.0.4.zip",
+      "archiveFileName": "SWAP-1.0.4.zip",
+      "size": 108950,
+      "checksum": "SHA-256:293c057bfbf7e942eae0e85b0ca2a1e292fbe6cd6c6d4efde09d83c0fa75b655"
+    },
+    {
+      "name": "SWAP",
+      "version": "1.0.5",
+      "author": "panStamp",
+      "maintainer": "panStamp \u003ccontact@panstamp.com\u003e",
+      "sentence": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
+      "paragraph": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
+      "website": "https://github.com/panStamp/swap.git",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/panStamp/SWAP-1.0.5.zip",
+      "archiveFileName": "SWAP-1.0.5.zip",
+      "size": 116511,
+      "checksum": "SHA-256:9d95021108463efaf1a3074446c87828094ac4e7e2967412a3c07c3c22a95fde"
+    },
+    {
+      "name": "SWAP",
+      "version": "1.0.6",
+      "author": "panStamp",
+      "maintainer": "panStamp \u003ccontact@panstamp.com\u003e",
+      "sentence": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
+      "paragraph": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
+      "website": "https://github.com/panStamp/swap.git",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/panStamp/SWAP-1.0.6.zip",
+      "archiveFileName": "SWAP-1.0.6.zip",
+      "size": 117160,
+      "checksum": "SHA-256:f682cec5cf793695fd50adefde64310c1167bd93d2a29abc307fa1ca81a7936b"
+    },
+    {
+      "name": "SWAP",
+      "version": "1.0.7",
+      "author": "panStamp",
+      "maintainer": "panStamp \u003ccontact@panstamp.com\u003e",
+      "sentence": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
+      "paragraph": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
+      "website": "https://github.com/panStamp/swap.git",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/panStamp/SWAP-1.0.7.zip",
+      "archiveFileName": "SWAP-1.0.7.zip",
+      "size": 121972,
+      "checksum": "SHA-256:fd1b7237a6f92758dc49faccde6541feabb2cf5c7ff56f32bc0c75d762406ad0"
     },
     {
       "name": "elapsedMillis",
@@ -16752,6 +17150,44 @@
       "checksum": "SHA-256:b5c33928c3946d124a37ff76a712cc9bc0e2544793fda303d19d6965eefb4e38"
     },
     {
+      "name": "Sodaq_DS3231",
+      "version": "1.2.0",
+      "author": "keestux,SODAQ",
+      "maintainer": "Kees Bakker \u003ckees@m2m4all.com\u003e",
+      "sentence": "An Arduino library for the DS3231 RTC (Real Time Clock).",
+      "website": "https://github.com/SodaqMoja/Sodaq_DS3231",
+      "category": "Sensors",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/SodaqMoja/Sodaq_DS3231-1.2.0.zip",
+      "archiveFileName": "Sodaq_DS3231-1.2.0.zip",
+      "size": 9808,
+      "checksum": "SHA-256:42fc9ba2744159716496f7b3da21084c3c9da4f0f61be213e46572196f333ae7"
+    },
+    {
+      "name": "Sodaq_DS3231",
+      "version": "1.2.1",
+      "author": "keestux,SODAQ",
+      "maintainer": "Kees Bakker \u003ckees@m2m4all.com\u003e",
+      "sentence": "An Arduino library for the DS3231 RTC (Real Time Clock).",
+      "website": "https://github.com/SodaqMoja/Sodaq_DS3231",
+      "category": "Sensors",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/SodaqMoja/Sodaq_DS3231-1.2.1.zip",
+      "archiveFileName": "Sodaq_DS3231-1.2.1.zip",
+      "size": 9814,
+      "checksum": "SHA-256:6875fe538ceafb4b26257413748b84bf200cdaa43f2532291527002ec6f3674e"
+    },
+    {
       "name": "Sodaq_PcInt",
       "version": "1.2.0",
       "author": "keestux,SODAQ",
@@ -17294,6 +17730,46 @@
       "archiveFileName": "Chrono-1.0.0.zip",
       "size": 131204,
       "checksum": "SHA-256:d2b22602fc2fd9eb23ba28861a4a22d4fc06d0ceadbdecb892dfc947cba96173"
+    },
+    {
+      "name": "DW1000",
+      "version": "0.4.0",
+      "author": "Thomas Trojer \u003cthomas@trojer.net\u003e",
+      "maintainer": "Thomas Trojer \u003cthomas@trojer.net\u003e",
+      "sentence": "A library that offers functionality to use Decawave's DW1000 chips/modules.",
+      "paragraph": "Supports transmission of messages, timestamp handling (for ranging and location sensing applications) and implements the different operation modes the DW1000 has to offer. The library design is intended to offer an easy-to-use interface to the otherwise complex and configuration intense handling of the DW1000.",
+      "website": "https://github.com/thotro/arduino-dw1000",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/thotro/DW1000-0.4.0.zip",
+      "archiveFileName": "DW1000-0.4.0.zip",
+      "size": 8860861,
+      "checksum": "SHA-256:b50ac55a59de180ec253832174d95742bad72b4509d2a02add4d5b72f1cd1f84"
+    },
+    {
+      "name": "DW1000",
+      "version": "0.5.0",
+      "author": "Thomas Trojer \u003cthomas@trojer.net\u003e",
+      "maintainer": "Thomas Trojer \u003cthomas@trojer.net\u003e",
+      "sentence": "A library that offers functionality to use Decawave's DW1000 chips/modules.",
+      "paragraph": "Supports transmission of messages, timestamp handling (for ranging and location sensing applications) and implements the different operation modes the DW1000 has to offer. The library design is intended to offer an easy-to-use interface to the otherwise complex and configuration intense handling of the DW1000.",
+      "website": "https://github.com/thotro/arduino-dw1000",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/thotro/DW1000-0.5.0.zip",
+      "archiveFileName": "DW1000-0.5.0.zip",
+      "size": 8900941,
+      "checksum": "SHA-256:7e6182204bdf6e7ad64ba75686ca88f49d5adb8870b97758e487206b7b7b2807"
     },
     {
       "name": "Kalman Filter Library",
@@ -18081,6 +18557,29 @@
       "archiveFileName": "PJON-3.0.0.zip",
       "size": 47363,
       "checksum": "SHA-256:fadfe1abde824bfa33fb1ef1986672c440e3d7a2954294d41c9c1555a05dbf12"
+    },
+    {
+      "name": "PJON",
+      "version": "4.0.0",
+      "author": "Giovanni Blu Mitolo \u003cgioscarab@gmail.com\u003e",
+      "maintainer": "Giovanni Blu Mitolo \u003cgioscarab@gmail.com\u003e",
+      "sentence": "PJON is an open-source, multi-master, mult-media device communications bus system framework",
+      "paragraph": "It is a valid, open-source alternative to i2c, 1-Wire, Serial and other Arduino compatible protocols.",
+      "website": "https://github.com/gioblu/PJON",
+      "category": "Communication",
+      "architectures": [
+        "avr",
+        "esp8266",
+        "sam",
+        "samd"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/gioblu/PJON-4.0.0.zip",
+      "archiveFileName": "PJON-4.0.0.zip",
+      "size": 52252,
+      "checksum": "SHA-256:63d63070e776710861918e0d218d4e3dc8542c0012e80606a2ddb7141aeb9954"
     },
     {
       "name": "OPC",
@@ -20243,6 +20742,326 @@
       "checksum": "SHA-256:e4dbbea1cce9e547e7e2159ad185aac0d5dc4b8985943ab55789139710b23539"
     },
     {
+      "name": "RBD_Light",
+      "version": "1.0.0",
+      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "sentence": "Blink and and fade many lights in real time with no delay.",
+      "paragraph": "Control many lights in real-time and blink without delay using commands such as on(), off(), blink(), and fade(). Lights must be connected to PWM enabled Arduino pins to work with this library.",
+      "website": "https://github.com/alextaujenis/RBD_Light",
+      "category": "Sensors",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-1.0.0.zip",
+      "archiveFileName": "RBD_Light-1.0.0.zip",
+      "size": 10728,
+      "checksum": "SHA-256:a05022e2071912c7b457e81776cfd20cb1f01bf07a3dffe528d9d65058cef188"
+    },
+    {
+      "name": "RBD_Light",
+      "version": "1.0.1",
+      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "sentence": "Blink and fade many lights in real time with no delay.",
+      "paragraph": "Control many lights in real-time and blink without delay using commands such as on(), off(), blink(), and fade(). Lights must be connected to PWM enabled Arduino pins to work with this library.",
+      "website": "https://github.com/alextaujenis/RBD_Light",
+      "category": "Sensors",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-1.0.1.zip",
+      "archiveFileName": "RBD_Light-1.0.1.zip",
+      "size": 10728,
+      "checksum": "SHA-256:3c19948dc27b9aff4c11f08693c492595b3f50d28de658b97ef0c14a349c18b7"
+    },
+    {
+      "name": "RBD_Light",
+      "version": "1.0.2",
+      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "sentence": "Control many lights.",
+      "paragraph": "Control many lights and blink without delay using commands such as on(), off(), blink(), and fade().",
+      "website": "https://github.com/alextaujenis/RBD_Light",
+      "category": "Sensors",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-1.0.2.zip",
+      "archiveFileName": "RBD_Light-1.0.2.zip",
+      "size": 8372,
+      "checksum": "SHA-256:8334cb9b21ce3bb06088050e195e89be8664b4d854dd88ceefedd6af8ce56da4"
+    },
+    {
+      "name": "RBD_Light",
+      "version": "1.0.3",
+      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "sentence": "Control many lights.",
+      "paragraph": "Control many lights and blink without delay using commands such as on(), off(), blink(), and fade().",
+      "website": "https://github.com/alextaujenis/RBD_Light",
+      "category": "Sensors",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-1.0.3.zip",
+      "archiveFileName": "RBD_Light-1.0.3.zip",
+      "size": 8525,
+      "checksum": "SHA-256:41f200e9e54d224743c64062cdc3d09c16a2ad205b10111bc6777418d208bffa"
+    },
+    {
+      "name": "RBD_Light",
+      "version": "1.0.4",
+      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "sentence": "Control many lights.",
+      "paragraph": "Control many lights and blink without delay using commands such as on(), off(), blink(), and fade().",
+      "website": "https://github.com/alextaujenis/RBD_Light",
+      "category": "Sensors",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-1.0.4.zip",
+      "archiveFileName": "RBD_Light-1.0.4.zip",
+      "size": 8641,
+      "checksum": "SHA-256:ae4989645ae25e3784ae571e27d6a5344d92255ed68ab3821fac9a054b5d14fe"
+    },
+    {
+      "name": "RBD_Light",
+      "version": "1.0.5",
+      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "sentence": "Control many lights.",
+      "paragraph": "Control many lights and blink without delay using commands such as on(), off(), blink(), and fade().",
+      "website": "https://github.com/alextaujenis/RBD_Light",
+      "category": "Sensors",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-1.0.5.zip",
+      "archiveFileName": "RBD_Light-1.0.5.zip",
+      "size": 8646,
+      "checksum": "SHA-256:4a11a8623c43111003ed150fa577a9a2eb7c7df0811c4dd001c9b749a939a08b"
+    },
+    {
+      "name": "RBD_Light",
+      "version": "2.0.0",
+      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "sentence": "Control many lights.",
+      "paragraph": "Control many lights / LEDs and blink without delay or interrupts using commands such as on(), off(), blink(), and fade(). Lights must be connected to PWM enabled pins to work with this library.",
+      "website": "https://github.com/alextaujenis/RBD_Light",
+      "category": "Sensors",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-2.0.0.zip",
+      "archiveFileName": "RBD_Light-2.0.0.zip",
+      "size": 8668,
+      "checksum": "SHA-256:c71febe1748fd8016cd27d137b3cf4d63bc30f1062d456b0a0582ba8153fed4d"
+    },
+    {
+      "name": "RBD_Light",
+      "version": "2.0.1",
+      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "sentence": "Control many lights.",
+      "paragraph": "Control many lights / LEDs and blink without delay or interrupts using commands such as on(), off(), blink(), and fade(). Lights must be connected to PWM enabled pins to work with this library.",
+      "website": "https://github.com/alextaujenis/RBD_Light",
+      "category": "Sensors",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-2.0.1.zip",
+      "archiveFileName": "RBD_Light-2.0.1.zip",
+      "size": 8911,
+      "checksum": "SHA-256:5a6a2c44ffc67811c12a20c136d0cdacca8fb41e90679bc0a1f81a26a885e52d"
+    },
+    {
+      "name": "RBD_Light",
+      "version": "2.1.0",
+      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "sentence": "Control many lights.",
+      "paragraph": "Control many lights / LEDs and blink without delay or interrupts using commands such as on(), off(), blink(), and fade(). Lights must be connected to PWM enabled pins to work with this library.",
+      "website": "https://github.com/alextaujenis/RBD_Light",
+      "category": "Sensors",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-2.1.0.zip",
+      "archiveFileName": "RBD_Light-2.1.0.zip",
+      "size": 9077,
+      "checksum": "SHA-256:a62f1c2b323e260385e193b5175169beaddfd410ed265d867fdd775f40269dfb"
+    },
+    {
+      "name": "RBD_Light",
+      "version": "2.1.1",
+      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "sentence": "Control many lights.",
+      "paragraph": "Control many lights / LEDs and blink without delay or interrupts using commands such as on(), off(), blink(), and fade(). Lights must be connected to PWM enabled pins to work with this library.",
+      "website": "https://github.com/alextaujenis/RBD_Light",
+      "category": "Sensors",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-2.1.1.zip",
+      "archiveFileName": "RBD_Light-2.1.1.zip",
+      "size": 4302,
+      "checksum": "SHA-256:ecb89f238d11cd7c14903ed7a1a55eb0b18f1112e8ae4d1262411a9a8e5a37e0"
+    },
+    {
+      "name": "RBD_Light",
+      "version": "2.1.2",
+      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "sentence": "Control many lights.",
+      "paragraph": "Control many lights / LEDs and blink without delay or interrupts using commands such as on(), off(), blink(), and fade(). Lights must be connected to PWM enabled pins to work with this library.",
+      "website": "https://github.com/alextaujenis/RBD_Light",
+      "category": "Sensors",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-2.1.2.zip",
+      "archiveFileName": "RBD_Light-2.1.2.zip",
+      "size": 4281,
+      "checksum": "SHA-256:c3300225b3d8d1fd4d3cced7bcfd916bfc58021dc24858950425b760f3d387c6"
+    },
+    {
+      "name": "RBD_Light",
+      "version": "2.1.3",
+      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "sentence": "Control many lights.",
+      "paragraph": "Control many lights / LEDs and blink without delay or interrupts using commands such as on(), off(), blink(), and fade(). Lights must be connected to PWM enabled pins to work with this library.",
+      "website": "https://github.com/alextaujenis/RBD_Light",
+      "category": "Sensors",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-2.1.3.zip",
+      "archiveFileName": "RBD_Light-2.1.3.zip",
+      "size": 6359,
+      "checksum": "SHA-256:37a055e1f4438ec3c087d04c3b06f53b6ec196e0922ab69afb3383c84a1719b7"
+    },
+    {
+      "name": "RBD_Light",
+      "version": "2.1.4",
+      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "sentence": "Control many lights.",
+      "paragraph": "Control many lights / LEDs and blink without delay or interrupts using commands such as on(), off(), blink(), and fade(). Lights can be connected to PWM or Digital Arduino pins to work with this library.",
+      "website": "https://github.com/alextaujenis/RBD_Light",
+      "category": "Sensors",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-2.1.4.zip",
+      "archiveFileName": "RBD_Light-2.1.4.zip",
+      "size": 6845,
+      "checksum": "SHA-256:1d55d232be582982c9c96af509a034d6d87e4f10e4e4033c0ea3544c2320ac7b"
+    },
+    {
+      "name": "RBD_Light",
+      "version": "2.1.5",
+      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "sentence": "Control many lights.",
+      "paragraph": "Control many lights / LEDs and blink without delay or interrupts using commands such as on(), off(), blink(), and fade(). Lights can be connected to PWM or Digital Arduino pins to work with this library.",
+      "website": "https://github.com/alextaujenis/RBD_Light",
+      "category": "Sensors",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-2.1.5.zip",
+      "archiveFileName": "RBD_Light-2.1.5.zip",
+      "size": 6886,
+      "checksum": "SHA-256:76b431b41a8e832e54f1dc3ed9a296dfa21b2be2310c54e7f082d12366800752"
+    },
+    {
+      "name": "RBD_Light",
+      "version": "2.1.6",
+      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "sentence": "Control many lights.",
+      "paragraph": "Control many lights / LEDs and blink without delay or interrupts using commands such as on(), off(), blink(), and fade(). Lights can be connected to PWM or Digital Arduino pins to work with this library.",
+      "website": "https://github.com/alextaujenis/RBD_Light",
+      "category": "Sensors",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-2.1.6.zip",
+      "archiveFileName": "RBD_Light-2.1.6.zip",
+      "size": 6955,
+      "checksum": "SHA-256:2f0418ee0c79c2042c5f1678d9d627e6db6a7564c5e0d658bfaa17f910d848a3"
+    },
+    {
+      "name": "RBD_Light",
+      "version": "2.1.7",
+      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
+      "sentence": "Control many lights.",
+      "paragraph": "Control many lights / LEDs and blink without delay or interrupts using commands such as on(), off(), blink(), and fade(). Lights can be connected to PWM or Digital Arduino pins to work with this library.",
+      "website": "https://github.com/alextaujenis/RBD_Light",
+      "category": "Sensors",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-2.1.7.zip",
+      "archiveFileName": "RBD_Light-2.1.7.zip",
+      "size": 7012,
+      "checksum": "SHA-256:dbf0cac44ea0316511b107e909372ea0cfb457a8c7afd4a656043c29dd21018e"
+    },
+    {
       "name": "RBD_LightSensor",
       "version": "1.0.0",
       "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
@@ -21493,6 +22312,66 @@
       "checksum": "SHA-256:dafe7f76950648a09092089b95330265e288f756382635c8895f1b1065f75398"
     },
     {
+      "name": "HID-Project",
+      "version": "2.4.1",
+      "author": "NicoHood",
+      "maintainer": "NicoHood \u003cblog@NicoHood.de\u003e",
+      "sentence": "Extended HID Functions for Arduino",
+      "paragraph": "Includes BootKeyboard/Mouse, Consumer, System, Gamepad, RawHID and more features. Also compatible with Arduino Uno/Mega via HoodLoader2.",
+      "website": "https://github.com/NicoHood/HID",
+      "category": "Communication",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/NicoHood/HID_Project-2.4.1.zip",
+      "archiveFileName": "HID_Project-2.4.1.zip",
+      "size": 276058,
+      "checksum": "SHA-256:7f85e92da0ea013ca64e7a9f231f0fbf589898939914057f59bcfde9e2cca66f"
+    },
+    {
+      "name": "HID-Project",
+      "version": "2.4.2",
+      "author": "NicoHood",
+      "maintainer": "NicoHood \u003cblog@NicoHood.de\u003e",
+      "sentence": "Extended HID Functions for Arduino",
+      "paragraph": "Includes BootKeyboard/Mouse, Consumer, System, Gamepad, RawHID and more features. Also compatible with Arduino Uno/Mega via HoodLoader2.",
+      "website": "https://github.com/NicoHood/HID",
+      "category": "Communication",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/NicoHood/HID_Project-2.4.2.zip",
+      "archiveFileName": "HID_Project-2.4.2.zip",
+      "size": 276102,
+      "checksum": "SHA-256:0f57973c954cdba214ab94c3d451518fa260be2e72ac42c259872f2b5371f7c4"
+    },
+    {
+      "name": "HID-Project",
+      "version": "2.4.3",
+      "author": "NicoHood",
+      "maintainer": "NicoHood \u003cblog@NicoHood.de\u003e",
+      "sentence": "Extended HID Functions for Arduino",
+      "paragraph": "Includes BootKeyboard/Mouse, Consumer, System, Gamepad, RawHID and more features. Also compatible with Arduino Uno/Mega via HoodLoader2.",
+      "website": "https://github.com/NicoHood/HID",
+      "category": "Communication",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/NicoHood/HID_Project-2.4.3.zip",
+      "archiveFileName": "HID_Project-2.4.3.zip",
+      "size": 276121,
+      "checksum": "SHA-256:8e11917ca93e7508257e500de39481565583a89becd5ab3115db468f77c2ba39"
+    },
+    {
       "name": "HardwareSerial_RS485",
       "version": "2.0.0",
       "author": "Michael Jonker",
@@ -21710,6 +22589,25 @@
       "archiveFileName": "I2CSoilMoistureSensor-1.0.0.zip",
       "size": 7412,
       "checksum": "SHA-256:35960eaa59034da81c3281fb814fb2a280990471818cf8060f5ed00eb209f033"
+    },
+    {
+      "name": "I2CSoilMoistureSensor",
+      "version": "1.1.0",
+      "author": "Ingo Fischer \u003cingo@fischer-ka.de\u003e",
+      "maintainer": "Ingo Fischer \u003cingo@fischer-ka.de\u003e",
+      "sentence": "Provide access to all functions of the I2C Soil Moisture Sensor from Catnip Electronics.",
+      "website": "https://github.com/Apollon77/I2CSoilMoistureSensor",
+      "category": "Sensors",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/Apollon77/I2CSoilMoistureSensor-1.1.0.zip",
+      "archiveFileName": "I2CSoilMoistureSensor-1.1.0.zip",
+      "size": 8628,
+      "checksum": "SHA-256:0e67b4310d2afc206e666d83e86438f9b71c174affa6325ffac95d59ed5d2f5d"
     },
     {
       "name": "ESP8266 Oled Driver for SSD1306 display",
@@ -23333,6 +24231,142 @@
       "checksum": "SHA-256:3d09f9b32153f16acc71c3a04e4c37813a8b5d8686ec99259bb568fdada9dff3"
     },
     {
+      "name": "WebSockets",
+      "version": "1.0.0",
+      "author": "Markus Sattler",
+      "maintainer": "Markus Sattler",
+      "sentence": "WebSockets for Arduino (Server + Client)",
+      "website": "https://github.com/Links2004/arduinoWebSockets",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/Links2004/WebSockets-1.0.0.zip",
+      "archiveFileName": "WebSockets-1.0.0.zip",
+      "size": 33460,
+      "checksum": "SHA-256:5dc3423a61abbf9675d693a28cd0504d9df1abfb548a453d98e2cb77983664c1"
+    },
+    {
+      "name": "WebSockets",
+      "version": "1.1.0",
+      "author": "Markus Sattler",
+      "maintainer": "Markus Sattler",
+      "sentence": "WebSockets for Arduino (Server + Client)",
+      "website": "https://github.com/Links2004/arduinoWebSockets",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/Links2004/WebSockets-1.1.0.zip",
+      "archiveFileName": "WebSockets-1.1.0.zip",
+      "size": 33403,
+      "checksum": "SHA-256:6c9267792eba92c18fd33f39e225f38ad8631426a31f43d2e37ed7f11c2f6faf"
+    },
+    {
+      "name": "WebSockets",
+      "version": "1.2.0",
+      "author": "Markus Sattler",
+      "maintainer": "Markus Sattler",
+      "sentence": "WebSockets for Arduino (Server + Client)",
+      "website": "https://github.com/Links2004/arduinoWebSockets",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/Links2004/WebSockets-1.2.0.zip",
+      "archiveFileName": "WebSockets-1.2.0.zip",
+      "size": 35556,
+      "checksum": "SHA-256:d12a9b9c316f7a935085c4e64c4012113e9566f808e408b01c9cfb8d6f08fd44"
+    },
+    {
+      "name": "WebSockets",
+      "version": "1.3.0",
+      "author": "Markus Sattler",
+      "maintainer": "Markus Sattler",
+      "sentence": "WebSockets for Arduino (Server + Client)",
+      "website": "https://github.com/Links2004/arduinoWebSockets",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/Links2004/WebSockets-1.3.0.zip",
+      "archiveFileName": "WebSockets-1.3.0.zip",
+      "size": 41944,
+      "checksum": "SHA-256:dfc2d818143b6b1e5360ec20d80e91c1aac6a346fd3b6fcfdb14d4590cf9d897"
+    },
+    {
+      "name": "WebSockets",
+      "version": "2.0.0",
+      "author": "Markus Sattler",
+      "maintainer": "Markus Sattler",
+      "sentence": "WebSockets for Arduino (Server + Client)",
+      "paragraph": "use 2.0 for ESP and 1.3 for AVR",
+      "website": "https://github.com/Links2004/arduinoWebSockets",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/Links2004/WebSockets-2.0.0.zip",
+      "archiveFileName": "WebSockets-2.0.0.zip",
+      "size": 45660,
+      "checksum": "SHA-256:d5efd668a361043d069b4b1f630844dbbfd0d2f2027f290b40474ad7caa33646"
+    },
+    {
+      "name": "WebSockets",
+      "version": "2.0.2",
+      "author": "Markus Sattler",
+      "maintainer": "Markus Sattler",
+      "sentence": "WebSockets for Arduino (Server + Client)",
+      "paragraph": "use 2.x.x for ESP and 1.3 for AVR",
+      "website": "https://github.com/Links2004/arduinoWebSockets",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/Links2004/WebSockets-2.0.2.zip",
+      "archiveFileName": "WebSockets-2.0.2.zip",
+      "size": 46567,
+      "checksum": "SHA-256:7a0df6b275b9c3e91f5ee822ceccfa2415b0f99bd931e361f8d3364bf16b9fc8"
+    },
+    {
+      "name": "WebSockets",
+      "version": "2.0.4",
+      "author": "Markus Sattler",
+      "maintainer": "Markus Sattler",
+      "sentence": "WebSockets for Arduino (Server + Client)",
+      "paragraph": "use 2.x.x for ESP and 1.3 for AVR",
+      "website": "https://github.com/Links2004/arduinoWebSockets",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/Links2004/WebSockets-2.0.4.zip",
+      "archiveFileName": "WebSockets-2.0.4.zip",
+      "size": 50517,
+      "checksum": "SHA-256:90dbcbace5ddbc2ac3ea979756f5ec72024ae4a521e142ec669f4f7e2636c054"
+    },
+    {
       "name": "Queuetue HX711 Library",
       "version": "1.0.1",
       "author": "Scott Russell \u003cscott@queuetue.com\u003e",
@@ -23951,6 +24985,26 @@
       "archiveFileName": "WiFiManager-0.9.0.zip",
       "size": 28768,
       "checksum": "SHA-256:0c207617301c4cca88c5b6bd0f80600fa7125a2dd0cc81cc7f301d2d0e39c68e"
+    },
+    {
+      "name": "Chronos",
+      "version": "1.0.0",
+      "author": "Pat Deegan",
+      "maintainer": "Pat Deegan \u003carduino-lib@flyingcarsandstuff.com\u003e",
+      "sentence": "Easily manipulate date-times to perform scheduling, setup calendars and find points in time that are of interest.",
+      "paragraph": "Chronos is comprised of three major components: DateTimes and Spans (OO date-time objects that can be manipulated in many ways), Marks (sets of calendar point events like \"every Sunday at 15h00\") and Calendar Events (actual events with fixed or repeating datetimes of specific duration, and the scheduling functions needed to find/manipulate events of interest).",
+      "website": "http://flyingcarsandstuff.com/projects/chronos/",
+      "category": "Other",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/psychogenic/Chronos-1.0.0.zip",
+      "archiveFileName": "Chronos-1.0.0.zip",
+      "size": 68103,
+      "checksum": "SHA-256:e6e6fd9c52254041786988c7113fd8ae8afe41072d238e92d788ec31406bf09e"
     },
     {
       "name": "Lewis",
@@ -25863,6 +26917,245 @@
       "checksum": "SHA-256:586345e1d7ede15b06747272ee48b6a7d5b6652a56723166d1c84a334536c64f"
     },
     {
+      "name": "OneWireHub",
+      "version": "0.2.0",
+      "author": "Shagrat2, orgua",
+      "maintainer": "Shagrat2",
+      "sentence": "OneWire slave device emulator with support for various simultaneously devices",
+      "website": "https://github.com/orgua/OneWireHub",
+      "category": "Sensors",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.2.0.zip",
+      "archiveFileName": "OneWireHub-0.2.0.zip",
+      "size": 2573405,
+      "checksum": "SHA-256:11aa0228c98b88da0c420d1edf682f576ad98f440c9c328413084651180e6d68"
+    },
+    {
+      "name": "OneWireHub",
+      "version": "0.3.0",
+      "author": "Shagrat2,orgua",
+      "maintainer": "Shagrat2",
+      "sentence": "OneWire slave device emulator with support for various simultaneously devices",
+      "paragraph": "supported sensors: DS2401, DS18B20, DS2405, DS2408, DS2413, DS2423, DS2433, DS2438, DS2450, DS2890",
+      "website": "https://github.com/orgua/OneWireHub",
+      "category": "Sensors",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.3.0.zip",
+      "archiveFileName": "OneWireHub-0.3.0.zip",
+      "size": 3632283,
+      "checksum": "SHA-256:3f29943c6c6bb40016b4869526c0abf4f7b0bf4fcddc0ce9e23f2a839292ce24"
+    },
+    {
+      "name": "OneWireHub",
+      "version": "0.4.0",
+      "author": "orgua,Shagrat2,MarkusLange",
+      "maintainer": "orgua",
+      "sentence": "OneWire slave device emulator with support for various simultaneously devices",
+      "paragraph": "supported sensors: DS1822, DS18B20, DS18S20, DS1990, DS2401, DS2405, DS2408, DS2413, DS2423, DS2433, DS2438, DS2450, DS2890",
+      "website": "https://github.com/orgua/OneWireHub",
+      "category": "Sensors",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.4.0.zip",
+      "archiveFileName": "OneWireHub-0.4.0.zip",
+      "size": 4940077,
+      "checksum": "SHA-256:2422a0a90b5488f3f48b4dceb73859af69c1806ddfa7cc688e0f9b84756e3a9b"
+    },
+    {
+      "name": "OneWireHub",
+      "version": "0.5.0",
+      "author": "orgua,Shagrat2,MarkusLange",
+      "maintainer": "orgua",
+      "sentence": "OneWire slave device emulator with support for various simultaneously devices",
+      "paragraph": "supported sensors: DS1822, DS18B20, DS18S20, DS1990, DS2401, DS2405, DS2408, DS2413, DS2423, DS2433, DS2438, DS2450, DS2890",
+      "website": "https://github.com/orgua/OneWireHub",
+      "category": "Sensors",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.5.0.zip",
+      "archiveFileName": "OneWireHub-0.5.0.zip",
+      "size": 7522284,
+      "checksum": "SHA-256:7cb4fb21c11adb01cdd1c474a66eacac5af553508b2f6815474714150e3396f5"
+    },
+    {
+      "name": "OneWireHub",
+      "version": "0.6.0",
+      "author": "Ingmar Splitt, orgua, MarkusLange, Shagrat2",
+      "maintainer": "orgua",
+      "sentence": "OneWire slave device emulator with support for various simultaneously devices",
+      "paragraph": "supported sensors: DS1822, DS18B20, DS18S20, DS1990, DS2401, DS2405, DS2408, DS2413, DS2423, DS2433, DS2438, DS2450, DS2890",
+      "website": "https://github.com/orgua/OneWireHub",
+      "category": "Sensors",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.6.0.zip",
+      "archiveFileName": "OneWireHub-0.6.0.zip",
+      "size": 7527762,
+      "checksum": "SHA-256:15b72762fd4bc427b3ad2d48758f7ee386e73460fa599ed2c02a7ba06eac3930"
+    },
+    {
+      "name": "OneWireHub",
+      "version": "0.6.5",
+      "author": "Ingmar Splitt, orgua, MarkusLange, Shagrat2",
+      "maintainer": "orgua",
+      "sentence": "OneWire slave device emulator with support for various simultaneously 1wire devices.",
+      "paragraph": "supported sensors: DS1822, DS18B20, DS18S20, DS1990, DS2401, DS2405, DS2408, DS2413, DS2423, DS2433, DS2438, DS2450, DS2890",
+      "website": "https://github.com/orgua/OneWireHub",
+      "category": "Sensors",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.6.5.zip",
+      "archiveFileName": "OneWireHub-0.6.5.zip",
+      "size": 7531210,
+      "checksum": "SHA-256:0e80f3e6a2947aa42f709b349fda2a46d07c4ca96bc942d2c517228586e9a83c"
+    },
+    {
+      "name": "OneWireHub",
+      "version": "0.7.0",
+      "author": "Ingmar Splitt, orgua, MarkusLange, Shagrat2",
+      "maintainer": "orgua",
+      "sentence": "OneWire slave device emulator with support for various simultaneously 1wire devices.",
+      "paragraph": "supported sensors: DS1822, DS18B20, DS18S20, DS1990, DS2401, DS2405, DS2408, DS2413, DS2423, DS2433, DS2438, DS2450, DS2890",
+      "website": "https://github.com/orgua/OneWireHub",
+      "category": "Sensors",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.7.0.zip",
+      "archiveFileName": "OneWireHub-0.7.0.zip",
+      "size": 7531458,
+      "checksum": "SHA-256:069e8acc1a00c9c7799ded84ff32137af96b31400038d01fd19d3d57d3f80cf7"
+    },
+    {
+      "name": "OneWireHub",
+      "version": "0.7.5",
+      "author": "Ingmar Splitt, orgua, MarkusLange, Shagrat2",
+      "maintainer": "orgua",
+      "sentence": "OneWire slave device emulator with support for various simultaneously 1wire devices.",
+      "paragraph": "supported sensors: DS1822, DS18B20, DS18S20, DS1990, DS2401, DS2405, DS2408, DS2413, DS2423, DS2433, DS2438, DS2450, DS2890",
+      "website": "https://github.com/orgua/OneWireHub",
+      "category": "Sensors",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.7.5.zip",
+      "archiveFileName": "OneWireHub-0.7.5.zip",
+      "size": 7545085,
+      "checksum": "SHA-256:237f613f7f6e38f1e52956a9f445b52131a8f55163e646cb090d354c293f1f25"
+    },
+    {
+      "name": "OneWireHub",
+      "version": "0.8.0",
+      "author": "Ingmar Splitt, orgua, MarkusLange, Shagrat2",
+      "maintainer": "orgua",
+      "sentence": "OneWire slave device emulator with support for up to 32 simultaneous 1wire devices.",
+      "paragraph": "supported sensors: DS1822, DS18B20, DS18S20, DS1990, DS2401, DS2405, DS2408, DS2413, DS2423, DS2433, DS2438, DS2450, DS2890",
+      "website": "https://github.com/orgua/OneWireHub",
+      "category": "Sensors",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.8.0.zip",
+      "archiveFileName": "OneWireHub-0.8.0.zip",
+      "size": 7546071,
+      "checksum": "SHA-256:e72175eee998c5468b5ae804e313dc1ffce703c39e3db69a121b470b54feb554"
+    },
+    {
+      "name": "OneWireHub",
+      "version": "0.8.5",
+      "author": "Ingmar Splitt, orgua, MarkusLange, Shagrat2",
+      "maintainer": "orgua",
+      "sentence": "OneWire slave device emulator with support for up to 32 simultaneous 1wire devices.",
+      "paragraph": "supported sensors: DS1822, DS18B20, DS18S20, DS1990, DS2401, DS2405, DS2408, DS2413, DS2423, DS2433, DS2438, DS2450, DS2890",
+      "website": "https://github.com/orgua/OneWireHub",
+      "category": "Sensors",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.8.5.zip",
+      "archiveFileName": "OneWireHub-0.8.5.zip",
+      "size": 7546351,
+      "checksum": "SHA-256:79c59d9d8cb6a026b809e42283705babc2ec42171b94d360dc893a0ea2b35a05"
+    },
+    {
+      "name": "OneWireHub",
+      "version": "0.9.0",
+      "author": "Ingmar Splitt, orgua, MarkusLange, Shagrat2",
+      "maintainer": "orgua",
+      "sentence": "OneWire slave device emulator with support for up to 32 simultaneous 1wire devices.",
+      "paragraph": "supported sensors: DS1822, DS18B20, DS18S20, DS1990, DS2401, DS2405, DS2408, DS2413, DS2423, DS2433, DS2438, DS2450, DS2890",
+      "website": "https://github.com/orgua/OneWireHub",
+      "category": "Sensors",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.9.0.zip",
+      "archiveFileName": "OneWireHub-0.9.0.zip",
+      "size": 7547820,
+      "checksum": "SHA-256:9912b78f90a6ed54c9052b52e781e78145e01d09b6751b40586fcec40599a0c2"
+    },
+    {
+      "name": "OneWireHub",
+      "version": "0.9.1",
+      "author": "Ingmar Splitt, orgua, MarkusLange, Shagrat2",
+      "maintainer": "orgua",
+      "sentence": "OneWire slave device emulator with support for up to 32 simultaneous 1wire devices.",
+      "paragraph": "supported sensors: DS1822, DS18B20, DS18S20, DS1990, DS2401, DS2405, DS2408, DS2413, DS2423, DS2433, DS2438, DS2450, DS2890",
+      "website": "https://github.com/orgua/OneWireHub",
+      "category": "Sensors",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.9.1.zip",
+      "archiveFileName": "OneWireHub-0.9.1.zip",
+      "size": 7548812,
+      "checksum": "SHA-256:0e3cc3f6732f551aba2b27b775af840c440f18a3aa6cdad8c7276dcbb53a38ff"
+    },
+    {
       "name": "NeoPixelBus by Makuna",
       "version": "2.0.0",
       "author": "Michael C. Miller (makuna@live.com)",
@@ -26760,6 +28053,46 @@
       "archiveFileName": "Button-1.0.0.zip",
       "size": 4892,
       "checksum": "SHA-256:e43e90e47c3365c917945ece2665c075646186d15cb7e41ba0eba4ca6e68f91d"
+    },
+    {
+      "name": "TurnoutPulser",
+      "version": "1.0.0",
+      "author": "Michael Adams \u003carduino@michaeladams.org\u003e",
+      "maintainer": "Michael Adams \u003carduino@michaeladams.org\u003e",
+      "sentence": "Control a Kato or Tomix style two-wire turnout.",
+      "paragraph": "Ideal for model railway and railroad control.",
+      "website": "http://utrainia.com/",
+      "category": "Device Control",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/madleech/TurnoutPulser-1.0.0.zip",
+      "archiveFileName": "TurnoutPulser-1.0.0.zip",
+      "size": 5324,
+      "checksum": "SHA-256:5ce0c4c832e04df7f929bfa67824d53f0afafab0ac1e7202f338fc183aa378a7"
+    },
+    {
+      "name": "TurnoutPulser",
+      "version": "1.0.1",
+      "author": "Michael Adams \u003carduino@michaeladams.org\u003e",
+      "maintainer": "Michael Adams \u003carduino@michaeladams.org\u003e",
+      "sentence": "Control a Kato or Tomix style two-wire turnout.",
+      "paragraph": "Ideal for model railway and railroad control.",
+      "website": "http://utrainia.com/",
+      "category": "Device Control",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/madleech/TurnoutPulser-1.0.1.zip",
+      "archiveFileName": "TurnoutPulser-1.0.1.zip",
+      "size": 5351,
+      "checksum": "SHA-256:d0360f66a4401ce436b88079dfa3bdf83f175d84f3ac9604616a809720f8279a"
     },
     {
       "name": "Mioduino",
@@ -27959,6 +29292,26 @@
       "archiveFileName": "FaBo_202_9Axis_MPU9250-1.0.0.zip",
       "size": 11064,
       "checksum": "SHA-256:4525e654b4bed2983903cabe1d69523e3aadab39133de170fec054191ce37256"
+    },
+    {
+      "name": "FaBo 205 Proximity VCNL4010",
+      "version": "1.0.0",
+      "author": "FaBo\u003cinfo@fabo.io\u003e",
+      "maintainer": "Akira Sasaki\u003cakira@fabo.io\u003e,Hideki Yamauchi\u003cyamauchi@fabo.io\u003e",
+      "sentence": "A library for FaBo Proximity I2C Brick",
+      "paragraph": "VCNL4010 is Proximity and Ambient Light Sensor with Infrared Emitter, I2C Interface.",
+      "website": "https://github.com/FaBoPlatform/FaBoProximity-VCNL4010-Library",
+      "category": "Sensors",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/FaBoPlatform/FaBo_205_Proximity_VCNL4010-1.0.0.zip",
+      "archiveFileName": "FaBo_205_Proximity_VCNL4010-1.0.0.zip",
+      "size": 9012,
+      "checksum": "SHA-256:8aca3f1ac62d218ff4d86d6a95aa4beecb1e886e7120dad7ab9e64be77fbabb3"
     },
     {
       "name": "FaBo 204 Baromter MPL115A2",
@@ -29798,6 +31151,46 @@
       "checksum": "SHA-256:86f216df2dd80a4ab4787c6311f798194f5d110eab0229343409657e5358be0e"
     },
     {
+      "name": "Thingplus",
+      "version": "1.0.3",
+      "author": "Younghyun Jo",
+      "maintainer": "Daliworks \u003cdev@daliworks.net\u003e",
+      "sentence": "Helps connecting your Arduino board to Thing+ cloud easly and fast",
+      "paragraph": "Helps connecting your Arduino board to Thing+ cloud easly and fast",
+      "website": "https://github.com/daliworks/arduino_library",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/daliworks/Thingplus-1.0.3.zip",
+      "archiveFileName": "Thingplus-1.0.3.zip",
+      "size": 11091,
+      "checksum": "SHA-256:6578d375a79e025b3712027a80a6a30e64f45288edfe06773dfdb3e6f1a04df4"
+    },
+    {
+      "name": "Thingplus",
+      "version": "1.0.4",
+      "author": "Younghyun Jo",
+      "maintainer": "Daliworks \u003cdev@daliworks.net\u003e",
+      "sentence": "Helps connecting your Arduino board to Thing+ cloud easly and fast",
+      "paragraph": "Helps connecting your Arduino board to Thing+ cloud easly and fast",
+      "website": "https://github.com/daliworks/arduino_library",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/daliworks/Thingplus-1.0.4.zip",
+      "archiveFileName": "Thingplus-1.0.4.zip",
+      "size": 11541,
+      "checksum": "SHA-256:cfd00d1def90f242676bf3d128a52bea5947c093a88353cac8bdb8f5babdda94"
+    },
+    {
       "name": "ESP8266 QRcode",
       "version": "1.0.0",
       "author": "Anun Panya \u003caspirinenun@gmail.com\u003e",
@@ -29816,6 +31209,26 @@
       "archiveFileName": "ESP8266_QRcode-1.0.0.zip",
       "size": 8540,
       "checksum": "SHA-256:3fb10f318296ad5d54f19161a80257baaa714a9ff5a304ecd8e9011d063c0fac"
+    },
+    {
+      "name": "MAX30100lib",
+      "version": "1.0.0",
+      "author": "OXullo Intersecans \u003cx@brainrapers.org\u003e",
+      "maintainer": "OXullo Intersecans \u003cx@brainrapers.org\u003e",
+      "sentence": "Maxim-IC MAX30100 heart-rate sensor driver and pulse-oximetry components",
+      "paragraph": "This library exposes most of the features of the MAX30100 and offers a modular approach to calculate pulse rate and SpO2",
+      "website": "https://github.com/oxullo/MAX30100lib",
+      "category": "Sensors",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/oxullo/MAX30100lib-1.0.0.zip",
+      "archiveFileName": "MAX30100lib-1.0.0.zip",
+      "size": 29888,
+      "checksum": "SHA-256:a68c6647c5af8ec121b56ddb1bc44b1248344a95509706fbe1d568716c807419"
     },
     {
       "name": "Cayenne",
@@ -30881,1375 +32294,6 @@
       "checksum": "SHA-256:2f8b8e3301895612012f6d34acbea46ff1b438d086c9f33fc6981ce896986951"
     },
     {
-      "name": "XLR8 Build",
-      "version": "0.0.1",
-      "author": "Alorium Technology",
-      "maintainer": "Alorium Technology \u003cinfo@aloriumtech.com\u003e",
-      "sentence": "Template for building custom designs for XLR8",
-      "paragraph": "Use this template to create a build directory for XLR8 designs",
-      "website": "https://github.com/AloriumTechnology/XLR8BuildTemplate",
-      "category": "Uncategorized",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/AloriumTechnology/XLR8_Build-0.0.1.zip",
-      "archiveFileName": "XLR8_Build-0.0.1.zip",
-      "size": 19930,
-      "checksum": "SHA-256:40be72a1fbee820aa4c27507c99b572946cc8ad08d87f6acc8420ee20a9ae980"
-    },
-    {
-      "name": "XLR8 Build",
-      "version": "0.0.2",
-      "author": "Alorium Technology",
-      "maintainer": "Alorium Technology \u003cinfo@aloriumtech.com\u003e",
-      "sentence": "Template for building custom designs for XLR8",
-      "paragraph": "Use this template to create a build directory for XLR8 designs",
-      "website": "https://github.com/AloriumTechnology/XLR8BuildTemplate",
-      "category": "Uncategorized",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/AloriumTechnology/XLR8_Build-0.0.2.zip",
-      "archiveFileName": "XLR8_Build-0.0.2.zip",
-      "size": 21875,
-      "checksum": "SHA-256:4ff2e502c881f080e9efad6f176da88dbaba8e1e6eb5b7ab013f548b4e36cd6a"
-    },
-    {
-      "name": "XLR8 Core",
-      "version": "0.0.1",
-      "author": "Alorium Technology",
-      "maintainer": "Alorium Technology \u003cinfo@aloriumtech.com\u003e",
-      "sentence": "OpenXLR8 Core components",
-      "paragraph": "With these components, users can integrate their own designs into XLR8 platform",
-      "website": "https://github.com/AloriumTechnology/XLR8Core",
-      "category": "Uncategorized",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/AloriumTechnology/XLR8_Core-0.0.1.zip",
-      "archiveFileName": "XLR8_Core-0.0.1.zip",
-      "size": 5163552,
-      "checksum": "SHA-256:1ff1f4f99c858cfafcc3b724cc2154245a598057c8a0e24fb6f26ea5ded962b0"
-    },
-    {
-      "name": "XLR8 Core",
-      "version": "0.0.2",
-      "author": "Alorium Technology",
-      "maintainer": "Alorium Technology \u003cinfo@aloriumtech.com\u003e",
-      "sentence": "OpenXLR8 Core components",
-      "paragraph": "With these components, users can integrate their own designs into XLR8 platform",
-      "website": "https://github.com/AloriumTechnology/XLR8Core",
-      "category": "Uncategorized",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/AloriumTechnology/XLR8_Core-0.0.2.zip",
-      "archiveFileName": "XLR8_Core-0.0.2.zip",
-      "size": 5235636,
-      "checksum": "SHA-256:9d02e7a025258510532fd4bffb9a83792dfd06819877e9ba398f8efe15421dfa"
-    },
-    {
-      "name": "XLR8Pong",
-      "version": "1.0.0",
-      "author": "Alorium Technology",
-      "maintainer": "Alorium Technology \u003cinfo@aloriumtech.com\u003e",
-      "sentence": "Pong game using the FPGA logic. For Alorium Technology's XLR8 board.",
-      "paragraph": "\u003cbr /\u003e",
-      "website": "https://github.com/AloriumTechnology/XLR8Pong",
-      "category": "Uncategorized",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/AloriumTechnology/XLR8Pong-1.0.0.zip",
-      "archiveFileName": "XLR8Pong-1.0.0.zip",
-      "size": 23929,
-      "checksum": "SHA-256:a31fc55cdea9e00f932134c1605088fb311c6e0bdc0cc21afb7bb5c285078603"
-    },
-    {
-      "name": "Lora Serialization",
-      "version": "2.1.0",
-      "author": "Joscha Feth \u003cjoscha@feth.com\u003e",
-      "maintainer": "Joscha Feth \u003cjoscha@feth.com\u003e",
-      "sentence": "Library for serialization of data on the Arduino side and deserialization in the TTN",
-      "website": "https://github.com/thesolarnomad/lora-serialization",
-      "category": "Data Processing",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/thesolarnomad/Lora_Serialization-2.1.0.zip",
-      "archiveFileName": "Lora_Serialization-2.1.0.zip",
-      "size": 432377,
-      "checksum": "SHA-256:67096fb12fb3551a2141a4327fea317b07bd1f8f9c3d4653975115a256c2e382"
-    },
-    {
-      "name": "Lora Serialization",
-      "version": "2.2.0",
-      "author": "Joscha Feth \u003cjoscha@feth.com\u003e",
-      "maintainer": "Joscha Feth \u003cjoscha@feth.com\u003e",
-      "sentence": "Library for serialization of data on the Arduino side and deserialization in the TTN",
-      "website": "https://github.com/thesolarnomad/lora-serialization",
-      "category": "Data Processing",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/thesolarnomad/Lora_Serialization-2.2.0.zip",
-      "archiveFileName": "Lora_Serialization-2.2.0.zip",
-      "size": 435070,
-      "checksum": "SHA-256:f7d1c46baaad4db118b89b01e8dd292a17bc05b5e3c4c04beea8f4e066729149"
-    },
-    {
-      "name": "Windows Virtual Shields for Arduino",
-      "version": "1.1.0",
-      "author": "Windows Developer Program for IoT \u003cwdpIoT@microsoft.com\u003e",
-      "maintainer": "Windows Developer Program for IoT \u003cwdpIoT@microsoft.com\u003e",
-      "sentence": "Windows Virtual Shields for Arduino allows an Arduino to communicate and control Windows devices running open-source Windows Universal Application.",
-      "paragraph": "Windows Virtual Shields for Arduino allows an Arduino to communicate with an open-source Windows Universal Application running on all Windows 10 devices, primarily focusing on Windows Phones. The library exposes the Windows Phones's sensors and capabilities to the an Arduino Sketch.",
-      "website": "https://windowsondevices.com",
-      "category": "Device Control",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Partner"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/ms-iot/Windows_Virtual_Shields_for_Arduino-1.1.0.zip",
-      "archiveFileName": "Windows_Virtual_Shields_for_Arduino-1.1.0.zip",
-      "size": 1210024,
-      "checksum": "SHA-256:16bafedd2cad3110f6f42f00710b433d81bb459032e96160baa4553f9b35a780"
-    },
-    {
-      "name": "Windows Virtual Shields for Arduino",
-      "version": "1.2.0",
-      "author": "Windows Developer Program for IoT \u003cwdpIoT@microsoft.com\u003e",
-      "maintainer": "Windows Developer Program for IoT \u003cwdpIoT@microsoft.com\u003e",
-      "sentence": "Windows Virtual Shields for Arduino allows an Arduino to communicate and control Windows devices running open-source Windows Universal Application.",
-      "paragraph": "Windows Virtual Shields for Arduino allows an Arduino to communicate with an open-source Windows Universal Application running on all Windows 10 devices, primarily focusing on Windows Phones. The library exposes the Windows Phones's sensors and capabilities to the an Arduino Sketch.",
-      "website": "https://windowsondevices.com",
-      "category": "Device Control",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Partner"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/ms-iot/Windows_Virtual_Shields_for_Arduino-1.2.0.zip",
-      "archiveFileName": "Windows_Virtual_Shields_for_Arduino-1.2.0.zip",
-      "size": 1212032,
-      "checksum": "SHA-256:cd3e47c71993e52dd4ac6efa16088157cb564d05fd177f21e669eb8804e811d7"
-    },
-    {
-      "name": "Adafruit Motor Shield V2 Library",
-      "version": "1.0.0",
-      "author": "Adafruit",
-      "maintainer": "Adafruit \u003cinfo@adafruit.com\u003e",
-      "sentence": "Library for the Adafruit Motor Shield V2 for Arduino. It supports DC motors \u0026 stepper motors with microstepping as well as stacking-support.",
-      "paragraph": "Library for the Adafruit Motor Shield V2 for Arduino. It supports DC motors \u0026 stepper motors with microstepping as well as stacking-support.",
-      "website": "https://github.com/adafruit/Adafruit_Motor_Shield_V2_Library",
-      "category": "Device Control",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Recommended"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/adafruit/Adafruit_Motor_Shield_V2_Library-1.0.0.zip",
-      "archiveFileName": "Adafruit_Motor_Shield_V2_Library-1.0.0.zip",
-      "size": 16157,
-      "checksum": "SHA-256:7772d09ce227a24cb887ea867cd46947ab6ff832544d0f201a1020c7d5fcbc8e"
-    },
-    {
-      "name": "Adafruit Motor Shield V2 Library",
-      "version": "1.0.1",
-      "author": "Adafruit",
-      "maintainer": "Adafruit \u003cinfo@adafruit.com\u003e",
-      "sentence": "Library for the Adafruit Motor Shield V2 for Arduino. It supports DC motors \u0026 stepper motors with microstepping as well as stacking-support.",
-      "paragraph": "Library for the Adafruit Motor Shield V2 for Arduino. It supports DC motors \u0026 stepper motors with microstepping as well as stacking-support.",
-      "website": "https://github.com/adafruit/Adafruit_Motor_Shield_V2_Library",
-      "category": "Device Control",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Recommended"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/adafruit/Adafruit_Motor_Shield_V2_Library-1.0.1.zip",
-      "archiveFileName": "Adafruit_Motor_Shield_V2_Library-1.0.1.zip",
-      "size": 16113,
-      "checksum": "SHA-256:9188e211e51f047b95830f20a589de245c7c82717bbbae6363767af991d3959c"
-    },
-    {
-      "name": "Adafruit Motor Shield V2 Library",
-      "version": "1.0.4",
-      "author": "Adafruit",
-      "maintainer": "Adafruit \u003cinfo@adafruit.com\u003e",
-      "sentence": "Library for the Adafruit Motor Shield V2 for Arduino. It supports DC motors \u0026 stepper motors with microstepping as well as stacking-support.",
-      "paragraph": "Library for the Adafruit Motor Shield V2 for Arduino. It supports DC motors \u0026 stepper motors with microstepping as well as stacking-support.",
-      "website": "https://github.com/adafruit/Adafruit_Motor_Shield_V2_Library",
-      "category": "Device Control",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Recommended"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/adafruit/Adafruit_Motor_Shield_V2_Library-1.0.4.zip",
-      "archiveFileName": "Adafruit_Motor_Shield_V2_Library-1.0.4.zip",
-      "size": 16530,
-      "checksum": "SHA-256:769e1b4f4eb8a5b5c63564134d2f1f6eb7ac09191d002789733584fdf5cb5817"
-    },
-    {
-      "name": "FrequencyTimer2",
-      "version": "2.1.0",
-      "author": "Jim Studt",
-      "maintainer": "Paul Stoffregen",
-      "sentence": "Generate a frequency using Timer2",
-      "website": "http://playground.arduino.cc/Code/FrequencyTimer2",
-      "category": "Timing",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/PaulStoffregen/FrequencyTimer2-2.1.0.zip",
-      "archiveFileName": "FrequencyTimer2-2.1.0.zip",
-      "size": 5546,
-      "checksum": "SHA-256:7b7a0be03a100a9aef45ff0e00313d0c2205c76ec305f9b8d0716fb55a7138d7"
-    },
-    {
-      "name": "TimerThree",
-      "version": "1.1.0",
-      "author": "Jesse Tane, Jérôme Despatis, Michael Polli, Dan Clemens, Paul Stoffregen",
-      "maintainer": "Paul Stoffregen",
-      "sentence": "Use hardware Timer3 for finer PWM control and/or running an periodic interrupt function",
-      "website": "http://playground.arduino.cc/Code/Timer1",
-      "category": "Timing",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/PaulStoffregen/TimerThree-1.1.0.zip",
-      "archiveFileName": "TimerThree-1.1.0.zip",
-      "size": 7676,
-      "checksum": "SHA-256:57b1dca773af015a209c2d743e1d6502b60444fdf53643bf1757f89513333729"
-    },
-    {
-      "name": "Akafugu Four Letter Word Library",
-      "version": "1.0.0",
-      "author": "Akafugu",
-      "maintainer": "Akafugu \u003cinfo@akafugu.jp\u003e",
-      "sentence": "Akafugu Four Letter Word Library",
-      "paragraph": "Akafugu Four Letter Word Library",
-      "website": "https://github.com/akafugu/FourLetterWord",
-      "category": "Other",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/akafugu/Akafugu_Four_Letter_Word_Library-1.0.0.zip",
-      "archiveFileName": "Akafugu_Four_Letter_Word_Library-1.0.0.zip",
-      "size": 10418,
-      "checksum": "SHA-256:d04ae00d1220d179988db32b079412d24f7c64d9d26ed6d8d71f8b61d0794ee1"
-    },
-    {
-      "name": "SWAP",
-      "version": "1.0.0",
-      "author": "panStamp",
-      "maintainer": "panStamp \u003ccontact@panstamp.com\u003e",
-      "sentence": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
-      "paragraph": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
-      "website": "https://github.com/panStamp/swap.git",
-      "category": "Communication",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/panStamp/SWAP-1.0.0.zip",
-      "archiveFileName": "SWAP-1.0.0.zip",
-      "size": 29279,
-      "checksum": "SHA-256:569926b017a65d3d43805a391ee85e14ffffc3a6e0a25e8797eb68909d568066"
-    },
-    {
-      "name": "SWAP",
-      "version": "1.0.1",
-      "author": "panStamp",
-      "maintainer": "panStamp \u003ccontact@panstamp.com\u003e",
-      "sentence": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
-      "paragraph": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
-      "website": "https://github.com/panStamp/swap.git",
-      "category": "Communication",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/panStamp/SWAP-1.0.1.zip",
-      "archiveFileName": "SWAP-1.0.1.zip",
-      "size": 101574,
-      "checksum": "SHA-256:875cf202d123d155fbe0c2700abe250a911ff534c508cfa61e7ab89cd2cba502"
-    },
-    {
-      "name": "SWAP",
-      "version": "1.0.2",
-      "author": "panStamp",
-      "maintainer": "panStamp \u003ccontact@panstamp.com\u003e",
-      "sentence": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
-      "paragraph": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
-      "website": "https://github.com/panStamp/swap.git",
-      "category": "Communication",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/panStamp/SWAP-1.0.2.zip",
-      "archiveFileName": "SWAP-1.0.2.zip",
-      "size": 100436,
-      "checksum": "SHA-256:63419b1579ed4fd6ebbf8d907478fbd44eda3b3e2bbb0191c72232ee97177d9c"
-    },
-    {
-      "name": "SWAP",
-      "version": "1.0.4",
-      "author": "panStamp",
-      "maintainer": "panStamp \u003ccontact@panstamp.com\u003e",
-      "sentence": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
-      "paragraph": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
-      "website": "https://github.com/panStamp/swap.git",
-      "category": "Communication",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/panStamp/SWAP-1.0.4.zip",
-      "archiveFileName": "SWAP-1.0.4.zip",
-      "size": 108950,
-      "checksum": "SHA-256:293c057bfbf7e942eae0e85b0ca2a1e292fbe6cd6c6d4efde09d83c0fa75b655"
-    },
-    {
-      "name": "SWAP",
-      "version": "1.0.5",
-      "author": "panStamp",
-      "maintainer": "panStamp \u003ccontact@panstamp.com\u003e",
-      "sentence": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
-      "paragraph": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
-      "website": "https://github.com/panStamp/swap.git",
-      "category": "Communication",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/panStamp/SWAP-1.0.5.zip",
-      "archiveFileName": "SWAP-1.0.5.zip",
-      "size": 116511,
-      "checksum": "SHA-256:9d95021108463efaf1a3074446c87828094ac4e7e2967412a3c07c3c22a95fde"
-    },
-    {
-      "name": "SWAP",
-      "version": "1.0.6",
-      "author": "panStamp",
-      "maintainer": "panStamp \u003ccontact@panstamp.com\u003e",
-      "sentence": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
-      "paragraph": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
-      "website": "https://github.com/panStamp/swap.git",
-      "category": "Communication",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/panStamp/SWAP-1.0.6.zip",
-      "archiveFileName": "SWAP-1.0.6.zip",
-      "size": 117160,
-      "checksum": "SHA-256:f682cec5cf793695fd50adefde64310c1167bd93d2a29abc307fa1ca81a7936b"
-    },
-    {
-      "name": "SWAP",
-      "version": "1.0.7",
-      "author": "panStamp",
-      "maintainer": "panStamp \u003ccontact@panstamp.com\u003e",
-      "sentence": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
-      "paragraph": "Simple Wireless Abstract Protocol (SWAP) library for ISM radios",
-      "website": "https://github.com/panStamp/swap.git",
-      "category": "Communication",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/panStamp/SWAP-1.0.7.zip",
-      "archiveFileName": "SWAP-1.0.7.zip",
-      "size": 121972,
-      "checksum": "SHA-256:fd1b7237a6f92758dc49faccde6541feabb2cf5c7ff56f32bc0c75d762406ad0"
-    },
-    {
-      "name": "Sodaq_DS3231",
-      "version": "1.2.0",
-      "author": "keestux,SODAQ",
-      "maintainer": "Kees Bakker \u003ckees@m2m4all.com\u003e",
-      "sentence": "An Arduino library for the DS3231 RTC (Real Time Clock).",
-      "website": "https://github.com/SodaqMoja/Sodaq_DS3231",
-      "category": "Sensors",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/SodaqMoja/Sodaq_DS3231-1.2.0.zip",
-      "archiveFileName": "Sodaq_DS3231-1.2.0.zip",
-      "size": 9808,
-      "checksum": "SHA-256:42fc9ba2744159716496f7b3da21084c3c9da4f0f61be213e46572196f333ae7"
-    },
-    {
-      "name": "Sodaq_DS3231",
-      "version": "1.2.1",
-      "author": "keestux,SODAQ",
-      "maintainer": "Kees Bakker \u003ckees@m2m4all.com\u003e",
-      "sentence": "An Arduino library for the DS3231 RTC (Real Time Clock).",
-      "website": "https://github.com/SodaqMoja/Sodaq_DS3231",
-      "category": "Sensors",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/SodaqMoja/Sodaq_DS3231-1.2.1.zip",
-      "archiveFileName": "Sodaq_DS3231-1.2.1.zip",
-      "size": 9814,
-      "checksum": "SHA-256:6875fe538ceafb4b26257413748b84bf200cdaa43f2532291527002ec6f3674e"
-    },
-    {
-      "name": "DW1000",
-      "version": "0.4.0",
-      "author": "Thomas Trojer \u003cthomas@trojer.net\u003e",
-      "maintainer": "Thomas Trojer \u003cthomas@trojer.net\u003e",
-      "sentence": "A library that offers functionality to use Decawave's DW1000 chips/modules.",
-      "paragraph": "Supports transmission of messages, timestamp handling (for ranging and location sensing applications) and implements the different operation modes the DW1000 has to offer. The library design is intended to offer an easy-to-use interface to the otherwise complex and configuration intense handling of the DW1000.",
-      "website": "https://github.com/thotro/arduino-dw1000",
-      "category": "Communication",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/thotro/DW1000-0.4.0.zip",
-      "archiveFileName": "DW1000-0.4.0.zip",
-      "size": 8860861,
-      "checksum": "SHA-256:b50ac55a59de180ec253832174d95742bad72b4509d2a02add4d5b72f1cd1f84"
-    },
-    {
-      "name": "DW1000",
-      "version": "0.5.0",
-      "author": "Thomas Trojer \u003cthomas@trojer.net\u003e",
-      "maintainer": "Thomas Trojer \u003cthomas@trojer.net\u003e",
-      "sentence": "A library that offers functionality to use Decawave's DW1000 chips/modules.",
-      "paragraph": "Supports transmission of messages, timestamp handling (for ranging and location sensing applications) and implements the different operation modes the DW1000 has to offer. The library design is intended to offer an easy-to-use interface to the otherwise complex and configuration intense handling of the DW1000.",
-      "website": "https://github.com/thotro/arduino-dw1000",
-      "category": "Communication",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/thotro/DW1000-0.5.0.zip",
-      "archiveFileName": "DW1000-0.5.0.zip",
-      "size": 8900941,
-      "checksum": "SHA-256:7e6182204bdf6e7ad64ba75686ca88f49d5adb8870b97758e487206b7b7b2807"
-    },
-    {
-      "name": "RBD_Light",
-      "version": "1.0.0",
-      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "sentence": "Blink and and fade many lights in real time with no delay.",
-      "paragraph": "Control many lights in real-time and blink without delay using commands such as on(), off(), blink(), and fade(). Lights must be connected to PWM enabled Arduino pins to work with this library.",
-      "website": "https://github.com/alextaujenis/RBD_Light",
-      "category": "Sensors",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-1.0.0.zip",
-      "archiveFileName": "RBD_Light-1.0.0.zip",
-      "size": 10728,
-      "checksum": "SHA-256:a05022e2071912c7b457e81776cfd20cb1f01bf07a3dffe528d9d65058cef188"
-    },
-    {
-      "name": "RBD_Light",
-      "version": "1.0.1",
-      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "sentence": "Blink and fade many lights in real time with no delay.",
-      "paragraph": "Control many lights in real-time and blink without delay using commands such as on(), off(), blink(), and fade(). Lights must be connected to PWM enabled Arduino pins to work with this library.",
-      "website": "https://github.com/alextaujenis/RBD_Light",
-      "category": "Sensors",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-1.0.1.zip",
-      "archiveFileName": "RBD_Light-1.0.1.zip",
-      "size": 10728,
-      "checksum": "SHA-256:3c19948dc27b9aff4c11f08693c492595b3f50d28de658b97ef0c14a349c18b7"
-    },
-    {
-      "name": "RBD_Light",
-      "version": "1.0.2",
-      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "sentence": "Control many lights.",
-      "paragraph": "Control many lights and blink without delay using commands such as on(), off(), blink(), and fade().",
-      "website": "https://github.com/alextaujenis/RBD_Light",
-      "category": "Sensors",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-1.0.2.zip",
-      "archiveFileName": "RBD_Light-1.0.2.zip",
-      "size": 8372,
-      "checksum": "SHA-256:8334cb9b21ce3bb06088050e195e89be8664b4d854dd88ceefedd6af8ce56da4"
-    },
-    {
-      "name": "RBD_Light",
-      "version": "1.0.3",
-      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "sentence": "Control many lights.",
-      "paragraph": "Control many lights and blink without delay using commands such as on(), off(), blink(), and fade().",
-      "website": "https://github.com/alextaujenis/RBD_Light",
-      "category": "Sensors",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-1.0.3.zip",
-      "archiveFileName": "RBD_Light-1.0.3.zip",
-      "size": 8525,
-      "checksum": "SHA-256:41f200e9e54d224743c64062cdc3d09c16a2ad205b10111bc6777418d208bffa"
-    },
-    {
-      "name": "RBD_Light",
-      "version": "1.0.4",
-      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "sentence": "Control many lights.",
-      "paragraph": "Control many lights and blink without delay using commands such as on(), off(), blink(), and fade().",
-      "website": "https://github.com/alextaujenis/RBD_Light",
-      "category": "Sensors",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-1.0.4.zip",
-      "archiveFileName": "RBD_Light-1.0.4.zip",
-      "size": 8641,
-      "checksum": "SHA-256:ae4989645ae25e3784ae571e27d6a5344d92255ed68ab3821fac9a054b5d14fe"
-    },
-    {
-      "name": "RBD_Light",
-      "version": "1.0.5",
-      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "sentence": "Control many lights.",
-      "paragraph": "Control many lights and blink without delay using commands such as on(), off(), blink(), and fade().",
-      "website": "https://github.com/alextaujenis/RBD_Light",
-      "category": "Sensors",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-1.0.5.zip",
-      "archiveFileName": "RBD_Light-1.0.5.zip",
-      "size": 8646,
-      "checksum": "SHA-256:4a11a8623c43111003ed150fa577a9a2eb7c7df0811c4dd001c9b749a939a08b"
-    },
-    {
-      "name": "RBD_Light",
-      "version": "2.0.0",
-      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "sentence": "Control many lights.",
-      "paragraph": "Control many lights / LEDs and blink without delay or interrupts using commands such as on(), off(), blink(), and fade(). Lights must be connected to PWM enabled pins to work with this library.",
-      "website": "https://github.com/alextaujenis/RBD_Light",
-      "category": "Sensors",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-2.0.0.zip",
-      "archiveFileName": "RBD_Light-2.0.0.zip",
-      "size": 8668,
-      "checksum": "SHA-256:c71febe1748fd8016cd27d137b3cf4d63bc30f1062d456b0a0582ba8153fed4d"
-    },
-    {
-      "name": "RBD_Light",
-      "version": "2.0.1",
-      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "sentence": "Control many lights.",
-      "paragraph": "Control many lights / LEDs and blink without delay or interrupts using commands such as on(), off(), blink(), and fade(). Lights must be connected to PWM enabled pins to work with this library.",
-      "website": "https://github.com/alextaujenis/RBD_Light",
-      "category": "Sensors",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-2.0.1.zip",
-      "archiveFileName": "RBD_Light-2.0.1.zip",
-      "size": 8911,
-      "checksum": "SHA-256:5a6a2c44ffc67811c12a20c136d0cdacca8fb41e90679bc0a1f81a26a885e52d"
-    },
-    {
-      "name": "RBD_Light",
-      "version": "2.1.0",
-      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "sentence": "Control many lights.",
-      "paragraph": "Control many lights / LEDs and blink without delay or interrupts using commands such as on(), off(), blink(), and fade(). Lights must be connected to PWM enabled pins to work with this library.",
-      "website": "https://github.com/alextaujenis/RBD_Light",
-      "category": "Sensors",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-2.1.0.zip",
-      "archiveFileName": "RBD_Light-2.1.0.zip",
-      "size": 9077,
-      "checksum": "SHA-256:a62f1c2b323e260385e193b5175169beaddfd410ed265d867fdd775f40269dfb"
-    },
-    {
-      "name": "RBD_Light",
-      "version": "2.1.1",
-      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "sentence": "Control many lights.",
-      "paragraph": "Control many lights / LEDs and blink without delay or interrupts using commands such as on(), off(), blink(), and fade(). Lights must be connected to PWM enabled pins to work with this library.",
-      "website": "https://github.com/alextaujenis/RBD_Light",
-      "category": "Sensors",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-2.1.1.zip",
-      "archiveFileName": "RBD_Light-2.1.1.zip",
-      "size": 4302,
-      "checksum": "SHA-256:ecb89f238d11cd7c14903ed7a1a55eb0b18f1112e8ae4d1262411a9a8e5a37e0"
-    },
-    {
-      "name": "RBD_Light",
-      "version": "2.1.2",
-      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "sentence": "Control many lights.",
-      "paragraph": "Control many lights / LEDs and blink without delay or interrupts using commands such as on(), off(), blink(), and fade(). Lights must be connected to PWM enabled pins to work with this library.",
-      "website": "https://github.com/alextaujenis/RBD_Light",
-      "category": "Sensors",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-2.1.2.zip",
-      "archiveFileName": "RBD_Light-2.1.2.zip",
-      "size": 4281,
-      "checksum": "SHA-256:c3300225b3d8d1fd4d3cced7bcfd916bfc58021dc24858950425b760f3d387c6"
-    },
-    {
-      "name": "RBD_Light",
-      "version": "2.1.3",
-      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "sentence": "Control many lights.",
-      "paragraph": "Control many lights / LEDs and blink without delay or interrupts using commands such as on(), off(), blink(), and fade(). Lights must be connected to PWM enabled pins to work with this library.",
-      "website": "https://github.com/alextaujenis/RBD_Light",
-      "category": "Sensors",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-2.1.3.zip",
-      "archiveFileName": "RBD_Light-2.1.3.zip",
-      "size": 6359,
-      "checksum": "SHA-256:37a055e1f4438ec3c087d04c3b06f53b6ec196e0922ab69afb3383c84a1719b7"
-    },
-    {
-      "name": "RBD_Light",
-      "version": "2.1.4",
-      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "sentence": "Control many lights.",
-      "paragraph": "Control many lights / LEDs and blink without delay or interrupts using commands such as on(), off(), blink(), and fade(). Lights can be connected to PWM or Digital Arduino pins to work with this library.",
-      "website": "https://github.com/alextaujenis/RBD_Light",
-      "category": "Sensors",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-2.1.4.zip",
-      "archiveFileName": "RBD_Light-2.1.4.zip",
-      "size": 6845,
-      "checksum": "SHA-256:1d55d232be582982c9c96af509a034d6d87e4f10e4e4033c0ea3544c2320ac7b"
-    },
-    {
-      "name": "RBD_Light",
-      "version": "2.1.5",
-      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "sentence": "Control many lights.",
-      "paragraph": "Control many lights / LEDs and blink without delay or interrupts using commands such as on(), off(), blink(), and fade(). Lights can be connected to PWM or Digital Arduino pins to work with this library.",
-      "website": "https://github.com/alextaujenis/RBD_Light",
-      "category": "Sensors",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-2.1.5.zip",
-      "archiveFileName": "RBD_Light-2.1.5.zip",
-      "size": 6886,
-      "checksum": "SHA-256:76b431b41a8e832e54f1dc3ed9a296dfa21b2be2310c54e7f082d12366800752"
-    },
-    {
-      "name": "RBD_Light",
-      "version": "2.1.6",
-      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "sentence": "Control many lights.",
-      "paragraph": "Control many lights / LEDs and blink without delay or interrupts using commands such as on(), off(), blink(), and fade(). Lights can be connected to PWM or Digital Arduino pins to work with this library.",
-      "website": "https://github.com/alextaujenis/RBD_Light",
-      "category": "Sensors",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-2.1.6.zip",
-      "archiveFileName": "RBD_Light-2.1.6.zip",
-      "size": 6955,
-      "checksum": "SHA-256:2f0418ee0c79c2042c5f1678d9d627e6db6a7564c5e0d658bfaa17f910d848a3"
-    },
-    {
-      "name": "RBD_Light",
-      "version": "2.1.7",
-      "author": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "maintainer": "Alex Taujenis \u003calex.taujenis@gmail.com\u003e",
-      "sentence": "Control many lights.",
-      "paragraph": "Control many lights / LEDs and blink without delay or interrupts using commands such as on(), off(), blink(), and fade(). Lights can be connected to PWM or Digital Arduino pins to work with this library.",
-      "website": "https://github.com/alextaujenis/RBD_Light",
-      "category": "Sensors",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/alextaujenis/RBD_Light-2.1.7.zip",
-      "archiveFileName": "RBD_Light-2.1.7.zip",
-      "size": 7012,
-      "checksum": "SHA-256:dbf0cac44ea0316511b107e909372ea0cfb457a8c7afd4a656043c29dd21018e"
-    },
-    {
-      "name": "HID-Project",
-      "version": "2.4.1",
-      "author": "NicoHood",
-      "maintainer": "NicoHood \u003cblog@NicoHood.de\u003e",
-      "sentence": "Extended HID Functions for Arduino",
-      "paragraph": "Includes BootKeyboard/Mouse, Consumer, System, Gamepad, RawHID and more features. Also compatible with Arduino Uno/Mega via HoodLoader2.",
-      "website": "https://github.com/NicoHood/HID",
-      "category": "Communication",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/NicoHood/HID_Project-2.4.1.zip",
-      "archiveFileName": "HID_Project-2.4.1.zip",
-      "size": 276058,
-      "checksum": "SHA-256:7f85e92da0ea013ca64e7a9f231f0fbf589898939914057f59bcfde9e2cca66f"
-    },
-    {
-      "name": "HID-Project",
-      "version": "2.4.2",
-      "author": "NicoHood",
-      "maintainer": "NicoHood \u003cblog@NicoHood.de\u003e",
-      "sentence": "Extended HID Functions for Arduino",
-      "paragraph": "Includes BootKeyboard/Mouse, Consumer, System, Gamepad, RawHID and more features. Also compatible with Arduino Uno/Mega via HoodLoader2.",
-      "website": "https://github.com/NicoHood/HID",
-      "category": "Communication",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/NicoHood/HID_Project-2.4.2.zip",
-      "archiveFileName": "HID_Project-2.4.2.zip",
-      "size": 276102,
-      "checksum": "SHA-256:0f57973c954cdba214ab94c3d451518fa260be2e72ac42c259872f2b5371f7c4"
-    },
-    {
-      "name": "HID-Project",
-      "version": "2.4.3",
-      "author": "NicoHood",
-      "maintainer": "NicoHood \u003cblog@NicoHood.de\u003e",
-      "sentence": "Extended HID Functions for Arduino",
-      "paragraph": "Includes BootKeyboard/Mouse, Consumer, System, Gamepad, RawHID and more features. Also compatible with Arduino Uno/Mega via HoodLoader2.",
-      "website": "https://github.com/NicoHood/HID",
-      "category": "Communication",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/NicoHood/HID_Project-2.4.3.zip",
-      "archiveFileName": "HID_Project-2.4.3.zip",
-      "size": 276121,
-      "checksum": "SHA-256:8e11917ca93e7508257e500de39481565583a89becd5ab3115db468f77c2ba39"
-    },
-    {
-      "name": "WebSockets",
-      "version": "1.0.0",
-      "author": "Markus Sattler",
-      "maintainer": "Markus Sattler",
-      "sentence": "WebSockets for Arduino (Server + Client)",
-      "website": "https://github.com/Links2004/arduinoWebSockets",
-      "category": "Communication",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/Links2004/WebSockets-1.0.0.zip",
-      "archiveFileName": "WebSockets-1.0.0.zip",
-      "size": 33460,
-      "checksum": "SHA-256:5dc3423a61abbf9675d693a28cd0504d9df1abfb548a453d98e2cb77983664c1"
-    },
-    {
-      "name": "WebSockets",
-      "version": "1.1.0",
-      "author": "Markus Sattler",
-      "maintainer": "Markus Sattler",
-      "sentence": "WebSockets for Arduino (Server + Client)",
-      "website": "https://github.com/Links2004/arduinoWebSockets",
-      "category": "Communication",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/Links2004/WebSockets-1.1.0.zip",
-      "archiveFileName": "WebSockets-1.1.0.zip",
-      "size": 33403,
-      "checksum": "SHA-256:6c9267792eba92c18fd33f39e225f38ad8631426a31f43d2e37ed7f11c2f6faf"
-    },
-    {
-      "name": "WebSockets",
-      "version": "1.2.0",
-      "author": "Markus Sattler",
-      "maintainer": "Markus Sattler",
-      "sentence": "WebSockets for Arduino (Server + Client)",
-      "website": "https://github.com/Links2004/arduinoWebSockets",
-      "category": "Communication",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/Links2004/WebSockets-1.2.0.zip",
-      "archiveFileName": "WebSockets-1.2.0.zip",
-      "size": 35556,
-      "checksum": "SHA-256:d12a9b9c316f7a935085c4e64c4012113e9566f808e408b01c9cfb8d6f08fd44"
-    },
-    {
-      "name": "WebSockets",
-      "version": "1.3.0",
-      "author": "Markus Sattler",
-      "maintainer": "Markus Sattler",
-      "sentence": "WebSockets for Arduino (Server + Client)",
-      "website": "https://github.com/Links2004/arduinoWebSockets",
-      "category": "Communication",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/Links2004/WebSockets-1.3.0.zip",
-      "archiveFileName": "WebSockets-1.3.0.zip",
-      "size": 41944,
-      "checksum": "SHA-256:dfc2d818143b6b1e5360ec20d80e91c1aac6a346fd3b6fcfdb14d4590cf9d897"
-    },
-    {
-      "name": "WebSockets",
-      "version": "2.0.0",
-      "author": "Markus Sattler",
-      "maintainer": "Markus Sattler",
-      "sentence": "WebSockets for Arduino (Server + Client)",
-      "paragraph": "use 2.0 for ESP and 1.3 for AVR",
-      "website": "https://github.com/Links2004/arduinoWebSockets",
-      "category": "Communication",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/Links2004/WebSockets-2.0.0.zip",
-      "archiveFileName": "WebSockets-2.0.0.zip",
-      "size": 45660,
-      "checksum": "SHA-256:d5efd668a361043d069b4b1f630844dbbfd0d2f2027f290b40474ad7caa33646"
-    },
-    {
-      "name": "WebSockets",
-      "version": "2.0.2",
-      "author": "Markus Sattler",
-      "maintainer": "Markus Sattler",
-      "sentence": "WebSockets for Arduino (Server + Client)",
-      "paragraph": "use 2.x.x for ESP and 1.3 for AVR",
-      "website": "https://github.com/Links2004/arduinoWebSockets",
-      "category": "Communication",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/Links2004/WebSockets-2.0.2.zip",
-      "archiveFileName": "WebSockets-2.0.2.zip",
-      "size": 46567,
-      "checksum": "SHA-256:7a0df6b275b9c3e91f5ee822ceccfa2415b0f99bd931e361f8d3364bf16b9fc8"
-    },
-    {
-      "name": "WebSockets",
-      "version": "2.0.4",
-      "author": "Markus Sattler",
-      "maintainer": "Markus Sattler",
-      "sentence": "WebSockets for Arduino (Server + Client)",
-      "paragraph": "use 2.x.x for ESP and 1.3 for AVR",
-      "website": "https://github.com/Links2004/arduinoWebSockets",
-      "category": "Communication",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/Links2004/WebSockets-2.0.4.zip",
-      "archiveFileName": "WebSockets-2.0.4.zip",
-      "size": 50517,
-      "checksum": "SHA-256:90dbcbace5ddbc2ac3ea979756f5ec72024ae4a521e142ec669f4f7e2636c054"
-    },
-    {
-      "name": "Chronos",
-      "version": "1.0.0",
-      "author": "Pat Deegan",
-      "maintainer": "Pat Deegan \u003carduino-lib@flyingcarsandstuff.com\u003e",
-      "sentence": "Easily manipulate date-times to perform scheduling, setup calendars and find points in time that are of interest.",
-      "paragraph": "Chronos is comprised of three major components: DateTimes and Spans (OO date-time objects that can be manipulated in many ways), Marks (sets of calendar point events like \"every Sunday at 15h00\") and Calendar Events (actual events with fixed or repeating datetimes of specific duration, and the scheduling functions needed to find/manipulate events of interest).",
-      "website": "http://flyingcarsandstuff.com/projects/chronos/",
-      "category": "Other",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/psychogenic/Chronos-1.0.0.zip",
-      "archiveFileName": "Chronos-1.0.0.zip",
-      "size": 68103,
-      "checksum": "SHA-256:e6e6fd9c52254041786988c7113fd8ae8afe41072d238e92d788ec31406bf09e"
-    },
-    {
-      "name": "FaBo 205 Proximity VCNL4010",
-      "version": "1.0.0",
-      "author": "FaBo\u003cinfo@fabo.io\u003e",
-      "maintainer": "Akira Sasaki\u003cakira@fabo.io\u003e,Hideki Yamauchi\u003cyamauchi@fabo.io\u003e",
-      "sentence": "A library for FaBo Proximity I2C Brick",
-      "paragraph": "VCNL4010 is Proximity and Ambient Light Sensor with Infrared Emitter, I2C Interface.",
-      "website": "https://github.com/FaBoPlatform/FaBoProximity-VCNL4010-Library",
-      "category": "Sensors",
-      "architectures": [
-        "avr"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/FaBoPlatform/FaBo_205_Proximity_VCNL4010-1.0.0.zip",
-      "archiveFileName": "FaBo_205_Proximity_VCNL4010-1.0.0.zip",
-      "size": 9012,
-      "checksum": "SHA-256:8aca3f1ac62d218ff4d86d6a95aa4beecb1e886e7120dad7ab9e64be77fbabb3"
-    },
-    {
-      "name": "MAX30100lib",
-      "version": "1.0.0",
-      "author": "OXullo Intersecans \u003cx@brainrapers.org\u003e",
-      "maintainer": "OXullo Intersecans \u003cx@brainrapers.org\u003e",
-      "sentence": "Maxim-IC MAX30100 heart-rate sensor driver and pulse-oximetry components",
-      "paragraph": "This library exposes most of the features of the MAX30100 and offers a modular approach to calculate pulse rate and SpO2",
-      "website": "https://github.com/oxullo/MAX30100lib",
-      "category": "Sensors",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/oxullo/MAX30100lib-1.0.0.zip",
-      "archiveFileName": "MAX30100lib-1.0.0.zip",
-      "size": 29888,
-      "checksum": "SHA-256:a68c6647c5af8ec121b56ddb1bc44b1248344a95509706fbe1d568716c807419"
-    },
-    {
-      "name": "OneWireHub",
-      "version": "0.2.0",
-      "author": "Shagrat2, orgua",
-      "maintainer": "Shagrat2",
-      "sentence": "OneWire slave device emulator with support for various simultaneously devices",
-      "website": "https://github.com/orgua/OneWireHub",
-      "category": "Sensors",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.2.0.zip",
-      "archiveFileName": "OneWireHub-0.2.0.zip",
-      "size": 2573405,
-      "checksum": "SHA-256:11aa0228c98b88da0c420d1edf682f576ad98f440c9c328413084651180e6d68"
-    },
-    {
-      "name": "OneWireHub",
-      "version": "0.3.0",
-      "author": "Shagrat2,orgua",
-      "maintainer": "Shagrat2",
-      "sentence": "OneWire slave device emulator with support for various simultaneously devices",
-      "paragraph": "supported sensors: DS2401, DS18B20, DS2405, DS2408, DS2413, DS2423, DS2433, DS2438, DS2450, DS2890",
-      "website": "https://github.com/orgua/OneWireHub",
-      "category": "Sensors",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.3.0.zip",
-      "archiveFileName": "OneWireHub-0.3.0.zip",
-      "size": 3632283,
-      "checksum": "SHA-256:3f29943c6c6bb40016b4869526c0abf4f7b0bf4fcddc0ce9e23f2a839292ce24"
-    },
-    {
-      "name": "OneWireHub",
-      "version": "0.4.0",
-      "author": "orgua,Shagrat2,MarkusLange",
-      "maintainer": "orgua",
-      "sentence": "OneWire slave device emulator with support for various simultaneously devices",
-      "paragraph": "supported sensors: DS1822, DS18B20, DS18S20, DS1990, DS2401, DS2405, DS2408, DS2413, DS2423, DS2433, DS2438, DS2450, DS2890",
-      "website": "https://github.com/orgua/OneWireHub",
-      "category": "Sensors",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.4.0.zip",
-      "archiveFileName": "OneWireHub-0.4.0.zip",
-      "size": 4940077,
-      "checksum": "SHA-256:2422a0a90b5488f3f48b4dceb73859af69c1806ddfa7cc688e0f9b84756e3a9b"
-    },
-    {
-      "name": "OneWireHub",
-      "version": "0.5.0",
-      "author": "orgua,Shagrat2,MarkusLange",
-      "maintainer": "orgua",
-      "sentence": "OneWire slave device emulator with support for various simultaneously devices",
-      "paragraph": "supported sensors: DS1822, DS18B20, DS18S20, DS1990, DS2401, DS2405, DS2408, DS2413, DS2423, DS2433, DS2438, DS2450, DS2890",
-      "website": "https://github.com/orgua/OneWireHub",
-      "category": "Sensors",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.5.0.zip",
-      "archiveFileName": "OneWireHub-0.5.0.zip",
-      "size": 7522284,
-      "checksum": "SHA-256:7cb4fb21c11adb01cdd1c474a66eacac5af553508b2f6815474714150e3396f5"
-    },
-    {
-      "name": "OneWireHub",
-      "version": "0.6.0",
-      "author": "Ingmar Splitt, orgua, MarkusLange, Shagrat2",
-      "maintainer": "orgua",
-      "sentence": "OneWire slave device emulator with support for various simultaneously devices",
-      "paragraph": "supported sensors: DS1822, DS18B20, DS18S20, DS1990, DS2401, DS2405, DS2408, DS2413, DS2423, DS2433, DS2438, DS2450, DS2890",
-      "website": "https://github.com/orgua/OneWireHub",
-      "category": "Sensors",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.6.0.zip",
-      "archiveFileName": "OneWireHub-0.6.0.zip",
-      "size": 7527762,
-      "checksum": "SHA-256:15b72762fd4bc427b3ad2d48758f7ee386e73460fa599ed2c02a7ba06eac3930"
-    },
-    {
-      "name": "OneWireHub",
-      "version": "0.6.5",
-      "author": "Ingmar Splitt, orgua, MarkusLange, Shagrat2",
-      "maintainer": "orgua",
-      "sentence": "OneWire slave device emulator with support for various simultaneously 1wire devices.",
-      "paragraph": "supported sensors: DS1822, DS18B20, DS18S20, DS1990, DS2401, DS2405, DS2408, DS2413, DS2423, DS2433, DS2438, DS2450, DS2890",
-      "website": "https://github.com/orgua/OneWireHub",
-      "category": "Sensors",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.6.5.zip",
-      "archiveFileName": "OneWireHub-0.6.5.zip",
-      "size": 7531210,
-      "checksum": "SHA-256:0e80f3e6a2947aa42f709b349fda2a46d07c4ca96bc942d2c517228586e9a83c"
-    },
-    {
-      "name": "OneWireHub",
-      "version": "0.7.0",
-      "author": "Ingmar Splitt, orgua, MarkusLange, Shagrat2",
-      "maintainer": "orgua",
-      "sentence": "OneWire slave device emulator with support for various simultaneously 1wire devices.",
-      "paragraph": "supported sensors: DS1822, DS18B20, DS18S20, DS1990, DS2401, DS2405, DS2408, DS2413, DS2423, DS2433, DS2438, DS2450, DS2890",
-      "website": "https://github.com/orgua/OneWireHub",
-      "category": "Sensors",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.7.0.zip",
-      "archiveFileName": "OneWireHub-0.7.0.zip",
-      "size": 7531458,
-      "checksum": "SHA-256:069e8acc1a00c9c7799ded84ff32137af96b31400038d01fd19d3d57d3f80cf7"
-    },
-    {
-      "name": "OneWireHub",
-      "version": "0.7.5",
-      "author": "Ingmar Splitt, orgua, MarkusLange, Shagrat2",
-      "maintainer": "orgua",
-      "sentence": "OneWire slave device emulator with support for various simultaneously 1wire devices.",
-      "paragraph": "supported sensors: DS1822, DS18B20, DS18S20, DS1990, DS2401, DS2405, DS2408, DS2413, DS2423, DS2433, DS2438, DS2450, DS2890",
-      "website": "https://github.com/orgua/OneWireHub",
-      "category": "Sensors",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.7.5.zip",
-      "archiveFileName": "OneWireHub-0.7.5.zip",
-      "size": 7545085,
-      "checksum": "SHA-256:237f613f7f6e38f1e52956a9f445b52131a8f55163e646cb090d354c293f1f25"
-    },
-    {
-      "name": "OneWireHub",
-      "version": "0.8.0",
-      "author": "Ingmar Splitt, orgua, MarkusLange, Shagrat2",
-      "maintainer": "orgua",
-      "sentence": "OneWire slave device emulator with support for up to 32 simultaneous 1wire devices.",
-      "paragraph": "supported sensors: DS1822, DS18B20, DS18S20, DS1990, DS2401, DS2405, DS2408, DS2413, DS2423, DS2433, DS2438, DS2450, DS2890",
-      "website": "https://github.com/orgua/OneWireHub",
-      "category": "Sensors",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.8.0.zip",
-      "archiveFileName": "OneWireHub-0.8.0.zip",
-      "size": 7546071,
-      "checksum": "SHA-256:e72175eee998c5468b5ae804e313dc1ffce703c39e3db69a121b470b54feb554"
-    },
-    {
-      "name": "OneWireHub",
-      "version": "0.8.5",
-      "author": "Ingmar Splitt, orgua, MarkusLange, Shagrat2",
-      "maintainer": "orgua",
-      "sentence": "OneWire slave device emulator with support for up to 32 simultaneous 1wire devices.",
-      "paragraph": "supported sensors: DS1822, DS18B20, DS18S20, DS1990, DS2401, DS2405, DS2408, DS2413, DS2423, DS2433, DS2438, DS2450, DS2890",
-      "website": "https://github.com/orgua/OneWireHub",
-      "category": "Sensors",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.8.5.zip",
-      "archiveFileName": "OneWireHub-0.8.5.zip",
-      "size": 7546351,
-      "checksum": "SHA-256:79c59d9d8cb6a026b809e42283705babc2ec42171b94d360dc893a0ea2b35a05"
-    },
-    {
-      "name": "OneWireHub",
-      "version": "0.9.0",
-      "author": "Ingmar Splitt, orgua, MarkusLange, Shagrat2",
-      "maintainer": "orgua",
-      "sentence": "OneWire slave device emulator with support for up to 32 simultaneous 1wire devices.",
-      "paragraph": "supported sensors: DS1822, DS18B20, DS18S20, DS1990, DS2401, DS2405, DS2408, DS2413, DS2423, DS2433, DS2438, DS2450, DS2890",
-      "website": "https://github.com/orgua/OneWireHub",
-      "category": "Sensors",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.9.0.zip",
-      "archiveFileName": "OneWireHub-0.9.0.zip",
-      "size": 7547820,
-      "checksum": "SHA-256:9912b78f90a6ed54c9052b52e781e78145e01d09b6751b40586fcec40599a0c2"
-    },
-    {
-      "name": "OneWireHub",
-      "version": "0.9.1",
-      "author": "Ingmar Splitt, orgua, MarkusLange, Shagrat2",
-      "maintainer": "orgua",
-      "sentence": "OneWire slave device emulator with support for up to 32 simultaneous 1wire devices.",
-      "paragraph": "supported sensors: DS1822, DS18B20, DS18S20, DS1990, DS2401, DS2405, DS2408, DS2413, DS2423, DS2433, DS2438, DS2450, DS2890",
-      "website": "https://github.com/orgua/OneWireHub",
-      "category": "Sensors",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/orgua/OneWireHub-0.9.1.zip",
-      "archiveFileName": "OneWireHub-0.9.1.zip",
-      "size": 7548812,
-      "checksum": "SHA-256:0e3cc3f6732f551aba2b27b775af840c440f18a3aa6cdad8c7276dcbb53a38ff"
-    },
-    {
-      "name": "TurnoutPulser",
-      "version": "1.0.0",
-      "author": "Michael Adams \u003carduino@michaeladams.org\u003e",
-      "maintainer": "Michael Adams \u003carduino@michaeladams.org\u003e",
-      "sentence": "Control a Kato or Tomix style two-wire turnout.",
-      "paragraph": "Ideal for model railway and railroad control.",
-      "website": "http://utrainia.com/",
-      "category": "Device Control",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/madleech/TurnoutPulser-1.0.0.zip",
-      "archiveFileName": "TurnoutPulser-1.0.0.zip",
-      "size": 5324,
-      "checksum": "SHA-256:5ce0c4c832e04df7f929bfa67824d53f0afafab0ac1e7202f338fc183aa378a7"
-    },
-    {
-      "name": "TurnoutPulser",
-      "version": "1.0.1",
-      "author": "Michael Adams \u003carduino@michaeladams.org\u003e",
-      "maintainer": "Michael Adams \u003carduino@michaeladams.org\u003e",
-      "sentence": "Control a Kato or Tomix style two-wire turnout.",
-      "paragraph": "Ideal for model railway and railroad control.",
-      "website": "http://utrainia.com/",
-      "category": "Device Control",
-      "architectures": [
-        "*"
-      ],
-      "types": [
-        "Contributed"
-      ],
-      "url": "http://downloads.arduino.cc/libraries/madleech/TurnoutPulser-1.0.1.zip",
-      "archiveFileName": "TurnoutPulser-1.0.1.zip",
-      "size": 5351,
-      "checksum": "SHA-256:d0360f66a4401ce436b88079dfa3bdf83f175d84f3ac9604616a809720f8279a"
-    },
-    {
       "name": "XLR8BuildTemplate",
       "version": "0.0.1",
       "author": "Alorium Technology",
@@ -32330,6 +32374,64 @@
       "checksum": "SHA-256:4fb72b75776ab53ea0341f6bd956e3edbf9316694104ee096157dabcb79f83e1"
     },
     {
+      "name": "XLR8Pong",
+      "version": "1.0.0",
+      "author": "Alorium Technology",
+      "maintainer": "Alorium Technology \u003cinfo@aloriumtech.com\u003e",
+      "sentence": "Pong game using the FPGA logic. For Alorium Technology's XLR8 board.",
+      "paragraph": "\u003cbr /\u003e",
+      "website": "https://github.com/AloriumTechnology/XLR8Pong",
+      "category": "Uncategorized",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/AloriumTechnology/XLR8Pong-1.0.0.zip",
+      "archiveFileName": "XLR8Pong-1.0.0.zip",
+      "size": 23929,
+      "checksum": "SHA-256:a31fc55cdea9e00f932134c1605088fb311c6e0bdc0cc21afb7bb5c285078603"
+    },
+    {
+      "name": "Lora Serialization",
+      "version": "2.1.0",
+      "author": "Joscha Feth \u003cjoscha@feth.com\u003e",
+      "maintainer": "Joscha Feth \u003cjoscha@feth.com\u003e",
+      "sentence": "Library for serialization of data on the Arduino side and deserialization in the TTN",
+      "website": "https://github.com/thesolarnomad/lora-serialization",
+      "category": "Data Processing",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/thesolarnomad/Lora_Serialization-2.1.0.zip",
+      "archiveFileName": "Lora_Serialization-2.1.0.zip",
+      "size": 432377,
+      "checksum": "SHA-256:67096fb12fb3551a2141a4327fea317b07bd1f8f9c3d4653975115a256c2e382"
+    },
+    {
+      "name": "Lora Serialization",
+      "version": "2.2.0",
+      "author": "Joscha Feth \u003cjoscha@feth.com\u003e",
+      "maintainer": "Joscha Feth \u003cjoscha@feth.com\u003e",
+      "sentence": "Library for serialization of data on the Arduino side and deserialization in the TTN",
+      "website": "https://github.com/thesolarnomad/lora-serialization",
+      "category": "Data Processing",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/thesolarnomad/Lora_Serialization-2.2.0.zip",
+      "archiveFileName": "Lora_Serialization-2.2.0.zip",
+      "size": 435070,
+      "checksum": "SHA-256:f7d1c46baaad4db118b89b01e8dd292a17bc05b5e3c4c04beea8f4e066729149"
+    },
+    {
       "name": "Shifty",
       "version": "0.1.0",
       "author": "Jonathan Bartlett \u003cjonathan@bartlettpublishing.com\u003e",
@@ -32370,6 +32472,26 @@
       "checksum": "SHA-256:75467bf8a41144aaf0650eebf854635b5696c231b0c0ce5db074b455b7bbd965"
     },
     {
+      "name": "Eventually",
+      "version": "0.1.3",
+      "author": "Jonathan Bartlett \u003cjonathan@bartlettpublishing.com\u003e",
+      "maintainer": "Jonathan Bartlett \u003cjonathan@bartlettpublishing.com\u003e",
+      "sentence": "Event-based programming library for Arduino",
+      "paragraph": "This library is meant to make Arduino programming tasks much more simplified by using an event-driven model rather than the standard looping model.",
+      "website": "http://www.github.com/johnnyb/Eventually",
+      "category": "Other",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/johnnyb/Eventually-0.1.3.zip",
+      "archiveFileName": "Eventually-0.1.3.zip",
+      "size": 10205,
+      "checksum": "SHA-256:37fa05faec59c218b820b2a11047ca27d3c18c86fe204f77d7cac09b427dc647"
+    },
+    {
       "name": "ACROBOTIC SSD1306",
       "version": "1.0.0",
       "author": "ACROBOTIC",
@@ -32405,8 +32527,269 @@
       ],
       "url": "http://downloads.arduino.cc/libraries/gmazzamuto/MAX1464-1.0.0.zip",
       "archiveFileName": "MAX1464-1.0.0.zip",
-      "size": 57681,
-      "checksum": "SHA-256:c424764f35546c54889b2299ab3648888cae8dd1d5eef0f41527ceef074a4b6f"
+      "size": 57678,
+      "checksum": "SHA-256:1d0799dbbc65befaf524bda41cb8baee832e849f081bedae6291b42ca4208208"
+    },
+    {
+      "name": "LispMotor",
+      "version": "0.0.1",
+      "author": "Lisper.li",
+      "maintainer": "Lisper \u003cleyapin@gmail.com\u003e",
+      "sentence": "L298x driver",
+      "paragraph": "This library make it easy to control car with DC motors use L298x",
+      "website": "https://github.com/leyap/LispMotor",
+      "category": "Device Control",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/leyap/LispMotor-0.0.1.zip",
+      "archiveFileName": "LispMotor-0.0.1.zip",
+      "size": 3742,
+      "checksum": "SHA-256:a3b2b1f9e204a4d50e308ae719f543cd9eda4f8d0af9edb65a88a54571a1c46b"
+    },
+    {
+      "name": "RTCDue",
+      "version": "1.0.0",
+      "author": "Markus Lange",
+      "maintainer": "Markus Lange \u003cmlange.unipb@gmail.com\u003e",
+      "sentence": "Use for the RTC inside the SAM3X8E from the Arduino DUE",
+      "paragraph": "The RTCDue Library feature: access to the RTC Modul from the DUE to set time, date and alarm functions.",
+      "website": "https://github.com/MarkusLange/RTCDue",
+      "category": "Timing",
+      "architectures": [
+        "sam"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/MarkusLange/RTCDue-1.0.0.zip",
+      "archiveFileName": "RTCDue-1.0.0.zip",
+      "size": 17693,
+      "checksum": "SHA-256:a63d88ff2fcd0aef39f8e18ec631b3fe7ba1f9047de03c94054f86943f4e3739"
+    },
+    {
+      "name": "BowlerCom",
+      "version": "3.12.0",
+      "author": "Kevin Harrington \u003cmad.hephaestus@gmail.com\u003e",
+      "maintainer": "Kevin Harrington \u003cmad.hephaestus@gmail.com\u003e",
+      "sentence": "A library to communicate between an arduino and a computer.",
+      "paragraph": "This library adds suppoort for the Bolwer Protocol to arduino. It lets you form namespaces and RPCs of arbitrary types and sizes, and send them in a compact binary format.",
+      "website": "https://github.com/madhephaestus/BowlerCom",
+      "category": "Communication",
+      "architectures": [
+        "avr",
+        "arc32"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/CommonWealthRobotics/BowlerCom-3.12.0.zip",
+      "archiveFileName": "BowlerCom-3.12.0.zip",
+      "size": 84589,
+      "checksum": "SHA-256:6c189764dd6ba8bfbef5c6d725303f5a70fc78841b1690f85c95cdf124f80bdd"
+    },
+    {
+      "name": "BowlerCom",
+      "version": "3.12.2",
+      "author": "Kevin Harrington \u003cmad.hephaestus@gmail.com\u003e",
+      "maintainer": "Kevin Harrington \u003cmad.hephaestus@gmail.com\u003e",
+      "sentence": "A library to communicate between an arduino and a computer.",
+      "paragraph": "This library adds suppoort for the Bolwer Protocol to arduino. It lets you form namespaces and RPCs of arbitrary types and sizes, and send them in a compact binary format.",
+      "website": "https://github.com/CommonWealthRobotics/BowlerCom",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/CommonWealthRobotics/BowlerCom-3.12.2.zip",
+      "archiveFileName": "BowlerCom-3.12.2.zip",
+      "size": 84575,
+      "checksum": "SHA-256:c06b42daec9bce5f63b967663142f90d62f2915752a7450f16132c122b1a4dba"
+    },
+    {
+      "name": "BowlerCom",
+      "version": "3.12.3",
+      "author": "Kevin Harrington \u003cmad.hephaestus@gmail.com\u003e",
+      "maintainer": "Kevin Harrington \u003cmad.hephaestus@gmail.com\u003e",
+      "sentence": "A library to communicate between an arduino and a computer.",
+      "paragraph": "This library adds suppoort for the Bolwer Protocol to arduino. It lets you form namespaces and RPCs of arbitrary types and sizes, and send them in a compact binary format.",
+      "website": "https://github.com/CommonWealthRobotics/BowlerCom",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/CommonWealthRobotics/BowlerCom-3.12.3.zip",
+      "archiveFileName": "BowlerCom-3.12.3.zip",
+      "size": 85197,
+      "checksum": "SHA-256:d9d07fcf0c14aa1618c88265c6c2ab70f703f29c438087eb95244bb56776cefc"
+    },
+    {
+      "name": "BowlerCom",
+      "version": "3.12.4",
+      "author": "Kevin Harrington \u003cmad.hephaestus@gmail.com\u003e",
+      "maintainer": "Kevin Harrington \u003cmad.hephaestus@gmail.com\u003e",
+      "sentence": "A library to communicate between an arduino and a computer.",
+      "paragraph": "This library adds suppoort for the Bolwer Protocol to arduino. It lets you form namespaces and RPCs of arbitrary types and sizes, and send them in a compact binary format.",
+      "website": "https://github.com/CommonWealthRobotics/BowlerCom",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/CommonWealthRobotics/BowlerCom-3.12.4.zip",
+      "archiveFileName": "BowlerCom-3.12.4.zip",
+      "size": 87031,
+      "checksum": "SHA-256:2111cd9c5308ab35608a82b79ab383b1e897ea9de71bc34d83128ecf8178ac03"
+    },
+    {
+      "name": "BowlerCom",
+      "version": "3.12.5",
+      "author": "Kevin Harrington \u003cmad.hephaestus@gmail.com\u003e",
+      "maintainer": "Kevin Harrington \u003cmad.hephaestus@gmail.com\u003e",
+      "sentence": "A library to communicate between an arduino and a computer.",
+      "paragraph": "This library adds suppoort for the Bolwer Protocol to arduino. It lets you form namespaces and RPCs of arbitrary types and sizes, and send them in a compact binary format.",
+      "website": "https://github.com/CommonWealthRobotics/BowlerCom",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/CommonWealthRobotics/BowlerCom-3.12.5.zip",
+      "archiveFileName": "BowlerCom-3.12.5.zip",
+      "size": 87380,
+      "checksum": "SHA-256:9e34b28b7c82d9a4824031f52a09673f76332ceec8c6f2b23b8c275bd34d2514"
+    },
+    {
+      "name": "LiquidMenu",
+      "version": "1.0.1",
+      "author": "Vasil Kalchev",
+      "maintainer": "Vasil Kalchev \u003cvase7u@gmail.com\u003e",
+      "sentence": "Menu creation Arduino library for LCDs, extends LiquidCrystal.",
+      "paragraph": "LiquidMenu extends the Arduino's LiquidCrystal library with the ability to create menus. It simplifies the menu creation process by abstracting the elements of a menu into hierarchically organized classes.",
+      "website": "https://github.com/VasilKalchev/LiquidMenu.git",
+      "category": "Display",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/VasilKalchev/LiquidMenu-1.0.1.zip",
+      "archiveFileName": "LiquidMenu-1.0.1.zip",
+      "size": 902745,
+      "checksum": "SHA-256:890d1e381dcfce62bba094d8eb2135bfbafe7c8df520eb3ebe0508ad4f34b163"
+    },
+    {
+      "name": "LiquidMenu",
+      "version": "1.0.2",
+      "author": "Vasil Kalchev",
+      "maintainer": "Vasil Kalchev \u003cvase7u@gmail.com\u003e",
+      "sentence": "Menu creation Arduino library for LCDs, extends LiquidCrystal.",
+      "paragraph": "LiquidMenu extends the Arduino's LiquidCrystal library with the ability to create menus. It simplifies the menu creation process by abstracting the elements of a menu into hierarchically organized classes.",
+      "website": "https://github.com/VasilKalchev/LiquidMenu.git",
+      "category": "Display",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/VasilKalchev/LiquidMenu-1.0.2.zip",
+      "archiveFileName": "LiquidMenu-1.0.2.zip",
+      "size": 902744,
+      "checksum": "SHA-256:4123f8a83cb5731fd3dde57d5db515ecb98cefdb81caa80304e12e8ce8590e7d"
+    },
+    {
+      "name": "WizFi250",
+      "version": "1.0.0",
+      "author": "DongEun Koak",
+      "maintainer": "WIZnet \u003cnet@wiznet.co.kr\u003e",
+      "sentence": "Helps using your Arduino board to Wi-Fi easily and fast",
+      "paragraph": "Helps using your Arduino board to Wi-Fi easily and fast",
+      "website": "https://github.com/Wiznet/WizFi250_arduino_library",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/Wiznet/WizFi250-1.0.0.zip",
+      "archiveFileName": "WizFi250-1.0.0.zip",
+      "size": 714979,
+      "checksum": "SHA-256:6034dd3ce7beda31d78546d586c9ab04fe15236d04455a34696b30ec8a9f507f"
+    },
+    {
+      "name": "Coordinates",
+      "version": "1.0.0",
+      "author": "Sebastien DUMETZ",
+      "maintainer": "Sebastien DUMETZ \u003cs.dumetz@holusion.com\u003e",
+      "sentence": "Allow easy and reliable conversion between cartesian and polar coordinate system.",
+      "paragraph": "This library provides a class to convert easily cartesian to polar or polar to cartesian coordinates. It uses floating point math to do so with quadrant checking to always give the best approximation.",
+      "website": "https://github.com/sdumetz/coordinates",
+      "category": "Data Processing",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/sdumetz/Coordinates-1.0.0.zip",
+      "archiveFileName": "Coordinates-1.0.0.zip",
+      "size": 4841,
+      "checksum": "SHA-256:6b01bdcb14f0f1f86916ea569494998f2d95c0c748ff744ae295c26342dcec39"
+    },
+    {
+      "name": "Sparkfun MPU-9250",
+      "version": "1.0.0",
+      "author": "SparkFun Electronics",
+      "maintainer": "SparkFun Electronics \u003cTechSupport@SparkFun.com\u003e",
+      "sentence": "Driver for InvenSense's MPU-9250 9-DOF IMU (3-axis gyroscope, 3-axis accelerometer \u0026 3-axis magnetometer)",
+      "paragraph": "The \u003ca href=\"https://www.invensense.com/products/motion-tracking/9-axis/mpu-9250/\"\u003eMPU-9250\u003c/a\u003e is a system-in-package featuring acceleration full-scales of ±2 / ±4 / ±8 / ±16 (g), rotational full-scales of ±250 / ±500 / ±1000 / ±2000 (°/sec) and a magnetic field full scale of ±4800 µT. The MPU-9250 includes an I\u003csup\u003e2\u003c/sup\u003eC serial bus interface that supports speeds up to 400 kHz.",
+      "website": "https://github.com/sparkfun/MPU-9250_Breakout",
+      "category": "Sensors",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/sparkfun/Sparkfun_MPU_9250-1.0.0.zip",
+      "archiveFileName": "Sparkfun_MPU_9250-1.0.0.zip",
+      "size": 21166,
+      "checksum": "SHA-256:526daabcce9483e30126fb334e1235ec0e3a02a9332b05e96b6c2710a728b1ac"
+    },
+    {
+      "name": "SoftModem",
+      "version": "1.0.0",
+      "author": "arms22",
+      "maintainer": "arms22",
+      "sentence": "Audio Jack Modem Library for Arduino.",
+      "paragraph": "Generates a FSK-modulated signal that can be fed into an audio jack for data transmission.",
+      "website": "https://github.com/arms22/SoftModem",
+      "category": "Communication",
+      "architectures": [
+        "avr"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "url": "http://downloads.arduino.cc/libraries/arms22/SoftModem-1.0.0.zip",
+      "archiveFileName": "SoftModem-1.0.0.zip",
+      "size": 5580,
+      "checksum": "SHA-256:aeb0dd724822aa9f50946956378e5e2ca4d59907e3d13afd0f3808aca8e9ed18"
     }
   ]
 }

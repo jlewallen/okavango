@@ -472,6 +472,53 @@
           ]
         },
         {
+          "name": "Arduino AVR Boards",
+          "architecture": "avr",
+          "version": "1.6.12",
+          "category": "Arduino",
+          "help": {
+            "online": "http://www.arduino.cc/en/Reference/HomePage"
+          },
+          "url": "http://downloads.arduino.cc/cores/avr-1.6.12.tar.bz2",
+          "archiveFileName": "avr-1.6.12.tar.bz2",
+          "checksum": "SHA-256:4a296a3304a51d820e680e2022fb9b9f5706144abf1e5d60c7876a0f9fc7e6d9",
+          "size": "4993586",
+          "boards": [
+            {"name": "Arduino Yún"},
+            {"name": "Arduino/Genuino Uno"},
+            {"name": "Arduino Diecimila"},
+            {"name": "Arduino Nano"},
+            {"name": "Arduino/Genuino Mega"},
+            {"name": "Arduino MegaADK"},
+            {"name": "Arduino Leonardo"},
+            {"name": "Arduino/Genuino Micro"},
+            {"name": "Arduino Esplora"},
+            {"name": "Arduino Mini"},
+            {"name": "Arduino Ethernet"},
+            {"name": "Arduino Fio"},
+            {"name": "Arduino BT"},
+            {"name": "Arduino LilyPadUSB"},
+            {"name": "Arduino Lilypad"},
+            {"name": "Arduino Pro"},
+            {"name": "Arduino ATMegaNG"},
+            {"name": "Arduino Robot Control"},
+            {"name": "Arduino Robot Motor"},
+            {"name": "Arduino Gemma"}
+          ],
+          "toolsDependencies": [
+            {
+              "packager": "arduino",
+              "name": "avr-gcc",
+              "version": "4.9.2-atmel3.5.3-arduino2"
+            },
+            {
+              "packager": "arduino",
+              "name": "avrdude",
+              "version": "6.3.0-arduino2"
+            }
+          ]
+        },
+        {
           "name": "Arduino SAM Boards (32-bits ARM Cortex-M3)",
           "architecture": "sam",
           "version": "1.6.2",
@@ -630,6 +677,31 @@
           "archiveFileName": "sam-1.6.8.tar.bz2",
           "checksum": "SHA-256:cc95b49b7dfe4138687a559d963db09b9b85352051173d93ad8c272aa23c2337",
           "size": "16471779",
+          "boards": [
+            {"name": "Arduino Due"}
+          ],
+          "toolsDependencies": [
+            {
+              "packager": "arduino",
+              "name": "arm-none-eabi-gcc",
+              "version": "4.8.3-2014q1"
+            },
+            {
+              "packager": "arduino",
+              "name": "bossac",
+              "version": "1.6.1-arduino"
+            }
+          ]
+        },
+        {
+          "name": "Arduino SAM Boards (32-bits ARM Cortex-M3)",
+          "architecture": "sam",
+          "version": "1.6.9",
+          "category": "Arduino",
+          "url": "http://downloads.arduino.cc/cores/sam-1.6.9.tar.bz2",
+          "archiveFileName": "sam-1.6.9.tar.bz2",
+          "checksum": "SHA-256:a5eaf60b5845599c24229456d6f5cd2254a275c8b34cac9d5330e4cfab6b0aa7",
+          "size": "16473503",
           "boards": [
             {"name": "Arduino Due"}
           ],
@@ -1192,6 +1264,129 @@
               "host": "i686-mingw32",
               "archiveFileName": "avrdude-6.0.1-arduino5-i686-mingw32.zip",
               "url": "http://downloads.arduino.cc/tools/avrdude-6.0.1-arduino5-i686-mingw32.zip"
+            }
+          ]
+        },
+        {
+          "name": "avr-gcc",
+          "version": "4.9.2-atmel3.5.3-arduino",
+          "systems": [
+            {
+              "size": "27046965",
+              "checksum": "SHA-256:adeee70be27cc3ee0e4b9e844610d9c534c7b21dae24ec3fa49808c2f04958de",
+              "host": "i386-apple-darwin11",
+              "archiveFileName": "avr-gcc-4.9.2-atmel3.5.3-arduino-i386-apple-darwin11.tar.bz2",
+              "url": "http://downloads.arduino.cc/tools/avr-gcc-4.9.2-atmel3.5.3-arduino-i386-apple-darwin11.tar.bz2"
+            },
+            {
+              "size": "27400001",
+              "checksum": "SHA-256:02dba9ee77694c23a4c304416a3808949c8faedf07f25a225a4189d850615ec6",
+              "host": "arm-linux-gnueabihf",
+              "archiveFileName": "avr-gcc-4.9.2-atmel3.5.3-arduino-armhf-pc-linux-gnu.tar.bz2",
+              "url": "http://downloads.arduino.cc/tools/avr-gcc-4.9.2-atmel3.5.3-arduino-armhf-pc-linux-gnu.tar.bz2"
+            },
+            {
+              "size": "29904544",
+              "checksum": "SHA-256:0711e885c0430859e7fea3831af8c69a0c25f92a90ecfda9281799a0acec7455",
+              "host": "x86_64-linux-gnu",
+              "archiveFileName": "avr-gcc-4.9.2-atmel3.5.3-arduino-x86_64-pc-linux-gnu.tar.bz2",
+              "url": "http://downloads.arduino.cc/tools/avr-gcc-4.9.2-atmel3.5.3-arduino-x86_64-pc-linux-gnu.tar.bz2"
+            },
+            {
+              "size": "29077606",
+              "checksum": "SHA-256:fe0bb1d6369694779ceb671d457ccadbeafe855a11f6746b7db20055cea4df33",
+              "host": "i686-linux-gnu",
+              "archiveFileName": "avr-gcc-4.9.2-atmel3.5.3-arduino-i686-pc-linux-gnu.tar.bz2",
+              "url": "http://downloads.arduino.cc/tools/avr-gcc-4.9.2-atmel3.5.3-arduino-i686-pc-linux-gnu.tar.bz2"
+            },
+            {
+              "size": "43847566",
+              "checksum": "SHA-256:445ce3117e87be7e196809fbbea373976160689b6d4b43dbf185eb4c914d1469",
+              "host": "i686-mingw32",
+              "archiveFileName": "avr-gcc-4.9.2-atmel3.5.3-arduino-i686-mingw32.zip",
+              "url": "http://downloads.arduino.cc/tools/avr-gcc-4.9.2-atmel3.5.3-arduino-i686-mingw32.zip"
+            }
+          ]
+        },
+        {
+          "name": "avr-gcc",
+          "version": "4.9.2-atmel3.5.3-arduino2",
+          "systems": [
+            {
+              "size": "27400889",
+              "checksum": "SHA-256:77f300d519bc6b9a25df17b36cb303218e9a258c059b2f6bff8f71a0d8f96821",
+              "host": "arm-linux-gnueabihf",
+              "archiveFileName": "avr-gcc-4.9.2-atmel3.5.3-arduino2-armhf-pc-linux-gnu.tar.bz2",
+              "url": "http://downloads.arduino.cc/tools/avr-gcc-4.9.2-atmel3.5.3-arduino2-armhf-pc-linux-gnu.tar.bz2"
+            },
+            {
+              "size": "27048070",
+              "checksum": "SHA-256:311258af188defe24a4b341e4e1f4dc93ca6c80516d3e3b55a2fc07a7050248b",
+              "host": "i386-apple-darwin11",
+              "archiveFileName": "avr-gcc-4.9.2-atmel3.5.3-arduino2-i386-apple-darwin11.tar.bz2",
+              "url": "http://downloads.arduino.cc/tools/avr-gcc-4.9.2-atmel3.5.3-arduino2-i386-apple-darwin11.tar.bz2"
+            },
+            {
+              "size": "43847945",
+              "checksum": "SHA-256:f8e6ede8746c70be01ec79a30803277cd94360cc5b2e104762da0fbcf536fcc6",
+              "host": "i686-mingw32",
+              "archiveFileName": "avr-gcc-4.9.2-atmel3.5.3-arduino2-i686-mingw32.zip",
+              "url": "http://downloads.arduino.cc/tools/avr-gcc-4.9.2-atmel3.5.3-arduino2-i686-mingw32.zip"
+            },
+            {
+              "size": "29292729",
+              "checksum": "SHA-256:f108951e7c4dc90926d1fc76cc27549f6ea63c702a2bb7ff39647a19ae86ec68",
+              "host": "i686-linux-gnu",
+              "archiveFileName": "avr-gcc-4.9.2-atmel3.5.3-arduino2-i686-pc-linux-gnu.tar.bz2",
+              "url": "http://downloads.arduino.cc/tools/avr-gcc-4.9.2-atmel3.5.3-arduino2-i686-pc-linux-gnu.tar.bz2"
+            },
+            {
+              "size": "29882960",
+              "checksum": "SHA-256:3903a6d1bb9fdd91727e504b5993d5501f119bcb7f99f7aee98a2101e5629188",
+              "host": "x86_64-linux-gnu",
+              "archiveFileName": "avr-gcc-4.9.2-atmel3.5.3-arduino2-x86_64-pc-linux-gnu.tar.bz2",
+              "url": "http://downloads.arduino.cc/tools/avr-gcc-4.9.2-atmel3.5.3-arduino2-x86_64-pc-linux-gnu.tar.bz2"
+            }
+          ]
+        },
+        {
+          "name": "avrdude",
+          "version": "6.3.0-arduino2",
+          "systems": [
+            {
+              "size": "643484",
+              "checksum": "SHA-256:26af86137d8a872f64d217cb262734860b36fe26d6d34faf72e951042f187885",
+              "host": "arm-linux-gnueabihf",
+              "archiveFileName": "avrdude-6.3.0-arduino2-armhf-pc-linux-gnu.tar.bz2",
+              "url": "http://downloads.arduino.cc/tools/avrdude-6.3.0-arduino2-armhf-pc-linux-gnu.tar.bz2"
+            },
+            {
+              "size": "653968",
+              "checksum": "SHA-256:32525ea3696c861030e1a6006a5f11971d1dad331e45bfa68dac35126476b04f",
+              "host": "i386-apple-darwin11",
+              "archiveFileName": "avrdude-6.3.0-arduino2-i386-apple-darwin11.tar.bz2",
+              "url": "http://downloads.arduino.cc/tools/avrdude-6.3.0-arduino2-i386-apple-darwin11.tar.bz2"
+            },
+            {
+              "size": "745081",
+              "checksum": "SHA-256:9635af5a35bdca11804c07582d7beec458140fb6e3308168c3deda18dc6790fa",
+              "host": "x86_64-linux-gnu",
+              "archiveFileName": "avrdude-6.3.0-arduino2-x86_64-pc-linux-gnu.tar.bz2",
+              "url": "http://downloads.arduino.cc/tools/avrdude-6.3.0-arduino2-x86_64-pc-linux-gnu.tar.bz2"
+            },
+            {
+              "size": "731802",
+              "checksum": "SHA-256:790b6cb610c48e73a2a0f65dcee9903d2fd7f1b0a1f75008a9a21f50a60c7251",
+              "host": "i686-linux-gnu",
+              "archiveFileName": "avrdude-6.3.0-arduino2-i686-pc-linux-gnu.tar.bz2",
+              "url": "http://downloads.arduino.cc/tools/avrdude-6.3.0-arduino2-i686-pc-linux-gnu.tar.bz2"
+            },
+            {
+              "size": "608496",
+              "checksum": "SHA-256:8eaf98ea41fbd4450483488ef31710cbcc43c0412dbc8e1e1b582feaab6eca30",
+              "host": "i686-mingw32",
+              "archiveFileName": "avrdude-6.3.0-arduino2-i686-w64-mingw32.zip",
+              "url": "http://downloads.arduino.cc/tools/avrdude-6.3.0-arduino2-i686-w64-mingw32.zip"
             }
           ]
         },
@@ -1921,6 +2116,30 @@
                   "name": "avrdude",
                   "version": "6.0.1-arduino5"
               }
+          ]
+        },
+        {
+          "name": "Atmel AVR Xplained-minis",
+          "architecture": "avr",
+          "version": "0.4.0",
+          "category": "Partner",
+          "url": "https://github.com/AtmelUniversityFrance/atmel-avr-xmini-boardmanagermodule/releases/download/v0.4.0/atmel-avr-xmini-boardmanagermodule-0.4.0.tar.bz2",
+          "archiveFileName": "atmel-avr-xmini-boardmanagermodule-0.4.0.tar.bz2",
+          "checksum": "SHA-256:36e09208c91071ff2fce4a7ed06463cf820c867d9f59477192d18965c0830ed5",
+          "size": "95452",
+          "boards": [
+            {
+              "name": "atmega168pb-xmini"
+            },
+            {
+              "name": "atmega328pb-xmini"
+            },
+            {
+              "name": "atmega328p-xmini"
+            }
+          ],
+          "toolsDependencies":
+          [
           ]
         }
       ],
