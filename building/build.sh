@@ -9,24 +9,38 @@ set -x
 ARD_HOME="../arduino-1.6.9"
 ARD_BIN="${ARD_HOME}/hardware/tools/avr/bin"
 PROJECT_DIR=`pwd`
+ROOT_DIR="${PROJECT_DIR}/../"
+BUILDING_DIR="${PROJECT_DIR}/../building"
 BUILD_DIR="${PROJECT_DIR}/build"
 SOURCES=*.ino
+BOSSAC=../arduino/packages/arduino/tools/bossac/1.6.1-arduino/bossac.exe
 
 function use_uno() {
     BOARD="arduino:avr:uno"
     MCU="atmega328p"
+    PROGRAMMER="avrdude"
     AVR_DUDE_PROGRAMMER="arduino"
     BAUD="115200"
     AB_EXTRA=""
     PORT_NAME="Arduino"
 }
 
-function use_feather() {
+function use_feather32u4() {
     BOARD="adafruit:avr:feather32u4"
     MCU="atmega32u4"
+    PROGRAMMER="avrdude"
     AVR_DUDE_PROGRAMMER="avr109"
     BAUD="57600"
     AB_EXTRA="-vid-pid=0X239A_0X800C"
+    PORT_NAME="Adafruit"
+}
+
+function use_featherm0() {
+    BOARD="adafruit:samd:adafruit_feather_m0"
+    MCU=""
+    PROGRAMMER="bossac"
+    BAUD="57600"
+    AB_EXTRA=""
     PORT_NAME="Adafruit"
 }
 
@@ -46,11 +60,19 @@ function build() {
 }
 
 function upload() {
-    # So, avrdude dislikes cygwin style paths.
-    BUILD_DIR_WINDOWS=`echo ${BUILD_DIR} | sed -r "s|/([a-zA-Z])/|\1:/|"`
-    PORT=`node ../get-upload-port.js $BOARD $PORT_NAME $PORT`
-    BINARY=`echo ${BUILD_DIR_WINDOWS}/*.ino.hex`
-    ${ARD_HOME}/hardware/tools/avr/bin/avrdude -C${ARD_HOME}/hardware/tools/avr/etc/avrdude.conf -v -p${MCU} -c${AVR_DUDE_PROGRAMMER} -P${PORT} -b${BAUD} -D -Uflash:w:${BINARY}:i
+    PORT=`node ${BUILDING_DIR}/get-upload-port.js $BOARD $PORT_NAME $PORT`
+
+    if [ "$PROGRAMMER" == "avrdude" ]; then
+        # So, avrdude dislikes cygwin style paths.
+        BUILD_DIR_WINDOWS=`echo ${BUILD_DIR} | sed -r "s|/([a-zA-Z])/|\1:/|"`
+        BINARY=`echo ${BUILD_DIR_WINDOWS}/*.ino.hex`
+        ${ARD_HOME}/hardware/tools/avr/bin/avrdude -C${ARD_HOME}/hardware/tools/avr/etc/avrdude.conf -v -p${MCU} -c${AVR_DUDE_PROGRAMMER} -P${PORT} -b${BAUD} -D -Uflash:w:${BINARY}:i
+    fi
+
+    if [ "$PROGRAMMER" == "bossac" ]; then
+        BINARY=`echo ${BUILD_DIR}/*bin`
+        ${BOSSAC}  -i -d --port=${PORT} -U true -i -e -w -v ${BINARY} -R 
+    fi
 }
 
 function showPorts() {
@@ -58,7 +80,7 @@ function showPorts() {
 }
 
 function openSerial() {
-    PORT=`node ../get-upload-port.js $BOARD $PORT_NAME $PORT`
+    PORT=`node ${BUILDING_DIR}/get-upload-port.js $BOARD $PORT_NAME $PORT`
     rm -f log.txt
     ../setup/putty.exe -serial $PORT -sercfg 115200 -sessionlog log.txt
 }
@@ -82,8 +104,9 @@ fi
 
 while [ .${1:0:1} = .- ]; do
     if [ .$1 = .-p ]; then showPorts
-    elif [ .$1 = .-f ]; then use_feather
+    elif [ .$1 = .-f ]; then use_feather32u4
     elif [ .$1 = .-a ]; then use_uno
+    elif [ .$1 = .-m ]; then use_featherm0
     elif [ .$1 = .-b ]; then clean && build
     elif [ .$1 = .-u ]; then clean && build && upload
     elif [ .$1 = .-c ]; then clean

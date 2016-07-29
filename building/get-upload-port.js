@@ -50,7 +50,7 @@ var portPath = _(process.argv).slice(4).first();
 getPorts()
     .then(function(portsBefore) {
         var port = guessPort(portsBefore, pattern, portPath);
-        if (board == "adafruit:avr:feather32u4") {
+        if (/feather/.test(board)) {
             return openAndClosePort(port).then(function() {
                 return delay(1000);
             }).then(function() {
