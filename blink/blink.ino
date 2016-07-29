@@ -51,14 +51,21 @@ void lowPowerSleep(short seconds) {
 }
 
 void setup() {
+    Serial.begin(112500);
+
     pinMode(PIN, OUTPUT);
     digitalWrite(PIN, LOW);
+
+    Serial.println("Hello");
 }
 
 void loop() {
-    lowPowerSleep(10);
+    // lowPowerSleep(10);
+
+    Serial.println("Tick");
 
     digitalWrite(PIN, HIGH);
     delay(1000);
     digitalWrite(PIN, LOW);
+    delay(1000);
 }

@@ -46,6 +46,10 @@ function use_featherm0() {
 
 # No editing should be required below here.
 
+function get_port() {
+    PORT=`node ${BUILDING_DIR}/get-port.js monitor $BOARD $PORT_NAME $PORT`
+}
+
 function clean() {
     rm -rf ${BUILD_DIR}
     mkdir -p ${BUILD_DIR}
@@ -60,28 +64,28 @@ function build() {
 }
 
 function upload() {
-    PORT=`node ${BUILDING_DIR}/get-upload-port.js $BOARD $PORT_NAME $PORT`
+    UPLOAD_PORT=`node ${BUILDING_DIR}/get-port.js upload $BOARD $PORT_NAME $PORT`
 
     if [ "$PROGRAMMER" == "avrdude" ]; then
         # So, avrdude dislikes cygwin style paths.
         BUILD_DIR_WINDOWS=`echo ${BUILD_DIR} | sed -r "s|/([a-zA-Z])/|\1:/|"`
         BINARY=`echo ${BUILD_DIR_WINDOWS}/*.ino.hex`
-        ${ARD_HOME}/hardware/tools/avr/bin/avrdude -C${ARD_HOME}/hardware/tools/avr/etc/avrdude.conf -v -p${MCU} -c${AVR_DUDE_PROGRAMMER} -P${PORT} -b${BAUD} -D -Uflash:w:${BINARY}:i
+        ${ARD_HOME}/hardware/tools/avr/bin/avrdude -C${ARD_HOME}/hardware/tools/avr/etc/avrdude.conf -v -p${MCU} -c${AVR_DUDE_PROGRAMMER} -P${UPLOAD_PORT} -b${BAUD} -D -Uflash:w:${BINARY}:i
     fi
 
     if [ "$PROGRAMMER" == "bossac" ]; then
         BINARY=`echo ${BUILD_DIR}/*bin`
-        ${BOSSAC}  -i -d --port=${PORT} -U true -i -e -w -v ${BINARY} -R 
+        ${BOSSAC}  -i -d --port=${UPLOAD_PORT} -U true -i -e -w -v ${BINARY} -R 
     fi
 }
 
-function showPorts() {
+function show_ports() {
     wmic path Win32_SerialPort get deviceid, description
 }
 
-function openSerial() {
-    PORT=`node ${BUILDING_DIR}/get-upload-port.js $BOARD $PORT_NAME $PORT`
+function open_serial() {
     rm -f log.txt
+    MONITOR_PORT=`node ${BUILDING_DIR}/get-port.js watch $BOARD $PORT_NAME $PORT`
     ../setup/putty.exe -serial $PORT -sercfg 115200 -sessionlog log.txt
 }
 
@@ -103,14 +107,14 @@ if [ .$1 = . -o .$1 = .-h ]; then
 fi
 
 while [ .${1:0:1} = .- ]; do
-    if [ .$1 = .-p ]; then showPorts
-    elif [ .$1 = .-f ]; then use_feather32u4
-    elif [ .$1 = .-a ]; then use_uno
-    elif [ .$1 = .-m ]; then use_featherm0
+    if [ .$1 = .-p ]; then show_ports
+    elif [ .$1 = .-f ]; then use_feather32u4 && get_port
+    elif [ .$1 = .-a ]; then use_uno && get_port
+    elif [ .$1 = .-m ]; then use_featherm0 && get_port
     elif [ .$1 = .-b ]; then clean && build
-    elif [ .$1 = .-u ]; then clean && build && upload
+    elif [ .$1 = .-u ]; then upload
     elif [ .$1 = .-c ]; then clean
-    elif [ .$1 = .-s ]; then openSerial
+    elif [ .$1 = .-s ]; then open_serial
     elif [ .$1 = .-z ]; then size
     else
         echo "Unknown option $1"
