@@ -17,7 +17,7 @@ bool AtlasScientificBoard::tick() {
     }
     switch (state) {
         case Start: {
-            hasValue = false;
+            numberOfValues = 0;
             transition(Status0);
             break;
         }
@@ -56,6 +56,7 @@ bool AtlasScientificBoard::tick() {
             break;
         }
         case Done: {
+            Serial.println("DONE");
             return false;
         }
     }
@@ -103,16 +104,25 @@ bool AtlasScientificBoard::handle(String reply) {
                 break;
             }
             case Read2: {
-                transition(Sleeping);
-                int16_t first = reply.indexOf('\n');
-                if (first >= 0) {
-                    int16_t second = reply.indexOf('\n', first + 1);
-                    if (second >= first) {
-                        String part = reply.substring(first, second - first);
-                        value = part.toFloat();
-                        hasValue = true;
+                int8_t position = 0;
+                numberOfValues = 0;
+                while (true) {
+                    int16_t index = reply.indexOf(',', position);
+                    if (index < 0) {
+                        index = reply.indexOf('\n');
+                    }
+                    if (index > position && numberOfValues < MAX_VALUES) {
+                        String part = reply.substring(position, index);
+                        values[numberOfValues++] = part.toFloat();
+                        position = index + 1;
+                    }
+                    else {
+                        break;
                     }
                 }
+
+                transition(Sleeping);
+
                 break;
             }
         }

@@ -20,21 +20,22 @@ enum AtlasScientificBoardState {
 
 class AtlasScientificBoard : public NonBlockingSerialProtocol, public Tickable {
 private:
+    const static int8_t MAX_VALUES = 4;
     AtlasScientificBoardState state = Start;
-    float value;
-    bool hasValue;
+    float values[MAX_VALUES];
+    int8_t numberOfValues;
 
 public:
     AtlasScientificBoard();
 
     virtual bool tick();
 
-    float getValue() {
-        return value;
+    const float *getValues() {
+        return values;
     }
 
-    bool getHasValue() {
-        return hasValue;
+    int8_t getNumberOfValues() {
+        return numberOfValues;
     }
 
     bool isDone() {
