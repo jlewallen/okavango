@@ -1,130 +1,125 @@
 #include <SPI.h>
 #include <RH_RF95.h>
 
-#define RFM95_CS 10
-#define RFM95_RST 9
-#define RFM95_INT 2
-
 #define RF95_FREQ 915.0
 
-#define RECEIVER
+#define HALT(error) Serial.println(error); while (true) { }
 
-RH_RF95 rf95(RFM95_CS, RFM95_INT);
+class LoraRadio {
+private:
+    RH_RF95 rf95;
+    const uint8_t pinEnable;
+    uint8_t buffer[RH_RF95_MAX_MESSAGE_LEN];
 
-void setup() {
-    pinMode(RFM95_RST, OUTPUT);
-    digitalWrite(RFM95_RST, HIGH);
+public:
+    LoraRadio(uint8_t pinCs, uint8_t pinG0, uint8_t pinEnable);
+    void setup();
+    void tick();
+    void send(uint8_t *packet, uint8_t size);
 
-    while (!Serial) {
-        delay(100);
+    const uint8_t *getPacket() {
+        return buffer;
     }
-    Serial.begin(115200);
-    delay(100);
 
-    Serial.println("Arduino LoRa TX Test!");
+    bool hasPacket() {
+        return buffer[0] != 0;
+    }
 
-    digitalWrite(RFM95_RST, LOW);
+    bool isIdle() {
+        return rf95.mode() == RHGenericDriver::RHMode::RHModeIdle;
+    }
+
+    void clear() {
+        buffer[0] = 0;
+    }
+
+    void sleep() {
+        rf95.sleep();
+    }
+};
+
+LoraRadio::LoraRadio(uint8_t pinCs, uint8_t pinG0, uint8_t pinEnable)
+    : rf95(pinCs, pinG0), pinEnable(pinEnable) {
+}
+
+void LoraRadio::setup() {
+    pinMode(pinEnable, OUTPUT);
+    digitalWrite(pinEnable, HIGH);
+
     delay(10);
-    digitalWrite(RFM95_RST, HIGH);
+    digitalWrite(pinEnable, LOW);
+    delay(10);
+    digitalWrite(pinEnable, HIGH);
     delay(10);
 
     while (!rf95.init()) {
-        Serial.println("LoRa radio init failed");
-        while (true) {
-        }
+        HALT("LoraRadio: Initialize failed!");
     }
-    Serial.println("LoRa radio init OK!");
 
     if (!rf95.setFrequency(RF95_FREQ)) {
-        Serial.println("setFrequency failed");
-        while (true) {
-        }
+        HALT("LoraRadio: setFrequency failed!");
     }
-    Serial.print("Set Freq to: ");
-    Serial.println(RF95_FREQ);
 
     rf95.setTxPower(23, false);
 }
 
-int16_t packetNumber = 0;
-
-void transmitter() {
-    Serial.println("Sending to rf95_server");
-
-    char radiopacket[20] = "Hello World #      ";
-    itoa(packetNumber++, radiopacket + 13, 10);
-
-    Serial.print("Sending ");
-    Serial.println(radiopacket);
-    radiopacket[19] = 0;
-
-    Serial.println("Sending...");
-    delay(10);
-    rf95.send((uint8_t *)radiopacket, 20);
-
-    Serial.println("Waiting for packet to complete...");
-    delay(10);
-    rf95.waitPacketSent();
-
-    uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
-    uint8_t len = sizeof(buf);
-
-    Serial.println("Waiting for reply...");
-    delay(10);
-    if (rf95.waitAvailableTimeout(1000))
-    { 
-        if (rf95.recv(buf, &len))
-        {
-            Serial.print("Got reply: ");
-            Serial.println((char*)buf);
-            Serial.print("RSSI: ");
-            Serial.println(rf95.lastRssi(), DEC);    
-        }
-        else
-        {
-            Serial.println("Receive failed");
-        }
-    }
-    else
-    {
-        Serial.println("No reply, is there a listener around?");
-    }
-
-    delay(1000);
+void LoraRadio::send(uint8_t *packet, uint8_t size) {
+    rf95.send(packet, size);
 }
 
-void receiver() {
+void LoraRadio::tick() {
     if (rf95.available())
     {
-        uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
-        uint8_t len = sizeof(buf);
-
-        if (rf95.recv(buf, &len))
-        {
-            RH_RF95::printBuffer("Received: ", buf, len);
-            Serial.print("Got: ");
-            Serial.println((char*)buf);
-            Serial.print("RSSI: ");
-            Serial.println(rf95.lastRssi(), DEC);
-
-            uint8_t data[] = "And hello back to you";
-            rf95.send(data, sizeof(data));
-            rf95.waitPacketSent();
-            Serial.println("Sent a reply");
-        }
-        else
-        {
-            Serial.println("Receive failed");
-        }
+        uint8_t length = sizeof(buffer);
+        rf95.recv(buffer, &length);
     }
 }
 
+#define RFM95_CS 10
+#define RFM95_RST 9
+#define RFM95_INT 2
+
+LoraRadio radio(RFM95_CS, RFM95_INT, RFM95_RST);
+
+void setup() {
+    while (!Serial) {
+        delay(100);
+    }
+
+    Serial.begin(115200);
+    delay(100);
+
+    radio.setup();
+
+    Serial.println("LoRa Radio Demo");
+}
+
+uint16_t packetNumber = 0;
+uint32_t lastReceived = 0;
+uint32_t lastSend = 0;
+
 void loop() {
-#ifdef RECEIVER
-    receiver();
-#else
-    transmitter();
-#endif
+    radio.tick();
+
+    if (radio.hasPacket()) {
+        Serial.print("Packet: ");
+        Serial.println((char *)radio.getPacket());
+        radio.clear();
+        lastReceived = millis();
+    }
+
+    if (millis() - lastReceived > 10000) {
+        if (radio.isIdle()) {
+            char message[20] = "Hello World #      ";
+            itoa(packetNumber++, message + 13, 10);
+            Serial.print("Sending ");
+            message[19] = 0;
+            radio.send((uint8_t *)message, sizeof(message));
+            lastSend = millis();
+        }
+    }
+
+    delay(10);
 }
 
 // vim: set ft=cpp:
