@@ -15,8 +15,6 @@ void finish() {
 }
 
 void setup() {
-    delay(3000);
-
     Serial.begin(115200);
     #ifdef WAIT_FOR_SERIAL
     while (!Serial) {
@@ -25,6 +23,8 @@ void setup() {
             break;
         }
     }
+    #else
+    delay(3000);
     #endif
 
     Serial.println("Begin");
@@ -54,7 +54,7 @@ void loop() {
         else if (newPort == 3) {
             Serial.println("Conductivity");
             board.setSerial(&conductivitySerial);
-            board.start(false);
+            board.start(OPEN_CONDUCTIVITY_SERIAL_ON_START);
         }
         else {
             Serial.println("Done");

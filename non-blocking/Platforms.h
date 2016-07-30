@@ -17,6 +17,8 @@
 #define CONDUCTIVITY_RX_PIN            4
 #define CONDUCTIVITY_TX_PIN            5
 
+#define OPEN_CONDUCTIVITY_SERIAL_ON_START true
+
 typedef SoftwareSerial SerialType;
 
 extern SerialType portExpanderSerial;
@@ -36,6 +38,8 @@ void platformPostSetup();
 #define PORT_EXPANDER_SELECT_PIN_2     9
 
 #define WAIT_FOR_SERIAL                1000 * 60
+
+#define OPEN_CONDUCTIVITY_SERIAL_ON_START false
 
 typedef Uart SerialType;
 

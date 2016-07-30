@@ -6,8 +6,6 @@ SerialType portExpanderSerial(PORT_EXPANDER_RX_PIN, PORT_EXPANDER_TX_PIN);
 SerialType conductivitySerial(CONDUCTIVITY_RX_PIN, CONDUCTIVITY_TX_PIN);
 
 void platformPostSetup() {
-    // We always do this right away, makes being cross platform with the Feather easier.
-    conductivitySerial.begin(9600);
 }
 
 #endif
