@@ -1,4 +1,5 @@
 #include <String.h>
+#include "Platforms.h"
 #include "AtlasScientific.h"
 
 const char *CMD_STATUS = "STATUS";
@@ -51,8 +52,6 @@ bool AtlasScientificBoard::tick() {
         }
         case Sleeping: {
             sendCommand(CMD_SLEEP);
-            close();
-            transition(Done);
             break;
         }
         case Done: {
@@ -123,6 +122,11 @@ bool AtlasScientificBoard::handle(String reply) {
 
                 transition(Sleeping);
 
+                break;
+            }
+            case Sleeping: {
+                transition(Done);
+                close();
                 break;
             }
         }

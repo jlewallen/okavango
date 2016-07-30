@@ -1,8 +1,7 @@
 #ifndef NON_BLOCKING_SERIAL_H
 #define NON_BLOCKING_SERIAL_H
 
-#include <SoftwareSerial.h>
-#include <Arduino.h>
+#include "Platforms.h"
 #include "Tickable.h"
 
 enum NonBlockingSerialProtocolState {
@@ -13,7 +12,7 @@ enum NonBlockingSerialProtocolState {
 
 class NonBlockingSerialProtocol : public Tickable {
 private:
-    SoftwareSerial *serial;
+    SerialType *serial;
     NonBlockingSerialProtocolState state = Idle;
     uint32_t lastStateChangeAt;
     String buffer;
@@ -21,7 +20,7 @@ private:
 public:
     NonBlockingSerialProtocol();
 
-    void setSerial(SoftwareSerial *newSerial) {
+    void setSerial(SerialType *newSerial) {
         serial = newSerial;
     }
 
@@ -34,7 +33,7 @@ public:
     }
 
 protected:
-    void sendCommand(const char *cmd, bool expectReply = true);
+    void sendCommand(const char *cmd);
     void transition(NonBlockingSerialProtocolState newState);
     virtual bool handle(String reply);
     void appendToBuffer(char newChar);

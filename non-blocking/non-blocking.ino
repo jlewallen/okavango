@@ -1,19 +1,15 @@
-#include <Arduino.h>
+#include "Platforms.h"
 #include "AtlasScientific.h"
 #include "SerialPortExpander.h"
 
-#include <SPI.h>
-#include <RH_RF95.h>
+SerialPortExpander portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1, PORT_EXPANDER_SELECT_PIN_2);
 
-SerialPortExpander portExpander(6, 7, 8);
-SoftwareSerial portExpanderSerial(2, 3);
-SoftwareSerial conductivitySerial(4, 5);
 AtlasScientificBoard board;
-uint8_t selectedPort = 0;
 
 void finish() {
     portExpander.select(3);
-    while (1) {
+
+    while (true) {
         delay(1000);
     }
 }
@@ -25,9 +21,14 @@ void setup() {
     Serial.println("Begin");
 
     portExpander.setup();
-    portExpander.select(selectedPort);
+    portExpander.select(0);
+
     board.setSerial(&portExpanderSerial);
     board.start();
+
+    platformPostSetup();
+
+    Serial.println("Loop");
 }
 
 void loop() {
@@ -35,16 +36,16 @@ void loop() {
     delay(50);
 
     if (board.isDone()) {
-        selectedPort++;
-        if (selectedPort < 3) {
+        byte newPort = portExpander.getPort() + 1;
+        portExpander.select(newPort);
+        if (newPort < 3) {
             Serial.println("Next sensor");
-            portExpander.select(selectedPort);
             board.start();
         }
-        else if (selectedPort == 3) {
+        else if (newPort == 3) {
             Serial.println("Conductivity");
             board.setSerial(&conductivitySerial);
-            board.start();
+            board.start(false);
         }
         else {
             Serial.println("Done");
@@ -52,3 +53,5 @@ void loop() {
         }
     }
 }
+
+// vim: set ft=cpp:

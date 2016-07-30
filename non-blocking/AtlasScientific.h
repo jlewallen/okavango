@@ -42,9 +42,11 @@ public:
         return state == Done;
     }
 
-    void start() {
+    void start(bool setupSerial = true) {
         state = Start;
-        setup();
+        if (setupSerial) {
+            setup();
+        }
         open();
     }
 

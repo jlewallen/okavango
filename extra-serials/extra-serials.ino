@@ -51,3 +51,5 @@ void loop() {
         digitalWrite(PIN, flash % 2 ? HIGH : LOW);
     }
 }
+
+// vim: set ft=cpp:

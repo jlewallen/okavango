@@ -21,4 +21,5 @@ void SerialPortExpander::select(byte port) {
     digitalWrite(selector[1], bitRead(port, 1));
     digitalWrite(selector[2], bitRead(port, 2));
     delay(2); // Technically we're blocking, though... 2ms? Meh.
+    this->port = port;
 }

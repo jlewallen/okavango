@@ -44,13 +44,11 @@ void NonBlockingSerialProtocol::appendToBuffer(char newChar) {
     }
 }
 
-void NonBlockingSerialProtocol::sendCommand(const char *cmd, bool expectReply) {
+void NonBlockingSerialProtocol::sendCommand(const char *cmd) {
     // Precondition: state == Idle
     serial->print(cmd);  
     serial->print('\r');
-    if (expectReply) {
-        transition(NonBlockingSerialProtocolState::Reading);
-    }
+    transition(NonBlockingSerialProtocolState::Reading);
     Serial.println(cmd);
 }
 

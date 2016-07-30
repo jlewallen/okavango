@@ -108,13 +108,13 @@ fi
 
 while [ .${1:0:1} = .- ]; do
     if [ .$1 = .-p ]; then show_ports
-    elif [ .$1 = .-f ]; then use_feather32u4 && get_port
-    elif [ .$1 = .-a ]; then use_uno && get_port
-    elif [ .$1 = .-m ]; then use_featherm0 && get_port
+    elif [ .$1 = .-f ]; then use_feather32u4
+    elif [ .$1 = .-a ]; then use_uno
+    elif [ .$1 = .-m ]; then use_featherm0
     elif [ .$1 = .-b ]; then clean && build
-    elif [ .$1 = .-u ]; then upload
+    elif [ .$1 = .-u ]; then get_port && upload
     elif [ .$1 = .-c ]; then clean
-    elif [ .$1 = .-s ]; then open_serial
+    elif [ .$1 = .-s ]; then get_port && open_serial
     elif [ .$1 = .-z ]; then size
     else
         echo "Unknown option $1"
