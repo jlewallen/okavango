@@ -62,7 +62,7 @@ function checkForPortChange(portsBefore, tries, desiredPort) {
             return newPorts.first();
         }
         else {
-            if (tries == 10) {
+            if (tries == 5) {
                 console.error("Giving up, guessing...");
                 return guessPort(portsAfter, pattern, portPath);
             }
