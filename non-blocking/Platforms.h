@@ -35,11 +35,7 @@ void platformPostSetup();
 #define PORT_EXPANDER_SELECT_PIN_1     6
 #define PORT_EXPANDER_SELECT_PIN_2     9
 
-#define PORT_EXPANDER_RX_PIN           NA
-#define PORT_EXPANDER_TX_PIN           NA
-
-#define CONDUCTIVITY_RX_PIN            NA
-#define CONDUCTIVITY_TX_PIN            NA
+#define WAIT_FOR_SERIAL                1000 * 60
 
 typedef Uart SerialType;
 

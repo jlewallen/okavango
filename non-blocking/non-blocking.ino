@@ -17,7 +17,16 @@ void finish() {
 void setup() {
     delay(3000);
 
-    Serial.begin(115200);      
+    Serial.begin(115200);
+    #ifdef WAIT_FOR_SERIAL
+    while (!Serial) {
+        delay(100);
+        if (millis() > WAIT_FOR_SERIAL) {
+            break;
+        }
+    }
+    #endif
+
     Serial.println("Begin");
 
     portExpander.setup();
