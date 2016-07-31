@@ -8,3 +8,6 @@ arduino-1.6.9
 */build
 
 log.txt
+
+*.o
+pi/lora-receiver/lora-receiver
