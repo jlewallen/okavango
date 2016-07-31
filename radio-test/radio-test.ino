@@ -1,8 +1,16 @@
 #include "LoraRadio.h"
 
-#define RFM95_CS  10
-#define RFM95_RST 9
-#define RFM95_INT 2
+#ifdef ARDUINO_SAMD_FEATHER_M0
+# define RFM95_CS  19
+# define RFM95_RST 17
+# define RFM95_INT 18
+#endif
+
+#ifdef ARDUINO_AVR_UNO
+# define RFM95_CS  10
+# define RFM95_RST 9
+# define RFM95_INT 2
+#endif
 
 LoraRadio radio(RFM95_CS, RFM95_INT, RFM95_RST);
 
@@ -42,7 +50,6 @@ void loop() {
         Serial.println(message);
         radio.send((uint8_t *)message, sizeof(message));
 
-        // radio.printRegisters();
         lastSend = millis();
     }
 

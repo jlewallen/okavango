@@ -30,8 +30,7 @@ void LoraRadio::send(uint8_t *packet, uint8_t size) {
 }
 
 void LoraRadio::tick() {
-    if (rf95.available())
-    {
+    if (rf95.available()) {
         uint8_t length = sizeof(buffer);
         rf95.recv(buffer, &length);
     }
