@@ -1,6 +1,6 @@
 CC=g++
 CFLAGS=-c -Wall
-LIBS=-lwiringPi
+LIBS=-lwiringPi -lpthread
 
 all: lora-receiver
 
