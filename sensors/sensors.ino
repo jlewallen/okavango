@@ -1,9 +1,10 @@
 #include "Platforms.h"
 #include "AtlasScientific.h"
 #include "SerialPortExpander.h"
+#include "LoraRadio.h"
 
 SerialPortExpander portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1, PORT_EXPANDER_SELECT_PIN_2);
-
+LoraRadio radio(RFM95_CS, RFM95_INT, RFM95_RST);
 AtlasScientificBoard board;
 
 void finish() {
@@ -11,6 +12,28 @@ void finish() {
 
     while (true) {
         delay(1000);
+    }
+}
+
+#define NUMBER_OF_VALUES 7
+
+typedef struct sensors_packet_t {
+    uint8_t kind;
+    uint32_t time;
+    float values[NUMBER_OF_VALUES];
+} sensors_packet_t;
+
+uint8_t valueIndex = 0;
+sensors_packet_t packet;
+
+void populatePacket() {
+    for (uint8_t i = 0; i < board.getNumberOfValues(); ++i) {
+        if (valueIndex < NUMBER_OF_VALUES) {
+            packet.values[valueIndex++] = board.getValues()[i];
+        }
+        else {
+            Serial.println("Not enough room for values.");
+        }
     }
 }
 
@@ -35,7 +58,11 @@ void setup() {
     board.setSerial(&portExpanderSerial);
     board.start();
 
+    radio.setup();
+
     platformPostSetup();
+
+    memset((void *)&packet, 0, sizeof(sensors_packet_t));
 
     Serial.println("Loop");
 }
@@ -45,6 +72,7 @@ void loop() {
     delay(50);
 
     if (board.isDone()) {
+        populatePacket();
         byte newPort = portExpander.getPort() + 1;
         portExpander.select(newPort);
         if (newPort < 3) {
@@ -58,6 +86,9 @@ void loop() {
         }
         else {
             Serial.println("Done");
+            radio.send((uint8_t *)&packet, sizeof(sensors_packet_t));
+            delay(5000);
+            radio.sleep();
             finish();
         }
     }

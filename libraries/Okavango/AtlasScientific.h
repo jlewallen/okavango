@@ -23,7 +23,7 @@ private:
     const static int8_t MAX_VALUES = 4;
     AtlasScientificBoardState state = Start;
     float values[MAX_VALUES];
-    int8_t numberOfValues;
+    uint8_t numberOfValues;
 
 public:
     AtlasScientificBoard();
@@ -34,7 +34,7 @@ public:
         return values;
     }
 
-    int8_t getNumberOfValues() {
+    uint8_t getNumberOfValues() {
         return numberOfValues;
     }
 
