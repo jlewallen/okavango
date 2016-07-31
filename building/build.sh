@@ -56,11 +56,19 @@ function clean() {
 }
 
 function preferences() {
-    ${ARD_HOME}/arduino-builder -dump-prefs -logger=machine -hardware "${ARD_HOME}/hardware" -hardware "${PROJECT_DIR}/../arduino/packages" -tools "${ARD_HOME}/tools-builder" -tools "${ARD_HOME}/hardware/tools/avr" -tools "${PROJECT_DIR}/../arduino/packages" -built-in-libraries "${ARD_HOME}/libraries" -libraries "../libraries" -fqbn=${BOARD} ${AB_EXTRA} -ide-version=10609 -build-path ${BUILD_DIR} -warnings=none -prefs=build.warn_data_percentage=75 -verbose ${SOURCES}
+    ${ARD_HOME}/arduino-builder -dump-prefs -logger=machine \
+     -hardware "${ARD_HOME}/hardware" -hardware "${PROJECT_DIR}/../arduino/packages" \
+     -tools "${ARD_HOME}/tools-builder" -tools "${ARD_HOME}/hardware/tools/avr" -tools "${PROJECT_DIR}/../arduino/packages" \
+     -built-in-libraries "${ARD_HOME}/libraries" -libraries "../libraries" -fqbn=${BOARD} ${AB_EXTRA} -ide-version=10609  \
+     -build-path ${BUILD_DIR} -warnings=none -prefs=build.warn_data_percentage=75 -verbose ${SOURCES}
 }
 
 function build() {
-    ${ARD_HOME}/arduino-builder -compile -logger=machine -hardware "${ARD_HOME}/hardware" -hardware "${PROJECT_DIR}/../arduino/packages" -tools "${ARD_HOME}/tools-builder" -tools "${ARD_HOME}/hardware/tools/avr" -tools "${PROJECT_DIR}/../arduino/packages" -built-in-libraries "${ARD_HOME}/libraries" -libraries "../libraries" -fqbn=${BOARD} ${AB_EXTRA} -ide-version=10609 -build-path ${BUILD_DIR} -warnings=none -prefs=build.warn_data_percentage=75 -verbose ${SOURCES}
+    ${ARD_HOME}/arduino-builder -compile -logger=machine \
+     -hardware "${ARD_HOME}/hardware" -hardware "${PROJECT_DIR}/../arduino/packages" \
+     -tools "${ARD_HOME}/tools-builder" -tools "${ARD_HOME}/hardware/tools/avr" -tools "${PROJECT_DIR}/../arduino/packages" \
+     -built-in-libraries "${ARD_HOME}/libraries" -libraries "../libraries" -fqbn=${BOARD} ${AB_EXTRA} -ide-version=10609 \
+     -build-path ${BUILD_DIR} -warnings=none -prefs=build.warn_data_percentage=75 -verbose ${SOURCES}
 }
 
 function upload() {

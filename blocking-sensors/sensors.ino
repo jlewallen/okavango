@@ -21,3 +21,5 @@ void setup() {
 
 void loop() {
 }
+
+// vim: set ft=cpp:

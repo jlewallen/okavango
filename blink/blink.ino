@@ -69,3 +69,5 @@ void loop() {
     digitalWrite(PIN, LOW);
     delay(1000);
 }
+
+// vim: set ft=cpp:
