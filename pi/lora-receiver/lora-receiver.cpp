@@ -122,18 +122,24 @@ void resetRadio() {
     delay(100);
 }
 
-void detectChip() {
+bool detectChip() {
     int8_t version = readRegister(RH_RF95_REG_42_VERSION);
-    if (version != 0x12) {
-        fprintf(stderr, "Unrecognized transceiver\n");
-        fprintf(stderr, "Version: 0x%x\n",version);
-        exit(1);
+    if (version == 0) {
+        fprintf(stderr, "No radio found\n");
+        return false;
     }
+    if (version != 0x12) {
+        fprintf(stderr, "Unrecognized transceiver (Version: 0x%x)\n", version);
+        return false;
+    }
+    return true;
 }
 
-void setupRadio() {
+bool setupRadio() {
     resetRadio();
-    detectChip();
+    if (!detectChip()) {
+        return false;
+    }
 
     writeRegister(RH_RF95_REG_01_OP_MODE, SX72_MODE_SLEEP);
     delay(10);
@@ -170,6 +176,8 @@ void setupRadio() {
     #if 0
     printRegisters();
     #endif
+
+    return true;
 }
 
 int32_t getSnr() {
@@ -221,9 +229,6 @@ void handleIsr() {
 }
 
 int32_t main() {
-    // struct timeval nowtime;
-    // uint32_t lastSeconds;
-
     wiringPiSetup();
 
     pinMode(PIN_SELECT, OUTPUT);
@@ -231,20 +236,20 @@ int32_t main() {
     pinMode(PIN_RESET, OUTPUT);
 
     wiringPiSPISetup(SPI_CHANNEL, 500000);
-
-    setupRadio();
-
     wiringPiISR(PIN_DIO_0, INT_EDGE_RISING, handleIsr);
 
+    bool haveRadio = false;
     while (true) {
-        /*
-        gettimeofday(&nowtime, NULL);
-        uint32_t nowSeconds = (uint32_t)(nowtime.tv_sec);
-        if (nowSeconds - lastSeconds >= 5) {
-            lastSeconds = nowSeconds;
+        if (!haveRadio) {
+            if (setupRadio()) {
+                haveRadio = true;
+            }
         }
-        */
-        delay(500);
+        else {
+            haveRadio = detectChip();
+        }
+
+        delay(1000);
     }
 
     return 0;
