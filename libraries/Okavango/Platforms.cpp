@@ -8,6 +8,10 @@ SerialType conductivitySerial(CONDUCTIVITY_RX_PIN, CONDUCTIVITY_TX_PIN);
 void platformPostSetup() {
 }
 
+void platformRestart() {
+    (*(void(*)())0)();
+}
+
 #endif
 
 #ifdef ARDUINO_SAMD_FEATHER_M0
@@ -30,6 +34,10 @@ void platformPostSetup() {
     // Order is very important here. This has to happen after the call to begin.
     pinPeripheral(10, PIO_SERCOM);
     pinPeripheral(11, PIO_SERCOM);
+}
+
+void platformRestart() {
+    NVIC_SystemReset();
 }
 
 #endif

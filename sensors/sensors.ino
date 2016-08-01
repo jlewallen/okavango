@@ -20,6 +20,7 @@ void finish() {
 typedef struct sensors_packet_t {
     uint8_t kind;
     uint32_t time;
+    float battery;
     float values[NUMBER_OF_VALUES];
 } sensors_packet_t;
 
@@ -37,8 +38,14 @@ void populatePacket() {
     }
 }
 
+#define PIN 13
+
 void setup() {
+    pinMode(PIN, OUTPUT);
+    digitalWrite(PIN, HIGH);
+
     Serial.begin(115200);
+
     #ifdef WAIT_FOR_SERIAL
     while (!Serial) {
         delay(100);
@@ -46,10 +53,9 @@ void setup() {
             break;
         }
     }
-    #else
-    delay(3000);
     #endif
 
+    digitalWrite(PIN, LOW);
     Serial.println("Begin");
 
     portExpander.setup();
@@ -87,9 +93,13 @@ void loop() {
         else {
             Serial.println("Done");
             radio.send((uint8_t *)&packet, sizeof(sensors_packet_t));
-            delay(5000);
+            delay(1000);
             radio.sleep();
+            #ifdef SINGLE_RUN
             finish();
+            #else
+            platformRestart();
+            #endif
         }
     }
 }

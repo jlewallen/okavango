@@ -28,8 +28,6 @@ typedef SoftwareSerial SerialType;
 extern SerialType portExpanderSerial;
 extern SerialType conductivitySerial;
 
-void platformPostSetup();
-
 #endif /* ARDUINO_AVR_UNO */
 
 
@@ -54,11 +52,12 @@ typedef Uart SerialType;
 extern SerialType &portExpanderSerial;
 extern SerialType &conductivitySerial;
 
-void platformPostSetup();
-
 #endif /* ARDUINO_SAMD_FEATHER_M0 */
 
 #include <SPI.h>
 #include <RH_RF95.h>
+
+void platformPostSetup();
+void platformRestart();
 
 #endif

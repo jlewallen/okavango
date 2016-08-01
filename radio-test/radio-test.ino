@@ -1,4 +1,4 @@
-#include "Platform.h"
+#include "Platforms.h"
 #include "LoraRadio.h"
 
 LoraRadio radio(RFM95_CS, RFM95_INT, RFM95_RST);

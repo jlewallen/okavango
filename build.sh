@@ -10,15 +10,17 @@ $BUILD -a -b
 $BUILD -m -b
 popd
 
+pushd radio-test
+$BUILD -a -b
+$BUILD -m -b
+popd
+
 pushd extra-serials
 $BUILD -m -b
 popd
 
-pushd non-blocking
+pushd sensors
 $BUILD -a -b
 $BUILD -m -b
 popd
 
-pushd sensor
-$BUILD -a -b
-popd
