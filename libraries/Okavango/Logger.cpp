@@ -16,6 +16,7 @@ bool Logger::setup() {
         return false;
     }
 
+    #if 0
     for (uint32_t i = 0; i <= 99999999; i++) {
         char filename[13];
         String fn(i);
@@ -39,6 +40,9 @@ bool Logger::setup() {
             }
         }
     }
+    #else
+    openFile("data.csv");
+    #endif
 
     if (opened()) {
         file.flush();
