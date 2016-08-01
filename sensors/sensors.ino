@@ -6,9 +6,11 @@
 #include "AtlasScientific.h"
 #include "SerialPortExpander.h"
 #include "LoraRadio.h"
+#include "Logger.h"
 
 SerialPortExpander portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1);
 LoraRadio radio(RFM95_CS, RFM95_INT, RFM95_RST);
+Logger logger(PIN_SD_CS);
 AtlasScientificBoard board;
 Adafruit_BME280 bme;
 
@@ -72,6 +74,10 @@ void setup() {
     board.setSerial(&portExpanderSerial);
     board.start();
 
+    if (!logger.setup()) {
+        catastrophe();
+    }
+
     if (!radio.setup()) {
         catastrophe();
     }
@@ -122,6 +128,21 @@ void loop() {
             packet.kind = 0;
             packet.time = millis();
             packet.battery = platformBatteryVoltage();
+
+            if (logger.opened()) {
+                Serial.println("Logging");
+                logger.log().print(packet.kind);
+                logger.log().print(",");
+                logger.log().print(packet.time);
+                logger.log().print(",");
+                logger.log().print(packet.battery);
+                for (uint8_t i = 0; i < SENSORS_PACKET_NUMBER_VALUES; ++i) {
+                    logger.log().print(",");
+                    logger.log().print(packet.values[i]);
+                }
+                logger.log().println();
+                logger.log().flush();
+            }
 
             Serial.println("Sending");
 

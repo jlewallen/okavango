@@ -25,6 +25,8 @@
 #define PIN_RED_LED                       13
 #define PIN_GREEN_LED                     13
 
+#define PIN_SD_CS                         ?
+
 typedef SoftwareSerial SerialType;
 
 extern SerialType portExpanderSerial;
@@ -50,6 +52,8 @@ extern SerialType conductivitySerial;
 
 #define PIN_RED_LED                       13
 #define PIN_GREEN_LED                     8
+
+#define PIN_SD_CS                         4
 
 typedef Uart SerialType;
 
