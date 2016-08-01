@@ -41,11 +41,12 @@ void populatePacket() {
     }
 }
 
-#define PIN 13
-
 void setup() {
-    pinMode(PIN, OUTPUT);
-    digitalWrite(PIN, HIGH);
+    pinMode(PIN_RED_LED, OUTPUT);
+    digitalWrite(PIN_RED_LED, HIGH);
+
+    pinMode(PIN_GREEN_LED, OUTPUT);
+    digitalWrite(PIN_GREEN_LED, LOW);
 
     Serial.begin(115200);
 
@@ -58,7 +59,8 @@ void setup() {
     }
     #endif
 
-    digitalWrite(PIN, LOW);
+    digitalWrite(PIN_RED_LED, LOW);
+
     Serial.println("Begin");
 
     portExpander.setup();
@@ -68,6 +70,7 @@ void setup() {
     board.start();
 
     radio.setup();
+    radio.sleep();
 
     if (!bme.begin()) {
         Serial.println("No BME280");
@@ -124,13 +127,11 @@ void loop() {
                 Serial.println("Unable to send!");
             }
 
-            delay(1000);
-            /*
             while (!radio.isIdle()) {
                 Serial.println(radio.modeName());
                 delay(500);
             }
-            */
+
             radio.sleep();
 
             Serial.println("Done");

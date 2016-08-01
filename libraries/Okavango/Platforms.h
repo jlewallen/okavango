@@ -22,6 +22,9 @@
 #define RFM95_RST                         9
 #define RFM95_INT                         2
 
+#define PIN_RED_LED                       13
+#define PIN_GREEN_LED                     13
+
 typedef SoftwareSerial SerialType;
 
 extern SerialType portExpanderSerial;
@@ -44,6 +47,9 @@ extern SerialType conductivitySerial;
 #define RFM95_CS                          19
 #define RFM95_RST                         17
 #define RFM95_INT                         18
+
+#define PIN_RED_LED                       13
+#define PIN_GREEN_LED                     8
 
 typedef Uart SerialType;
 
