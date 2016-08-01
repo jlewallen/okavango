@@ -9,7 +9,6 @@
 
 #define PORT_EXPANDER_SELECT_PIN_0        6
 #define PORT_EXPANDER_SELECT_PIN_1        7
-#define PORT_EXPANDER_SELECT_PIN_2        8
 
 #define PORT_EXPANDER_RX_PIN              2
 #define PORT_EXPANDER_TX_PIN              3
@@ -37,7 +36,6 @@ extern SerialType conductivitySerial;
 
 #define PORT_EXPANDER_SELECT_PIN_0        5
 #define PORT_EXPANDER_SELECT_PIN_1        6
-#define PORT_EXPANDER_SELECT_PIN_2        9
 
 #define WAIT_FOR_SERIAL                   1000 * 60
 

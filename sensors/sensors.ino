@@ -3,7 +3,7 @@
 #include "SerialPortExpander.h"
 #include "LoraRadio.h"
 
-SerialPortExpander portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1, PORT_EXPANDER_SELECT_PIN_2);
+SerialPortExpander portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1);
 LoraRadio radio(RFM95_CS, RFM95_INT, RFM95_RST);
 AtlasScientificBoard board;
 
