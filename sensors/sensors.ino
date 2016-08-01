@@ -1,4 +1,6 @@
 #include <Adafruit_BME280.h>
+#include <SPI.h>
+#include <SD.h>
 
 #include "Platforms.h"
 #include "AtlasScientific.h"
@@ -10,11 +12,12 @@ LoraRadio radio(RFM95_CS, RFM95_INT, RFM95_RST);
 AtlasScientificBoard board;
 Adafruit_BME280 bme;
 
-void finish() {
-    portExpander.select(3);
-
+void catastrophe() {
     while (true) {
-        delay(1000);
+        delay(500);
+        digitalWrite(PIN_RED_LED, HIGH);
+        delay(500);
+        digitalWrite(PIN_RED_LED, LOW);
     }
 }
 
@@ -69,11 +72,14 @@ void setup() {
     board.setSerial(&portExpanderSerial);
     board.start();
 
-    radio.setup();
+    if (!radio.setup()) {
+        catastrophe();
+    }
+
     radio.sleep();
 
     if (!bme.begin()) {
-        Serial.println("No BME280");
+        catastrophe();
     }
 
     platformPostSetup();
@@ -121,8 +127,6 @@ void loop() {
 
             radio.setup();
 
-            delay(1000);
-
             if (!radio.send((uint8_t *)&packet, sizeof(sensors_packet_t))) {
                 Serial.println("Unable to send!");
             }
@@ -136,11 +140,7 @@ void loop() {
 
             Serial.println("Done");
 
-            #ifdef SINGLE_RUN
-            finish();
-            #else
             platformRestart();
-            #endif
         }
     }
 }

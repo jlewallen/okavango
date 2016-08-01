@@ -12,7 +12,7 @@ private:
 
 public:
     LoraRadio(uint8_t pinCs, uint8_t pinG0, uint8_t pinEnable);
-    void setup();
+    bool setup();
     void tick();
     bool send(uint8_t *packet, uint8_t size);
 

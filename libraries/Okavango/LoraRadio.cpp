@@ -1,13 +1,12 @@
 #include "LoraRadio.h"
 
 #define RF95_FREQ 915.0
-#define HALT(error) Serial.println(error); while (true) { }
 
 LoraRadio::LoraRadio(uint8_t pinCs, uint8_t pinG0, uint8_t pinEnable)
     : rf95(pinCs, pinG0), pinEnable(pinEnable) {
 }
 
-void LoraRadio::setup() {
+bool LoraRadio::setup() {
     pinMode(pinEnable, OUTPUT);
 
     powerOn();
@@ -15,14 +14,18 @@ void LoraRadio::setup() {
     reset();
 
     while (!rf95.init()) {
-        HALT("LoraRadio: Initialize failed!");
+        Serial.println("LoraRadio: Initialize failed!");
+        return false;
     }
 
     if (!rf95.setFrequency(RF95_FREQ)) {
-        HALT("LoraRadio: setFrequency failed!");
+        Serial.println("LoraRadio: setFrequency failed!");
+        return false;
     }
 
     rf95.setTxPower(23, false);
+
+    return true;
 }
 
 bool LoraRadio::send(uint8_t *packet, uint8_t size) {
