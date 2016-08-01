@@ -38,9 +38,18 @@ const int32_t rssiCorrection = 157;
 const sf_t sf = SF7;
 
 typedef struct packet_t {
-    int8_t size;
-    char *data;
+    uint8_t size;
+    uint8_t *data;
 } packet_t;
+
+#define SENSORS_PACKET_NUMBER_VALUES 10
+
+typedef struct sensors_packet_t {
+    uint8_t kind;
+    uint32_t time;
+    float battery;
+    float values[SENSORS_PACKET_NUMBER_VALUES];
+} sensors_packet_t;
 
 void selectReceiver() {
     digitalWrite(PIN_SELECT, LOW);
@@ -102,7 +111,7 @@ packet_t *readPacket() {
 
     packet_t *pkt = (packet_t *)malloc(sizeof(packet_t) + receivedBytes + 1);
     pkt->size = receivedBytes;
-    pkt->data = ((char *)pkt) + sizeof(packet_t);
+    pkt->data = ((uint8_t *)pkt) + sizeof(packet_t);
 
     writeRegister(RH_RF95_REG_0D_FIFO_ADDR_PTR, currentAddress);
 
@@ -202,6 +211,13 @@ int32_t getRssi() {
 void receivePacket() {
     packet_t *pkt = readPacket();
     if (pkt != NULL) {
+        if (pkt->size <= 4) {
+            fprintf(stderr, "Ignoring small packet (%d)\n", pkt->size);
+            free(pkt);
+            pkt = NULL;
+            return;
+        }
+
         int8_t headerTo = pkt->data[0];
         int8_t headerFrom = pkt->data[1];
         int8_t headerId = pkt->data[2];
@@ -214,8 +230,19 @@ void receivePacket() {
         printf("To: %x, From: %x, Id: %x, Flags: %x", headerTo, headerFrom, headerId, headerFlags);
         printf("\n");
 
-        pkt->data[pkt->size] = 0;
-        printf("%s\n", pkt->data + 4);
+        uint8_t *frame = (uint8_t *)pkt->data + 4;
+        if (frame[0] == 0) {
+            sensors_packet_t *sensorsPacket = (sensors_packet_t *)frame;
+            printf("%d %d %f", sensorsPacket->kind, sensorsPacket->time, sensorsPacket->battery);
+            for (int8_t i = 0; i < SENSORS_PACKET_NUMBER_VALUES; ++i) {
+                printf(" %f", sensorsPacket->values[i]);
+            }
+            printf("\n");
+        }
+        else {
+            pkt->data[pkt->size] = 0;
+            printf("%s\n", (char *)frame);
+        }
 
         fflush(stdout);
 
