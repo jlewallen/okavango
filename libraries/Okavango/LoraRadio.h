@@ -14,7 +14,7 @@ public:
     LoraRadio(uint8_t pinCs, uint8_t pinG0, uint8_t pinEnable);
     void setup();
     void tick();
-    void send(uint8_t *packet, uint8_t size);
+    bool send(uint8_t *packet, uint8_t size);
 
     const uint8_t *getPacket() {
         return buffer;

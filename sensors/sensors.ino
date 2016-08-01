@@ -1,3 +1,5 @@
+#include <Adafruit_BME280.h>
+
 #include "Platforms.h"
 #include "AtlasScientific.h"
 #include "SerialPortExpander.h"
@@ -6,6 +8,7 @@
 SerialPortExpander portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1);
 LoraRadio radio(RFM95_CS, RFM95_INT, RFM95_RST);
 AtlasScientificBoard board;
+Adafruit_BME280 bme;
 
 void finish() {
     portExpander.select(3);
@@ -15,13 +18,13 @@ void finish() {
     }
 }
 
-#define NUMBER_OF_VALUES 7
+#define SENSORS_PACKET_NUMBER_VALUES 10
 
 typedef struct sensors_packet_t {
     uint8_t kind;
     uint32_t time;
     float battery;
-    float values[NUMBER_OF_VALUES];
+    float values[SENSORS_PACKET_NUMBER_VALUES];
 } sensors_packet_t;
 
 uint8_t valueIndex = 0;
@@ -29,7 +32,7 @@ sensors_packet_t packet;
 
 void populatePacket() {
     for (uint8_t i = 0; i < board.getNumberOfValues(); ++i) {
-        if (valueIndex < NUMBER_OF_VALUES) {
+        if (valueIndex < SENSORS_PACKET_NUMBER_VALUES) {
             packet.values[valueIndex++] = board.getValues()[i];
         }
         else {
@@ -66,6 +69,10 @@ void setup() {
 
     radio.setup();
 
+    if (!bme.begin()) {
+        Serial.println("No BME280");
+    }
+
     platformPostSetup();
 
     memset((void *)&packet, 0, sizeof(sensors_packet_t));
@@ -91,15 +98,43 @@ void loop() {
             board.start(OPEN_CONDUCTIVITY_SERIAL_ON_START);
         }
         else {
-            Serial.println("Done");
+            Serial.println("Bme");
+
+            float temperature = bme.readTemperature();
+            float pressure = bme.readPressure();
+            float humidity = bme.readHumidity();
+
+            packet.values[valueIndex++] = temperature;
+            packet.values[valueIndex++] = pressure;
+            packet.values[valueIndex++] = humidity;
+
+            Serial.println("Metrics");
 
             packet.kind = 0;
             packet.time = millis();
             packet.battery = platformBatteryVoltage();
 
-            radio.send((uint8_t *)&packet, sizeof(sensors_packet_t));
+            Serial.println("Sending");
+
+            radio.setup();
+
             delay(1000);
+
+            if (!radio.send((uint8_t *)&packet, sizeof(sensors_packet_t))) {
+                Serial.println("Unable to send!");
+            }
+
+            delay(1000);
+            /*
+            while (!radio.isIdle()) {
+                Serial.println(radio.modeName());
+                delay(500);
+            }
+            */
             radio.sleep();
+
+            Serial.println("Done");
+
             #ifdef SINGLE_RUN
             finish();
             #else

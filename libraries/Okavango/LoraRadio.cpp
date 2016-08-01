@@ -25,8 +25,8 @@ void LoraRadio::setup() {
     rf95.setTxPower(23, false);
 }
 
-void LoraRadio::send(uint8_t *packet, uint8_t size) {
-    rf95.send(packet, size);
+bool LoraRadio::send(uint8_t *packet, uint8_t size) {
+    return rf95.send(packet, size);
 }
 
 void LoraRadio::tick() {
