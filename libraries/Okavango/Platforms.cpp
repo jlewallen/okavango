@@ -12,6 +12,10 @@ void platformRestart() {
     (*(void(*)())0)();
 }
 
+float platformBatteryVoltage() {
+    return 0.0f;
+}
+
 #endif
 
 #ifdef ARDUINO_SAMD_FEATHER_M0
@@ -38,6 +42,16 @@ void platformPostSetup() {
 
 void platformRestart() {
     NVIC_SystemReset();
+}
+
+#define FEATHER_M0_VBATPIN      A7
+   
+float platformBatteryVoltage() {
+    float vBat = analogRead(FEATHER_M0_VBATPIN);
+    vBat *= 2;    // board divides by 2
+    vBat *= 3.3;  // multiply by 3.3V, our reference voltage
+    vBat /= 1024; // convert to voltage
+    return vBat;
 }
 
 #endif

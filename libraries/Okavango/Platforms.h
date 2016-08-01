@@ -59,5 +59,6 @@ extern SerialType &conductivitySerial;
 
 void platformPostSetup();
 void platformRestart();
+float platformBatteryVoltage();
 
 #endif

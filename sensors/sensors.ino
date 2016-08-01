@@ -92,6 +92,11 @@ void loop() {
         }
         else {
             Serial.println("Done");
+
+            packet.kind = 0;
+            packet.time = millis();
+            packet.battery = platformBatteryVoltage();
+
             radio.send((uint8_t *)&packet, sizeof(sensors_packet_t));
             delay(1000);
             radio.sleep();
