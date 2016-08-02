@@ -95,6 +95,59 @@ void setup() {
     Serial.println("Loop");
 }
 
+void logPacketLocally() {
+    if (logger.opened()) {
+        Serial.println("Logging");
+        logger.log().print(packet.kind);
+        logger.log().print(",");
+        logger.log().print(packet.time);
+        logger.log().print(",");
+        logger.log().print(packet.battery);
+        for (uint8_t i = 0; i < SENSORS_PACKET_NUMBER_VALUES; ++i) {
+            logger.log().print(",");
+            logger.log().print(packet.values[i]);
+        }
+        logger.log().println();
+        logger.log().flush();
+    }
+}
+
+void sendPacketAndWaitForAck() {
+    Serial.println("Enabling radio");
+
+    radio.setup();
+
+    for (uint8_t i = 0; i < 3; ++i) {
+        Serial.println("Sending");
+
+        if (!radio.send((uint8_t *)&packet, sizeof(sensors_packet_t))) {
+            Serial.println("Unable to send!");
+            delay(500);
+            break;
+        }
+
+        radio.waitPacketSent();
+
+        uint32_t before = millis();
+        bool gotAck = false;
+        while (millis() - before < 5000) {
+            radio.tick();
+
+            if (radio.hasPacket()) {
+                gotAck = true;
+                radio.clear();
+                break;
+            }
+            delay(500);
+        }
+        if (gotAck) {
+            break;
+        }
+    }
+
+    radio.sleep();
+}
+
 void loop() {
     board.tick();
     delay(50);
@@ -129,35 +182,9 @@ void loop() {
             packet.time = millis();
             packet.battery = platformBatteryVoltage();
 
-            if (logger.opened()) {
-                Serial.println("Logging");
-                logger.log().print(packet.kind);
-                logger.log().print(",");
-                logger.log().print(packet.time);
-                logger.log().print(",");
-                logger.log().print(packet.battery);
-                for (uint8_t i = 0; i < SENSORS_PACKET_NUMBER_VALUES; ++i) {
-                    logger.log().print(",");
-                    logger.log().print(packet.values[i]);
-                }
-                logger.log().println();
-                logger.log().flush();
-            }
+            logPacketLocally();
 
-            Serial.println("Sending");
-
-            radio.setup();
-
-            if (!radio.send((uint8_t *)&packet, sizeof(sensors_packet_t))) {
-                Serial.println("Unable to send!");
-            }
-
-            while (!radio.isIdle()) {
-                Serial.println(radio.modeName());
-                delay(500);
-            }
-
-            radio.sleep();
+            sendPacketAndWaitForAck();
 
             Serial.println("Done");
 

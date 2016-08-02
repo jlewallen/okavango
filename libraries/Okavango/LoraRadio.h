@@ -9,6 +9,7 @@ private:
     RH_RF95 rf95;
     const uint8_t pinEnable;
     uint8_t buffer[RH_RF95_MAX_MESSAGE_LEN];
+    uint8_t length;
 
 public:
     LoraRadio(uint8_t pinCs, uint8_t pinG0, uint8_t pinEnable);
@@ -21,7 +22,7 @@ public:
     }
 
     bool hasPacket() {
-        return buffer[0] != 0;
+        return length > 0;
     }
 
     bool isIdle() {
@@ -29,6 +30,7 @@ public:
     }
 
     void clear() {
+        length = 0;
         buffer[0] = 0;
     }
 
@@ -48,6 +50,10 @@ public:
         delay(10);
         powerOn();
         delay(10);
+    }
+
+    void waitPacketSent() {
+        rf95.waitPacketSent();
     }
 
     void sleep() {

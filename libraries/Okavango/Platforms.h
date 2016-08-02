@@ -42,7 +42,7 @@ extern SerialType conductivitySerial;
 #define PORT_EXPANDER_SELECT_PIN_0        5
 #define PORT_EXPANDER_SELECT_PIN_1        6
 
-#define WAIT_FOR_SERIAL                   1000 * 60
+#define WAIT_FOR_SERIAL                   1000 * 30
 
 #define OPEN_CONDUCTIVITY_SERIAL_ON_START false
 
