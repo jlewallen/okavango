@@ -10,6 +10,8 @@ enum sf_t {
     SF12
 };
 
+#define SX1272_HEADER_LENGTH                               4
+
 #define PAYLOAD_LENGTH              0x40
 
 #define RH_RF95_REG_00_FIFO                                0x00
@@ -65,10 +67,18 @@ enum sf_t {
 #define RH_RF95_REG_63_AGC_THRESH2                         0x63
 #define RH_RF95_REG_64_AGC_THRESH3                         0x64
 
-#define SX72_MODE_RX_CONTINUOS      0x85
-#define SX72_MODE_TX                0x83
-#define SX72_MODE_SLEEP             0x80
-#define SX72_MODE_STANDBY           0x81
+// RH_RF95_REG_01_OP_MODE                             0x01
+#define RH_RF95_LONG_RANGE_MODE                       0x80
+#define RH_RF95_ACCESS_SHARED_REG                     0x40
+#define RH_RF95_MODE                                  0x07
+#define RH_RF95_MODE_SLEEP                            0x00
+#define RH_RF95_MODE_STDBY                            0x01
+#define RH_RF95_MODE_FSTX                             0x02
+#define RH_RF95_MODE_TX                               0x03
+#define RH_RF95_MODE_FSRX                             0x04
+#define RH_RF95_MODE_RXCONTINUOUS                     0x05
+#define RH_RF95_MODE_RXSINGLE                         0x06
+#define RH_RF95_MODE_CAD                              0x07
 
 #define RH_RF95_LNA_MAX_GAIN                0x23
 #define RH_RF95_LNA_OFF_GAIN                0x00
@@ -111,6 +121,10 @@ enum sf_t {
 
 #define SX72_MC1_LOW_DATA_RATE_OPTIMIZE  0x01 // mandated for SF11 and SF12
 
+// RH_RF95_REG_09_PA_CONFIG                           0x09
+#define RH_RF95_PA_SELECT                             0x80
+#define RH_RF95_OUTPUT_POWER                          0x0f
+
 // set frequency
 // uint64_t frf = ((uint64_t)freq << 19) / 32000000;
 // The crystal oscillator frequency of the module
@@ -118,5 +132,36 @@ enum sf_t {
 
 // The Frequency Synthesizer step = RH_RF95_FXOSC / 2^^19
 #define RH_RF95_FSTEP  (RH_RF95_FXOSC / 524288)
+
+typedef struct raw_packet_t {
+    uint8_t size;
+    uint8_t *data;
+} raw_packet_t;
+
+typedef struct lora_packet_t {
+    uint8_t size;
+    uint8_t *data;
+    uint8_t to;
+    uint8_t from;
+    uint8_t id;
+    uint8_t flags;
+} lora_packet_t;
+
+bool radio_setup();
+bool radio_detect_chip();
+void radio_print_registers();
+void radio_reset();
+uint8_t radio_get_mode();
+void radio_set_mode_tx();
+void radio_set_mode_rx();
+void radio_set_mode_idle();
+void radio_set_preamble_length(uint16_t length);
+void radio_send_packet(lora_packet_t *packet);
+raw_packet_t *radio_read_raw_packet();
+lora_packet_t *lora_packet_new(size_t size);
+lora_packet_t *lora_packet_create_from(raw_packet_t *raw);
+int32_t radio_get_snr();
+int32_t radio_get_packet_rssi();
+int32_t radio_get_rssi();
 
 #endif
