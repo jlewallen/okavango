@@ -211,6 +211,10 @@ raw_packet_t *radio_read_raw_packet() {
         pkt->data[i] = (char)spi_read_register(RH_RF95_REG_00_FIFO);
     }
 
+    pkt->packet_rssi = radio_get_packet_rssi();
+    pkt->rssi = radio_get_rssi();
+    pkt->snr = radio_get_snr();
+
     return pkt;
 }
 
@@ -290,26 +294,48 @@ lora_packet_t *lora_packet_create_from(raw_packet_t *raw) {
 
 time_t last_packet_at = 0;
 
+void log_raw_packet(FILE *fp, raw_packet_t *raw_packet, lora_packet_t *lora_packet) {
+    fprintf(fp, "0x%x,0x%x,0x%x,0x%x,", lora_packet->to, lora_packet->from, lora_packet->id, lora_packet->flags);
+    fprintf(fp, "%d,", (int32_t)lora_packet->size);
+    fprintf(fp, "%d,", raw_packet->packet_rssi);
+    fprintf(fp, "%d,", raw_packet->rssi);
+    fprintf(fp, "%d", raw_packet->snr);
+    fprintf(fp, "\n");
+}
+
+void log_sensors_packet(FILE *fp, sensors_packet_t *sensors_packet) {
+    fprintf(fp, "%d,%d,%f", sensors_packet->kind, sensors_packet->time, sensors_packet->battery);
+    for (int8_t i = 0; i < SENSORS_PACKET_NUMBER_VALUES; ++i) {
+        fprintf(fp, ",%f", sensors_packet->values[i]);
+    }
+    fprintf(fp, "\n");
+}
+
 void receive_packet() {
     raw_packet_t *raw_packet = radio_read_raw_packet();
     if (raw_packet != NULL) {
         lora_packet_t *lora_packet = lora_packet_create_from(raw_packet);
         if (lora_packet != NULL) {
-            printf("Packet RSSI: %d, ", radio_get_packet_rssi());
-            printf("RSSI: %d, ", radio_get_rssi());
-            printf("SNR: %d, ", radio_get_snr());
-            printf("Length: %d, ", (int32_t)lora_packet->size);
-            printf("To: %x, From: %x, Id: %x, Flags: %x", lora_packet->to, lora_packet->from, lora_packet->id, lora_packet->flags);
-            printf("\n");
 
             uint8_t *frame = lora_packet->data;
             if (frame[0] == 0) {
                 sensors_packet_t *sensors_packet = (sensors_packet_t *)frame;
-                printf("%d %d %f", sensors_packet->kind, sensors_packet->time, sensors_packet->battery);
-                for (int8_t i = 0; i < SENSORS_PACKET_NUMBER_VALUES; ++i) {
-                    printf(" %f", sensors_packet->values[i]);
+
+                log_raw_packet(stdout, raw_packet, lora_packet);
+                log_sensors_packet(stdout, sensors_packet);
+
+                FILE *log_file = fopen("lora-receiver.log", "a+");
+                if (log_file != NULL) {
+                    log_raw_packet(log_file, raw_packet, lora_packet);
+                    log_sensors_packet(log_file, sensors_packet);
+                    fclose(log_file);
                 }
-                printf("\n");
+
+                FILE *sensors_file = fopen("sensors.log", "a+");
+                if (sensors_file != NULL) {
+                    log_sensors_packet(sensors_file, sensors_packet);
+                    fclose(sensors_file);
+                }
 
                 lora_packet_t *ack = lora_packet_new(1);
                 radio_send_packet(ack);

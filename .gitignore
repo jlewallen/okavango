@@ -1,3 +1,4 @@
+*.log
 *.swp
 *.pyc
 databoat.json
@@ -8,6 +9,7 @@ arduino-1.6.9
 */build
 
 log.txt
+screenlog.*
 
 *.o
 pi/lora-receiver/lora-receiver

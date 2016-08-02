@@ -136,6 +136,9 @@ enum sf_t {
 typedef struct raw_packet_t {
     uint8_t size;
     uint8_t *data;
+    int32_t packet_rssi;
+    int32_t rssi;
+    int32_t snr;
 } raw_packet_t;
 
 typedef struct lora_packet_t {
