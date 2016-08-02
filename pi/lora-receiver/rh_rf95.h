@@ -150,21 +150,28 @@ typedef struct lora_packet_t {
     uint8_t flags;
 } lora_packet_t;
 
-bool radio_setup();
-bool radio_detect_chip();
-void radio_print_registers();
-void radio_reset();
-uint8_t radio_get_mode();
-void radio_set_mode_tx();
-void radio_set_mode_rx();
-void radio_set_mode_idle();
-void radio_set_preamble_length(uint16_t length);
-void radio_send_packet(lora_packet_t *packet);
-raw_packet_t *radio_read_raw_packet();
+typedef struct radio_t {
+    pthread_mutex_t mutex;
+    uint8_t mode;
+    uint8_t pin_slave;
+    uint8_t pin_power;
+} radio_t;
+
+bool radio_setup(radio_t *radio);
+bool radio_detect_chip(radio_t *radio);
+void radio_print_registers(radio_t *radio);
+void radio_reset(radio_t *radio);
+uint8_t radio_get_mode(radio_t *radio);
+void radio_set_mode_tx(radio_t *radio);
+void radio_set_mode_rx(radio_t *radio);
+void radio_set_mode_idle(radio_t *radio);
+void radio_set_preamble_length(radio_t *radio, uint16_t length);
+void radio_send_packet(radio_t *radio, lora_packet_t *packet);
+raw_packet_t *radio_read_raw_packet(radio_t *radio);
 lora_packet_t *lora_packet_new(size_t size);
 lora_packet_t *lora_packet_create_from(raw_packet_t *raw);
-int32_t radio_get_snr();
-int32_t radio_get_packet_rssi();
-int32_t radio_get_rssi();
+int32_t radio_get_snr(radio_t *radio);
+int32_t radio_get_packet_rssi(radio_t *radio);
+int32_t radio_get_rssi(radio_t *radio);
 
 #endif
