@@ -1,18 +1,9 @@
 #ifndef RH_RF95_H
 #define RH_RF95_H
 
-enum sf_t {
-    SF7 = 7,
-    SF8,
-    SF9,
-    SF10,
-    SF11,
-    SF12
-};
+#define RH_RF95_RSSI_CORRECTION                            157
 
 #define SX1272_HEADER_LENGTH                               4
-
-#define PAYLOAD_LENGTH              0x40
 
 #define RH_RF95_REG_00_FIFO                                0x00
 #define RH_RF95_REG_01_OP_MODE                             0x01
@@ -152,11 +143,24 @@ typedef struct lora_packet_t {
 
 typedef struct radio_t {
     pthread_mutex_t mutex;
+    uint8_t number;
     uint8_t mode;
     uint8_t pin_slave;
     uint8_t pin_power;
+    uint8_t pin_dio0;
+    uint8_t spi_channel;
+    time_t last_packet_at;
 } radio_t;
 
+typedef bool boolean;
+
+typedef struct modem_config_t {
+    uint8_t reg_1d;
+    uint8_t reg_1e;
+    uint8_t reg_26;
+} modem_config_t;
+
+radio_t *radio_create(uint8_t number);
 bool radio_setup(radio_t *radio);
 bool radio_detect_chip(radio_t *radio);
 void radio_print_registers(radio_t *radio);

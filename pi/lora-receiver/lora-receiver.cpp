@@ -1,14 +1,3 @@
-/*******************************************************************************
- *
- * Copyright (c) 2015 Thomas Telkamp
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- *******************************************************************************/
-
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -27,14 +16,9 @@
 
 #include "rh_rf95.h"
 
-#define PIN_SELECT      6
-#define PIN_DIO_0       7
-#define PIN_RESET       0
-#define SPI_CHANNEL 0
-
-typedef bool boolean;
-
 #define SENSORS_PACKET_NUMBER_VALUES 10
+
+modem_config_t Bw125Cr45Sf128 = { 0x72, 0x74, 0x00};
 
 typedef struct sensors_packet_t {
     uint8_t kind;
@@ -43,49 +27,41 @@ typedef struct sensors_packet_t {
     float values[SENSORS_PACKET_NUMBER_VALUES];
 } sensors_packet_t;
 
-int8_t spi_read_register(uint8_t pin_slave, int8_t address) {
+int8_t spi_read_register(radio_t *radio, int8_t address) {
     unsigned char buffer[2];
 
     buffer[0] = address & 0x7F;
     buffer[1] = 0x00;
 
-    digitalWrite(pin_slave, LOW);
-    wiringPiSPIDataRW(SPI_CHANNEL, buffer, 2);
-    digitalWrite(pin_slave, HIGH);
+    digitalWrite(radio->pin_slave, LOW);
+    wiringPiSPIDataRW(radio->spi_channel, buffer, 2);
+    digitalWrite(radio->pin_slave, HIGH);
 
     return buffer[1];
 }
 
-void spi_write_register(uint8_t pin_slave, int8_t address, int8_t value) {
+void spi_write_register(radio_t *radio, int8_t address, int8_t value) {
     unsigned char buffer[2];
 
     buffer[0] = address | 0x80;
     buffer[1] = value;
 
-    digitalWrite(pin_slave, LOW);
-    wiringPiSPIDataRW(SPI_CHANNEL, buffer, 2);
-    digitalWrite(pin_slave, HIGH);
+    digitalWrite(radio->pin_slave, LOW);
+    wiringPiSPIDataRW(radio->spi_channel, buffer, 2);
+    digitalWrite(radio->pin_slave, HIGH);
 }
 
 void radio_set_frequency(radio_t *radio, float centre) {
     uint32_t frf = (centre * 1000000.0) / RH_RF95_FSTEP;
-    spi_write_register(radio->pin_slave, RH_RF95_REG_06_FRF_MSB, (uint8_t)((frf >> 16) & 0xff));
-    spi_write_register(radio->pin_slave, RH_RF95_REG_07_FRF_MID, (uint8_t)((frf >> 8) & 0xff));
-    spi_write_register(radio->pin_slave, RH_RF95_REG_08_FRF_LSB, (uint8_t)((frf) & 0xff));
+    spi_write_register(radio, RH_RF95_REG_06_FRF_MSB, (uint8_t)((frf >> 16) & 0xff));
+    spi_write_register(radio, RH_RF95_REG_07_FRF_MID, (uint8_t)((frf >> 8) & 0xff));
+    spi_write_register(radio, RH_RF95_REG_08_FRF_LSB, (uint8_t)((frf) & 0xff));
 }
 
-typedef struct modem_config_t {
-    uint8_t reg_1d;
-    uint8_t reg_1e;
-    uint8_t reg_26;
-} modem_config_t;
-
-modem_config_t Bw125Cr45Sf128 = { 0x72, 0x74, 0x00};
-
 void radio_set_modem_config(radio_t *radio, modem_config_t *config) {
-    spi_write_register(radio->pin_slave, RH_RF95_REG_1D_MODEM_CONFIG1, config->reg_1d);
-    spi_write_register(radio->pin_slave, RH_RF95_REG_1E_MODEM_CONFIG2, config->reg_1e);
-    spi_write_register(radio->pin_slave, RH_RF95_REG_26_MODEM_CONFIG3, config->reg_26);
+    spi_write_register(radio, RH_RF95_REG_1D_MODEM_CONFIG1, config->reg_1d);
+    spi_write_register(radio, RH_RF95_REG_1E_MODEM_CONFIG2, config->reg_1e);
+    spi_write_register(radio, RH_RF95_REG_26_MODEM_CONFIG3, config->reg_26);
 }
 
 void radio_set_tx_power(radio_t *radio, int8_t power) {
@@ -93,7 +69,7 @@ void radio_set_tx_power(radio_t *radio, int8_t power) {
         power = 20;
     if (power < 5)
         power = 5;
-    spi_write_register(radio->pin_slave, RH_RF95_REG_09_PA_CONFIG, RH_RF95_PA_SELECT | (power - 5));
+    spi_write_register(radio, RH_RF95_REG_09_PA_CONFIG, RH_RF95_PA_SELECT | (power - 5));
 }
 
 bool radio_setup(radio_t *radio) {
@@ -103,13 +79,13 @@ bool radio_setup(radio_t *radio) {
         return false;
     }
 
-    spi_write_register(radio->pin_slave, RH_RF95_REG_01_OP_MODE, RH_RF95_MODE_SLEEP | RH_RF95_LONG_RANGE_MODE);
+    spi_write_register(radio, RH_RF95_REG_01_OP_MODE, RH_RF95_MODE_SLEEP | RH_RF95_LONG_RANGE_MODE);
     delay(10);
 
-    spi_write_register(radio->pin_slave, RH_RF95_REG_0D_FIFO_ADDR_PTR, spi_read_register(radio->pin_slave, RH_RF95_REG_0F_FIFO_RX_BASE_ADDR));
-    spi_write_register(radio->pin_slave, RH_RF95_REG_23_MAX_PAYLOAD_LENGTH, 0x80);
-    spi_write_register(radio->pin_slave, RH_RF95_REG_0E_FIFO_TX_BASE_ADDR, 0);
-    spi_write_register(radio->pin_slave, RH_RF95_REG_0F_FIFO_RX_BASE_ADDR, 0);
+    spi_write_register(radio, RH_RF95_REG_0D_FIFO_ADDR_PTR, spi_read_register(radio, RH_RF95_REG_0F_FIFO_RX_BASE_ADDR));
+    spi_write_register(radio, RH_RF95_REG_23_MAX_PAYLOAD_LENGTH, 0x80);
+    spi_write_register(radio, RH_RF95_REG_0E_FIFO_TX_BASE_ADDR, 0);
+    spi_write_register(radio, RH_RF95_REG_0F_FIFO_RX_BASE_ADDR, 0);
 
     radio_set_mode_idle(radio);
 
@@ -131,33 +107,33 @@ void radio_print_registers(radio_t *radio) {
     0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x39 };
 
     for (uint8_t i = 0; i < sizeof(registers); i++) {
-        printf("%x: %x\n", registers[i], spi_read_register(radio->pin_slave, registers[i]));
+        printf("%x: %x\n", registers[i], spi_read_register(radio, registers[i]));
     }
 }
 
 uint8_t radio_get_mode(radio_t *radio) {
-    return spi_read_register(radio->pin_slave, RH_RF95_REG_01_OP_MODE);
+    return spi_read_register(radio, RH_RF95_REG_01_OP_MODE);
 }
 
 void radio_set_mode_tx(radio_t *radio) {
     if (radio->mode != RH_RF95_MODE_TX) {
-        spi_write_register(radio->pin_slave, RH_RF95_REG_40_DIO_MAPPING1, 0x40); // IRQ on TxDone
-        spi_write_register(radio->pin_slave, RH_RF95_REG_01_OP_MODE, RH_RF95_MODE_TX);
+        spi_write_register(radio, RH_RF95_REG_40_DIO_MAPPING1, 0x40); // IRQ on TxDone
+        spi_write_register(radio, RH_RF95_REG_01_OP_MODE, RH_RF95_MODE_TX);
         radio->mode = RH_RF95_MODE_TX;
     }
 }
 
 void radio_set_mode_rx(radio_t *radio) {
     if (radio->mode != RH_RF95_MODE_RXCONTINUOUS) {
-        spi_write_register(radio->pin_slave, RH_RF95_REG_40_DIO_MAPPING1, 0x00); // IRQ on RxDone
-        spi_write_register(radio->pin_slave, RH_RF95_REG_01_OP_MODE, RH_RF95_MODE_RXCONTINUOUS);
+        spi_write_register(radio, RH_RF95_REG_40_DIO_MAPPING1, 0x00); // IRQ on RxDone
+        spi_write_register(radio, RH_RF95_REG_01_OP_MODE, RH_RF95_MODE_RXCONTINUOUS);
         radio->mode = RH_RF95_MODE_RXCONTINUOUS;
     }
 }
 
 void radio_set_mode_idle(radio_t *radio) {
     if (radio->mode != RH_RF95_MODE_STDBY) {
-        spi_write_register(radio->pin_slave, RH_RF95_REG_01_OP_MODE, RH_RF95_MODE_STDBY);
+        spi_write_register(radio, RH_RF95_REG_01_OP_MODE, RH_RF95_MODE_STDBY);
         radio->mode = RH_RF95_MODE_STDBY;
     }
 }
@@ -165,40 +141,42 @@ void radio_set_mode_idle(radio_t *radio) {
 void radio_send_packet(radio_t *radio, lora_packet_t *packet) {
     radio_set_mode_idle(radio);
 
-    spi_write_register(radio->pin_slave, RH_RF95_REG_0E_FIFO_TX_BASE_ADDR, 0);
-    spi_write_register(radio->pin_slave, RH_RF95_REG_0D_FIFO_ADDR_PTR, 0);
+    spi_write_register(radio, RH_RF95_REG_0E_FIFO_TX_BASE_ADDR, 0);
+    spi_write_register(radio, RH_RF95_REG_0D_FIFO_ADDR_PTR, 0);
 
-    spi_write_register(radio->pin_slave, RH_RF95_REG_00_FIFO, packet->to);
-    spi_write_register(radio->pin_slave, RH_RF95_REG_00_FIFO, packet->from);
-    spi_write_register(radio->pin_slave, RH_RF95_REG_00_FIFO, packet->id);
-    spi_write_register(radio->pin_slave, RH_RF95_REG_00_FIFO, packet->flags);
+    spi_write_register(radio, RH_RF95_REG_00_FIFO, packet->to);
+    spi_write_register(radio, RH_RF95_REG_00_FIFO, packet->from);
+    spi_write_register(radio, RH_RF95_REG_00_FIFO, packet->id);
+    spi_write_register(radio, RH_RF95_REG_00_FIFO, packet->flags);
 
     for (uint8_t i = 0; i < packet->size; ++i) {
-        spi_write_register(radio->pin_slave, RH_RF95_REG_00_FIFO, packet->data[i]);
+        spi_write_register(radio, RH_RF95_REG_00_FIFO, packet->data[i]);
     }
 
-    spi_write_register(radio->pin_slave, RH_RF95_REG_22_PAYLOAD_LENGTH, packet->size + SX1272_HEADER_LENGTH);
+    spi_write_register(radio, RH_RF95_REG_22_PAYLOAD_LENGTH, packet->size + SX1272_HEADER_LENGTH);
 
     radio_set_mode_tx(radio);
 }
 
 raw_packet_t *radio_read_raw_packet(radio_t *radio) {
-    uint8_t current_address = spi_read_register(radio->pin_slave, RH_RF95_REG_10_FIFO_RX_CURRENT_ADDR);
-    uint8_t received_bytes = spi_read_register(radio->pin_slave, RH_RF95_REG_13_RX_NB_BYTES);
+    uint8_t current_address = spi_read_register(radio, RH_RF95_REG_10_FIFO_RX_CURRENT_ADDR);
+    uint8_t received_bytes = spi_read_register(radio, RH_RF95_REG_13_RX_NB_BYTES);
 
     raw_packet_t *pkt = (raw_packet_t *)malloc(sizeof(raw_packet_t) + received_bytes + 1);
     pkt->size = received_bytes;
     pkt->data = ((uint8_t *)pkt) + sizeof(raw_packet_t);
 
-    spi_write_register(radio->pin_slave, RH_RF95_REG_0D_FIFO_ADDR_PTR, current_address);
+    spi_write_register(radio, RH_RF95_REG_0D_FIFO_ADDR_PTR, current_address);
 
     for (uint8_t i = 0; i < received_bytes; i++) {
-        pkt->data[i] = (char)spi_read_register(radio->pin_slave, RH_RF95_REG_00_FIFO);
+        pkt->data[i] = (char)spi_read_register(radio, RH_RF95_REG_00_FIFO);
     }
 
     pkt->packet_rssi = radio_get_packet_rssi(radio);
     pkt->rssi = radio_get_rssi(radio);
     pkt->snr = radio_get_snr(radio);
+
+    radio->last_packet_at = time(NULL);
 
     return pkt;
 }
@@ -211,7 +189,7 @@ void radio_reset(radio_t *radio) {
 }
 
 bool radio_detect_chip(radio_t *radio) {
-    uint8_t version = spi_read_register(radio->pin_slave, RH_RF95_REG_42_VERSION);
+    uint8_t version = spi_read_register(radio, RH_RF95_REG_42_VERSION);
     if (version == 0) {
         fprintf(stderr, "No radio found\n");
         return false;
@@ -224,12 +202,12 @@ bool radio_detect_chip(radio_t *radio) {
 }
 
 void radio_set_preamble_length(radio_t *radio, uint16_t length) {
-    spi_write_register(radio->pin_slave, RH_RF95_REG_20_PREAMBLE_MSB, length >> 8);
-    spi_write_register(radio->pin_slave, RH_RF95_REG_21_PREAMBLE_LSB, length & 0xff);
+    spi_write_register(radio, RH_RF95_REG_20_PREAMBLE_MSB, length >> 8);
+    spi_write_register(radio, RH_RF95_REG_21_PREAMBLE_LSB, length & 0xff);
 }
 
 int32_t radio_get_snr(radio_t *radio) {
-    uint8_t value = spi_read_register(radio->pin_slave, RH_RF95_REG_19_PKT_SNR_VALUE);
+    uint8_t value = spi_read_register(radio, RH_RF95_REG_19_PKT_SNR_VALUE);
     if (value & 0x80) {
         value = ((~value + 1) & 0xFF) >> 2;
         return -value;
@@ -239,14 +217,12 @@ int32_t radio_get_snr(radio_t *radio) {
     }
 }
 
-#define RH_RF95_RSSI_CORRECTION 157
-
 int32_t radio_get_packet_rssi(radio_t *radio) {
-    return spi_read_register(radio->pin_slave, RH_RF95_REG_1A_PKT_RSSI_VALUE) - RH_RF95_RSSI_CORRECTION;
+    return spi_read_register(radio, RH_RF95_REG_1A_PKT_RSSI_VALUE) - RH_RF95_RSSI_CORRECTION;
 }
 
 int32_t radio_get_rssi(radio_t *radio) {
-    return spi_read_register(radio->pin_slave, RH_RF95_REG_1B_RSSI_VALUE) - RH_RF95_RSSI_CORRECTION;
+    return spi_read_register(radio, RH_RF95_REG_1B_RSSI_VALUE) - RH_RF95_RSSI_CORRECTION;
 }
 
 lora_packet_t *lora_packet_new(size_t size) {
@@ -276,8 +252,6 @@ lora_packet_t *lora_packet_create_from(raw_packet_t *raw) {
 
     return lora;
 }
-
-time_t last_packet_at = 0;
 
 void log_raw_packet(FILE *fp, raw_packet_t *raw_packet, lora_packet_t *lora_packet) {
     fprintf(fp, "0x%x,0x%x,0x%x,0x%x,", lora_packet->to, lora_packet->from, lora_packet->id, lora_packet->flags);
@@ -325,8 +299,6 @@ void radio_receive_packet(radio_t *radio) {
                 lora_packet_t *ack = lora_packet_new(1);
                 radio_send_packet(radio, ack);
                 free(ack);
-
-                last_packet_at = time(NULL);
             }
 
             free(lora_packet);
@@ -338,14 +310,14 @@ void radio_receive_packet(radio_t *radio) {
     }
 }
 
-radio_t *isr_radio = NULL;
+radio_t *radios_for_isr[1];
 
 void handle_isr() {
-    radio_t *radio = isr_radio;
+    radio_t *radio = radios_for_isr[0];
 
     pthread_mutex_lock(&radio->mutex);
 
-    uint8_t flags = spi_read_register(radio->pin_slave, RH_RF95_REG_12_IRQ_FLAGS);
+    uint8_t flags = spi_read_register(radio, RH_RF95_REG_12_IRQ_FLAGS);
 
     if ((flags & RH_RF95_PAYLOAD_CRC_ERROR_MASK) == RH_RF95_PAYLOAD_CRC_ERROR_MASK) {
         // Oh no
@@ -358,63 +330,75 @@ void handle_isr() {
         radio_set_mode_idle(radio);
     }
 
-    spi_write_register(radio->pin_slave, RH_RF95_REG_12_IRQ_FLAGS, 0xff); // clear all IRQ flags
+    spi_write_register(radio, RH_RF95_REG_12_IRQ_FLAGS, 0xff); // clear all IRQ flags
 
     pthread_mutex_unlock(&radio->mutex);
 }
 
-int32_t main() {
-    radio_t radio;
-    radio.pin_slave = PIN_SELECT;
-    radio.pin_power = PIN_RESET;
+#define PIN_SELECT      6
+#define PIN_DIO_0       7
+#define PIN_RESET       0
 
-    isr_radio = &radio;
-
-    wiringPiSetup();
+radio_t *radio_create(uint8_t number) {
+    radio_t *radio = (radio_t *)malloc(sizeof(radio_t));
+    radio->number = number;
+    radio->pin_slave = PIN_SELECT;
+    radio->pin_power = PIN_RESET;
+    radio->pin_dio0 = PIN_DIO_0;
+    radio->spi_channel = 0;
+    radios_for_isr[0] = radio;
 
     pinMode(PIN_SELECT, OUTPUT);
     pinMode(PIN_DIO_0, INPUT);
     pinMode(PIN_RESET, OUTPUT);
 
-    wiringPiSPISetup(SPI_CHANNEL, 500000);
     wiringPiISR(PIN_DIO_0, INT_EDGE_RISING, handle_isr);
 
-    pthread_mutex_init(&radio.mutex, NULL);
+    return radio;
+}
+
+int32_t main() {
+    wiringPiSetup();
+    wiringPiSPISetup(0, 500000);
+
+    radio_t *radio = radio_create(0);
+
+    pthread_mutex_init(&radio->mutex, NULL);
 
     time_t check_radio_every = 1000;
     time_t radio_checked_at = 0;
 
     bool have_radio = false;
     while (true) {
-        pthread_mutex_lock(&radio.mutex);
+        pthread_mutex_lock(&radio->mutex);
 
         if (!have_radio) {
-            if (radio_setup(&radio)) {
-                radio_set_mode_rx(&radio);
+            if (radio_setup(radio)) {
+                radio_set_mode_rx(radio);
                 have_radio = true;
             }
         }
         else {
             if (time(NULL) - radio_checked_at > check_radio_every) {
-                have_radio = radio_detect_chip(&radio);
+                have_radio = radio_detect_chip(radio);
                 radio_checked_at = time(NULL);
 
-                if (time(NULL) - last_packet_at > 60) {
-                    fprintf(stderr, "Last packet received %d seconds ago\n", (int32_t)(time(NULL) - last_packet_at));
+                if (time(NULL) - radio->last_packet_at > 60) {
+                    fprintf(stderr, "Last packet received %d seconds ago\n", (int32_t)(time(NULL) - radio->last_packet_at));
                 }
             }
 
-            if (radio.mode == RH_RF95_MODE_STDBY) {
-                radio_set_mode_rx(&radio);
+            if (radio->mode == RH_RF95_MODE_STDBY) {
+                radio_set_mode_rx(radio);
             }
         }
 
-        pthread_mutex_unlock(&radio.mutex);
+        pthread_mutex_unlock(&radio->mutex);
 
         delay(100);
     }
 
-    pthread_mutex_destroy(&radio.mutex);
+    pthread_mutex_destroy(&radio->mutex);
 
     return 0;
 
