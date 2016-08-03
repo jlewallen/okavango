@@ -34,7 +34,7 @@ First, some handy pinout diagrams:
 Here is the general idea: 
 
     sudo apt-get update
-    sudo apt-get install vim tmux git node python-pip 
+    sudo apt-get install vim tmux git node python-pip monit
     sudo raspi-config # Enable SPI
     sudo raspi-config # Update
     git clone git://git.drogon.net/wiringPi
@@ -44,3 +44,12 @@ Here is the general idea:
     cd okavango
     make
     
+## Cron
+
+    sudo cp pi/etc/okavango.cron /etc/cron.d
+    sudo /etc/init.d/crond restart
+    
+## Monit
+
+    sudo cp pi/etc/okavango.moni /etc/monit/conf.d/okavango
+    sudo /etc/init.d/monit restart
