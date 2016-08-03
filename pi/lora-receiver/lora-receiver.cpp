@@ -10,6 +10,7 @@
 #include <cstring>
 #include <string>
 #include <pthread.h>
+#include <unistd.h>
 
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
@@ -296,6 +297,12 @@ void radio_receive_packet(radio_t *radio) {
                     fclose(sensors_file);
                 }
 
+                FILE *queue_file = fopen("queue.log", "a+");
+                if (queue_file != NULL) {
+                    log_sensors_packet(queue_file, sensors_packet);
+                    fclose(queue_file);
+                }
+
                 lora_packet_t *ack = lora_packet_new(1);
                 radio_send_packet(radio, ack);
                 free(ack);
@@ -357,9 +364,25 @@ radio_t *radio_create(uint8_t number) {
     return radio;
 }
 
-int32_t main() {
+void write_pid() {
+    FILE *fp = fopen("/var/run/lora-receiver.pid", "w");
+    fprintf(fp, "%d", getpid());
+    fclose(fp);
+}
+
+int32_t main(int32_t argc, const char **argv) {
     wiringPiSetup();
     wiringPiSPISetup(0, 500000);
+
+    if (argc > 1) {
+        if (daemon(1, 0) == 0) {
+            chdir(argv[1]);
+            write_pid();
+        }
+        else {
+            return 1;
+        }
+    }
 
     radio_t *radio = radio_create(0);
 
