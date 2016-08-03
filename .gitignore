@@ -1,4 +1,5 @@
 *.log
+queue.log.*
 *.swp
 *.pyc
 databoat.json
@@ -7,6 +8,8 @@ node_modules
 arduino-1.6.9-windows.zip
 arduino-1.6.9
 */build
+processed
+sensors.db
 
 log.txt
 screenlog.*
