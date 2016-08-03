@@ -38,7 +38,7 @@ class SampleUploader:
         cfg.read(path)
         return self.validate_configuration(cfg)
 
-    Save the sample locally, expecting the raw sample because we'll just append to a local CSV...
+    # Save the sample locally, expecting the raw sample because we'll just append to a local CSV...
     # may wanna make sure this doesn't fill up the SD card.
     def save(self, timestamp, sample, parsed):
         queue_path = self.config.get('databoat', 'queue_file')

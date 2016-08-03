@@ -7,10 +7,13 @@ import base64
 import serial
 import serial.threaded
 import threading
-import logging
 import time
 import glob
 import Queue as queue
+
+from utilities import log
+
+import RPi.GPIO as GPIO
 
 class ATException(Exception):
     pass
@@ -38,7 +41,7 @@ class ATProtocol(serial.threaded.LineReader):
 
     def handle_line(self, line):
         if len(line) > 0:
-            print '> ', line
+            log('> ' + line)
             if line.startswith('+'):
                 self.events.put(line)
             else:
@@ -47,13 +50,20 @@ class ATProtocol(serial.threaded.LineReader):
     def handle_event(self, event):
         pass
 
-    def command_with_event_response(self, command):
+    def command_with_event_response(self, command, response='OK'):
+        lines = self.command(command, response)
+        log(lines)
         with self.lock:
-            self._awaiting_response_for = command
-            self.transport.write(b'{}\r'.format(command.encode(self.ENCODING, self.UNICODE_HANDLING)))
             response = self.event_responses.get()
-            self._awaiting_response_for = None
             return response
+
+    def clear(self):
+        while not self.responses.empty():
+            self.responses.get()
+        while not self.events.empty():
+            self.events.get()
+        while not self.event_responses.empty():
+            self.event_responses.get()
 
     def command(self, command, response='OK', timeout=60):
         with self.lock:
@@ -100,20 +110,42 @@ class RockBlock(ATProtocol):
     def get_signal_strength(self):
         return self.command_with_event_response("AT+CSQ")
 
-    def send_message(data):
-        self.command("AT+SBDWT=Hello World")
-        self.command("AT+SBDIX", response='OK')
+    def send_message(self, data):
+        self.clear()
+        self.command("AT+SBDWT=Hello World", response='OK')
+        self.command_with_event_response("AT+SBDIX")
 
 if __name__ == '__main__':
+    pin_sleep = 23
+
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(pin_sleep, GPIO.OUT)
+
+    log("Waking up RockBlock on pin %d..." % pin_sleep)
+
+    GPIO.output(pin_sleep, True)
+
+    log("Waiting 5 seconds...")
+
+    time.sleep(5)
+
+    log("Starting.")
+
     devices = glob.glob("/dev/ttyUSB*") + glob.glob("/dev/tty.usbser*")
-    print "Devices", devices 
+    log("Devices", devices)
     deviceName = devices[0]
     device = serial.Serial(deviceName, 19200, timeout=5, writeTimeout=5)
 
-    with serial.threaded.ReaderThread(device, RockBlock) as rock_block:
-        rock_block.setup()
-        print rock_block.get_serial_identifier()
-        print rock_block.get_signal_strength()
-            
-    device.close()
+    try:
+        with serial.threaded.ReaderThread(device, RockBlock) as rock_block:
+            rock_block.setup()
+            log(rock_block.get_signal_strength())
+            # rock_block.send_message(None)
+    finally:
+        log("Cleanup")
+        # This returns GPIO to a state that turns the RockBLOCK back on, so we don't.
+        # GPIO.cleanup()
+        GPIO.output(pin_sleep, False)
+        device.close()
 

@@ -2,87 +2,41 @@
 
 from __future__ import print_function
 
-import serial
 import struct
 import sys
 import time
-import logging
-import daemon
 import syslog
+import os
 import glob
+import datetime
+import sqlite3
 
-from xbee import ZigBee
-from okavango import SampleUploader
+from utilities import log
 
-logging.basicConfig(level=logging.DEBUG)
-syslog.openlog(logoption=syslog.LOG_PID)
+class QueuedSamplesImporter:
+    def get_queue_files(self, root):
+        filename = "queue.log"
+        if os.path.exists(os.path.join(root, filename)):
+            stamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y%m%d%H%M%S')
+            os.rename(os.path.join(root, filename), os.path.join(root, filename + "." + stamp ))
+        return glob.glob(os.path.join(root, filename + ".*"))
 
-def log(*objects):
-    print(*objects)
-    for i in objects:
-        syslog.syslog(str(i))
+    def process(self, root, database_path):
+        db = sqlite3.connect(database_path, isolation_level="EXCLUSIVE")
+        db.execute("CREATE TABLE IF NOT EXISTS samples (id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT)")
 
-def read_a_frame():
-    pass
-
-class XbeeListener(daemon.Daemon):
-    def __init__(self, pidfile, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
-        daemon.Daemon.__init__(self, pidfile, stdin, stdout, stderr)
-
-    def run(self):
-        log("Daemon running...")
-        while True:
-
-        devices = glob.glob("/dev/ttyUSB*")
-        log("Devices", devices)
-        if len(devices) == 0:
-            time.sleep(1)
-
-        for deviceName in devices:
-            try:
-                device = serial.Serial(deviceName, 9600, timeout=5, writeTimeout=5)
-                xbee = ZigBee(device)
-
-                while True:
-                    try:
-                        log("Reading frame...")
-                        response = xbee.wait_read_frame()
-                        log("Got frame...", response)
-                        data =  response['rf_data']
-                        payload = struct.unpack('ffffLb', data)
-                        kind = payload[5]
-                        dictionary = deserializers[kind](payload)
-                        log(payload, dictionary)
-                        timestamp = str(payload[4])
-                        uploader = SampleUploader(sys.argv[1], None)
-                        dictionary["gps_lat"] = uploader.config.get("databoat", "gps_lat")
-                        dictionary["gps_long"] = uploader.config.get("databoat", "gps_long")
-                        dictionary["SensorNode"] = uploader.config.get("databoat", "SensorNode")
-                        sample = {
-                        "t_local": timestamp,
-                        "data": dictionary
-                        }
-                        samples = uploader.save(timestamp, None, sample)
-                        uploader.upload(samples)
-                    except KeyboardInterrupt:
-                        sys.exit(0)
-                    except Exception as i:
-                        log(i)
-                        time.sleep(1)
-            except Exception as i:
-                log(i)
-                time.sleep(1)
-            finally:
-                device.close()
+        for path in self.get_queue_files(root):
+            log("Importing", path)
+            with open(path) as f:
+                rows = f.read().strip().split('\n')
+                for row in rows:
+                    db.execute("INSERT INTO samples (id, data) VALUES (NULL, ?)", [row])
+            os.rename(path, os.path.join(root, 'processed', os.path.basename(path)))
+        db.commit()
+        db.close()
 
 if __name__ == "__main__":
-    log("Starting...")
-    listener = XbeeListener("/var/run/xbee.pid")
-    if "start" in sys.argv:
-        listener.start()
-    if "restart" in sys.argv:
-        listener.restart()
-    if "stop" in sys.argv:
-        listener.stop()
-    else:
-        listener.run()
+    path = "/home/pi/okavango/pi/lora-receiver"
+    database_path = "/home/pi/okavango/pi/sensors.db"
+    importer = QueuedSamplesImporter()
+    importer.process(path, database_path)
