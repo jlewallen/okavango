@@ -1,17 +1,13 @@
 #!/usr/bin/python
 
 from __future__ import print_function
+from utilities import log
 
-import struct
-import sys
 import time
-import syslog
 import os
 import glob
 import datetime
 import sqlite3
-
-from utilities import log
 
 class QueuedSamplesImporter:
     def get_queue_files(self, root):

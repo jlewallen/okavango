@@ -1,2 +1,2 @@
-0 */6 * * * root /sbin/reboot
-* *   * * * root python /home/pi/okavango/pi/okavango.py
+0   */6 * * * root /sbin/reboot
+*/5 *   * * * root /home/pi/okavango/pi/okavango
