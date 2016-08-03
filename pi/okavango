@@ -1,10 +1,11 @@
 #!/bin/bash
 
-set -e
 set -x
 
 pkill -9 -f importer.py
 pkill -9 -f publish.py
+
+set -e
 
 python /home/pi/okavango/pi/importer.py /home/pi/okavango/pi/test.cfg
 python /home/pi/okavango/pi/publish.py /home/pi/okavango/pi/test.cfg
