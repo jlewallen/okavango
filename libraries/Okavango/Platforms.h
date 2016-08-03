@@ -26,6 +26,7 @@
 #define PIN_GREEN_LED                     13
 
 #define PIN_SD_CS                         ?
+#define PIN_DS18B20                       ?
 
 typedef SoftwareSerial SerialType;
 
@@ -54,6 +55,7 @@ extern SerialType conductivitySerial;
 #define PIN_GREEN_LED                     8
 
 #define PIN_SD_CS                         4
+#define PIN_DS18B20                       14
 
 typedef Uart SerialType;
 

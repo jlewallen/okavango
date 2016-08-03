@@ -6,12 +6,14 @@
 #include "AtlasScientific.h"
 #include "SerialPortExpander.h"
 #include "LoraRadio.h"
+#include "Ds18B20.h"
 #include "Logger.h"
 
 SerialPortExpander portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1);
 LoraRadio radio(RFM95_CS, RFM95_INT, RFM95_RST);
 Logger logger(PIN_SD_CS);
 AtlasScientificBoard board;
+Ds18B20 ds18b20(PIN_DS18B20);
 Adafruit_BME280 bme;
 
 void catastrophe() {
@@ -23,7 +25,7 @@ void catastrophe() {
     }
 }
 
-#define SENSORS_PACKET_NUMBER_VALUES 10
+#define SENSORS_PACKET_NUMBER_VALUES 11
 
 typedef struct sensors_packet_t {
     uint8_t kind;
@@ -175,6 +177,15 @@ void loop() {
             packet.values[valueIndex++] = temperature;
             packet.values[valueIndex++] = pressure;
             packet.values[valueIndex++] = humidity;
+
+            if (ds18b20.setup()) {
+                Serial.println("Ds18B20 detected!");
+                packet.values[valueIndex++] = ds18b20.getTemperature();
+            }
+            else {
+                Serial.println("Ds18B20 missing");
+                packet.values[valueIndex++] = 0.0f;
+            }
 
             Serial.println("Metrics");
 
