@@ -1,6 +1,7 @@
 #include <Adafruit_BME280.h>
 #include <SPI.h>
 #include <SD.h>
+#include <Adafruit_SleepyDog.h>
 
 #include "Platforms.h"
 #include "AtlasScientific.h"
@@ -48,7 +49,18 @@ void populatePacket() {
     }
 }
 
+void lowPowerSleep(uint32_t numberOfMs) {
+    if (numberOfMs > 0) {
+        uint32_t slept = 0;
+        while (slept < numberOfMs) {
+            slept += Watchdog.sleep();
+        }
+    }
+}
+
 void setup() {
+    lowPowerSleep(LOW_POWER_SLEEP_BEGIN);
+
     pinMode(PIN_RED_LED, OUTPUT);
     digitalWrite(PIN_RED_LED, HIGH);
 
@@ -198,6 +210,8 @@ void loop() {
             sendPacketAndWaitForAck();
 
             Serial.println("Done");
+
+            lowPowerSleep(LOW_POWER_SLEEP_END);
 
             platformRestart();
         }

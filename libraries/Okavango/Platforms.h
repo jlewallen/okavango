@@ -71,4 +71,7 @@ void platformPostSetup();
 void platformRestart();
 float platformBatteryVoltage();
 
+#define LOW_POWER_SLEEP_END               1000 * 60 * 5
+#define LOW_POWER_SLEEP_BEGIN             0
+
 #endif
