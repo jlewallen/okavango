@@ -17,15 +17,6 @@ AtlasScientificBoard board;
 Ds18B20 ds18b20(PIN_DS18B20);
 Adafruit_BME280 bme;
 
-void catastrophe() {
-    while (true) {
-        delay(500);
-        digitalWrite(PIN_RED_LED, HIGH);
-        delay(500);
-        digitalWrite(PIN_RED_LED, LOW);
-    }
-}
-
 #define SENSORS_PACKET_NUMBER_VALUES 11
 
 typedef struct sensors_packet_t {
@@ -37,6 +28,21 @@ typedef struct sensors_packet_t {
 
 uint8_t valueIndex = 0;
 sensors_packet_t packet;
+
+void blink(uint8_t pin) {
+    #ifndef LOW_POWER
+    delay(500);
+    digitalWrite(pin, HIGH);
+    delay(500);
+    digitalWrite(pin, LOW);
+    #endif
+}
+
+void catastrophe() {
+    while (true) {
+        blink(PIN_RED_LED);
+    }
+}
 
 void populatePacket() {
     for (uint8_t i = 0; i < board.getNumberOfValues(); ++i) {
@@ -53,7 +59,12 @@ void lowPowerSleep(uint32_t numberOfMs) {
     if (numberOfMs > 0) {
         uint32_t slept = 0;
         while (slept < numberOfMs) {
-            slept += Watchdog.sleep();
+            uint32_t before = millis();
+            Watchdog.sleep();
+            slept += millis() - before;
+            Serial.println(numberOfMs);
+            Serial.println(slept);
+            blink(PIN_GREEN_LED);
         }
     }
 }
