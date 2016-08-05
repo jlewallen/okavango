@@ -61,8 +61,6 @@ void lowPowerSleep(uint32_t numberOfMs) {
         while (slept < numberOfMs) {
             uint32_t before = millis();
             Watchdog.sleep();
-            Serial.println(numberOfMs);
-            Serial.println(slept);
             blink(PIN_GREEN_LED);
             slept += millis() - before;
         }
