@@ -1,7 +1,6 @@
 #include <Adafruit_BME280.h>
 #include <SPI.h>
 #include <SD.h>
-#include <Adafruit_SleepyDog.h>
 
 #include "Platforms.h"
 #include "AtlasScientific.h"
@@ -29,21 +28,6 @@ typedef struct sensors_packet_t {
 uint8_t valueIndex = 0;
 sensors_packet_t packet;
 
-void blink(uint8_t pin) {
-    #ifndef LOW_POWER
-    delay(500);
-    digitalWrite(pin, HIGH);
-    delay(500);
-    digitalWrite(pin, LOW);
-    #endif
-}
-
-void catastrophe() {
-    while (true) {
-        blink(PIN_RED_LED);
-    }
-}
-
 void populatePacket() {
     for (uint8_t i = 0; i < board.getNumberOfValues(); ++i) {
         if (valueIndex < SENSORS_PACKET_NUMBER_VALUES) {
@@ -55,20 +39,8 @@ void populatePacket() {
     }
 }
 
-void lowPowerSleep(uint32_t numberOfMs) {
-    if (numberOfMs > 0) {
-        uint32_t slept = 0;
-        while (slept < numberOfMs) {
-            uint32_t before = millis();
-            Watchdog.sleep();
-            blink(PIN_GREEN_LED);
-            slept += millis() - before;
-        }
-    }
-}
-
 void setup() {
-    lowPowerSleep(LOW_POWER_SLEEP_BEGIN);
+    platformLowPowerSleep(LOW_POWER_SLEEP_BEGIN);
 
     pinMode(PIN_RED_LED, OUTPUT);
     digitalWrite(PIN_RED_LED, HIGH);
@@ -98,17 +70,17 @@ void setup() {
     board.start();
 
     if (!logger.setup()) {
-        catastrophe();
+        platformCatastrophe(PIN_RED_LED);
     }
 
     if (!radio.setup()) {
-        catastrophe();
+        platformCatastrophe(PIN_RED_LED);
     }
 
     radio.sleep();
 
     if (!bme.begin()) {
-        catastrophe();
+        platformCatastrophe(PIN_RED_LED);
     }
 
     platformPostSetup();
@@ -220,7 +192,7 @@ void loop() {
 
             Serial.println("Done");
 
-            lowPowerSleep(LOW_POWER_SLEEP_END);
+            platformLowPowerSleep(LOW_POWER_SLEEP_END);
 
             platformRestart();
         }

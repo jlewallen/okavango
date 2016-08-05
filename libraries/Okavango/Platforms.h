@@ -24,6 +24,7 @@
 
 #define PIN_RED_LED                       13
 #define PIN_GREEN_LED                     13
+#define PIN_SLEEP_LED                     13
 
 #define PIN_SD_CS                         ?
 #define PIN_DS18B20                       ?
@@ -53,6 +54,7 @@ extern SerialType conductivitySerial;
 
 #define PIN_RED_LED                       13
 #define PIN_GREEN_LED                     8
+#define PIN_SLEEP_LED                     8
 
 #define PIN_SD_CS                         4
 #define PIN_DS18B20                       14
@@ -70,6 +72,9 @@ extern SerialType &conductivitySerial;
 void platformPostSetup();
 void platformRestart();
 float platformBatteryVoltage();
+void platformCatastrophe(uint8_t pin);
+void platformLowPowerSleep(uint32_t numberOfMs);
+void platformBlink(uint8_t pin);
 
 #define LOW_POWER_SLEEP_END               1000 * 60 * 5
 #define LOW_POWER_SLEEP_BEGIN             0

@@ -1,3 +1,5 @@
+#include <Adafruit_SleepyDog.h>
+
 #include "Platforms.h"
 
 #ifdef ARDUINO_AVR_UNO
@@ -55,3 +57,32 @@ float platformBatteryVoltage() {
 }
 
 #endif
+
+void platformBlink(uint8_t pin) {
+    #ifndef LOW_POWER
+    delay(500);
+    digitalWrite(pin, HIGH);
+    delay(500);
+    digitalWrite(pin, LOW);
+    #endif
+}
+
+void platformCatastrophe(uint8_t pin) {
+    while (true) {
+        platformBlink(pin);
+    }
+}
+
+
+void platformLowPowerSleep(uint32_t numberOfMs) {
+    if (numberOfMs > 0) {
+        uint32_t slept = 0;
+        while (slept < numberOfMs) {
+            uint32_t before = millis();
+            Watchdog.sleep();
+            platformBlink(PIN_SLEEP_LED);
+            slept += millis() - before;
+        }
+    }
+}
+
