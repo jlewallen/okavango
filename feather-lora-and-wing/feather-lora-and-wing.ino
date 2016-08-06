@@ -8,7 +8,7 @@
 #define RFM95_CS                         8
 #define RFM95_RST                        4
 #define RFM95_INT                        3
-#define PIN_SD_CS                        10
+#define PIN_SD_CS                        16
 
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 RTC_PCF8523 rtc;

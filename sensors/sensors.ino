@@ -2,6 +2,8 @@
 #include <SPI.h>
 #include <SD.h>
 
+#define FEATHER_WING
+
 #include "Platforms.h"
 #include "AtlasScientific.h"
 #include "SerialPortExpander.h"
@@ -60,6 +62,14 @@ void setup() {
     #endif
 
     digitalWrite(PIN_RED_LED, LOW);
+
+    pinMode(PIN_SD_CS, OUTPUT);
+    pinMode(RFM95_CS, OUTPUT);
+    pinMode(RFM95_RST, OUTPUT);
+
+    digitalWrite(PIN_SD_CS, HIGH);
+    digitalWrite(RFM95_CS, HIGH);
+    digitalWrite(RFM95_RST, HIGH);
 
     Serial.println("Begin");
 

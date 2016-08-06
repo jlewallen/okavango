@@ -51,7 +51,7 @@ extern SerialType conductivitySerial;
 # define RFM95_CS                         8
 # define RFM95_RST                        4
 # define RFM95_INT                        3
-# define PIN_SD_CS                        10
+# define PIN_SD_CS                        16
 #else
 # define RFM95_CS                         19
 # define RFM95_RST                        17
