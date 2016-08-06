@@ -1,6 +1,7 @@
 #include <Adafruit_BME280.h>
 #include <SPI.h>
 #include <SD.h>
+#include "RTClib.h"
 
 #define FEATHER_WING
 
@@ -17,6 +18,7 @@ Logger logger(PIN_SD_CS);
 AtlasScientificBoard board;
 Ds18B20 ds18b20(PIN_DS18B20);
 Adafruit_BME280 bme;
+RTC_PCF8523 rtc;
 
 #define SENSORS_PACKET_NUMBER_VALUES 11
 
@@ -170,9 +172,25 @@ void loop() {
             board.start(OPEN_CONDUCTIVITY_SERIAL_ON_START);
         }
         else {
-            Serial.println("Bme");
+            if (!rtc.begin()) {
+                packet.time = 0;
+                Serial.println("RTC Missing");
+            }
+            else {
+                if (!rtc.initialized()) {
+                    packet.time = 0;
+                    Serial.println("RTC uninitialized");
+                    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+                }
+                else {
+                    DateTime now = rtc.now();
+                    packet.time = now.unixtime();
+                }
+            }
 
             #ifdef BME280
+            Serial.println("Bme");
+
             if (!bme.begin()) {
                 float temperature = bme.readTemperature();
                 float pressure = bme.readPressure();
@@ -195,8 +213,9 @@ void loop() {
 
             Serial.println("Metrics");
 
+            DateTime now = rtc.now();
+
             packet.kind = 0;
-            packet.time = millis();
             packet.battery = platformBatteryVoltage();
 
             logPacketLocally();
