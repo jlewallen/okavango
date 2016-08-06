@@ -21,12 +21,19 @@
 
  */
 
+#include <SoftwareSerial.h> //I2C needed for sensors
 #include <Wire.h> //I2C needed for sensors
 #include "SparkFunMPL3115A2.h" //Pressure sensor - Search "SparkFun MPL3115" and install from Library Manager
 #include "SparkFunHTU21D.h" //Humidity sensor - Search "SparkFun HTU21D" and install from Library Manager
 
 MPL3115A2 myPressure; //Create an instance of the pressure sensor
 HTU21D myHumidity; //Create an instance of the humidity sensor
+#include <TinyGPS++.h> //GPS parsing - Available through the Library Manager.
+
+TinyGPSPlus gps;
+
+static const int RXPin = 5, TXPin = 4; //GPS is attached to pin 4(TX from GPS) and pin 5(RX into GPS)
+SoftwareSerial ss(RXPin, TXPin); 
 
 //Hardware pin definitions
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -35,6 +42,7 @@ const byte WSPEED = 3;
 const byte RAIN = 2;
 const byte STAT1 = 7;
 const byte STAT2 = 8;
+const byte GPS_PWRCTL = 6;
 
 // analog I/O pins
 const byte REFERENCE_3V3 = A3;
@@ -130,9 +138,14 @@ void setup()
 	Serial.begin(115200);
 	Serial.println("Weather Shield Example");
 
+    ss.begin(9600); //Begin listening to GPS over software serial at 9600. This should be the default baud of the module.
+
 	pinMode(STAT1, OUTPUT); //Status LED Blue
 	pinMode(STAT2, OUTPUT); //Status LED Green
 
+    pinMode(GPS_PWRCTL, OUTPUT);
+    digitalWrite(GPS_PWRCTL, HIGH); //Pulling this pin low puts GPS to sleep but maintains RTC and RAM
+  
 	pinMode(WSPEED, INPUT_PULLUP); // input from wind meters windspeed sensor
 	pinMode(RAIN, INPUT_PULLUP); // input from wind meters rain gauge sensor
 
@@ -213,7 +226,18 @@ void loop()
 		digitalWrite(STAT1, LOW); //Turn off stat LED
 	}
 
-  delay(100);
+  smartdelay(800);
+}
+
+//While we delay for a given amount of time, gather GPS data
+static void smartdelay(unsigned long ms)
+{
+  unsigned long start = millis();
+  do 
+  {
+    while (ss.available())
+      gps.encode(ss.read());
+  } while (millis() - start < ms);
 }
 
 //Calculates each of the variables that wunderground is expecting
@@ -428,8 +452,28 @@ void printWeather()
 	Serial.print(batt_lvl, 2);
 	Serial.print(",light_lvl=");
 	Serial.print(light_lvl, 2);
-	Serial.print(",");
-	Serial.println("#");
+
+    
+    Serial.print(",lat=");
+    Serial.print(gps.location.lat(), 6);
+    Serial.print(",lat=");
+    Serial.print(gps.location.lng(), 6);
+    Serial.print(",altitude=");
+    Serial.print(gps.altitude.meters());
+    Serial.print(",sats=");
+    Serial.print(gps.satellites.value());
+
+    char sz[32];
+    Serial.print(",date=");
+    sprintf(sz, "%02d/%02d/%02d", gps.date.month(), gps.date.day(), gps.date.year());
+    Serial.print(sz);
+
+    Serial.print(",time=");
+    sprintf(sz, "%02d:%02d:%02d", gps.time.hour(), gps.time.minute(), gps.time.second());
+    Serial.print(sz);
+
+    Serial.print(",");
+    Serial.println("#");
 
 }
 
