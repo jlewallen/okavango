@@ -7,6 +7,7 @@
 class LoraRadio {
 private:
     RH_RF95 rf95;
+    bool available;
     const uint8_t pinEnable;
     uint8_t buffer[RH_RF95_MAX_MESSAGE_LEN];
     uint8_t length;
@@ -16,6 +17,9 @@ public:
     bool setup();
     void tick();
     bool send(uint8_t *packet, uint8_t size);
+    bool isAvailable() {
+        return available;
+    }
 
     const uint8_t *getPacket() {
         return buffer;

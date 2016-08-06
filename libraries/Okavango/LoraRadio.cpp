@@ -3,7 +3,7 @@
 #define RF95_FREQ 915.0
 
 LoraRadio::LoraRadio(uint8_t pinCs, uint8_t pinG0, uint8_t pinEnable)
-    : rf95(pinCs, pinG0), pinEnable(pinEnable) {
+    : rf95(pinCs, pinG0), pinEnable(pinEnable), available(false) {
 }
 
 bool LoraRadio::setup() {
@@ -13,7 +13,7 @@ bool LoraRadio::setup() {
     delay(10);
     reset();
 
-    while (!rf95.init()) {
+    if (!rf95.init()) {
         Serial.println("LoraRadio: Initialize failed!");
         return false;
     }
@@ -25,6 +25,7 @@ bool LoraRadio::setup() {
 
     rf95.setTxPower(23, false);
 
+    available = true;
     return true;
 }
 

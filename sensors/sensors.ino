@@ -73,14 +73,8 @@ void setup() {
         platformCatastrophe(PIN_RED_LED);
     }
 
-    if (!radio.setup()) {
-        platformCatastrophe(PIN_RED_LED);
-    }
-
-    radio.sleep();
-
-    if (!bme.begin()) {
-        platformCatastrophe(PIN_RED_LED);
+    if (radio.setup()) {
+        radio.sleep();
     }
 
     platformPostSetup();
@@ -108,6 +102,11 @@ void logPacketLocally() {
 }
 
 void sendPacketAndWaitForAck() {
+    if (!radio.isAvailable()) {
+        Serial.println("No radio available");
+        return;
+    }
+
     Serial.println("Enabling radio");
 
     radio.setup();
@@ -163,13 +162,17 @@ void loop() {
         else {
             Serial.println("Bme");
 
-            float temperature = bme.readTemperature();
-            float pressure = bme.readPressure();
-            float humidity = bme.readHumidity();
+            #ifdef BME280
+            if (!bme.begin()) {
+                float temperature = bme.readTemperature();
+                float pressure = bme.readPressure();
+                float humidity = bme.readHumidity();
 
-            packet.values[valueIndex++] = temperature;
-            packet.values[valueIndex++] = pressure;
-            packet.values[valueIndex++] = humidity;
+                packet.values[valueIndex++] = temperature;
+                packet.values[valueIndex++] = pressure;
+                packet.values[valueIndex++] = humidity;
+            }
+            #endif
 
             if (ds18b20.setup()) {
                 Serial.println("Ds18B20 detected!");
