@@ -21,13 +21,12 @@
 #define RFM95_CS                          10
 #define RFM95_RST                         9
 #define RFM95_INT                         2
+#define PIN_SD_CS                         ?
+#define PIN_DS18B20                       ?
 
 #define PIN_RED_LED                       13
 #define PIN_GREEN_LED                     13
 #define PIN_SLEEP_LED                     13
-
-#define PIN_SD_CS                         ?
-#define PIN_DS18B20                       ?
 
 typedef SoftwareSerial SerialType;
 
@@ -48,16 +47,23 @@ extern SerialType conductivitySerial;
 
 #define OPEN_CONDUCTIVITY_SERIAL_ON_START false
 
-#define RFM95_CS                          19
-#define RFM95_RST                         17
-#define RFM95_INT                         18
+#ifdef FEATHER_WING
+# define RFM95_CS                         8
+# define RFM95_RST                        4
+# define RFM95_INT                        3
+# define PIN_SD_CS                        10
+#else
+# define RFM95_CS                         19
+# define RFM95_RST                        17
+# define RFM95_INT                        18
+# define PIN_SD_CS                        4
+#endif
+
+#define PIN_DS18B20                       14
 
 #define PIN_RED_LED                       13
 #define PIN_GREEN_LED                     8
 #define PIN_SLEEP_LED                     8
-
-#define PIN_SD_CS                         4
-#define PIN_DS18B20                       14
 
 typedef Uart SerialType;
 
