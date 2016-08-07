@@ -13,7 +13,7 @@ const byte PIN_IRQ_WIND_SPEED = 3;
 const byte PIN_IRQ_RAIN = 2;
 const byte PIN_LED_BLUE = 7;
 const byte PIN_LED_RED = 8;
-const byte GPS_PWRCTL = 6;
+const byte PIN_GPS_POWER = 6;
 
 const byte PIN_REFERENCE_3V3 = A3;
 const byte PIN_LIGHT = A1;
@@ -86,37 +86,37 @@ void irq_handler_wind_speed() {
 }
 
 void setup() {
-	Serial.begin(9600);
+    Serial.begin(9600);
 
     gpsSerial.begin(9600);
 
-	pinMode(PIN_LED_BLUE, OUTPUT);
-	pinMode(PIN_LED_RED, OUTPUT);
+    pinMode(PIN_LED_BLUE, OUTPUT);
+    pinMode(PIN_LED_RED, OUTPUT);
 
-    pinMode(GPS_PWRCTL, OUTPUT);
-    digitalWrite(GPS_PWRCTL, HIGH); // Pulling this pin low puts GPS to sleep but maintains RTC and RAM
-  
-	pinMode(PIN_IRQ_WIND_SPEED, INPUT_PULLUP);
-	pinMode(PIN_IRQ_RAIN, INPUT_PULLUP);
+    pinMode(PIN_GPS_POWER, OUTPUT);
+    digitalWrite(PIN_GPS_POWER, HIGH); // Pulling this pin low puts GPS to sleep but maintains RTC and RAM
 
-	pinMode(PIN_REFERENCE_3V3, INPUT);
-	pinMode(PIN_LIGHT, INPUT);
+    pinMode(PIN_IRQ_WIND_SPEED, INPUT_PULLUP);
+    pinMode(PIN_IRQ_RAIN, INPUT_PULLUP);
 
-	myPressure.begin();
-	myPressure.setModeBarometer();   // Measure pressure in Pascals from 20 to 110 kPa
-	myPressure.setOversampleRate(7); // Set Oversample to the recommended 128
-	myPressure.enableEventFlags();   // Enable all three pressure and temp event flags
+    pinMode(PIN_REFERENCE_3V3, INPUT);
+    pinMode(PIN_LIGHT, INPUT);
 
-	myHumidity.begin();
+    myPressure.begin();
+    myPressure.setModeBarometer();   // Measure pressure in Pascals from 20 to 110 kPa
+    myPressure.setOversampleRate(7); // Set Oversample to the recommended 128
+    myPressure.enableEventFlags();   // Enable all three pressure and temp event flags
 
-	seconds = 0;
-	lastSecond = millis();
+    myHumidity.begin();
 
-	// Attach external interrupt pins to IRQ functions
-	attachInterrupt(0, irq_handler_rain, FALLING);
-	attachInterrupt(1, irq_handler_wind_speed, FALLING);
+    seconds = 0;
+    lastSecond = millis();
 
-	interrupts();
+    // Attach external interrupt pins to IRQ functions
+    attachInterrupt(0, irq_handler_rain, FALLING);
+    attachInterrupt(1, irq_handler_wind_speed, FALLING);
+
+    interrupts();
 }
 
 void loop() {
@@ -177,7 +177,7 @@ static void delay_and_check_gps(uint32_t ms) {
 }
 
 void calculate_weather() {
-	winddir = get_wind_direction();
+    winddir = get_wind_direction();
 
     float temp = 0;
     for (int32_t i = 0 ; i < 120 ; i++) {
@@ -186,15 +186,15 @@ void calculate_weather() {
     temp /= 120.0;
     windspdmph_avg2m = temp;
 
-	// Calc winddir_avg2m, Wind Direction
-	// You can't just take the average. Google "mean of circular quantities" for more info
-	// We will use the Mitsuta method because it no trig functions
-	// Based on: http://abelian.org/vlf/bearings.html
-	// Based on: http://stackoverflow.com/questions/1813483/averaging-angles-again
-	long sum = winddiravg[0];
-	int32_t D = winddiravg[0];
-	for (int32_t i = 1 ; i < WIND_DIR_AVG_SIZE ; i++) {
-		int32_t delta = winddiravg[i] - D;
+    // Calc winddir_avg2m, Wind Direction
+    // You can't just take the average. Google "mean of circular quantities" for more info
+    // We will use the Mitsuta method because it no trig functions
+    // Based on: http://abelian.org/vlf/bearings.html
+    // Based on: http://stackoverflow.com/questions/1813483/averaging-angles-again
+    long sum = winddiravg[0];
+    int32_t D = winddiravg[0];
+    for (int32_t i = 1 ; i < WIND_DIR_AVG_SIZE ; i++) {
+        int32_t delta = winddiravg[i] - D;
 
         if (delta < -180) {
             D += delta + 360;
@@ -206,14 +206,14 @@ void calculate_weather() {
             D += delta;
         }
 
-		sum += D;
-	}
-	winddir_avg2m = sum / WIND_DIR_AVG_SIZE;
-	if (winddir_avg2m >= 360) winddir_avg2m -= 360;
-	if (winddir_avg2m < 0) winddir_avg2m += 360;
+        sum += D;
+    }
+    winddir_avg2m = sum / WIND_DIR_AVG_SIZE;
+    if (winddir_avg2m >= 360) winddir_avg2m -= 360;
+    if (winddir_avg2m < 0) winddir_avg2m += 360;
 
-	windgustmph_10m = 0;
-	windgustdir_10m = 0;
+    windgustmph_10m = 0;
+    windgustdir_10m = 0;
     for (int32_t i = 0; i < 10 ; i++) {
         if (windgust_10m[i] > windgustmph_10m) {
             windgustmph_10m = windgust_10m[i];
@@ -221,105 +221,105 @@ void calculate_weather() {
         }
     }
 
-	humidity = myHumidity.readHumidity();
+    humidity = myHumidity.readHumidity();
 
-	tempf = myPressure.readTempF();
+    tempf = myPressure.readTempF();
 
-	rainin = 0;
+    rainin = 0;
 
-	for (int32_t i = 0 ; i < 60 ; i++) {
+    for (int32_t i = 0 ; i < 60 ; i++) {
         rainin += rainHour[i];
     }
 
-	pressure = myPressure.readPressure();
+    pressure = myPressure.readPressure();
 
-	light_lvl = get_light_level();
+    light_lvl = get_light_level();
 }
 
 float get_light_level() {
-	float operatingVoltage = analogRead(PIN_REFERENCE_3V3);
-	float lightSensor = analogRead(PIN_LIGHT);
+    float operatingVoltage = analogRead(PIN_REFERENCE_3V3);
+    float lightSensor = analogRead(PIN_LIGHT);
 
-	operatingVoltage = 3.3 / operatingVoltage; // the reference voltage is 3.3V
+    operatingVoltage = 3.3 / operatingVoltage; // the reference voltage is 3.3V
 
-	lightSensor = operatingVoltage * lightSensor;
+    lightSensor = operatingVoltage * lightSensor;
 
-	return lightSensor;
+    return lightSensor;
 }
 
 float get_wind_speed() {
-	float deltaTime = millis() - lastWindCheck; // 750ms
+    float deltaTime = millis() - lastWindCheck; // 750ms
 
-	deltaTime /= 1000.0;
+    deltaTime /= 1000.0;
 
-	float windSpeed = (float)windClicks / deltaTime; // 3 / 0.750s = 4
+    float windSpeed = (float)windClicks / deltaTime; // 3 / 0.750s = 4
 
-	windClicks = 0;
-	lastWindCheck = millis();
+    windClicks = 0;
+    lastWindCheck = millis();
 
-	windSpeed *= 1.492; // 4 * 1.492 = 5.968MPH
+    windSpeed *= 1.492; // 4 * 1.492 = 5.968MPH
 
-	return windSpeed;
+    return windSpeed;
 }
 
 uint32_t get_wind_direction() {
-	uint32_t adc = analogRead(PIN_WIND_DIRECTION);
+    uint32_t adc = analogRead(PIN_WIND_DIRECTION);
 
-	// The following table is ADC readings for the wind direction sensor output, sorted from low to high.
-	// Each threshold is the midpoint between adjacent headings. The output is degrees for that ADC reading.
-	// Note that these are not in compass degree order! See Weather Meters datasheet for more information.
+    // The following table is ADC readings for the wind direction sensor output, sorted from low to high.
+    // Each threshold is the midpoint between adjacent headings. The output is degrees for that ADC reading.
+    // Note that these are not in compass degree order! See Weather Meters datasheet for more information.
 
-	if (adc < 380) return 113;
-	if (adc < 393) return 68;
-	if (adc < 414) return 90;
-	if (adc < 456) return 158;
-	if (adc < 508) return 135;
-	if (adc < 551) return 203;
-	if (adc < 615) return 180;
-	if (adc < 680) return 23;
-	if (adc < 746) return 45;
-	if (adc < 801) return 248;
-	if (adc < 833) return 225;
-	if (adc < 878) return 338;
-	if (adc < 913) return 0;
-	if (adc < 940) return 293;
-	if (adc < 967) return 315;
-	if (adc < 990) return 270;
-	return -1;
+    if (adc < 380) return 113;
+    if (adc < 393) return 68;
+    if (adc < 414) return 90;
+    if (adc < 456) return 158;
+    if (adc < 508) return 135;
+    if (adc < 551) return 203;
+    if (adc < 615) return 180;
+    if (adc < 680) return 23;
+    if (adc < 746) return 45;
+    if (adc < 801) return 248;
+    if (adc < 833) return 225;
+    if (adc < 878) return 338;
+    if (adc < 913) return 0;
+    if (adc < 940) return 293;
+    if (adc < 967) return 315;
+    if (adc < 990) return 270;
+    return -1;
 }
 
 void print_weather() {
-	calculate_weather();
+    calculate_weather();
 
-	Serial.print("winddir=");
-	Serial.print(winddir);
-	Serial.print(",windspeedmph=");
-	Serial.print(windspeedmph, 1);
-	Serial.print(",windgustmph=");
-	Serial.print(windgustmph, 1);
-	Serial.print(",windgustdir=");
-	Serial.print(windgustdir);
-	Serial.print(",windspdmph_avg2m=");
-	Serial.print(windspdmph_avg2m, 1);
-	Serial.print(",winddir_avg2m=");
-	Serial.print(winddir_avg2m);
-	Serial.print(",windgustmph_10m=");
-	Serial.print(windgustmph_10m, 1);
-	Serial.print(",windgustdir_10m=");
-	Serial.print(windgustdir_10m);
-	Serial.print(",humidity=");
-	Serial.print(humidity, 1);
-	Serial.print(",tempf=");
-	Serial.print(tempf, 1);
-	Serial.print(",rainin=");
-	Serial.print(rainin, 2);
-	Serial.print(",dailyrainin=");
-	Serial.print(dailyrainin, 2);
-	Serial.print(",pressure=");
-	Serial.print(pressure, 2);
-	Serial.print(",light_lvl=");
-	Serial.print(light_lvl, 2);
-    
+    Serial.print("winddir=");
+    Serial.print(winddir);
+    Serial.print(",windspeedmph=");
+    Serial.print(windspeedmph, 1);
+    Serial.print(",windgustmph=");
+    Serial.print(windgustmph, 1);
+    Serial.print(",windgustdir=");
+    Serial.print(windgustdir);
+    Serial.print(",windspdmph_avg2m=");
+    Serial.print(windspdmph_avg2m, 1);
+    Serial.print(",winddir_avg2m=");
+    Serial.print(winddir_avg2m);
+    Serial.print(",windgustmph_10m=");
+    Serial.print(windgustmph_10m, 1);
+    Serial.print(",windgustdir_10m=");
+    Serial.print(windgustdir_10m);
+    Serial.print(",humidity=");
+    Serial.print(humidity, 1);
+    Serial.print(",tempf=");
+    Serial.print(tempf, 1);
+    Serial.print(",rainin=");
+    Serial.print(rainin, 2);
+    Serial.print(",dailyrainin=");
+    Serial.print(dailyrainin, 2);
+    Serial.print(",pressure=");
+    Serial.print(pressure, 2);
+    Serial.print(",light_lvl=");
+    Serial.print(light_lvl, 2);
+
     Serial.print(",lat=");
     Serial.print(gps.location.lat(), 6);
     Serial.print(",lat=");
