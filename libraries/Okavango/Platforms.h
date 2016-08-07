@@ -3,20 +3,22 @@
 
 #include <Arduino.h>
 
+#define memzero(ptr, sz)                  memset(ptr, 0, sz)
+
 // Primarily for Feather FONA with the Adalogger wing.
 #ifdef ARDUINO_AVR_FEATHER32U4
 
 #include <SoftwareSerial.h>
 
-#ifdef FEATHER_WING
-# define RFM95_CS                         23
-# define RFM95_RST                        21
-# define RFM95_INT                        2
-# define PIN_SD_CS                        4
+#ifdef FEATHER_WING_ADALOGGER
+#define RFM95_CS                          23
+#define RFM95_RST                         21
+#define RFM95_INT                         2
+#define PIN_SD_CS                         4
 #else
-# define RFM95_CS                         23
-# define RFM95_RST                        21
-# define RFM95_INT                        2
+#define RFM95_CS                          23
+#define RFM95_RST                         21
+#define RFM95_INT                         2
 #endif
 
 #define PIN_RED_LED                       13
@@ -46,8 +48,6 @@ typedef SoftwareSerial SerialType;
 #define RFM95_CS                          10
 #define RFM95_RST                         9
 #define RFM95_INT                         2
-#define PIN_SD_CS                         ?
-#define PIN_DS18B20                       ?
 
 #define PIN_RED_LED                       13
 #define PIN_GREEN_LED                     13
@@ -73,16 +73,16 @@ extern SerialType conductivitySerial;
 
 #define OPEN_CONDUCTIVITY_SERIAL_ON_START false
 
-#ifdef FEATHER_WING
-# define RFM95_CS                         8
-# define RFM95_RST                        4
-# define RFM95_INT                        3
-# define PIN_SD_CS                        16
+#ifdef FEATHER_WING_ADALOGGER
+#define RFM95_CS                          8
+#define RFM95_RST                         4
+#define RFM95_INT                         3
+#define PIN_SD_CS                         16
 #else
-# define RFM95_CS                         19
-# define RFM95_RST                        17
-# define RFM95_INT                        18
-# define PIN_SD_CS                        4
+#define RFM95_CS                          19
+#define RFM95_RST                         17
+#define RFM95_INT                         18
+#define PIN_SD_CS                         4
 #endif
 
 #define PIN_DS18B20                       14
@@ -110,5 +110,10 @@ void platformBlink(uint8_t pin);
 
 #define LOW_POWER_SLEEP_END               1000 * 60 * 5
 #define LOW_POWER_SLEEP_BEGIN             0
+
+#define RF95_FREQ                         915.0
+
+#define FK_SETTINGS_QUEUE_FILENAME        "queue.data"
+
 
 #endif

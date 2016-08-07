@@ -1,41 +1,122 @@
-#include <Adafruit_BME280.h>
 #include <SPI.h>
 #include <SD.h>
-#include "RTClib.h"
-
-#define FEATHER_WING
+#include <Ds18B20.h>
+#include <Adafruit_BME280.h>
 
 #include "Platforms.h"
+
+#include "core.h"
+#include "protocol.h"
+
 #include "AtlasScientific.h"
 #include "SerialPortExpander.h"
-#include "LoraRadio.h"
-#include "Ds18B20.h"
-#include "Logger.h"
 
-SerialPortExpander portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1);
-LoraRadio radio(RFM95_CS, RFM95_INT, RFM95_RST);
-Logger logger(PIN_SD_CS);
-AtlasScientificBoard board;
-Ds18B20 ds18b20(PIN_DS18B20);
-Adafruit_BME280 bme;
-RTC_PCF8523 rtc;
+/**
+ * A board containing primarily Atlas sensors and a few others, including water temperature.
+ */
+class AtlasSensorBoard {
+private:
+    CorePlatform *corePlatform;
+    SerialPortExpander portExpander;
+    AtlasScientificBoard board;
+    Ds18B20 ds18b20;
+    Adafruit_BME280 bme;
+    atlas_sensors_packet_t packet;
+    uint8_t packet_value_index = 0;
 
-#define SENSORS_PACKET_NUMBER_VALUES 11
+public:
+    AtlasSensorBoard(CorePlatform *corePlatform);
 
-typedef struct sensors_packet_t {
-    uint8_t kind;
-    uint32_t time;
-    float battery;
-    float values[SENSORS_PACKET_NUMBER_VALUES];
-} sensors_packet_t;
+public:
+    bool tick();
+    void setup();
 
-uint8_t valueIndex = 0;
-sensors_packet_t packet;
+private:
+    void populatePacket();
+    void logPacketLocally();
 
-void populatePacket() {
+};
+
+AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform)
+    : corePlatform(corePlatform), portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1), ds18b20(PIN_DS18B20) {
+    memzero((uint8_t *)&packet, sizeof(atlas_sensors_packet_t));
+}
+
+bool AtlasSensorBoard::tick() {
+    board.tick();
+
+    if (board.isDone()) {
+        populatePacket();
+        byte newPort = portExpander.getPort() + 1;
+        portExpander.select(newPort);
+        if (newPort < 3) {
+            Serial.println("Next sensor");
+            board.start();
+        }
+        else if (newPort == 3) {
+            Serial.println("Conductivity");
+            board.setSerial(&conductivitySerial);
+            board.start(OPEN_CONDUCTIVITY_SERIAL_ON_START);
+        }
+        else {
+            #ifdef BME280
+            Serial.println("Bme");
+
+            if (!bme.begin()) {
+                float temperature = bme.readTemperature();
+                float pressure = bme.readPressure();
+                float humidity = bme.readHumidity();
+
+                packet.values[packet_value_index++] = temperature;
+                packet.values[packet_value_index++] = pressure;
+                packet.values[packet_value_index++] = humidity;
+            }
+            #endif
+
+            if (ds18b20.setup()) {
+                Serial.println("Ds18B20 detected!");
+                packet.values[packet_value_index++] = ds18b20.getTemperature();
+            }
+            else {
+                Serial.println("Ds18B20 missing");
+                packet.values[packet_value_index++] = 0.0f;
+            }
+
+            Serial.println("Metrics");
+
+            packet.time = corePlatform->now();
+            packet.battery = platformBatteryVoltage();
+            packet.fk.kind = FK_PACKET_KIND_ATLAS_SENSORS;
+
+            logPacketLocally();
+
+            corePlatform->enqueue((uint8_t *)&packet);
+
+            Serial.println("Done");
+
+            platformLowPowerSleep(LOW_POWER_SLEEP_END);
+
+            platformRestart();
+        }
+    }
+
+    return true;
+}
+
+void AtlasSensorBoard::setup() {
+    portExpander.setup();
+    portExpander.select(0);
+
+    board.setSerial(&portExpanderSerial);
+    board.start();
+
+    memset((void *)&packet, 0, sizeof(atlas_sensors_packet_t));
+}
+
+void AtlasSensorBoard::populatePacket() {
     for (uint8_t i = 0; i < board.getNumberOfValues(); ++i) {
-        if (valueIndex < SENSORS_PACKET_NUMBER_VALUES) {
-            packet.values[valueIndex++] = board.getValues()[i];
+        if (packet_value_index < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES) {
+            packet.values[packet_value_index++] = board.getValues()[i];
         }
         else {
             Serial.println("Not enough room for values.");
@@ -43,14 +124,30 @@ void populatePacket() {
     }
 }
 
+void AtlasSensorBoard::logPacketLocally() {
+    Logger *logger = corePlatform->logger();
+
+    if (logger->opened()) {
+        Serial.println("Logging");
+        logger->log().print(packet.fk.kind);
+        logger->log().print(",");
+        logger->log().print(packet.time);
+        logger->log().print(",");
+        logger->log().print(packet.battery);
+        for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
+            logger->log().print(",");
+            logger->log().print(packet.values[i]);
+        }
+        logger->log().println();
+        logger->log().flush();
+    }
+}
+
+CorePlatform corePlatform;
+AtlasSensorBoard atlasSensorBoard(&corePlatform);
+
 void setup() {
     platformLowPowerSleep(LOW_POWER_SLEEP_BEGIN);
-
-    pinMode(PIN_RED_LED, OUTPUT);
-    digitalWrite(PIN_RED_LED, HIGH);
-
-    pinMode(PIN_GREEN_LED, OUTPUT);
-    digitalWrite(PIN_GREEN_LED, LOW);
 
     Serial.begin(115200);
 
@@ -63,56 +160,17 @@ void setup() {
     }
     #endif
 
-    digitalWrite(PIN_RED_LED, LOW);
-
-    pinMode(PIN_SD_CS, OUTPUT);
-    pinMode(RFM95_CS, OUTPUT);
-    pinMode(RFM95_RST, OUTPUT);
-
-    digitalWrite(PIN_SD_CS, HIGH);
-    digitalWrite(RFM95_CS, HIGH);
-    digitalWrite(RFM95_RST, HIGH);
-
     Serial.println("Begin");
 
-    portExpander.setup();
-    portExpander.select(0);
-
-    board.setSerial(&portExpanderSerial);
-    board.start();
-
-    if (!logger.setup()) {
-        platformCatastrophe(PIN_RED_LED);
-    }
-
-    if (radio.setup()) {
-        radio.sleep();
-    }
+    corePlatform.setup();
+    atlasSensorBoard.setup();
 
     platformPostSetup();
-
-    memset((void *)&packet, 0, sizeof(sensors_packet_t));
 
     Serial.println("Loop");
 }
 
-void logPacketLocally() {
-    if (logger.opened()) {
-        Serial.println("Logging");
-        logger.log().print(packet.kind);
-        logger.log().print(",");
-        logger.log().print(packet.time);
-        logger.log().print(",");
-        logger.log().print(packet.battery);
-        for (uint8_t i = 0; i < SENSORS_PACKET_NUMBER_VALUES; ++i) {
-            logger.log().print(",");
-            logger.log().print(packet.values[i]);
-        }
-        logger.log().println();
-        logger.log().flush();
-    }
-}
-
+/*
 void sendPacketAndWaitForAck() {
     if (!radio.isAvailable()) {
         Serial.println("No radio available");
@@ -126,7 +184,7 @@ void sendPacketAndWaitForAck() {
     for (uint8_t i = 0; i < 3; ++i) {
         Serial.println("Sending");
 
-        if (!radio.send((uint8_t *)&packet, sizeof(sensors_packet_t))) {
+        if (!radio.send((uint8_t *)&packet, sizeof(atlas_sensors_packet_t))) {
             Serial.println("Unable to send!");
             delay(500);
             break;
@@ -153,82 +211,13 @@ void sendPacketAndWaitForAck() {
 
     radio.sleep();
 }
+*/
 
 void loop() {
-    board.tick();
+    corePlatform.tick();
+    atlasSensorBoard.tick();
+
     delay(50);
-
-    if (board.isDone()) {
-        populatePacket();
-        byte newPort = portExpander.getPort() + 1;
-        portExpander.select(newPort);
-        if (newPort < 3) {
-            Serial.println("Next sensor");
-            board.start();
-        }
-        else if (newPort == 3) {
-            Serial.println("Conductivity");
-            board.setSerial(&conductivitySerial);
-            board.start(OPEN_CONDUCTIVITY_SERIAL_ON_START);
-        }
-        else {
-            if (!rtc.begin()) {
-                packet.time = 0;
-                Serial.println("RTC Missing");
-            }
-            else {
-                if (!rtc.initialized()) {
-                    packet.time = 0;
-                    Serial.println("RTC uninitialized");
-                    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-                }
-                else {
-                    DateTime now = rtc.now();
-                    packet.time = now.unixtime();
-                }
-            }
-
-            #ifdef BME280
-            Serial.println("Bme");
-
-            if (!bme.begin()) {
-                float temperature = bme.readTemperature();
-                float pressure = bme.readPressure();
-                float humidity = bme.readHumidity();
-
-                packet.values[valueIndex++] = temperature;
-                packet.values[valueIndex++] = pressure;
-                packet.values[valueIndex++] = humidity;
-            }
-            #endif
-
-            if (ds18b20.setup()) {
-                Serial.println("Ds18B20 detected!");
-                packet.values[valueIndex++] = ds18b20.getTemperature();
-            }
-            else {
-                Serial.println("Ds18B20 missing");
-                packet.values[valueIndex++] = 0.0f;
-            }
-
-            Serial.println("Metrics");
-
-            DateTime now = rtc.now();
-
-            packet.kind = 0;
-            packet.battery = platformBatteryVoltage();
-
-            logPacketLocally();
-
-            sendPacketAndWaitForAck();
-
-            Serial.println("Done");
-
-            platformLowPowerSleep(LOW_POWER_SLEEP_END);
-
-            platformRestart();
-        }
-    }
 }
 
 // vim: set ft=cpp:

@@ -1,6 +1,5 @@
 #include "LoraRadio.h"
-
-#define RF95_FREQ 915.0
+#include "Platforms.h"
 
 LoraRadio::LoraRadio(uint8_t pinCs, uint8_t pinG0, uint8_t pinEnable)
     : rf95(pinCs, pinG0), pinEnable(pinEnable), available(false) {
@@ -15,12 +14,12 @@ bool LoraRadio::setup() {
     reset();
 
     if (!rf95.init()) {
-        Serial.println("LoraRadio: Initialize failed!");
+        Serial.println("Radio: Initialize failed!");
         return false;
     }
 
     if (!rf95.setFrequency(RF95_FREQ)) {
-        Serial.println("LoraRadio: setFrequency failed!");
+        Serial.println("Radio: setFrequency failed!");
         return false;
     }
 
