@@ -94,7 +94,10 @@ function show_ports() {
 function open_serial() {
     rm -f log.txt
     MONITOR_PORT=`node ${BUILDING_DIR}/get-port.js watch $BOARD $PORT_NAME $PORT`
-    ../setup/putty.exe -serial $PORT -sercfg 115200 -sessionlog log.txt
+    if [ "$SERIAL_BAUD" == "" ]; then
+        SERIAL_BAUD="115200"
+    fi
+    ../setup/putty.exe -serial $PORT -sercfg $SERIAL_BAUD -sessionlog log.txt
 }
 
 function size() {

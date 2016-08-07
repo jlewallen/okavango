@@ -135,8 +135,7 @@ void wspeedIRQ()
 
 void setup()
 {
-	Serial.begin(115200);
-	Serial.println("Weather Shield Example");
+	Serial.begin(9600);
 
     ss.begin(9600); //Begin listening to GPS over software serial at 9600. This should be the default baud of the module.
 
@@ -170,9 +169,6 @@ void setup()
 
 	// turn on interrupts
 	interrupts();
-
-	Serial.println("Weather Shield online!");
-
 }
 
 void loop()
@@ -414,15 +410,21 @@ int get_wind_direction()
 	return (-1); // error, disconnected?
 }
 
+int32_t freeRam() {
+    extern int __heap_start, *__brkval; 
+    int v; 
+    return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
+}
 
 //Prints the various variables directly to the port
 //I don't like the way this function is written but Arduino doesn't support floats under sprintf
 void printWeather()
 {
-	calcWeather(); //Go calc all the various sensors
+	calcWeather();
 
-	Serial.println();
-	Serial.print("$,winddir=");
+    // Serial.println(freeRam());
+
+	Serial.print("winddir=");
 	Serial.print(winddir);
 	Serial.print(",windspeedmph=");
 	Serial.print(windspeedmph, 1);
@@ -463,18 +465,11 @@ void printWeather()
     Serial.print(",sats=");
     Serial.print(gps.satellites.value());
 
-    char sz[32];
     Serial.print(",date=");
-    sprintf(sz, "%02d/%02d/%02d", gps.date.month(), gps.date.day(), gps.date.year());
-    Serial.print(sz);
-
+    Serial.print(gps.date.value());
     Serial.print(",time=");
-    sprintf(sz, "%02d:%02d:%02d", gps.time.hour(), gps.time.minute(), gps.time.second());
-    Serial.print(sz);
-
-    Serial.print(",");
-    Serial.println("#");
-
+    Serial.print(gps.time.value());
+    Serial.println();
 }
 
 // vim: set ft=cpp:

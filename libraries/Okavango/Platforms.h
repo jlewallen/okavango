@@ -3,6 +3,31 @@
 
 #include <Arduino.h>
 
+// Primarily for Feather FONA with the Adalogger wing.
+#ifdef ARDUINO_AVR_FEATHER32U4
+
+#include <SoftwareSerial.h>
+
+#ifdef FEATHER_WING
+# define RFM95_CS                         23
+# define RFM95_RST                        21
+# define RFM95_INT                        2
+# define PIN_SD_CS                        4
+#else
+# define RFM95_CS                         23
+# define RFM95_RST                        21
+# define RFM95_INT                        2
+#endif
+
+#define PIN_RED_LED                       13
+#define PIN_GREEN_LED                     13
+#define PIN_SLEEP_LED                     13
+
+typedef SoftwareSerial SerialType;
+
+#endif
+
+// Simple/basic testing on an Ardunio. Many things won't work.
 #ifdef ARDUINO_AVR_UNO
 
 #include <SoftwareSerial.h>
@@ -36,6 +61,7 @@ extern SerialType conductivitySerial;
 #endif /* ARDUINO_AVR_UNO */
 
 
+// Our core platform, at least hopefully eventually.
 #ifdef ARDUINO_SAMD_FEATHER_M0
 
 #include "wiring_private.h" // pinPeripheral() function
