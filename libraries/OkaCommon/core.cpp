@@ -30,10 +30,13 @@ void CorePlatform::setup() {
     }
 
     if (!sdLogger.setup()) {
-        platformCatastrophe(PIN_RED_LED);
+        Serial.println("SD Missing");
     }
 
-    if (loraRadio.setup()) {
+    if (!loraRadio.setup()) {
+        Serial.println("Radio Missing");
+    }
+    else {
         loraRadio.sleep();
     }
 }

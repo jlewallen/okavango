@@ -40,4 +40,7 @@ typedef struct fk_network_ack_t {
 /* Should be largest possible. */
 #define FK_QUEUE_ENTRY_SIZE                                 sizeof(atlas_sensors_packet_t)
 
+extern fk_network_packet_t *fk_network_packet_new(size_t sz, uint8_t kind);
+extern void fk_network_packet_free(fk_network_packet_t *packet);
+
 #endif

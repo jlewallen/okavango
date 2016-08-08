@@ -34,12 +34,57 @@ public:
 private:
     void populatePacket();
     void logPacketLocally();
+    void sendPacketAndWaitForAck();
 
 };
 
 AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform)
     : corePlatform(corePlatform), portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1), ds18b20(PIN_DS18B20) {
     memzero((uint8_t *)&packet, sizeof(atlas_sensors_packet_t));
+}
+
+// Eventually going to be moved?
+void AtlasSensorBoard::sendPacketAndWaitForAck() {
+    LoraRadio *radio = corePlatform->radio();
+
+    if (!radio->isAvailable()) {
+        Serial.println("No radio available");
+        return;
+    }
+
+    Serial.println("Enabling radio");
+
+    radio->setup();
+
+    for (uint8_t i = 0; i < 3; ++i) {
+        Serial.println("Sending");
+
+        if (!radio->send((uint8_t *)&packet, sizeof(atlas_sensors_packet_t))) {
+            Serial.println("Unable to send!");
+            delay(500);
+            break;
+        }
+
+        radio->waitPacketSent();
+
+        uint32_t before = millis();
+        bool gotAck = false;
+        while (millis() - before < 5000) {
+            radio->tick();
+
+            if (radio->hasPacket()) {
+                gotAck = true;
+                radio->clear();
+                break;
+            }
+            delay(500);
+        }
+        if (gotAck) {
+            break;
+        }
+    }
+
+    radio->sleep();
 }
 
 bool AtlasSensorBoard::tick() {
@@ -91,6 +136,9 @@ bool AtlasSensorBoard::tick() {
             logPacketLocally();
 
             corePlatform->enqueue((uint8_t *)&packet);
+
+            // Eventually moved.
+            sendPacketAndWaitForAck();
 
             Serial.println("Done");
 
@@ -169,49 +217,6 @@ void setup() {
 
     Serial.println("Loop");
 }
-
-/*
-void sendPacketAndWaitForAck() {
-    if (!radio.isAvailable()) {
-        Serial.println("No radio available");
-        return;
-    }
-
-    Serial.println("Enabling radio");
-
-    radio.setup();
-
-    for (uint8_t i = 0; i < 3; ++i) {
-        Serial.println("Sending");
-
-        if (!radio.send((uint8_t *)&packet, sizeof(atlas_sensors_packet_t))) {
-            Serial.println("Unable to send!");
-            delay(500);
-            break;
-        }
-
-        radio.waitPacketSent();
-
-        uint32_t before = millis();
-        bool gotAck = false;
-        while (millis() - before < 5000) {
-            radio.tick();
-
-            if (radio.hasPacket()) {
-                gotAck = true;
-                radio.clear();
-                break;
-            }
-            delay(500);
-        }
-        if (gotAck) {
-            break;
-        }
-    }
-
-    radio.sleep();
-}
-*/
 
 void loop() {
     corePlatform.tick();

@@ -5,22 +5,20 @@ set -x
 
 BUILD=`pwd`/building/build.sh
 
-pushd blink
-$BUILD -a -b
-$BUILD -m -b
-popd
-
-pushd radio-test
-$BUILD -a -b
-$BUILD -m -b
-popd
-
-pushd extra-serials
-$BUILD -m -b
+pushd tests
+for a in *; do
+    pushd $a
+    $BUILD -m -b
+    $BUILD -a -b
+    popd
+done
 popd
 
 pushd sensors
-$BUILD -a -b
 $BUILD -m -b
+popd 
+
+pushd weather-shield
+$BUILD -a -b
 popd
 

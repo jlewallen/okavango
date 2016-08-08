@@ -14,12 +14,12 @@ bool LoraRadio::setup() {
     reset();
 
     if (!rf95.init()) {
-        Serial.println("Radio: Initialize failed!");
+        Serial.println("Radio missing!");
         return false;
     }
 
     if (!rf95.setFrequency(RF95_FREQ)) {
-        Serial.println("Radio: setFrequency failed!");
+        Serial.println("Radio setFrequency failed");
         return false;
     }
 
