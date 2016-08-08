@@ -15,7 +15,6 @@ class NetworkProtocolState {
 private:
     NetworkState state;
     CorePlatform *platform;
-    LoraRadio *radio;
     
 public:
     NetworkProtocolState(NetworkState state, CorePlatform *platform);
