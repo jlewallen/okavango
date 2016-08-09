@@ -49,7 +49,11 @@ function use_featherm0() {
 # No editing should be required below here.
 
 function get_port() {
-    PORT=`node ${BUILDING_DIR}/get-port.js monitor $BOARD $PORT_NAME $PORT`
+    if [ "$USER_PORT" -eq "" ]; then
+        PORT=`node ${BUILDING_DIR}/get-port.js monitor $BOARD $PORT_NAME $PORT`
+    else
+        PORT=$USER_PORT
+    fi
 }
 
 function clean() {
