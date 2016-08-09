@@ -56,8 +56,12 @@ void Queue::enqueue(uint8_t *buffer) {
 }
 
 void Queue::removeAll() {
-    file.close();
-    SD.remove(filename);
+    if (file) {
+        file.close();
+    }
+    if (!SD.remove(filename)) {
+        Serial.println("Error");
+    }
     file = SD.open(filename, FILE_WRITE);
 }
 

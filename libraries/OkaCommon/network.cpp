@@ -30,20 +30,16 @@ void NetworkProtocolState::tick() {
 
     switch (state) {
         case NetworkState::EnqueueFromNetwork: {
-            if (!inDelay) {
-                transition(NetworkState::EnqueueFromNetwork, 5000);
-            }
-            else {
-                checkForPacket();
-            }
+            checkForPacket();
 
             break;
         }
         case NetworkState::PingForListener: {
-            sendPing();
+            if (platform->queue()->size() > 0) {
+                sendPing();
 
-            transition(NetworkState::ListenForPong, 5000);
-
+                transition(NetworkState::ListenForPong, 5000);
+            }
             break;
         }
         case NetworkState::ListenForAck: {

@@ -13,9 +13,12 @@ NetworkProtocolState networkProtocol(NetworkState::PingForListener, &corePlatfor
 #endif
 
 void refillQueue() {
+    #ifndef FEATHER_WING_ADALOGGER
     pinMode(5, INPUT);
 
     if (digitalRead(5)) {
+        Serial.println("Refilling");
+
         atlas_sensors_packet_t sensors;
         memzero((uint8_t *)&sensors, sizeof(atlas_sensors_packet_t));
         sensors.fk.kind = FK_PACKET_KIND_ATLAS_SENSORS;
@@ -26,8 +29,10 @@ void refillQueue() {
         }
 
         corePlatform.queue()->startAtBeginning();
-        DEBUG_PRINTLN("Queued 10");
+
+        DEBUG_PRINTLN("Done!");
     }
+    #endif
 }
 
 void setup() {
@@ -62,7 +67,6 @@ void loop() {
         networkProtocol.tick();
 
         if (millis() - lastRefill > 10000) {
-            // DEBUG_PRINTLN("Tick");
             if (corePlatform.queue()->size() == 0) {
                 refillQueue();
             }

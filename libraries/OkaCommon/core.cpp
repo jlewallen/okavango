@@ -21,6 +21,7 @@ void CorePlatform::setup() {
     pinMode(PIN_SD_CS, OUTPUT);
     digitalWrite(PIN_SD_CS, HIGH);
 
+    #ifdef FEATHER_WING_ADALOGGER
     if (!rtc.begin()) {
         Serial.println("RTC Missing");
     }
@@ -30,12 +31,14 @@ void CorePlatform::setup() {
             rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
         }
     }
+    #endif
 
     pinMode(PIN_SD_CS, OUTPUT);
 
     if (SD.begin(PIN_SD_CS)) {
         sdLogger.setup();
         localQueue.setup();
+        localQueue.removeAll();
     }
     else {
         Serial.println("SD Missing");
