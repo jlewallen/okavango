@@ -6,22 +6,24 @@ First, some handy pinout diagrams:
 * [Raspberry Pi](http://pinout.xyz/pinout/spi)
 * [Arduino Uno](https://blog.arduino.cc/2012/05/29/handy-arduino-uno-r3-pinout-diagram/)
 
-
-|  Component Pin  | Feather M0 Pin | Arduino Uno Pin | Raspberry Pi 3 |
-|:---------------:|:--------------:|:---------------:|:--------------:|
-| Conductivity Rx |       10       |        4        |                |
-| Conductivity Tx |       11       |        5        |                |
-| SPE A (Rx)      |        0       |        2        |                |
-| SPE B (Tx)      |        1       |        3        |                |
-| SPE X           |        5       |        6        |                |
-| SPE Y           |        6       |        7        |                |
-| LoRa En         |                |        9        |                |
-| LoRa G0         |       18       |        2        |        7       |
-| LoRa SCK        |       24       |        13       |       23       |
-| LoRa MISO       |       22       |        12       |       21       |
-| LoRa MOSI       |       23       |        11       |       19       |
-| LoRa CS         |       19       |        10       |       22       |
-| LoRa RST        |       17       |                 |       11       |
+|    Component    | Feather 32u4 Fona | Feather M0 Lora | Feather M0 Logger | Arduino Uno | Raspberry Pi 3 |
+|:---------------:|:-----------------:|:---------------:|:-----------------:|:-----------:|:--------------:|
+| Conductivity Rx |                   | 10              | 10                | 4           |                |
+| Conductivity Tx |                   | 11              | 11                | 5           |                |
+| SPE A (Rx)      |                   | 0               | 0                 | 2           |                |
+| SPE B (Tx)      |                   | 1               | 1                 | 3           |                |
+| SPE X           |                   | 5               | 5                 | 6           |                |
+| SPE Y           |                   | 6               | 6                 | 7           |                |
+| LoRa En         |                   |                 |                   | 9           |                |
+| LoRa G0         | 2                 | 3               | 18                | 2           | 7              |
+| LoRa SCK        | 15                |                 | 24                | 13          | 23             |
+| LoRa MISO       | 14                |                 | 22                | 12          | 21             |
+| LoRa MOSI       | 16                |                 | 23                | 11          | 19             |
+| LoRa CS         | 23                | 8               | 19                | 10          | 22             |
+| LoRa RST        | 21                | 4               | 17                |             | 11             |
+| SD CS           | 4                 | 16              | 4                 |             |                |
+| WS (Rx)         | 1                 |                 |                   |             |                |
+| WS (Tx)         | 0                 |                 |                   |             |                |
 
 ## Caveats:
 
