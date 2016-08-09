@@ -67,10 +67,16 @@ void loop() {
         networkProtocol.tick();
 
         if (millis() - lastRefill > 10000) {
+            Serial.println(networkProtocol.numberOfPacketsReceived());
             if (corePlatform.queue()->size() == 0) {
                 refillQueue();
             }
             lastRefill = millis();
+        }
+
+        if (networkProtocol.isQueueEmpty() || networkProtocol.isNobodyListening()) {
+            Serial.println("Starting over...");
+            networkProtocol.startOver(PingForListener);
         }
 
         delay(10);

@@ -16,8 +16,8 @@ bool Queue::setup() {
         return false;
     }
 
-    Serial.print("Queue size: ");
-    Serial.println(size());
+    // Serial.print("Queue size: ");
+    // Serial.println(size());
 
     startAtBeginning();
     available = true;
@@ -79,8 +79,8 @@ uint8_t *Queue::dequeue() {
     uint32_t position = file.position();
 
     while (position < size) {
-        DEBUG_PRINT("Queue #");
-        DEBUG_PRINTLN(position / interval);
+        // DEBUG_PRINT("Queue #");
+        // DEBUG_PRINTLN(position / interval);
 
         header_t header;
         if (file.read(&header, sizeof(header_t)) != sizeof(header_t)) {

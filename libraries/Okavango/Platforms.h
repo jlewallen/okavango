@@ -10,7 +10,7 @@ typedef struct fk_board_t {
     uint8_t pin_sd_cs;
 } fk_board_t;
 
-// #define FEATHER_WING_ADALOGGER
+#define FEATHER_WING_ADALOGGER
 
 // Primarily for Feather FONA with the Adalogger wing.
 #ifdef ARDUINO_AVR_FEATHER32U4

@@ -10,14 +10,18 @@ enum NetworkState {
     ListenForPong,
     ListenForAck,
     GiveListenerABreak,
-    Sleep
+    Sleep,
+
+    QueueEmpty,
+    NobodyListening
 };
 
 class NetworkProtocolState {
 private:
     CorePlatform *platform;
     NetworkState state;
-    uint32_t stateDelay;
+    uint16_t stateDelay;
+    uint16_t packetsReceived;
     uint32_t lastTick;
     uint32_t lastTickNonDelayed;
     bool pingAgainAfterDequeue;
@@ -27,13 +31,23 @@ public:
 
 public:
     void tick();
-    void handle(fk_network_packet_t *packet);
+    void startOver(NetworkState state);
+    bool isQueueEmpty() {
+        return state == QueueEmpty;
+    }
+    bool isNobodyListening() {
+        return state == NobodyListening;
+    }
+    uint16_t numberOfPacketsReceived() {
+        return packetsReceived;
+    }
 
 private:
     void sendPing();
     void sendAck();
     void dequeueAndSend();
     void checkForPacket();
+    void handle(fk_network_packet_t *packet);
     void transition(NetworkState newState, uint32_t delay);
     bool is(NetworkState aState) {
         return state == aState;
