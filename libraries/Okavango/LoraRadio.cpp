@@ -16,12 +16,12 @@ bool LoraRadio::setup() {
     reset();
 
     if (!rf95.init()) {
-        DEBUG_PRINTLN("Radio missing");
+        DEBUG_PRINTLN(F("Radio missing"));
         return false;
     }
 
     if (!rf95.setFrequency(RF95_FREQ)) {
-        DEBUG_PRINTLN("Radio setup failed");
+        DEBUG_PRINTLN(F("Radio setup failed"));
         return false;
     }
 

@@ -17,11 +17,11 @@ void CorePlatform::setup() {
     #ifdef FEATHER_WING_ADALOGGER
     #ifndef FEATHER_DISABLE_RTC
     if (!rtc.begin()) {
-        Serial.println(F("RTC Missing"));
+        DEBUG_PRINTLN(F("RTC Missing"));
     }
     else {
         if (!rtc.initialized()) {
-            Serial.println("RTC uninitialized");
+            DEBUG_PRINTLN(F("RTC uninitialized"));
             rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
         }
     }
@@ -31,20 +31,19 @@ void CorePlatform::setup() {
     pinMode(PIN_SD_CS, OUTPUT);
     digitalWrite(PIN_SD_CS, HIGH);
 
+    pinMode(PIN_RFM95_CS, OUTPUT);
+    digitalWrite(PIN_RFM95_CS, HIGH);
+
     if (SD.begin(PIN_SD_CS)) {
         sdLogger.setup();
-        Serial.println("A");
         localQueue.setup();
-        Serial.println("B");
     }
     else {
-        Serial.println("SD Missing");
+        DEBUG_PRINTLN(F("SD Missing"));
     }
 
-    // pinMode(PIN_RFM95_CS, OUTPUT);
-    // pinMode(PIN_RFM95_RST, OUTPUT);
-    // digitalWrite(PIN_RFM95_CS, HIGH);
-    // digitalWrite(PIN_RFM95_RST, HIGH);
+    pinMode(PIN_RFM95_RST, OUTPUT);
+    digitalWrite(PIN_RFM95_RST, HIGH);
 
     if (loraRadio.setup()) {
         loraRadio.sleep();

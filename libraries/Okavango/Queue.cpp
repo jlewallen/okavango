@@ -12,11 +12,11 @@ Queue::Queue(size_t entrySize, const char *filename) :
 bool Queue::setup() {
     file = SD.open(filename, FILE_WRITE);
     if (!file) {
-        Serial.println("File unavailable");
+        DEBUG_PRINTLN(F("Queue unavailable"));
         return false;
     }
 
-    // DEBUG_PRINT("Queue size: ");
+    // DEBUG_PRINT(F("Queue size: "));
     // DEBUG_PRINTLN(size());
 
     startAtBeginning();
@@ -79,7 +79,7 @@ uint8_t *Queue::dequeue() {
     uint32_t position = file.position();
 
     while (position < size) {
-        // DEBUG_PRINT("Queue #");
+        // DEBUG_PRINT(F("Queue #"));
         // DEBUG_PRINTLN(position / interval);
 
         header_t header;
@@ -92,17 +92,17 @@ uint8_t *Queue::dequeue() {
                 return NULL;
             }
 
-            // DEBUG_PRINTLN(" returning");
+            // DEBUG_PRINTLN(F(" returning"));
             return buffer;
         }
         else {
-            // DEBUG_PRINTLN(" dead");
+            // DEBUG_PRINTLN(F(" dead"));
         }
 
         position += interval;
     }
 
-    DEBUG_PRINTLN("End of queue");
+    DEBUG_PRINTLN(F("End of queue"));
 
     removeAll();
 

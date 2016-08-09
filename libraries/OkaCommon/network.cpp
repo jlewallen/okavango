@@ -48,15 +48,15 @@ void NetworkProtocolState::tick() {
             if (!inDelay) {
                 /*
                 if (wasDelayed) {
-                    DEBUG_PRINT("DELAYED ");
+                    DEBUG_PRINT(F("DELAYED "));
                 }
                 */
                 if (platform->radio()->resend()) {
-                    DEBUG_PRINTLN("Nack, rx");
+                    DEBUG_PRINTLN(F("Nack, rx"));
                     transition(NetworkState::ListenForAck, RETRY_DELAY);
                 }
                 else {
-                    DEBUG_PRINTLN("Nack, break");
+                    DEBUG_PRINTLN(F("Nack, break"));
                     transition(NetworkState::GiveListenerABreak, RETRY_DELAY);
                 }
             }
@@ -70,14 +70,14 @@ void NetworkProtocolState::tick() {
                 if (platform->radio()->resend()) {
                     /*
                     if (wasDelayed) {
-                        DEBUG_PRINT("DELAYED ");
+                        DEBUG_PRINT(F("DELAYED "));
                     }
                     */
-                    DEBUG_PRINTLN("Ping retry");
+                    DEBUG_PRINTLN(F("Ping retry"));
                     transition(NetworkState::ListenForPong, RETRY_DELAY);
                 }
                 else {
-                    DEBUG_PRINTLN("No pong");
+                    DEBUG_PRINTLN(F("No pong"));
                     platform->radio()->sleep();
                     transition(NetworkState::NobodyListening, 0);
                 }
@@ -100,7 +100,7 @@ void NetworkProtocolState::tick() {
 void NetworkProtocolState::handle(fk_network_packet_t *packet) {
     packetsReceived++;
 
-    DEBUG_PRINT("P:");
+    DEBUG_PRINT(F("P:"));
     DEBUG_PRINTLN(packet->kind);
 
     switch (packet->kind) {
@@ -133,22 +133,22 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet) {
     }
     case FK_PACKET_KIND_PONG: {
         if (state == NetworkState::ListenForPong) {
-            DEBUG_PRINTLN("Ponged");
+            DEBUG_PRINTLN(F("Ponged"));
             platform->queue()->startAtBeginning();
             dequeueAndSend();
         }
         else {
-            DEBUG_PRINTLN("Ignore pong");
+            DEBUG_PRINTLN(F("Ignore pong"));
         }
         break;
     }
     case FK_PACKET_KIND_ACK: {
-        DEBUG_PRINTLN("Ack");
+        DEBUG_PRINTLN(F("Ack"));
         dequeueAndSend();
         break;
     }
     default: {
-        DEBUG_PRINTLN("Unknown");
+        DEBUG_PRINTLN(F("Unknown"));
 
         // So this is actually weird. I'm thinking that sometimes things get corrupted and we
         // should avoid that rather than causing the remote end to retry all over again. I saw
@@ -161,7 +161,7 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet) {
 }
 
 void NetworkProtocolState::sendPing() {
-    DEBUG_PRINTLN("Pinging");
+    DEBUG_PRINTLN(F("Pinging"));
 
     fk_network_ping_t ping;
     memzero((uint8_t *)&ping, sizeof(fk_network_ping_t));
@@ -172,7 +172,7 @@ void NetworkProtocolState::sendPing() {
 }
 
 void NetworkProtocolState::sendAck() {
-    DEBUG_PRINTLN("Acking");
+    DEBUG_PRINTLN(F("Acking"));
 
     fk_network_ack_t ack;
     memzero((uint8_t *)&ack, sizeof(fk_network_ack_t));
@@ -221,11 +221,11 @@ void NetworkProtocolState::dequeueAndSend() {
                     break;
                 }
                 else {
-                    DEBUG_PRINTLN("Ign non-ACK");
+                    DEBUG_PRINTLN(F("Ign non-ACK"));
                 }
             }
             else {
-                DEBUG_PRINTLN("Empty");
+                DEBUG_PRINTLN(F("Empty"));
                 platform->radio()->sleep();
                 transition(NetworkState::QueueEmpty, 0);
                 break;
