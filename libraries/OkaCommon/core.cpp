@@ -38,7 +38,6 @@ void CorePlatform::setup() {
     if (SD.begin(PIN_SD_CS)) {
         sdLogger.setup();
         localQueue.setup();
-        localQueue.removeAll();
     }
     else {
         Serial.println("SD Missing");
