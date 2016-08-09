@@ -16,14 +16,16 @@ private:
     Logger sdLogger;
     LoraRadio loraRadio;
     RTC_PCF8523 rtc;
-    Queue queue;
+    Queue localQueue;
 
 public:
-    CorePlatform();
+    CorePlatform(fk_board_t *board);
 
 public:
     Logger *logger() { return &sdLogger; }
     LoraRadio *radio() { return &loraRadio; }
+    Queue *queue() { return &localQueue; }
+
     uint32_t now() { return rtc.now().unixtime(); }
     void enqueue(uint8_t *data);
     uint8_t *dequeue();

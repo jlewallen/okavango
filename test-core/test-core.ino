@@ -4,7 +4,31 @@
 #include "protocol.h"
 #include "network.h"
 
-CorePlatform corePlatform;
+#ifdef FEATHER_WING_ADALOGGER
+CorePlatform corePlatform(&feather_m0_lora_adalogger_wing);
+NetworkProtocolState networkProtocol(NetworkState::EnqueueFromNetwork, &corePlatform);
+#else
+CorePlatform corePlatform(&feather_m0_adalogger_external_lora);
+NetworkProtocolState networkProtocol(NetworkState::PingForListener, &corePlatform);
+#endif
+
+void refillQueue() {
+    pinMode(5, INPUT);
+
+    if (digitalRead(5)) {
+        atlas_sensors_packet_t sensors;
+        memzero((uint8_t *)&sensors, sizeof(atlas_sensors_packet_t));
+        sensors.fk.kind = FK_PACKET_KIND_ATLAS_SENSORS;
+        sensors.time = 0;
+        for (uint8_t i = 0; i < 10; ++i) {
+            corePlatform.enqueue((uint8_t *)&sensors);
+            sensors.time++;
+        }
+
+        corePlatform.queue()->startAtBeginning();
+        DEBUG_PRINTLN("Queued 10");
+    }
+}
 
 void setup() {
     platformLowPowerSleep(LOW_POWER_SLEEP_BEGIN);
@@ -23,22 +47,30 @@ void setup() {
     Serial.println("Begin");
 
     corePlatform.setup();
-
     platformPostSetup();
+
+    refillQueue();
 
     Serial.println("Loop");
 }
 
-uint32_t lastPing = 0;
-
-NetworkProtocolState networkProtocol(NetworkState::PingForListener, &corePlatform);
-// NetworkProtocolState networkProtocol(NetworkState::Enqueue, &corePlatform);
+uint32_t lastRefill = 0;
 
 void loop() {
-    corePlatform.tick();
-    networkProtocol.tick();
+    while (1) {
+        corePlatform.tick();
+        networkProtocol.tick();
 
-    delay(10);
+        if (millis() - lastRefill > 10000) {
+            // DEBUG_PRINTLN("Tick");
+            if (corePlatform.queue()->size() == 0) {
+                refillQueue();
+            }
+            lastRefill = millis();
+        }
+
+        delay(10);
+    }
 }
 
 // vim: set ft=cpp:

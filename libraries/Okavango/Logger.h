@@ -6,14 +6,13 @@
 
 class Logger {
 private:
-    const uint8_t pinCs;
     File file;
 
 private:
     void openFile(const char *filename);
 
 public:
-    Logger(uint8_t pinCs);
+    Logger();
     bool setup();
 
     bool opened() {

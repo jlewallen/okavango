@@ -5,10 +5,11 @@
 #include "protocol.h"
 
 enum NetworkState {
-    Enqueue,
+    EnqueueFromNetwork,
     PingForListener,
     ListenForPong,
     ListenForAck,
+    GiveListenerABreak,
     Sleep
 };
 
@@ -16,7 +17,7 @@ class NetworkProtocolState {
 private:
     CorePlatform *platform;
     NetworkState state;
-    uint32_t delay;
+    uint32_t stateDelay;
     uint32_t lastTick;
     uint32_t lastTickNonDelayed;
     bool pingAgainAfterDequeue;
@@ -30,6 +31,8 @@ public:
 
 private:
     void sendPing();
+    void sendAck();
+    void dequeueAndSend();
     void checkForPacket();
     void transition(NetworkState newState, uint32_t delay);
     bool is(NetworkState aState) {

@@ -1,6 +1,6 @@
 #include "Logger.h"
 
-Logger::Logger(uint8_t pinCs) : pinCs(pinCs) {
+Logger::Logger() {
 }
 
 void Logger::openFile(const char *filename) {
@@ -10,12 +10,6 @@ void Logger::openFile(const char *filename) {
 }
 
 bool Logger::setup() {
-    pinMode(pinCs, OUTPUT);
-
-    if (!SD.begin(pinCs)) {
-        return false;
-    }
-
     #if 0
     for (uint32_t i = 0; i <= 99999999; i++) {
         char filename[13];

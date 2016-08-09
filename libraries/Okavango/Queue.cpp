@@ -1,24 +1,32 @@
 #include "Queue.h"
+#include "Platforms.h"
 
 typedef struct header_t {
     bool live;
 } header_t;
 
-Queue::Queue(uint8_t pinCs, size_t entrySize, const char *filename) :
-    pinCs(pinCs), entrySize(entrySize), filename(filename) {
+Queue::Queue(size_t entrySize, const char *filename) :
+    entrySize(entrySize), filename(filename) {
 }
 
 bool Queue::setup() {
-    pinMode(pinCs, OUTPUT);
-
-    if (!SD.begin(pinCs)) {
-        available = false;
+    file = SD.open(filename, FILE_WRITE);
+    if (!file) {
+        Serial.println("File unavailable");
+        return false;
     }
 
-    file = SD.open(filename, FILE_WRITE);
-    file.seek(0);
+    Serial.print("Queue size: ");
+    Serial.println(size());
+
+    startAtBeginning();
+    available = true;
 
     return available;
+}
+
+void Queue::startAtBeginning() {
+    file.seek(0);
 }
 
 void Queue::close() {
@@ -37,16 +45,20 @@ uint16_t Queue::size() {
 
 void Queue::enqueue(uint8_t *buffer) {
     if (available) {
-        header_t header = {
-            true
-        };
+        header_t header = { true };
 
         // TODO: Find free position.
         file.seek(file.size());
-        file.write((uint8_t *)&header, sizeof(header_t));
-        file.write(buffer, entrySize);
+        uint32_t written = file.write((uint8_t *)&header, sizeof(header_t));
+        written += file.write(buffer, entrySize);
         file.flush();
     }
+}
+
+void Queue::removeAll() {
+    file.close();
+    SD.remove(filename);
+    file = SD.open(filename, FILE_WRITE);
 }
 
 uint8_t *Queue::dequeue() {
@@ -54,13 +66,17 @@ uint8_t *Queue::dequeue() {
         return NULL;
     }
 
-    const size_t interval = sizeof(header_t) + entrySize;
     const uint32_t size = file.size();
+    if (size == 0) {
+        return NULL;
+    }
+
+    const size_t interval = sizeof(header_t) + entrySize;
     uint32_t position = file.position();
 
     while (position < size) {
-        Serial.print("Queue #");
-        Serial.print(position / interval);
+        DEBUG_PRINT("Queue #");
+        DEBUG_PRINTLN(position / interval);
 
         header_t header;
         if (file.read(&header, sizeof(header_t)) != sizeof(header_t)) {
@@ -68,29 +84,23 @@ uint8_t *Queue::dequeue() {
         }
 
         if (header.live) {
-            uint8_t *buffer = (uint8_t *)malloc(entrySize);
             if (file.read(buffer, entrySize) != entrySize) {
-                free(buffer);
                 return NULL;
             }
 
-            Serial.println(" returning");
+            // DEBUG_PRINTLN(" returning");
             return buffer;
         }
         else {
-            Serial.println(" dead");
+            // DEBUG_PRINTLN(" dead");
         }
 
         position += interval;
     }
 
-    Serial.println("End of queue");
+    DEBUG_PRINTLN("End of queue");
 
-    file.close();
-
-    SD.remove(filename);
-
-    file = SD.open(filename, FILE_WRITE);
+    removeAll();
 
     return NULL;
 }

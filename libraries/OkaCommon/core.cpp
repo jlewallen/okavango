@@ -1,13 +1,15 @@
 #include "core.h"
 #include "protocol.h" 
 
-CorePlatform::CorePlatform()
-    : sdLogger(PIN_SD_CS), loraRadio(RFM95_CS, RFM95_INT, RFM95_RST), queue(PIN_SD_CS, FK_QUEUE_ENTRY_SIZE, FK_SETTINGS_QUEUE_FILENAME) {
+CorePlatform::CorePlatform(fk_board_t *board) :
+    sdLogger(),
+    loraRadio(board->pin_rfm95_cs, board->pin_rfm95_g0, board->pin_rfm95_power),
+    localQueue(FK_QUEUE_ENTRY_SIZE, FK_SETTINGS_QUEUE_FILENAME) {
 }
 
 void CorePlatform::setup() {
     pinMode(PIN_RED_LED, OUTPUT);
-    digitalWrite(PIN_RED_LED, HIGH);
+    digitalWrite(PIN_RED_LED, LOW);
     pinMode(PIN_GREEN_LED, OUTPUT);
     digitalWrite(PIN_GREEN_LED, LOW);
 
@@ -29,7 +31,13 @@ void CorePlatform::setup() {
         }
     }
 
-    if (!sdLogger.setup()) {
+    pinMode(PIN_SD_CS, OUTPUT);
+
+    if (SD.begin(PIN_SD_CS)) {
+        sdLogger.setup();
+        localQueue.setup();
+    }
+    else {
         Serial.println("SD Missing");
     }
 
@@ -46,10 +54,10 @@ bool CorePlatform::tick() {
 }
 
 void CorePlatform::enqueue(uint8_t *data) {
-    queue.enqueue(data);
+    localQueue.enqueue(data);
 }
 
 uint8_t *CorePlatform::dequeue() {
-    return queue.dequeue();
+    return localQueue.dequeue();
 }
 

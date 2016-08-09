@@ -10,6 +10,8 @@ typedef struct fk_board_t {
     uint8_t pin_sd_cs;
 } fk_board_t;
 
+// #define FEATHER_WING_ADALOGGER
+
 // Primarily for Feather FONA with the Adalogger wing.
 #ifdef ARDUINO_AVR_FEATHER32U4
 
@@ -19,7 +21,7 @@ typedef struct fk_board_t {
 #define RFM95_CS                                             /* 23 */
 #define RFM95_RST                                            /* 21 */
 #define RFM95_INT                                            /* 2 */
-#define PIN_SD_CS                         4
+#define PIN_SD_CS                                            4
 #else
 #define RFM95_CS                                             /* 23 */
 #define RFM95_RST                                            /* 21 */
@@ -75,8 +77,6 @@ extern SerialType conductivitySerial;
 #define PORT_EXPANDER_SELECT_PIN_0                           5
 #define PORT_EXPANDER_SELECT_PIN_1                           6
 
-#define WAIT_FOR_SERIAL                                      1000 * 30
-
 #define OPEN_CONDUCTIVITY_SERIAL_ON_START                    false
 
 #define PIN_FEATHER_M0_LORA_ADALOGGER_WING_RFM95_CS          8
@@ -122,12 +122,15 @@ extern SerialType &conductivitySerial;
 
 #define LOW_POWER_SLEEP_END                                  1000 * 60 * 5
 #define LOW_POWER_SLEEP_BEGIN                                0
+#define WAIT_FOR_SERIAL                                      1000 * 10
 
 #define RF95_FREQ                                            915.0
 
-#define FK_SETTINGS_QUEUE_FILENAME                           "queue.data"
+#define FK_SETTINGS_QUEUE_FILENAME                           "queue.bin"
 
-#define DEBUG_LOG(msg)                                       Serial.println(msg)
+#define DEBUG_PRINTLN(msg)                                   Serial.println(msg)
+#define DEBUG_PRINT(msg)                                     Serial.print(msg)
+
 #define memzero(ptr, sz)                                     memset(ptr, 0, sz)
 
 void platformPostSetup();

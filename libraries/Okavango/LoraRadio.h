@@ -9,24 +9,31 @@ private:
     RH_RF95 rf95;
     bool available;
     const uint8_t pinEnable;
-    uint8_t buffer[RH_RF95_MAX_MESSAGE_LEN];
-    uint8_t length;
+    uint8_t sendBuffer[RH_RF95_MAX_MESSAGE_LEN];
+    uint8_t sendLength;
+    uint8_t recvBuffer[RH_RF95_MAX_MESSAGE_LEN];
+    uint8_t recvLength;
+    uint8_t tries;
 
 public:
     LoraRadio(uint8_t pinCs, uint8_t pinG0, uint8_t pinEnable);
     bool setup();
     void tick();
     bool send(uint8_t *packet, uint8_t size);
+    bool resend();
+    uint8_t numberOfTries() {
+        return tries;
+    }
     bool isAvailable() {
         return available;
     }
 
     const uint8_t *getPacket() {
-        return buffer;
+        return recvBuffer;
     }
 
     bool hasPacket() {
-        return length > 0;
+        return recvLength > 0;
     }
 
     bool isIdle() {
@@ -34,8 +41,8 @@ public:
     }
 
     void clear() {
-        length = 0;
-        buffer[0] = 0;
+        recvBuffer[0] = 0;
+        recvLength = 0;
     }
 
     void wake() {
