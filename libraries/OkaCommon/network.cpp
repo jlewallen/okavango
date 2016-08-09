@@ -37,11 +37,10 @@ void NetworkProtocolState::tick() {
             break;
         }
         case NetworkState::PingForListener: {
-            if (platform->queue()->size() > 0) {
-                sendPing();
+            sendPing();
 
-                transition(NetworkState::ListenForPong, RETRY_DELAY);
-            }
+            transition(NetworkState::ListenForPong, RETRY_DELAY);
+
             break;
         }
         case NetworkState::ListenForAck: {
@@ -60,7 +59,6 @@ void NetworkProtocolState::tick() {
                 }
             }
             else {
-                // Order relative to the above because of transitions.
                 checkForPacket();
             }
             break;
@@ -83,7 +81,6 @@ void NetworkProtocolState::tick() {
                 }
             }
             else {
-                // Order relative to the above because of transitions.
                 checkForPacket();
             }
             break;
@@ -111,6 +108,7 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet) {
         pong.time = 0;
         platform->radio()->send((uint8_t *)&pong, sizeof(fk_network_pong_t));
         platform->radio()->waitPacketSent();
+        checkForPacket();
         break;
     }
     case FK_PACKET_KIND_ATLAS_SENSORS: {
@@ -164,6 +162,7 @@ void NetworkProtocolState::sendPing() {
     memzero((uint8_t *)&ping, sizeof(fk_network_ping_t));
     ping.fk.kind = FK_PACKET_KIND_PING;
     platform->radio()->send((uint8_t *)&ping, sizeof(fk_network_ping_t));
+    platform->radio()->waitPacketSent();
     checkForPacket();
 }
 
@@ -172,6 +171,7 @@ void NetworkProtocolState::sendAck() {
     memzero((uint8_t *)&ack, sizeof(fk_network_ack_t));
     ack.fk.kind = FK_PACKET_KIND_ACK;
     platform->radio()->send((uint8_t *)&ack, sizeof(fk_network_ack_t));
+    platform->radio()->waitPacketSent();
     checkForPacket();
 }
 
