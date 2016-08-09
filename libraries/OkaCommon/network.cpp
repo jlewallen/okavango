@@ -203,19 +203,32 @@ void NetworkProtocolState::transition(NetworkState newState, uint32_t newDelay) 
 
 void NetworkProtocolState::dequeueAndSend() {
     if (state == NetworkState::ListenForPong || state == NetworkState::ListenForAck) {
-        uint8_t *packet = platform->dequeue();
-        if (packet != NULL) {
-            // This size is bad. -jlewallen
-            platform->radio()->send(packet, sizeof(atlas_sensors_packet_t));
-            platform->radio()->waitPacketSent();
-            packet = NULL;
+        while (true) {
+            fk_network_packet_t *packet = (fk_network_packet_t *)platform->dequeue();
+            if (packet != NULL) {
+                if (packet->kind != FK_PACKET_KIND_ACK &&
+                    packet->kind != FK_PACKET_KIND_PING &&
+                    packet->kind != FK_PACKET_KIND_PONG) {
+                    // This size is bad. -jlewallen
+                    platform->radio()->send((uint8_t *)packet, sizeof(atlas_sensors_packet_t));
+                    platform->radio()->waitPacketSent();
+                    checkForPacket();
+                    packet = NULL;
 
-            transition(NetworkState::ListenForAck, 5000);
-        }
-        else {
-            DEBUG_PRINTLN("Empty");
-            platform->radio()->sleep();
-            transition(NetworkState::QueueEmpty, 0);
+                    transition(NetworkState::ListenForAck, 5000);
+
+                    break;
+                }
+                else {
+                    DEBUG_PRINTLN("Ign non-ACK");
+                }
+            }
+            else {
+                DEBUG_PRINTLN("Empty");
+                platform->radio()->sleep();
+                transition(NetworkState::QueueEmpty, 0);
+                break;
+            }
         }
     }
 }
