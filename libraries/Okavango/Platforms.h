@@ -12,28 +12,31 @@ typedef struct fk_board_t {
 
 #define FEATHER_WING_ADALOGGER
 
-// Primarily for Feather FONA with the Adalogger wing.
+// Primarily for Feather FONA with the Adalogger wing, though we
+// could use the Lora version too.
 #ifdef ARDUINO_AVR_FEATHER32U4
 
 #include <SoftwareSerial.h>
 
-#ifdef FEATHER_WING_ADALOGGER
-#define RFM95_CS                                             /* 23 */
-#define RFM95_RST                                            /* 21 */
-#define RFM95_INT                                            /* 2 */
-#define PIN_SD_CS                                            4
-#else
-#define RFM95_CS                                             /* 23 */
-#define RFM95_RST                                            /* 21 */
-#define RFM95_INT                                            /* 2 */
-#define PIN_SD_CS                                            /* NONE */
-#endif
+#define FEATHER_DISABLE_RTC
+
+#define PIN_FEATHER_32U4_EXTERNAL_LORA_RFM95_CS              23
+#define PIN_FEATHER_32U4_EXTERNAL_LORA_RFM95_RST             21
+#define PIN_FEATHER_32U4_EXTERNAL_LORA_RFM95_INT             2
+#define PIN_FEATHER_32U4_ADALOGGER_WING_SD_CS                20
+
+#define PIN_RFM95_CS                                         PIN_FEATHER_32U4_EXTERNAL_LORA_RFM95_CS
+#define PIN_RFM95_RST                                        PIN_FEATHER_32U4_EXTERNAL_LORA_RFM95_RST
+#define PIN_RFM95_INT                                        PIN_FEATHER_32U4_EXTERNAL_LORA_RFM95_INT
+#define PIN_SD_CS                                            PIN_FEATHER_32U4_ADALOGGER_WING_SD_CS
 
 #define PIN_RED_LED                                          13
 #define PIN_GREEN_LED                                        13
 #define PIN_SLEEP_LED                                        13
 
 typedef SoftwareSerial SerialType;
+
+extern fk_board_t feather_32u4_fona_adalogger_wing_external_lora;
 
 #endif
 
@@ -53,9 +56,9 @@ typedef SoftwareSerial SerialType;
 
 #define OPEN_CONDUCTIVITY_SERIAL_ON_START                    true
 
-#define ARDUINO_UNO_EXTERNAL_LORA_RFM95_CS                   10
-#define ARDUINO_UNO_EXTERNAL_LORA_RFM95_RST                  9
-#define ARDUINO_UNO_EXTERNAL_LORA_RFM95_INT                  2
+#define PIN_ARDUINO_UNO_EXTERNAL_LORA_RFM95_CS               10
+#define PIN_ARDUINO_UNO_EXTERNAL_LORA_RFM95_RST              9
+#define PIN_ARDUINO_UNO_EXTERNAL_LORA_RFM95_INT              2
 
 #define PIN_RED_LED                                          13
 #define PIN_GREEN_LED                                        13
@@ -90,14 +93,14 @@ extern SerialType conductivitySerial;
 #define PIN_FEATHER_M0_ADALOGGER_EXTERNAL_LORA_SD_CS         4
 
 #ifdef FEATHER_WING_ADALOGGER
-#define RFM95_CS                                             PIN_FEATHER_M0_LORA_ADALOGGER_WING_RFM95_CS
-#define RFM95_RST                                            PIN_FEATHER_M0_LORA_ADALOGGER_WING_RFM95_RST
-#define RFM95_INT                                            PIN_FEATHER_M0_LORA_ADALOGGER_WING_RFM95_INT
+#define PIN_RFM95_CS                                         PIN_FEATHER_M0_LORA_ADALOGGER_WING_RFM95_CS
+#define PIN_RFM95_RST                                        PIN_FEATHER_M0_LORA_ADALOGGER_WING_RFM95_RST
+#define PIN_RFM95_INT                                        PIN_FEATHER_M0_LORA_ADALOGGER_WING_RFM95_INT
 #define PIN_SD_CS                                            PIN_FEATHER_M0_LORA_ADALOGGER_WING_SD_CS
 #else
-#define RFM95_CS                                             PIN_FEATHER_M0_ADALOGGER_EXTERNAL_LORA_RFM95_CS
-#define RFM95_RST                                            PIN_FEATHER_M0_ADALOGGER_EXTERNAL_LORA_RFM95_RST
-#define RFM95_INT                                            PIN_FEATHER_M0_ADALOGGER_EXTERNAL_LORA_RFM95_INT
+#define PIN_RFM95_CS                                         PIN_FEATHER_M0_ADALOGGER_EXTERNAL_LORA_RFM95_CS
+#define PIN_RFM95_RST                                        PIN_FEATHER_M0_ADALOGGER_EXTERNAL_LORA_RFM95_RST
+#define PIN_RFM95_INT                                        PIN_FEATHER_M0_ADALOGGER_EXTERNAL_LORA_RFM95_INT
 #define PIN_SD_CS                                            PIN_FEATHER_M0_ADALOGGER_EXTERNAL_LORA_SD_CS
 #endif
 
@@ -114,6 +117,8 @@ typedef Uart SerialType;
 
 extern SerialType &portExpanderSerial;
 extern SerialType &conductivitySerial;
+
+#define F(text)                                              text
 
 #endif /* ARDUINO_SAMD_FEATHER_M0 */
 

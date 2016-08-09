@@ -2,6 +2,32 @@
 
 #include "Platforms.h"
 
+#ifdef ARDUINO_AVR_FEATHER32U4
+
+fk_board_t feather_32u4_fona_adalogger_wing_external_lora {
+    PIN_FEATHER_32U4_EXTERNAL_LORA_RFM95_CS,
+    PIN_FEATHER_32U4_EXTERNAL_LORA_RFM95_RST,
+    PIN_FEATHER_32U4_EXTERNAL_LORA_RFM95_INT,
+    PIN_FEATHER_32U4_ADALOGGER_WING_SD_CS
+};
+
+void platformPostSetup() {
+}
+
+void platformRestart() {
+    (*(void(*)())0)();
+}
+
+float platformBatteryVoltage() {
+    return 0.0f;
+}
+
+fk_board_t *platformDetectBoard(fk_board_t *board[], size_t numberOfBoards) {
+    return NULL;
+}
+
+#endif
+
 #ifdef ARDUINO_AVR_UNO
 
 SerialType portExpanderSerial(PORT_EXPANDER_RX_PIN, PORT_EXPANDER_TX_PIN);

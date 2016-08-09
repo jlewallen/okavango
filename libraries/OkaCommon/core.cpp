@@ -10,20 +10,14 @@ CorePlatform::CorePlatform(fk_board_t *board) :
 void CorePlatform::setup() {
     pinMode(PIN_RED_LED, OUTPUT);
     digitalWrite(PIN_RED_LED, LOW);
+
     pinMode(PIN_GREEN_LED, OUTPUT);
     digitalWrite(PIN_GREEN_LED, LOW);
 
-    pinMode(RFM95_CS, OUTPUT);
-    pinMode(RFM95_RST, OUTPUT);
-    digitalWrite(RFM95_CS, HIGH);
-    digitalWrite(RFM95_RST, HIGH);
-
-    pinMode(PIN_SD_CS, OUTPUT);
-    digitalWrite(PIN_SD_CS, HIGH);
-
     #ifdef FEATHER_WING_ADALOGGER
+    #ifndef FEATHER_DISABLE_RTC
     if (!rtc.begin()) {
-        Serial.println("RTC Missing");
+        Serial.println(F("RTC Missing"));
     }
     else {
         if (!rtc.initialized()) {
@@ -32,21 +26,27 @@ void CorePlatform::setup() {
         }
     }
     #endif
-
+    #endif
+    
     pinMode(PIN_SD_CS, OUTPUT);
+    digitalWrite(PIN_SD_CS, HIGH);
 
     if (SD.begin(PIN_SD_CS)) {
         sdLogger.setup();
+        Serial.println("A");
         localQueue.setup();
+        Serial.println("B");
     }
     else {
         Serial.println("SD Missing");
     }
 
-    if (!loraRadio.setup()) {
-        Serial.println("Radio Missing");
-    }
-    else {
+    // pinMode(PIN_RFM95_CS, OUTPUT);
+    // pinMode(PIN_RFM95_RST, OUTPUT);
+    // digitalWrite(PIN_RFM95_CS, HIGH);
+    // digitalWrite(PIN_RFM95_RST, HIGH);
+
+    if (loraRadio.setup()) {
         loraRadio.sleep();
     }
 }
