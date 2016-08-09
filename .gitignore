@@ -11,7 +11,7 @@ build
 processed
 sensors.db
 
-log.txt
+*log.txt
 screenlog.*
 
 *.o
