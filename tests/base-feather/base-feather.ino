@@ -1,7 +1,7 @@
 #include "Platforms.h"
 #include "LoraRadio.h"
 
-LoraRadio radio(RFM95_CS, RFM95_INT, RFM95_RST);
+LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST);
 
 void setup() {
     Serial.begin(115200);

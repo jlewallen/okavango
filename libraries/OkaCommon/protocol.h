@@ -1,7 +1,6 @@
 #ifndef PROTOCOL_H
 #define PROTOCOL_H
 
-#include <Arduino.h>
 #include "settings.h"
 
 #define FK_PACKET_KIND_PING                                 0x0

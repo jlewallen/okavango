@@ -11,7 +11,6 @@ enum NetworkState {
     ListenForAck,
     GiveListenerABreak,
     Sleep,
-
     QueueEmpty,
     NobodyListening
 };

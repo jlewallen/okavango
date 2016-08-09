@@ -2,8 +2,9 @@
 
 #define RETRY_DELAY         2500
 
-NetworkProtocolState::NetworkProtocolState(NetworkState state, CorePlatform *platform)
-    : state(state), platform(platform), stateDelay(0), lastTick(0), lastTickNonDelayed(0), pingAgainAfterDequeue(true), packetsReceived(0) {
+NetworkProtocolState::NetworkProtocolState(NetworkState state, CorePlatform *platform) :
+    state(state), platform(platform), stateDelay(0), lastTick(0), lastTickNonDelayed(0),
+    pingAgainAfterDequeue(true), packetsReceived(0) {
 }
 
 void NetworkProtocolState::tick() {

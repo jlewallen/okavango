@@ -16,8 +16,8 @@ bool Queue::setup() {
         return false;
     }
 
-    // Serial.print("Queue size: ");
-    // Serial.println(size());
+    // DEBUG_PRINT("Queue size: ");
+    // DEBUG_PRINTLN(size());
 
     startAtBeginning();
     available = true;
