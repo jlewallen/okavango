@@ -7,6 +7,7 @@
 
 #include "core.h"
 #include "protocol.h"
+#include "network.h"
 
 #include "AtlasScientific.h"
 #include "SerialPortExpander.h"
@@ -34,7 +35,7 @@ public:
 private:
     void populatePacket();
     void logPacketLocally();
-    void sendPacketAndWaitForAck();
+    void tryAndSendLocalQueue();
 
 };
 
@@ -43,8 +44,8 @@ AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform)
     memzero((uint8_t *)&packet, sizeof(atlas_sensors_packet_t));
 }
 
-// Eventually going to be moved?
-void AtlasSensorBoard::sendPacketAndWaitForAck() {
+void AtlasSensorBoard::tryAndSendLocalQueue() {
+    NetworkProtocolState networkProtocol(NetworkState::PingForListener, corePlatform);
     LoraRadio *radio = corePlatform->radio();
 
     if (!radio->isAvailable()) {
@@ -56,32 +57,18 @@ void AtlasSensorBoard::sendPacketAndWaitForAck() {
 
     radio->setup();
 
-    for (uint8_t i = 0; i < 3; ++i) {
-        Serial.println("Sending");
+    Serial.print("Queue: ");
+    Serial.println(corePlatform->queue()->size());
 
-        if (!radio->send((uint8_t *)&packet, sizeof(atlas_sensors_packet_t))) {
-            Serial.println("Unable to send!");
-            delay(500);
+    while (1) {
+        corePlatform->tick();
+        networkProtocol.tick();
+
+        if (networkProtocol.isQueueEmpty() || networkProtocol.isNobodyListening()) {
             break;
         }
 
-        radio->waitPacketSent();
-
-        uint32_t before = millis();
-        bool gotAck = false;
-        while (millis() - before < 5000) {
-            radio->tick();
-
-            if (radio->hasPacket()) {
-                gotAck = true;
-                radio->clear();
-                break;
-            }
-            delay(500);
-        }
-        if (gotAck) {
-            break;
-        }
+        delay(10);
     }
 
     radio->sleep();
@@ -118,6 +105,7 @@ bool AtlasSensorBoard::tick() {
             }
             #endif
 
+            #ifdef DS18B20
             if (ds18b20.setup()) {
                 Serial.println("Ds18B20 detected!");
                 packet.values[packet_value_index++] = ds18b20.getTemperature();
@@ -126,19 +114,21 @@ bool AtlasSensorBoard::tick() {
                 Serial.println("Ds18B20 missing");
                 packet.values[packet_value_index++] = 0.0f;
             }
+            #endif
 
             Serial.println("Metrics");
 
             packet.time = corePlatform->now();
-            packet.battery = platformBatteryVoltage();
+            // packet.battery = platformBatteryVoltage();
             packet.fk.kind = FK_PACKET_KIND_ATLAS_SENSORS;
-
-            logPacketLocally();
 
             corePlatform->enqueue((uint8_t *)&packet);
 
-            // Eventually moved.
-            sendPacketAndWaitForAck();
+            logPacketLocally();
+
+            corePlatform->queue()->startAtBeginning();
+
+            tryAndSendLocalQueue();
 
             Serial.println("Done");
 
@@ -191,7 +181,7 @@ void AtlasSensorBoard::logPacketLocally() {
     }
 }
 
-CorePlatform corePlatform;
+CorePlatform corePlatform(&feather_m0_lora_adalogger_wing);
 AtlasSensorBoard atlasSensorBoard(&corePlatform);
 
 void setup() {

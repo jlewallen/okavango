@@ -50,11 +50,12 @@ void NetworkProtocolState::tick() {
                     DEBUG_PRINT("DELAYED ");
                 }
                 */
-                DEBUG_PRINTLN("Nack");
                 if (platform->radio()->resend()) {
+                    DEBUG_PRINTLN("Nack, rx");
                     transition(NetworkState::ListenForAck, RETRY_DELAY);
                 }
                 else {
+                    DEBUG_PRINTLN("Nack, break");
                     transition(NetworkState::GiveListenerABreak, RETRY_DELAY);
                 }
             }
@@ -98,6 +99,9 @@ void NetworkProtocolState::tick() {
 void NetworkProtocolState::handle(fk_network_packet_t *packet) {
     packetsReceived++;
 
+    DEBUG_PRINT("P:");
+    DEBUG_PRINTLN(packet->kind);
+
     switch (packet->kind) {
     case FK_PACKET_KIND_PING: {
         DEBUG_PRINTLN("Ponging!");
@@ -138,7 +142,7 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet) {
         break;
     }
     case FK_PACKET_KIND_ACK: {
-        // DEBUG_PRINTLN("Ack");
+        DEBUG_PRINTLN("Ack");
         dequeueAndSend();
         break;
     }
@@ -167,6 +171,8 @@ void NetworkProtocolState::sendPing() {
 }
 
 void NetworkProtocolState::sendAck() {
+    DEBUG_PRINTLN("Acking");
+
     fk_network_ack_t ack;
     memzero((uint8_t *)&ack, sizeof(fk_network_ack_t));
     ack.fk.kind = FK_PACKET_KIND_ACK;
