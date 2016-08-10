@@ -37,8 +37,10 @@ bool FonaChild::tick() {
 }
 
 bool FonaChild::handle(String reply) {
-    Serial.print(">");
-    Serial.println(reply);
+    if (reply.length() > 0) {
+        Serial.print(">");
+        Serial.println(reply);
+    }
     if (reply.startsWith("OK")) {
         switch (state) {
             case Start: {

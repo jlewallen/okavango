@@ -129,7 +129,9 @@ void loop() {
                 commandSerial.print(F("'\n"));
                 commandSerial.print(F("ER\r"));
             }
+            #ifdef USB_SERIAL
             Serial.println();
+            #endif
             buffer = "";
         }
     }
