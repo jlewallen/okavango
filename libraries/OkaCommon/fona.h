@@ -10,6 +10,7 @@ enum FonaChildState {
     NetworkStatus,
     WaitForNetwork,
     SendSms,
+    Failed,
     Done
 };
 
@@ -17,6 +18,7 @@ class FonaChild : public NonBlockingSerialProtocol {
 private:
     FonaChildState state = Start;
     uint32_t lastStateChange;
+    uint8_t tries;
     bool registered;
     String numberToSms;
 
@@ -33,6 +35,10 @@ public:
 
     bool isDone() {
         return state == Done;
+    }
+
+    bool isFailed() {
+        return state == Failed;
     }
 
 };

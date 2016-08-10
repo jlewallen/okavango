@@ -1,17 +1,23 @@
 #include "fona.h"
 
 FonaChild::FonaChild(String numberToSms) :
-    numberToSms(numberToSms), NonBlockingSerialProtocol(true, false) {
+    numberToSms(numberToSms), NonBlockingSerialProtocol(true, false), tries(0) {
 }
 
 bool FonaChild::tick() {
     if (NonBlockingSerialProtocol::tick()) {
         return true;
     }
+
     switch (state) {
         case Start: {
-            sendCommand("~HELLO");
             registered = false;
+            if (tries++ > 3) {
+                transition(Failed);
+            }
+            else {
+                sendCommand("~HELLO");
+            }
             break;
         }
         case Power: {
@@ -19,7 +25,12 @@ bool FonaChild::tick() {
             break;
         }
         case NetworkStatus: {
-            sendCommand("~STATUS");
+            if (tries++ > 10) {
+                transition(Failed);
+            }
+            else {
+                sendCommand("~STATUS");
+            }
             break;
         }
         case WaitForNetwork: {
@@ -50,6 +61,7 @@ bool FonaChild::handle(String reply) {
             }
             case Power: {
                 transition(NetworkStatus);
+                tries = 0;
                 break;
             }
             case NetworkStatus: {
