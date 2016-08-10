@@ -3,7 +3,6 @@
 
 #include <Arduino.h>
 #include "NonBlockingSerial.h"
-#include "Tickable.h"
 
 enum AtlasScientificBoardState {
     Start,
@@ -18,7 +17,7 @@ enum AtlasScientificBoardState {
     Done
 };
 
-class AtlasScientificBoard : public NonBlockingSerialProtocol, public Tickable {
+class AtlasScientificBoard : public NonBlockingSerialProtocol {
 private:
     const static int8_t MAX_VALUES = 4;
     AtlasScientificBoardState state = Start;

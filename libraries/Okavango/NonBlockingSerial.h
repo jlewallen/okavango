@@ -2,7 +2,6 @@
 #define NON_BLOCKING_SERIAL_H
 
 #include "Platforms.h"
-#include "Tickable.h"
 
 enum NonBlockingSerialProtocolState {
     Reading,
@@ -10,7 +9,7 @@ enum NonBlockingSerialProtocolState {
     Closed
 };
 
-class NonBlockingSerialProtocol : public Tickable {
+class NonBlockingSerialProtocol {
 private:
     SerialType *serial;
     NonBlockingSerialProtocolState state = Idle;
