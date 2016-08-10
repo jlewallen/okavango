@@ -63,6 +63,9 @@ float light_lvl = 455;
 
 volatile unsigned long raintime, rainlast, raininterval, rain;
 
+float get_wind_speed();
+uint32_t get_wind_direction();
+
 // Activated by the magnet and reed switch in the rain gauge.
 void irq_handler_rain() {
     raintime = millis();
@@ -288,51 +291,59 @@ uint32_t get_wind_direction() {
     return -1;
 }
 
+#define PRINT_LABEL(label)                  Serial.print(",")
+#define PRINT_VALUE_FLT(value, decimals)    Serial.print(value, decimals)
+#define PRINT_VALUE_INT(value)              Serial.print(value)
+
 void print_weather() {
     calculate_weather();
 
-    Serial.print("winddir=");
-    Serial.print(winddir);
-    Serial.print(",windspeedmph=");
-    Serial.print(windspeedmph, 1);
-    Serial.print(",windgustmph=");
-    Serial.print(windgustmph, 1);
-    Serial.print(",windgustdir=");
-    Serial.print(windgustdir);
-    Serial.print(",windspdmph_avg2m=");
-    Serial.print(windspdmph_avg2m, 1);
-    Serial.print(",winddir_avg2m=");
-    Serial.print(winddir_avg2m);
-    Serial.print(",windgustmph_10m=");
-    Serial.print(windgustmph_10m, 1);
-    Serial.print(",windgustdir_10m=");
-    Serial.print(windgustdir_10m);
-    Serial.print(",humidity=");
-    Serial.print(humidity, 1);
-    Serial.print(",tempf=");
-    Serial.print(tempf, 1);
-    Serial.print(",rainin=");
-    Serial.print(rainin, 2);
-    Serial.print(",dailyrainin=");
-    Serial.print(dailyrainin, 2);
-    Serial.print(",pressure=");
-    Serial.print(pressure, 2);
-    Serial.print(",light_lvl=");
-    Serial.print(light_lvl, 2);
+    PRINT_LABEL("winddir=");
+    PRINT_VALUE_INT(winddir);
+    PRINT_LABEL(",windspeedmph=");
+    PRINT_VALUE_FLT(windspeedmph, 1);
+    PRINT_LABEL(",windgustmph=");
+    PRINT_VALUE_FLT(windgustmph, 1);
+    PRINT_LABEL(",windgustdir=");
+    PRINT_VALUE_INT(windgustdir);
+    PRINT_LABEL(",windspdmph_avg2m=");
+    PRINT_VALUE_FLT(windspdmph_avg2m, 1);
+    PRINT_LABEL(",winddir_avg2m=");
+    PRINT_VALUE_FLT(winddir_avg2m, 1);
+    PRINT_LABEL(",windgustmph_10m=");
+    PRINT_VALUE_FLT(windgustmph_10m, 1);
+    PRINT_LABEL(",windgustdir_10m=");
+    PRINT_VALUE_INT(windgustdir_10m);
+    PRINT_LABEL(",humidity=");
+    PRINT_VALUE_FLT(humidity, 1);
+    PRINT_LABEL(",tempf=");
+    PRINT_VALUE_FLT(tempf, 1);
+    PRINT_LABEL(",rainin=");
+    PRINT_VALUE_FLT(rainin, 2);
+    PRINT_LABEL(",dailyrainin=");
+    PRINT_VALUE_FLT(dailyrainin, 2);
+    PRINT_LABEL(",pressure=");
+    PRINT_VALUE_FLT(pressure, 2);
+    PRINT_LABEL(",light_lvl=");
+    PRINT_VALUE_FLT(light_lvl, 2);
 
-    Serial.print(",lat=");
-    Serial.print(gps.location.lat(), 6);
-    Serial.print(",lat=");
-    Serial.print(gps.location.lng(), 6);
-    Serial.print(",altitude=");
-    Serial.print(gps.altitude.meters());
-    Serial.print(",sats=");
-    Serial.print(gps.satellites.value());
+    PRINT_LABEL(",lat=");
+    PRINT_VALUE_FLT(gps.location.lat(), 6);
+    PRINT_LABEL(",lat=");
+    PRINT_VALUE_FLT(gps.location.lng(), 6);
+    PRINT_LABEL(",altitude=");
+    PRINT_VALUE_INT(gps.altitude.meters());
+    PRINT_LABEL(",sats=");
+    PRINT_VALUE_INT(gps.satellites.value());
 
-    Serial.print(",date=");
-    Serial.print(gps.date.value());
-    Serial.print(",time=");
-    Serial.print(gps.time.value());
+    PRINT_LABEL(",date=");
+    PRINT_VALUE_INT(gps.date.value());
+    PRINT_LABEL(",time=");
+    PRINT_VALUE_INT(gps.time.value());
+    PRINT_LABEL(",unixtime=");
+
+    PRINT_VALUE_INT(gps.time.value());
+
     Serial.println();
 }
 
