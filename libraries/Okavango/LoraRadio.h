@@ -3,15 +3,16 @@
 
 #include <SPI.h>
 #include <RH_RF95.h>
+#include "protocol.h"
 
 class LoraRadio {
 private:
     RH_RF95 rf95;
     bool available;
     const uint8_t pinEnable;
-    uint8_t sendBuffer[RH_RF95_MAX_MESSAGE_LEN];
+    uint8_t sendBuffer[FK_QUEUE_ENTRY_SIZE];
     uint8_t sendLength;
-    uint8_t recvBuffer[RH_RF95_MAX_MESSAGE_LEN];
+    uint8_t recvBuffer[FK_QUEUE_ENTRY_SIZE];
     uint8_t recvLength;
     uint8_t tries;
 
