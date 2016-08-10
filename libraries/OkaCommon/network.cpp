@@ -118,13 +118,14 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet) {
     }
     case FK_PACKET_KIND_ATLAS_SENSORS: {
         if (state == NetworkState::EnqueueFromNetwork) {
-            delay(100);
+            delay(50);
+
+            DEBUG_PRINTLN("Queuing");
+
             // Enqueue
-            // enqueue((uint8_t *)packet);
+            queue->enqueue((uint8_t *)packet);
 
             sendAck();
-
-            // DEBUG_PRINTLN("Acked");
         }
         else {
             // DEBUG_PRINTLN("Rougue sensors!");
