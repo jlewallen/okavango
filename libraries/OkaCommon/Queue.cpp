@@ -70,14 +70,18 @@ uint8_t *Queue::dequeue() {
             header_t header;
             if (file.read(&header, sizeof(header_t)) != sizeof(header_t)) {
                 file.close();
+                DEBUG_PRINTLN("Read QH error");
                 return NULL;
             }
 
             if (header.live) {
                 if (file.read(buffer, FK_QUEUE_ENTRY_SIZE) != FK_QUEUE_ENTRY_SIZE) {
+                    DEBUG_PRINTLN("Read QE error");
                     file.close();
                     return NULL;
                 }
+
+                dequeuePosition += FK_QUEUE_ENTRY_SIZE_ON_DISK;
 
                 // DEBUG_PRINTLN(F(" returning"));
                 return buffer;
@@ -85,8 +89,6 @@ uint8_t *Queue::dequeue() {
             else {
                 // DEBUG_PRINTLN(F(" dead"));
             }
-
-            dequeuePosition += FK_QUEUE_ENTRY_SIZE_ON_DISK;
         }
 
         DEBUG_PRINTLN(F("End of queue"));
