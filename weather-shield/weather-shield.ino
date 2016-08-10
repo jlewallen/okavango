@@ -3,6 +3,7 @@
 #include <SparkFunMPL3115A2.h>
 #include <SparkFunHTU21D.h>
 #include <TinyGPS++.h>
+#include <RTClib.h>
 
 MPL3115A2 myPressure;
 HTU21D myHumidity;
@@ -298,6 +299,9 @@ uint32_t get_wind_direction() {
 void print_weather() {
     calculate_weather();
 
+    DateTime now = DateTime(gps.date.year(), gps.date.month(), gps.date.day(), gps.time.hour(), gps.time.minute(), gps.time.second());
+    PRINT_VALUE_INT(now.unixtime());
+
     PRINT_LABEL("winddir=");
     PRINT_VALUE_INT(winddir);
     PRINT_LABEL(",windspeedmph=");
@@ -339,9 +343,6 @@ void print_weather() {
     PRINT_LABEL(",date=");
     PRINT_VALUE_INT(gps.date.value());
     PRINT_LABEL(",time=");
-    PRINT_VALUE_INT(gps.time.value());
-    PRINT_LABEL(",unixtime=");
-
     PRINT_VALUE_INT(gps.time.value());
 
     Serial.println();
