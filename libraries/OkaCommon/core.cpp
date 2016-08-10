@@ -2,9 +2,6 @@
 #include "core.h"
 #include "protocol.h" 
 
-CorePlatform::CorePlatform() {
-}
-
 void CorePlatform::setup() {
     pinMode(PIN_RED_LED, OUTPUT);
     digitalWrite(PIN_RED_LED, LOW);
@@ -41,3 +38,6 @@ void CorePlatform::setup() {
     digitalWrite(PIN_RFM95_RST, HIGH);
 }
 
+uint32_t CorePlatform::now() {
+    return rtc.now().unixtime();
+}

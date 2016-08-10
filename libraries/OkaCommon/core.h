@@ -9,10 +9,8 @@ private:
     RTC_PCF8523 rtc;
 
 public:
-    CorePlatform();
-
-public:
     void setup();
+    uint32_t now();
 
 };
 

@@ -118,9 +118,11 @@ bool AtlasSensorBoard::tick() {
 
             Serial.println("Metrics");
 
-            // packet.time = corePlatform->now();
-            // packet.battery = platformBatteryVoltage();
+            packet.time = corePlatform->now();
+            packet.battery = platformBatteryVoltage();
             packet.fk.kind = FK_PACKET_KIND_ATLAS_SENSORS;
+
+            Serial.println(packet.time);
 
             logPacketLocally();
 
