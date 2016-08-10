@@ -124,8 +124,7 @@ void loop() {
                 commandSerial.print(F("OK\r"));
             }
             else {
-                commandSerial.print(F("+UNK '"));
-                commandSerial.print(F("'"));
+                commandSerial.print(F("+UNKNOWN '"));
                 commandSerial.print(buffer);
                 commandSerial.print(F("'\n"));
                 commandSerial.print(F("ER\r"));
