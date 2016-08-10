@@ -14,13 +14,25 @@ private:
     SerialType *serial;
     NonBlockingSerialProtocolState state = Idle;
     uint32_t lastStateChangeAt;
+    bool emptyBufferAfterEveryLine;
     String buffer;
 
 public:
-    NonBlockingSerialProtocol();
+    NonBlockingSerialProtocol(bool emptyBufferAfterEveryLine = false);
 
     void setSerial(SerialType *newSerial) {
         serial = newSerial;
+    }
+
+    void drain() {
+        uint16_t to = 0;
+        while (to++ < 40) {
+            while (serial->available()) {
+                serial->read();
+                to = 0;
+            }
+            delay(1);
+        }
     }
 
     void setup();

@@ -1,7 +1,7 @@
 #include <String.h>
 #include "NonBlockingSerial.h"
 
-NonBlockingSerialProtocol::NonBlockingSerialProtocol() {
+NonBlockingSerialProtocol::NonBlockingSerialProtocol(bool emptyBufferAfterEveryLine) :  emptyBufferAfterEveryLine(emptyBufferAfterEveryLine) {
 }
 
 void NonBlockingSerialProtocol::setup() {
@@ -39,6 +39,9 @@ void NonBlockingSerialProtocol::appendToBuffer(char newChar) {
 
         if (handle(buffer)) {
             transition(NonBlockingSerialProtocolState::Idle);
+            buffer = "";
+        }
+        else if (emptyBufferAfterEveryLine) {
             buffer = "";
         }
     }
