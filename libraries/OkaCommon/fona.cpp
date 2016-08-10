@@ -1,6 +1,7 @@
 #include "fona.h"
 
-FonaChild::FonaChild(String numberToSms) : numberToSms(numberToSms), NonBlockingSerialProtocol(true) {
+FonaChild::FonaChild(String numberToSms) :
+    numberToSms(numberToSms), NonBlockingSerialProtocol(true, false) {
 }
 
 bool FonaChild::tick() {

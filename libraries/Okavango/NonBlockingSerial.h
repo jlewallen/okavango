@@ -15,10 +15,11 @@ private:
     NonBlockingSerialProtocolState state = Idle;
     uint32_t lastStateChangeAt;
     bool emptyBufferAfterEveryLine;
+    bool addNewLines;
     String buffer;
 
 public:
-    NonBlockingSerialProtocol(bool emptyBufferAfterEveryLine = false);
+    NonBlockingSerialProtocol(bool emptyBufferAfterEveryLine = false, bool addNewLine = true);
 
     void setSerial(SerialType *newSerial) {
         serial = newSerial;

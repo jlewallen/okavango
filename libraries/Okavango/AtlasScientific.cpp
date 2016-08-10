@@ -108,7 +108,10 @@ bool AtlasScientificBoard::handle(String reply) {
                 while (true) {
                     int16_t index = reply.indexOf(',', position);
                     if (index < 0) {
-                        index = reply.indexOf('\n');
+                        index = reply.indexOf('\r', position);
+                    }
+                    if (index < 0) {
+                        index = reply.indexOf('\n', position);
                     }
                     if (index > position && numberOfValues < MAX_VALUES) {
                         String part = reply.substring(position, index);
