@@ -1,6 +1,5 @@
 #include "fona.h"
-
-#define NUMBER_TO_SMS       ""
+#include "config.h"
 
 FonaChild fona(NUMBER_TO_SMS);
 

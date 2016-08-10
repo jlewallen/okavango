@@ -16,3 +16,5 @@ screenlog.*
 
 *.o
 pi/lora-receiver/lora-receiver
+
+libraries/OkaCommon/config.h
