@@ -4,10 +4,7 @@
 #include "network.h"
 #include "fona.h"
 #include "config.h"
-
-typedef struct fk_collector_state_t {
-    uint32_t transmit_time;
-} fk_collector_state_t;
+#include "TransmissionStatus.h"
 
 bool radioSetup = false;
 
@@ -68,28 +65,34 @@ void checkAirwaves() {
     }
 
     radio.sleep();
+
+    Serial.println();
 }
 
-void sendLatestSample() {
+void handleTransmissionIfNecessary() {
     Queue queue;
 
     if (queue.size() == 0) {
+        DEBUG_PRINTLN("Queue empty");
         return;
     }
 
-    FonaChild fona(NUMBER_TO_SMS);
-    Serial1.begin(4800);
-    SerialType &fonaSerial = Serial1;
-    fona.setSerial(&fonaSerial);
-    while (!fona.isDone() && !fona.isFailed()) {
-        fona.tick();
-        delay(10);
+    TransmissionStatus status;
+    if (status.shouldWe()) {
+        FonaChild fona(NUMBER_TO_SMS);
+        Serial1.begin(4800);
+        SerialType &fonaSerial = Serial1;
+        fona.setSerial(&fonaSerial);
+        while (!fona.isDone() && !fona.isFailed()) {
+            fona.tick();
+            delay(10);
+        }
     }
 }
 
 void loop() {
     checkAirwaves();
-    sendLatestSample();
+    handleTransmissionIfNecessary();
 }
 
 // vim: set ft=cpp:

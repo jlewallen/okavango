@@ -121,6 +121,8 @@ extern SerialType &conductivitySerial;
 
 #define FK_SETTINGS_QUEUE_FILENAME                           "queue.bin"
 #define FK_SETTINGS_DATA_FILENAME                            "data.csv"
+#define FK_SETTINGS_TRANSMISSION_STATUS_FILENAME             "status.bin"
+#define FK_SETTINGS_TRANSMISSION_INTERVAL                    5 * 60 * 1000
 
 #define DEBUG_PRINTLN(msg)                                   Serial.println(msg)
 #define DEBUG_PRINT(msg)                                     Serial.print(msg)
