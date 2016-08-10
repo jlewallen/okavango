@@ -4,7 +4,7 @@
 
 NetworkProtocolState::NetworkProtocolState(NetworkState state, LoraRadio *radio, Queue *queue) :
     state(state), radio(radio), queue(queue), stateDelay(0), lastTick(0), lastTickNonDelayed(0),
-    pingAgainAfterDequeue(true), packetsReceived(0) {
+    pingAgainAfterDequeue(true), packetsReceived(0), lastPacketTime(0) {
 }
 
 void NetworkProtocolState::tick() {
@@ -34,6 +34,15 @@ void NetworkProtocolState::tick() {
     switch (state) {
         case NetworkState::EnqueueFromNetwork: {
             checkForPacket();
+
+            if (millis() - lastPacketTime > 10000) {
+                transition(NetworkState::Quiet, 500);
+            }
+
+            break;
+        }
+        case NetworkState::Quiet: {
+            transition(NetworkState::EnqueueFromNetwork, 0);
 
             break;
         }
@@ -99,6 +108,8 @@ void NetworkProtocolState::tick() {
 
 void NetworkProtocolState::handle(fk_network_packet_t *packet) {
     packetsReceived++;
+
+    lastPacketTime = millis();
 
     DEBUG_PRINT(F("P:"));
     DEBUG_PRINTLN(packet->kind);

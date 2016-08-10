@@ -14,7 +14,8 @@ enum NetworkState {
     GiveListenerABreak,
     Sleep,
     QueueEmpty,
-    NobodyListening
+    NobodyListening,
+    Quiet
 };
 
 class NetworkProtocolState {
@@ -24,6 +25,7 @@ private:
     NetworkState state;
     uint16_t stateDelay;
     uint16_t packetsReceived;
+    uint32_t lastPacketTime;
     uint32_t lastTick;
     uint32_t lastTickNonDelayed;
     bool pingAgainAfterDequeue;
@@ -34,6 +36,9 @@ public:
 public:
     void tick();
     void startOver(NetworkState state);
+    bool isQuiet() {
+        return state == Quiet;
+    }
     bool isQueueEmpty() {
         return state == QueueEmpty;
     }
