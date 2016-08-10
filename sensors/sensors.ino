@@ -8,6 +8,7 @@
 #include "core.h"
 #include "protocol.h"
 #include "network.h"
+#include "Logger.h"
 
 #include "AtlasScientific.h"
 #include "SerialPortExpander.h"
@@ -35,7 +36,7 @@ public:
 private:
     void populatePacket();
     void logPacketLocally();
-    void tryAndSendLocalQueue();
+    void tryAndSendLocalQueue(Queue *queue);
 
 };
 
@@ -44,34 +45,33 @@ AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform)
     memzero((uint8_t *)&packet, sizeof(atlas_sensors_packet_t));
 }
 
-void AtlasSensorBoard::tryAndSendLocalQueue() {
-    NetworkProtocolState networkProtocol(NetworkState::PingForListener, corePlatform);
-    LoraRadio *radio = corePlatform->radio();
+void AtlasSensorBoard::tryAndSendLocalQueue(Queue *queue) {
+    LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST);
+    NetworkProtocolState networkProtocol(NetworkState::PingForListener, &radio, queue);
 
-    if (!radio->isAvailable()) {
-        Serial.println("No radio available");
-        return;
-    }
+    if (radio.setup()) {
+        Serial.println("Enabling radio");
 
-    Serial.println("Enabling radio");
+        radio.setup();
 
-    radio->setup();
+        Serial.print("Queue: ");
+        Serial.println(queue->size());
 
-    Serial.print("Queue: ");
-    Serial.println(corePlatform->queue()->size());
+        while (1) {
+            networkProtocol.tick();
 
-    while (1) {
-        corePlatform->tick();
-        networkProtocol.tick();
+            if (networkProtocol.isQueueEmpty() || networkProtocol.isNobodyListening()) {
+                break;
+            }
 
-        if (networkProtocol.isQueueEmpty() || networkProtocol.isNobodyListening()) {
-            break;
+            delay(10);
         }
 
-        delay(10);
+        radio.sleep();
     }
-
-    radio->sleep();
+    else {
+        Serial.println("No radio available");
+    }
 }
 
 bool AtlasSensorBoard::tick() {
@@ -118,17 +118,17 @@ bool AtlasSensorBoard::tick() {
 
             Serial.println("Metrics");
 
-            packet.time = corePlatform->now();
+            // packet.time = corePlatform->now();
             // packet.battery = platformBatteryVoltage();
             packet.fk.kind = FK_PACKET_KIND_ATLAS_SENSORS;
 
-            corePlatform->enqueue((uint8_t *)&packet);
-
             logPacketLocally();
 
-            corePlatform->queue()->startAtBeginning();
+            Queue queue;
+            queue.enqueue((uint8_t *)&packet);
+            queue.startAtBeginning();
 
-            tryAndSendLocalQueue();
+            tryAndSendLocalQueue(&queue);
 
             Serial.println("Done");
 
@@ -163,21 +163,20 @@ void AtlasSensorBoard::populatePacket() {
 }
 
 void AtlasSensorBoard::logPacketLocally() {
-    Logger *logger = corePlatform->logger();
-
-    if (logger->opened()) {
+    File file = Logger::open(FK_SETTINGS_DATA_FILENAME);
+    if (file) {
         Serial.println("Logging");
-        logger->log().print(packet.fk.kind);
-        logger->log().print(",");
-        logger->log().print(packet.time);
-        logger->log().print(",");
-        logger->log().print(packet.battery);
+        file.print(packet.fk.kind);
+        file.print(",");
+        file.print(packet.time);
+        file.print(",");
+        file.print(packet.battery);
         for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
-            logger->log().print(",");
-            logger->log().print(packet.values[i]);
+            file.print(",");
+            file.print(packet.values[i]);
         }
-        logger->log().println();
-        logger->log().flush();
+        file.println();
+        file.close();
     }
 }
 
@@ -209,7 +208,6 @@ void setup() {
 }
 
 void loop() {
-    corePlatform.tick();
     atlasSensorBoard.tick();
 
     delay(50);

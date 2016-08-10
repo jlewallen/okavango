@@ -52,7 +52,10 @@ void loop() {
         delay(10);
 
         if (millis() - last > 1000) {
-            DEBUG_PRINTLN(queue.size());
+            uint16_t size = queue.size();
+            if (size != 0) {
+                DEBUG_PRINTLN(size);
+            }
             last = millis();
         }
     }

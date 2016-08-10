@@ -5,23 +5,8 @@
 #include <SD.h>
 
 class Logger {
-private:
-    File file;
-
-private:
-    void openFile(const char *filename);
-
 public:
-    Logger();
-    bool setup();
-
-    bool opened() {
-        return file;
-    }
-
-    File &log() {
-        return file;
-    }
+    static File open(const char *filename);
 };
 
 #endif

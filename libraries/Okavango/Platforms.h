@@ -120,6 +120,7 @@ extern SerialType &conductivitySerial;
 #define RF95_FREQ                                            915.0
 
 #define FK_SETTINGS_QUEUE_FILENAME                           "queue.bin"
+#define FK_SETTINGS_DATA_FILENAME                            "data.csv"
 
 #define DEBUG_PRINTLN(msg)                                   Serial.println(msg)
 #define DEBUG_PRINT(msg)                                     Serial.print(msg)

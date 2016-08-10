@@ -1,25 +1,12 @@
 #include "Platforms.h"
 #include "Logger.h"
 
-Logger::Logger() {
-}
-
-void Logger::openFile(const char *filename) {
-    file = SD.open(filename, FILE_WRITE);
+File Logger::open(const char *filename) {
+    File file = SD.open(filename, FILE_WRITE);
     if (!file) {
         DEBUG_PRINTLN(F("Log unavailable"));
+        return file;
     }
+    return file;
 }
 
-bool Logger::setup() {
-    openFile("data.csv");
-
-    if (opened()) {
-        file.flush();
-    }
-    else {
-        return false;
-    }
-
-    return true;
-}
