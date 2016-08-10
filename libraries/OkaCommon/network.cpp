@@ -2,8 +2,8 @@
 
 #define RETRY_DELAY         2500
 
-NetworkProtocolState::NetworkProtocolState(NetworkState state, CorePlatform *platform) :
-    state(state), platform(platform), stateDelay(0), lastTick(0), lastTickNonDelayed(0),
+NetworkProtocolState::NetworkProtocolState(NetworkState state, LoraRadio *radio, Queue *queue) :
+    state(state), radio(radio), queue(queue), stateDelay(0), lastTick(0), lastTickNonDelayed(0),
     pingAgainAfterDequeue(true), packetsReceived(0) {
 }
 
@@ -51,7 +51,7 @@ void NetworkProtocolState::tick() {
                     DEBUG_PRINT(F("DELAYED "));
                 }
                 */
-                if (platform->radio()->resend()) {
+                if (radio->resend()) {
                     DEBUG_PRINTLN(F("Nack, rx"));
                     transition(NetworkState::ListenForAck, RETRY_DELAY);
                 }
@@ -67,7 +67,7 @@ void NetworkProtocolState::tick() {
         }
         case NetworkState::ListenForPong: {
             if (!inDelay) {
-                if (platform->radio()->resend()) {
+                if (radio->resend()) {
                     /*
                     if (wasDelayed) {
                         DEBUG_PRINT(F("DELAYED "));
@@ -78,7 +78,7 @@ void NetworkProtocolState::tick() {
                 }
                 else {
                     DEBUG_PRINTLN(F("No pong"));
-                    platform->radio()->sleep();
+                    radio->sleep();
                     transition(NetworkState::NobodyListening, 0);
                 }
             }
@@ -111,8 +111,8 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet) {
         memzero((uint8_t *)&pong, sizeof(fk_network_pong_t));
         pong.fk.kind = FK_PACKET_KIND_PONG;
         pong.time = 0;
-        platform->radio()->send((uint8_t *)&pong, sizeof(fk_network_pong_t));
-        platform->radio()->waitPacketSent();
+        radio->send((uint8_t *)&pong, sizeof(fk_network_pong_t));
+        radio->waitPacketSent();
         checkForPacket();
         break;
     }
@@ -120,7 +120,7 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet) {
         if (state == NetworkState::EnqueueFromNetwork) {
             delay(100);
             // Enqueue
-            // platform->enqueue((uint8_t *)packet);
+            // enqueue((uint8_t *)packet);
 
             sendAck();
 
@@ -134,7 +134,7 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet) {
     case FK_PACKET_KIND_PONG: {
         if (state == NetworkState::ListenForPong) {
             DEBUG_PRINTLN(F("Ponged"));
-            platform->queue()->startAtBeginning();
+            queue->startAtBeginning();
             dequeueAndSend();
         }
         else {
@@ -166,8 +166,8 @@ void NetworkProtocolState::sendPing() {
     fk_network_ping_t ping;
     memzero((uint8_t *)&ping, sizeof(fk_network_ping_t));
     ping.fk.kind = FK_PACKET_KIND_PING;
-    platform->radio()->send((uint8_t *)&ping, sizeof(fk_network_ping_t));
-    platform->radio()->waitPacketSent();
+    radio->send((uint8_t *)&ping, sizeof(fk_network_ping_t));
+    radio->waitPacketSent();
     checkForPacket();
 }
 
@@ -177,17 +177,17 @@ void NetworkProtocolState::sendAck() {
     fk_network_ack_t ack;
     memzero((uint8_t *)&ack, sizeof(fk_network_ack_t));
     ack.fk.kind = FK_PACKET_KIND_ACK;
-    platform->radio()->send((uint8_t *)&ack, sizeof(fk_network_ack_t));
-    platform->radio()->waitPacketSent();
+    radio->send((uint8_t *)&ack, sizeof(fk_network_ack_t));
+    radio->waitPacketSent();
     checkForPacket();
 }
 
 void NetworkProtocolState::checkForPacket() {
-    platform->radio()->tick();
+    radio->tick();
 
-    if (platform->radio()->hasPacket()) {
-        handle((fk_network_packet_t *)platform->radio()->getPacket());
-        platform->radio()->clear();
+    if (radio->hasPacket()) {
+        handle((fk_network_packet_t *)radio->getPacket());
+        radio->clear();
     }
 }
 
@@ -205,14 +205,14 @@ void NetworkProtocolState::transition(NetworkState newState, uint32_t newDelay) 
 void NetworkProtocolState::dequeueAndSend() {
     if (state == NetworkState::ListenForPong || state == NetworkState::ListenForAck) {
         while (true) {
-            fk_network_packet_t *packet = (fk_network_packet_t *)platform->dequeue();
+            fk_network_packet_t *packet = (fk_network_packet_t *)queue->dequeue();
             if (packet != NULL) {
                 if (packet->kind != FK_PACKET_KIND_ACK &&
                     packet->kind != FK_PACKET_KIND_PING &&
                     packet->kind != FK_PACKET_KIND_PONG) {
                     // This size is bad. -jlewallen
-                    platform->radio()->send((uint8_t *)packet, sizeof(atlas_sensors_packet_t));
-                    platform->radio()->waitPacketSent();
+                    radio->send((uint8_t *)packet, sizeof(atlas_sensors_packet_t));
+                    radio->waitPacketSent();
                     checkForPacket();
                     packet = NULL;
 
@@ -226,7 +226,7 @@ void NetworkProtocolState::dequeueAndSend() {
             }
             else {
                 DEBUG_PRINTLN(F("Empty"));
-                platform->radio()->sleep();
+                radio->sleep();
                 transition(NetworkState::QueueEmpty, 0);
                 break;
             }

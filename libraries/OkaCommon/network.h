@@ -1,7 +1,9 @@
 #ifndef NETWORK_H
 #define NETWORK_H
 
-#include "core.h"
+#include "LoraRadio.h"
+#include "Queue.h"
+#include "Platforms.h"
 #include "protocol.h"
 
 enum NetworkState {
@@ -17,7 +19,8 @@ enum NetworkState {
 
 class NetworkProtocolState {
 private:
-    CorePlatform *platform;
+    LoraRadio *radio;
+    Queue *queue;
     NetworkState state;
     uint16_t stateDelay;
     uint16_t packetsReceived;
@@ -26,7 +29,7 @@ private:
     bool pingAgainAfterDequeue;
     
 public:
-    NetworkProtocolState(NetworkState state, CorePlatform *platform);
+    NetworkProtocolState(NetworkState state, LoraRadio *radio, Queue *queue);
 
 public:
     void tick();

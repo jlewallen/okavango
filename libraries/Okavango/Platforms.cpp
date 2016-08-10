@@ -4,13 +4,6 @@
 
 #ifdef ARDUINO_AVR_FEATHER32U4
 
-fk_board_t feather_32u4_fona_adalogger_wing_external_lora {
-    PIN_FEATHER_32U4_EXTERNAL_LORA_RFM95_CS,
-    PIN_FEATHER_32U4_EXTERNAL_LORA_RFM95_RST,
-    PIN_FEATHER_32U4_EXTERNAL_LORA_RFM95_INT,
-    PIN_FEATHER_32U4_ADALOGGER_WING_SD_CS
-};
-
 void platformPostSetup() {
 }
 
@@ -20,10 +13,6 @@ void platformRestart() {
 
 float platformBatteryVoltage() {
     return 0.0f;
-}
-
-fk_board_t *platformDetectBoard(fk_board_t *board[], size_t numberOfBoards) {
-    return NULL;
 }
 
 #endif
@@ -42,10 +31,6 @@ void platformRestart() {
 
 float platformBatteryVoltage() {
     return 0.0f;
-}
-
-fk_board_t *platformDetectBoard(fk_board_t *board[], size_t numberOfBoards) {
-    return NULL;
 }
 
 #endif
@@ -84,24 +69,6 @@ float platformBatteryVoltage() {
     vBat *= 3.3;  // multiply by 3.3V, our reference voltage
     vBat /= 1024; // convert to voltage
     return vBat;
-}
-
-fk_board_t feather_m0_lora_adalogger_wing = {
-    PIN_FEATHER_M0_LORA_ADALOGGER_WING_RFM95_CS,
-    PIN_FEATHER_M0_LORA_ADALOGGER_WING_RFM95_RST,
-    PIN_FEATHER_M0_LORA_ADALOGGER_WING_RFM95_INT,
-    PIN_FEATHER_M0_LORA_ADALOGGER_WING_SD_CS
-};
-
-fk_board_t feather_m0_adalogger_external_lora = {
-    PIN_FEATHER_M0_ADALOGGER_EXTERNAL_LORA_RFM95_CS,
-    PIN_FEATHER_M0_ADALOGGER_EXTERNAL_LORA_RFM95_RST,
-    PIN_FEATHER_M0_ADALOGGER_EXTERNAL_LORA_RFM95_INT,
-    PIN_FEATHER_M0_ADALOGGER_EXTERNAL_LORA_SD_CS
-};
-
-fk_board_t *platformDetectBoard(fk_board_t *board[], size_t numberOfBoards) {
-    return NULL;
 }
 
 #endif

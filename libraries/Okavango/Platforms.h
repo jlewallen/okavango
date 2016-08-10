@@ -3,13 +3,6 @@
 
 #include <Arduino.h>
 
-typedef struct fk_board_t {
-    uint8_t pin_rfm95_cs;
-    uint8_t pin_rfm95_power;
-    uint8_t pin_rfm95_g0;
-    uint8_t pin_sd_cs;
-} fk_board_t;
-
 #define FEATHER_WING_ADALOGGER
 
 // Primarily for Feather FONA with the Adalogger wing, though we
@@ -35,8 +28,6 @@ typedef struct fk_board_t {
 #define PIN_SLEEP_LED                                        13
 
 typedef SoftwareSerial SerialType;
-
-extern fk_board_t feather_32u4_fona_adalogger_wing_external_lora;
 
 #endif
 
@@ -110,9 +101,6 @@ extern SerialType conductivitySerial;
 #define PIN_GREEN_LED                                        8
 #define PIN_SLEEP_LED                                        8
 
-extern fk_board_t feather_m0_lora_adalogger_wing;
-extern fk_board_t feather_m0_adalogger_external_lora;
-
 typedef Uart SerialType;
 
 extern SerialType &portExpanderSerial;
@@ -144,6 +132,5 @@ float platformBatteryVoltage();
 void platformCatastrophe(uint8_t pin);
 void platformLowPowerSleep(uint32_t numberOfMs);
 void platformBlink(uint8_t pin);
-fk_board_t *platformDetectBoard(fk_board_t *board[], size_t numberOfBoards);
 
 #endif

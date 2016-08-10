@@ -1,11 +1,7 @@
 #include "Platforms.h"
-
 #include "core.h"
 #include "protocol.h"
 #include "network.h"
-
-CorePlatform corePlatform(&feather_32u4_fona_adalogger_wing_external_lora);
-NetworkProtocolState networkProtocol(NetworkState::EnqueueFromNetwork, &corePlatform);
 
 int32_t freeRam() {
     extern int __heap_start, *__brkval; 
@@ -30,6 +26,7 @@ void setup() {
     Serial.println(F("Begin"));
     Serial.println(freeRam());
 
+    CorePlatform corePlatform;
     corePlatform.setup();
 
     platformPostSetup();
@@ -38,10 +35,27 @@ void setup() {
 }
 
 void loop() {
-    corePlatform.tick();
-    networkProtocol.tick();
+    Queue queue;
+    LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST);
+    NetworkProtocolState networkProtocol(NetworkState::EnqueueFromNetwork, &radio, &queue);
 
-    delay(10);
+    Serial.println(F("Begin"));
+    Serial.println(freeRam());
+
+    if (radio.setup()) {
+        radio.sleep();
+    }
+
+    uint32_t last = 0;
+    while (1) {
+        networkProtocol.tick();
+        delay(10);
+
+        if (millis() - last > 1000) {
+            DEBUG_PRINTLN(queue.size());
+            last = millis();
+        }
+    }
 }
 
 // vim: set ft=cpp:

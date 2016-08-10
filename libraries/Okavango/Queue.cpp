@@ -5,107 +5,95 @@ typedef struct header_t {
     bool live;
 } header_t;
 
-Queue::Queue(size_t entrySize, const char *filename) :
-    entrySize(entrySize), filename(filename) {
+#define FK_QUEUE_ENTRY_SIZE_ON_DISK    (sizeof(header_t) + FK_QUEUE_ENTRY_SIZE)
+
+Queue::Queue() : dequeuePosition(0) {
 }
 
-bool Queue::setup() {
-    file = SD.open(filename, FILE_WRITE);
+File Queue::open() {
+    File file = SD.open(FK_SETTINGS_QUEUE_FILENAME, FILE_WRITE);
     if (!file) {
         DEBUG_PRINTLN(F("Queue unavailable"));
-        return false;
+        return file;
     }
 
-    // DEBUG_PRINT(F("Queue size: "));
-    // DEBUG_PRINTLN(size());
-
-    startAtBeginning();
-    available = true;
-
-    return available;
+    return file;
 }
 
 void Queue::startAtBeginning() {
-    file.seek(0);
+    dequeuePosition = 0;
 }
 
-void Queue::close() {
-    file.close();
-}
-
-uint16_t Queue::size() {
-    if (!available) {
-        return 0;
+int16_t Queue::size() {
+    File file = open();
+    if (file) {
+        const uint32_t size = file.size();
+        const uint32_t length = size / FK_QUEUE_ENTRY_SIZE_ON_DISK;
+        file.close();
+        return length;
     }
 
-    const uint32_t size = file.size();
-
-    return size / (sizeof(header_t) + entrySize);
+    return -1;
 }
 
 void Queue::enqueue(uint8_t *buffer) {
-    if (available) {
+    File file = open();
+    if (file) {
         header_t header = { true };
 
-        // TODO: Find free position.
         file.seek(file.size());
         uint32_t written = file.write((uint8_t *)&header, sizeof(header_t));
-        written += file.write(buffer, entrySize);
-        file.flush();
+        written += file.write(buffer, FK_QUEUE_ENTRY_SIZE);
+        file.close();
     }
 }
 
 void Queue::removeAll() {
-    if (file) {
-        file.close();
-    }
-    if (!SD.remove(filename)) {
-        Serial.println("Error");
-    }
-    file = SD.open(filename, FILE_WRITE);
+    SD.remove(FK_SETTINGS_QUEUE_FILENAME);
 }
 
 uint8_t *Queue::dequeue() {
-    if (!available) {
-        return NULL;
-    }
-
-    const uint32_t size = file.size();
-    if (size == 0) {
-        return NULL;
-    }
-
-    const size_t interval = sizeof(header_t) + entrySize;
-    uint32_t position = file.position();
-
-    while (position < size) {
-        // DEBUG_PRINT(F("Queue #"));
-        // DEBUG_PRINTLN(position / interval);
-
-        header_t header;
-        if (file.read(&header, sizeof(header_t)) != sizeof(header_t)) {
+    File file = open();
+    if (file) {
+        const uint32_t size = file.size();
+        if (size == 0) {
+            file.close();
             return NULL;
         }
 
-        if (header.live) {
-            if (file.read(buffer, entrySize) != entrySize) {
+        while (dequeuePosition < size) {
+            // DEBUG_PRINT(F("Queue #"));
+            // DEBUG_PRINTLN(dequeuePosition / QUEUE_ENTRY_SIZE);
+
+            header_t header;
+            if (file.read(&header, sizeof(header_t)) != sizeof(header_t)) {
+                file.close();
                 return NULL;
             }
 
-            // DEBUG_PRINTLN(F(" returning"));
-            return buffer;
-        }
-        else {
-            // DEBUG_PRINTLN(F(" dead"));
+            if (header.live) {
+                if (file.read(buffer, FK_QUEUE_ENTRY_SIZE) != FK_QUEUE_ENTRY_SIZE) {
+                    file.close();
+                    return NULL;
+                }
+
+                // DEBUG_PRINTLN(F(" returning"));
+                return buffer;
+            }
+            else {
+                // DEBUG_PRINTLN(F(" dead"));
+            }
+
+            dequeuePosition += FK_QUEUE_ENTRY_SIZE_ON_DISK;
         }
 
-        position += interval;
+        DEBUG_PRINTLN(F("End of queue"));
+
+        file.close();
+
+        removeAll();
+
+        return NULL;
     }
-
-    DEBUG_PRINTLN(F("End of queue"));
-
-    removeAll();
-
-    return NULL;
 }
 

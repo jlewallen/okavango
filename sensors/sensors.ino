@@ -181,7 +181,7 @@ void AtlasSensorBoard::logPacketLocally() {
     }
 }
 
-CorePlatform corePlatform(&feather_m0_lora_adalogger_wing);
+CorePlatform corePlatform;
 AtlasSensorBoard atlasSensorBoard(&corePlatform);
 
 void setup() {

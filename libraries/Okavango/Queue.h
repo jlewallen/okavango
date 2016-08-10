@@ -1,5 +1,5 @@
 #ifndef QUEUE_H
-#define QUEUE_CPP
+#define QUEUE_H
 
 #include <SPI.h>
 #include <SD.h>
@@ -8,21 +8,18 @@
 class Queue {
 private:
     uint8_t buffer[FK_QUEUE_ENTRY_SIZE];
-    const size_t entrySize;
-    const char *filename;
-    bool available;
-    File file;
+    uint32_t dequeuePosition;
 
 public:
-    Queue(size_t entrySize, const char *filename);
-    void startAtBeginning();
-    uint16_t size();
-    bool setup();
-    void close();
+    Queue();
+    int16_t size();
     void removeAll();
     uint8_t *dequeue();
     void enqueue(uint8_t *buffer);
+    void startAtBeginning();
 
+private:
+    File open();
 };
 
 #endif
