@@ -98,9 +98,10 @@ void loop() {
             }
             else if (buffer.startsWith(F("~SMS"))) {
                 String end = buffer.substring(5);
+                end.trim();
                 uint32_t i = end.indexOf(' ');
                 String number = end.substring(0, i);
-                String message = end.substring(i);
+                String message = end.substring(i + 1);
 
                 commandSerial.print(F("+NUMBER="));
                 commandSerial.print(number);
@@ -126,7 +127,7 @@ void loop() {
             else {
                 commandSerial.print(F("+UNKNOWN '"));
                 commandSerial.print(buffer);
-                commandSerial.print(F("'\n"));
+                commandSerial.print(F("'\r"));
                 commandSerial.print(F("ER\r"));
             }
             #ifdef USB_SERIAL

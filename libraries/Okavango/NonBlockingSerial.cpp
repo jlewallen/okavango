@@ -35,7 +35,7 @@ void NonBlockingSerialProtocol::appendToBuffer(char newChar) {
     /* Most of our protocols work like this, so let's start here. */
     buffer += (char)newChar;
     if (newChar == '\r') {
-        buffer += '\n';
+        // buffer += '\n';
 
         if (handle(buffer)) {
             transition(NonBlockingSerialProtocolState::Idle);
