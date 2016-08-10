@@ -11,9 +11,9 @@ Adafruit_FONA fona(PIN_FONA_RST);
 String buffer = "";
 bool available = false;
 
-// #define USB_SERIAL
+// #define FONA_DRIVER_USB_SERIAL
 
-#ifdef USB_SERIAL
+#ifdef FONA_DRIVER_USB_SERIAL
 Serial_ &commandSerial = Serial;
 #else
 HardwareSerial &commandSerial = Serial1;
@@ -22,10 +22,14 @@ HardwareSerial &commandSerial = Serial1;
 void setup() {
     fonaSerial.begin(4800);
     Serial1.begin(4800);
+    #ifdef FONA_DRIVER_USB_SERIAL
     Serial.begin(115200);
+    #endif
 
     if (!fona.begin(fonaSerial)) {
+        #ifdef FONA_DRIVER_USB_SERIAL
         Serial.println(F("No FONA"));
+        #endif
         available = false;
     }
     else {
@@ -55,10 +59,16 @@ void loop() {
         char c = (char)commandSerial.read();
         buffer += c;
         if (c == '\r') {
-            if (buffer == F("~HELLO\r")) {
+            commandSerial.print(F("+ECHO '"));
+            commandSerial.print(buffer);
+            commandSerial.print(F("' "));
+            commandSerial.print(buffer.length());
+            commandSerial.print(F("\r"));
+
+            if (buffer.startsWith("~HELLO")) {
                 commandSerial.print(F("OK\r"));
             }
-            else if (buffer == F("~POWER\r")) {
+            else if (buffer.startsWith("~POWER")) {
                 if (!fona.begin(fonaSerial)) {
                     commandSerial.print(F("ER\r"));
                 }
@@ -78,11 +88,11 @@ void loop() {
                     }
                 }
             }
-            else if (buffer == F("~TYPE\r")) {
+            else if (buffer.startsWith("~TYPE")) {
                 fona_echo_type();
                 commandSerial.print(F("OK\r"));
             }
-            else if (buffer == F("~STATUS\r")) {
+            else if (buffer.startsWith("~STATUS")) {
                 uint8_t n = fona.getNetworkStatus();
                 commandSerial.print(F("+STATUS,"));
                 commandSerial.print(n);
@@ -96,7 +106,8 @@ void loop() {
                 commandSerial.print(F("\r"));
                 commandSerial.print(F("OK\r"));
             }
-            else if (buffer.startsWith(F("~SMS"))) {
+            else if (buffer.startsWith("~SMS")) {
+                commandSerial.print(F("+TRY\r"));
                 String end = buffer.substring(5);
                 end.trim();
                 uint32_t i = end.indexOf(' ');
@@ -118,19 +129,24 @@ void loop() {
                     commandSerial.print(F("ER\r"));
                 }
             }
-            else if (buffer == F("~OFF\r")) {
+            else if (buffer.startsWith("~OFF")) {
                 commandSerial.print(F("OK\r"));
             }
-            else if (buffer == F("~ON\r")) {
+            else if (buffer.startsWith("~ON")) {
                 commandSerial.print(F("OK\r"));
             }
             else {
+                buffer.trim();
+
                 commandSerial.print(F("+UNKNOWN '"));
                 commandSerial.print(buffer);
-                commandSerial.print(F("'\r"));
+                commandSerial.print(F("' "));
+                commandSerial.print(buffer.length());
+                commandSerial.print(F("\r"));
                 commandSerial.print(F("ER\r"));
             }
-            #ifdef USB_SERIAL
+
+            #ifdef FONA_DRIVER_USB_SERIAL
             Serial.println();
             #endif
             buffer = "";
