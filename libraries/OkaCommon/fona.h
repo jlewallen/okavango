@@ -10,6 +10,8 @@ enum FonaChildState {
     NetworkStatus,
     WaitForNetwork,
     SendSms,
+    PowerOffBeforeFailed,
+    PowerOffBeforeDone,
     Failed,
     Done
 };

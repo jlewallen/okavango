@@ -13,7 +13,7 @@ bool FonaChild::tick() {
         case Start: {
             registered = false;
             if (tries++ > 3) {
-                transition(Failed);
+                transition(PowerOffBeforeFailed);
             }
             else {
                 sendCommand("~HELLO");
@@ -42,6 +42,14 @@ bool FonaChild::tick() {
         case SendSms: {
             String command = "~SMS " + numberToSms + " WORD";
             sendCommand(command.c_str());
+            break;
+        }
+        case PowerOffBeforeFailed: {
+            sendCommand("~OFF");
+            break;
+        }
+        case PowerOffBeforeDone: {
+            sendCommand("~OFF");
             break;
         }
     }
@@ -77,7 +85,24 @@ bool FonaChild::handle(String reply) {
                 transition(Done);
                 break;
             }
+            case PowerOffBeforeFailed: {
+                transition(Failed);
+                break;
+            }
+            case PowerOffBeforeDone: {
+                transition(Done);
+                break;
+            }
             case Done: {
+                break;
+            }
+        }
+        return true;
+    }
+    else if (reply.startsWith("ER")) {
+        switch (state) {
+            case SendSms: {
+                transition(PowerOffBeforeFailed);
                 break;
             }
         }
