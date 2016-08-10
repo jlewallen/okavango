@@ -65,6 +65,8 @@ uint8_t *Queue::dequeue() {
             // DEBUG_PRINT(F("Queue #"));
             // DEBUG_PRINTLN(dequeuePosition / QUEUE_ENTRY_SIZE);
 
+            file.seek(dequeuePosition);
+
             header_t header;
             if (file.read(&header, sizeof(header_t)) != sizeof(header_t)) {
                 file.close();
