@@ -146,11 +146,16 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize
     }
     case FK_PACKET_KIND_PONG: {
         if (state == NetworkState::ListenForPong) {
-            fk_network_pong_t *pong = (fk_network_pong_t *)packet;
-            DEBUG_PRINTLN(F("Ponged"));
-            if (pong->time > 0) {
-                SystemClock.set(pong->time);
+            // M0 requires word aligned access!
+            fk_network_pong_t pong;
+            memcpy(&pong, packet, sizeof(fk_network_pong_t));
+
+            DEBUG_PRINTLN("Ponged");
+
+            if (pong.time > 0) {
+                SystemClock.set(pong.time);
             }
+
             queue->startAtBeginning();
             dequeueAndSend();
         }
