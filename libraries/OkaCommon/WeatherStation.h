@@ -23,6 +23,8 @@ public:
     bool tick();
     float *getValues() { return values; }
     uint8_t getNumberOfValues() { return numberOfValues; }
+    void logReadingLocally();
+
 };
 
 #endif

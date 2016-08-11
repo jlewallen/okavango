@@ -165,7 +165,7 @@ void AtlasSensorBoard::populatePacket() {
 }
 
 void AtlasSensorBoard::logPacketLocally() {
-    File file = Logger::open(FK_SETTINGS_DATA_FILENAME);
+    File file = Logger::open(FK_SETTINGS_ATLAS_DATA_FILENAME);
     if (file) {
         Serial.println("Logging");
         file.print(packet.fk.kind);

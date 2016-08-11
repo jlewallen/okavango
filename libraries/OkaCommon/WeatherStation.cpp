@@ -1,5 +1,6 @@
 #include "WeatherStation.h"
 #include "protocol.h"
+#include "Logger.h"
 
 #ifdef ARDUINO_SAMD_FEATHER_M0
 
@@ -46,5 +47,21 @@ bool WeatherStation::tick() {
 
     return false;
 }
+
+void WeatherStation::logReadingLocally() {
+    File file = Logger::open(FK_SETTINGS_WEATHER_STATION_DATA_FILENAME);
+    if (file) {
+        Serial.println("Logging");
+        for (uint8_t i = 0; i < numberOfValues; ++i) {
+            if (i > 0) {
+                file.print(",");
+            }
+            file.print(values[i]);
+        }
+        file.println();
+        file.close();
+    }
+}
+
 
 #endif

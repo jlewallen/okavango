@@ -122,7 +122,8 @@ extern SerialType &conductivitySerial;
 #define RF95_FREQ                                            915.0
 
 #define FK_SETTINGS_QUEUE_FILENAME                           "queue.bin"
-#define FK_SETTINGS_DATA_FILENAME                            "data.csv"
+#define FK_SETTINGS_WEATHER_STATION_DATA_FILENAME            "weather.csv"
+#define FK_SETTINGS_ATLAS_DATA_FILENAME                      "atlas.csv"
 #define FK_SETTINGS_TRANSMISSION_STATUS_FILENAME             "status.bin"
 #define FK_SETTINGS_TRANSMISSION_INTERVAL                    1 * 60 * 1000
 

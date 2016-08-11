@@ -1,5 +1,5 @@
 #ifndef LOGGER_H
-#define LOGGER_CPP
+#define LOGGER_H
 
 #include <SPI.h>
 #include <SD.h>

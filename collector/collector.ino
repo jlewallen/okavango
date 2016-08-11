@@ -69,6 +69,7 @@ void checkAirwaves() {
         }
 
         if (weatherStation.tick()) {
+            weatherStation.logReadingLocally();
             float *values = weatherStation.getValues();
             SystemClock.set((uint32_t)values[0]);
 
