@@ -227,8 +227,9 @@ void NetworkProtocolState::dequeueAndSend() {
                 if (packet->kind != FK_PACKET_KIND_ACK &&
                     packet->kind != FK_PACKET_KIND_PING &&
                     packet->kind != FK_PACKET_KIND_PONG) {
-                    // This size is bad. -jlewallen
-                    radio->send((uint8_t *)packet, sizeof(atlas_sensors_packet_t));
+
+                    size_t packetSize = fk_packet_get_size(packet);
+                    radio->send((uint8_t *)packet, packetSize);
                     radio->waitPacketSent();
                     checkForPacket();
                     packet = NULL;
