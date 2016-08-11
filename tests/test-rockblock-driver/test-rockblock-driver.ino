@@ -1,8 +1,6 @@
 #include "RockBlock.h"
 #include "config.h"
 
-RockBlock rockBlock("1,334.0,123,344.0,3243.0,3243");
-
 void setup() {
     Serial.begin(115200);
 
@@ -19,15 +17,21 @@ void setup() {
 
     Serial.println("Starting...");
 
-    SerialType &rockBlockSerial = Serial1;
-    rockBlock.setSerial(&rockBlockSerial);
 }
 
 void loop() {
-    while (!rockBlock.isDone() && !rockBlock.isFailed()) {
-        rockBlock.tick();
-        delay(10);
+    String message = "1470945736,0.00,1020.00,0.00,0.00,0.00,234.59";
+    for (uint8_t i = 0; i < 30; ++i) {
+        RockBlock rockBlock(message);
+        SerialType &rockBlockSerial = Serial1;
+        rockBlock.setSerial(&rockBlockSerial);
+        while (!rockBlock.isDone() && !rockBlock.isFailed()) {
+            rockBlock.tick();
+            delay(10);
+        }
+        message += "0";
     }
+
 
     while (1) {
     }

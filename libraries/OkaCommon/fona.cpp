@@ -69,6 +69,7 @@ bool FonaChild::tick() {
 
 bool FonaChild::handle(String reply) {
     if (reply.length() > 0) {
+        Serial.print(state);
         Serial.print(">");
         Serial.println(reply);
     }

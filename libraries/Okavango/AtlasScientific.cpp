@@ -85,7 +85,11 @@ uint8_t numberOfOccurences(String &str, char chr) {
 
 bool AtlasScientificBoard::handle(String reply) {
     if (reply.indexOf("*") >= 0) {
-        Serial.println(reply);
+        if (reply.length() > 0) {
+            Serial.print(state);
+            Serial.print(">");
+            Serial.println(reply);
+        }
 
         switch (state) {
             case Status0: {

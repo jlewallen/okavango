@@ -1,7 +1,8 @@
 #include "RockBlock.h"
 
 RockBlock::RockBlock(String message) :
-    message(message), NonBlockingSerialProtocol(10 * 1000, true, false), tries(0) {
+    message(message), NonBlockingSerialProtocol(10 * 1000, true, false),
+    sendTries(0), signalTries(0) {
 }
 
 bool RockBlock::tick() {
@@ -9,25 +10,47 @@ bool RockBlock::tick() {
         return true;
     }
 
+    if (getSendsCounter() == 5) {
+        transition(RockBlockPowerOffBeforeFailed);
+        return true;
+    }
+
     switch (state) {
         case RockBlockStart: {
-            available = false;
             transition(RockBlockPowerOn);
+
+            Serial.println(message.length());
             break;
         }
         case RockBlockPowerOn: {
             pinMode(PIN_ROCK_BLOCK, OUTPUT);
             digitalWrite(PIN_ROCK_BLOCK, HIGH);
 
-            transition(RockBlockConfigure);
+            transition(RockBlockConfigure0);
             break;
         }
-        case RockBlockConfigure: {
+        case RockBlockConfigure0: {
             sendCommand("AT");
             break;
         }
+        case RockBlockConfigure1: {
+            sendCommand("AT&K0");
+            break;
+        }
+        case RockBlockConfigure2: {
+            sendCommand("AT&K0");
+            break;
+        }
+        case RockBlockPrepareMessage: {
+            sendCommand("AT+SBDWT");
+            break;
+        }
+        case RockBlockWriteMessage: {
+            sendCommand(message.c_str());
+            break;
+        }
         case RockBlockSignalStrength: {
-            if (tries++ > 10) {
+            if (signalTries++ > 10) {
                 transition(RockBlockPowerOffBeforeFailed);
             }
             else {
@@ -41,39 +64,33 @@ bool RockBlock::tick() {
             }
             break;
         }
-        case RockBlockPrepareMessage: {
-            if (message.length() > 0) {
-                String command = "AT+SBDWT=" + message;
-                sendCommand(command.c_str());
-            }
-            else {
-                DEBUG_PRINTLN("No message");
-                transition(RockBlockPowerOffBeforeDone);
-            }
-            break;
-        }
         case RockBlockSendMessage: {
-            sendCommand("AT+SBDIX");
+            if (sendTries == 5) {
+                transition(RockBlockPowerOffBeforeFailed);
+            }
+            else  {
+                sendCommand("AT+SBDIX");
+            }
             break;
         }
         case RockBlockPowerOffBeforeFailed: {
             pinMode(PIN_ROCK_BLOCK, OUTPUT);
             digitalWrite(PIN_ROCK_BLOCK, LOW);
             transition(RockBlockFailed);
+            DEBUG_PRINTLN("Failed");
             break;
         }
         case RockBlockPowerOffBeforeDone: {
             pinMode(PIN_ROCK_BLOCK, OUTPUT);
             digitalWrite(PIN_ROCK_BLOCK, LOW);
             transition(RockBlockDone);
+            DEBUG_PRINTLN("Done");
             break;
         }
         case RockBlockFailed: {
-            DEBUG_PRINTLN("Failed");
             break;
         }
         case RockBlockDone: {
-            DEBUG_PRINTLN("Done");
             break;
         }
     }
@@ -84,44 +101,78 @@ bool RockBlock::handle(String reply) {
     if (reply.length() > 0) {
         reply.trim();
         if (reply.length() > 0) {
+            Serial.print(state);
             Serial.print(">");
             Serial.println(reply);
         }
     }
     if (reply.indexOf("OK") >= 0) {
         switch (state) {
-            case RockBlockConfigure: {
+            case RockBlockConfigure0: {
+                transition(RockBlockConfigure1);
+                break;
+            }
+            case RockBlockConfigure1: {
+                transition(RockBlockConfigure2);
+                break;
+            }
+            case RockBlockConfigure2: {
+                transition(RockBlockPrepareMessage);
+                break;
+            }
+            case RockBlockWriteMessage: {
                 transition(RockBlockSignalStrength);
                 break;
             }
             case RockBlockSignalStrength: {
-                if (available) {
-                    transition(RockBlockPrepareMessage);
+                if (signalStrength > 0) {
+                    Serial.println("Send");
+                    transition(RockBlockSendMessage);
                 }
                 else {
+                    Serial.println("Waiting...");
                     transition(RockBlockWaitForNetwork);
                 }
                 break;
             }
-            case RockBlockPrepareMessage: {
-                transition(RockBlockSendMessage);
-                break;
-            }
             case RockBlockSendMessage: {
-                transition(RockBlockPowerOffBeforeDone);
+                if (success) {
+                    transition(RockBlockPowerOffBeforeDone);
+                }
+                else {
+                    if (sendTries < 3) {
+                        transition(RockBlockSignalStrength);
+                    }
+                    else {
+                        transition(RockBlockPowerOffBeforeFailed);
+                    }
+                }
                 break;
             }
         }
         return true;
     }
+    else if (reply.indexOf("READY") == 0) {
+        if (state == RockBlockPrepareMessage) {
+            transition(RockBlockWriteMessage);
+        }
+        return true;
+    }
     else if (reply.indexOf("+CSQ:") == 0) {
         int8_t i = reply.indexOf(":");
-        uint8_t strength = reply.substring(i + 1).toInt();
-        if (strength > 0) {
-            available = true;
-        }
-        else {
-            available = false;
+        signalStrength = reply.substring(i + 1).toInt();
+        return false;
+    }
+    else if (reply.indexOf("+SBDIX:") == 0) {
+        int8_t i = reply.indexOf(":");
+        int8_t c = reply.indexOf(",");
+        uint8_t status = reply.substring(i + 1, c).toInt();
+        success = status >= 0 && status < 4;
+        return false;
+    }
+    else if (reply.indexOf("0") == 0) {
+        if (state == RockBlockWriteMessage) {
+            Serial.println("Message Written");
         }
         return false;
     }
