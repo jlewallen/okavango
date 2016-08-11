@@ -140,5 +140,6 @@ float platformBatteryVoltage();
 void platformCatastrophe(uint8_t pin);
 void platformLowPowerSleep(uint32_t numberOfMs);
 void platformBlink(uint8_t pin);
+uint32_t platformFreeMemory();
 
 #endif

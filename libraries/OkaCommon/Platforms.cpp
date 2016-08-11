@@ -33,6 +33,10 @@ float platformBatteryVoltage() {
     return 0.0f;
 }
 
+uint32_t platformFreeMemory() {
+    return 0;
+}
+
 #endif
 
 #ifdef ARDUINO_SAMD_FEATHER_M0
@@ -57,6 +61,12 @@ void platformPostSetup() {
     pinPeripheral(11, PIO_SERCOM);
 }
 
+extern "C" char *sbrk(int32_t i);
+ 
+uint32_t platformFreeMemory() {
+    char stack_dummy = 0;
+    return &stack_dummy - sbrk(0);
+}
 void platformRestart() {
     NVIC_SystemReset();
 }
