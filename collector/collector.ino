@@ -64,12 +64,13 @@ void checkAirwaves() {
             last = millis();
         }
 
-        if (millis() - started > 60 * 1000 && networkProtocol.isQuiet()) {
+        if (millis() - started > 2 * 60 * 1000 && networkProtocol.isQuiet()) {
             break;
         }
 
         if (weatherStation.tick()) {
             weatherStation.logReadingLocally();
+
             float *values = weatherStation.getValues();
             SystemClock.set((uint32_t)values[0]);
 
