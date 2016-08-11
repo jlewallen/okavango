@@ -1,4 +1,5 @@
 #include "network.h"
+#include "core.h"
 
 #define RETRY_DELAY         2500
 
@@ -121,7 +122,7 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet) {
         fk_network_pong_t pong;
         memzero((uint8_t *)&pong, sizeof(fk_network_pong_t));
         pong.fk.kind = FK_PACKET_KIND_PONG;
-        pong.time = 0;
+        pong.time = SystemClock.now();
         radio->send((uint8_t *)&pong, sizeof(fk_network_pong_t));
         radio->waitPacketSent();
         checkForPacket();
@@ -145,7 +146,11 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet) {
     }
     case FK_PACKET_KIND_PONG: {
         if (state == NetworkState::ListenForPong) {
+            fk_network_pong_t *pong = (fk_network_pong_t *)packet;
             DEBUG_PRINTLN(F("Ponged"));
+            if (pong->time > 0) {
+                SystemClock.set(pong->time);
+            }
             queue->startAtBeginning();
             dequeueAndSend();
         }

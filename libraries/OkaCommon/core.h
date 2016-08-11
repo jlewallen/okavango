@@ -5,13 +5,21 @@
 #include "Platforms.h"
 
 class CorePlatform {
-private:
-    RTC_PCF8523 rtc;
-
 public:
     void setup();
-    uint32_t now();
 
 };
+
+class RtcSystemClock {
+    RTC_PCF8523 rtc;
+    uint32_t adjusted = 0;
+
+public:
+    bool setup();
+    uint32_t now();
+    bool set(uint32_t now);
+};
+
+extern RtcSystemClock SystemClock;
 
 #endif
