@@ -159,16 +159,20 @@ bool RockBlock::handle(String reply) {
         return true;
     }
     else if (reply.indexOf("+CSQ:") == 0) {
-        int8_t i = reply.indexOf(":");
-        signalStrength = reply.substring(i + 1).toInt();
-        return false;
+        if (state == RockBlockSignalStrength) {
+            int8_t i = reply.indexOf(":");
+            signalStrength = reply.substring(i + 1).toInt();
+            return false;
+        }
     }
     else if (reply.indexOf("+SBDIX:") == 0) {
-        int8_t i = reply.indexOf(":");
-        int8_t c = reply.indexOf(",");
-        uint8_t status = reply.substring(i + 1, c).toInt();
-        success = status >= 0 && status < 4;
-        return false;
+        if (state == RockBlockSendMessage) {
+            int8_t i = reply.indexOf(":");
+            int8_t c = reply.indexOf(",");
+            uint8_t status = reply.substring(i + 1, c).toInt();
+            success = status >= 0 && status < 4;
+            return false;
+        }
     }
     else if (reply.indexOf("0") == 0) {
         if (state == RockBlockWriteMessage) {
