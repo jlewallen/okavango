@@ -5,6 +5,7 @@
 #include "fona.h"
 #include "config.h"
 #include "TransmissionStatus.h"
+#include "WeatherStation.h"
 
 bool radioSetup = false;
 
@@ -27,6 +28,9 @@ void setup() {
     CorePlatform corePlatform;
     corePlatform.setup();
 
+    WeatherStation weatherStation;
+    weatherStation.setup();
+
     platformPostSetup();
 
     Serial.println(F("Loop"));
@@ -36,6 +40,7 @@ void checkAirwaves() {
     Queue queue;
     LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST);
     NetworkProtocolState networkProtocol(NetworkState::EnqueueFromNetwork, &radio, &queue);
+    WeatherStation weatherStation;
 
     Serial.println("Checking airwaves...");
 
@@ -62,11 +67,33 @@ void checkAirwaves() {
         if (millis() - started > 60 * 1000 && networkProtocol.isQuiet()) {
             break;
         }
+
+        if (weatherStation.tick()) {
+            float *values = weatherStation.getValues();
+            SystemClock.set((uint32_t)values[0]);
+
+            weather_station_packet_t packet;
+            memzero((uint8_t *)&packet, sizeof(weather_station_packet_t));
+            packet.fk.kind = FK_PACKET_KIND_WEATHER_STATION;
+            packet.time = SystemClock.now();
+            packet.battery = 0.0f;
+            for (uint8_t i = 0; i < FK_WEATHER_STATION_PACKET_NUMBER_VALUES; ++i) {
+                packet.values[i] = values[i];
+            }
+
+            queue.enqueue((uint8_t *)&packet);
+
+            weatherStation.clear();
+        }
     }
 
     radio.sleep();
 
     Serial.println();
+}
+
+String buildTransmission(atlas_sensors_packet_t *atlas) {
+    return "";
 }
 
 void handleTransmissionIfNecessary() {
@@ -79,7 +106,7 @@ void handleTransmissionIfNecessary() {
 
     TransmissionStatus status;
     if (status.shouldWe()) {
-        FonaChild fona(NUMBER_TO_SMS);
+        FonaChild fona(NUMBER_TO_SMS, "");
         Serial1.begin(4800);
         SerialType &fonaSerial = Serial1;
         fona.setSerial(&fonaSerial);
