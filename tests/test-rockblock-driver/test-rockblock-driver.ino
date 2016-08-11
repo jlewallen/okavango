@@ -1,7 +1,7 @@
-#include "fona.h"
+#include "RockBlock.h"
 #include "config.h"
 
-FonaChild fona(NUMBER_TO_SMS, "What");
+RockBlock rockBlock("");
 
 void setup() {
     Serial.begin(115200);
@@ -15,14 +15,16 @@ void setup() {
     }
     #endif
 
-    Serial1.begin(4800);
+    Serial1.begin(19200);
 
-    SerialType &fonaSerial = Serial1;
-    fona.setSerial(&fonaSerial);
+    Serial.println("Starting...");
+
+    SerialType &rockBlockSerial = Serial1;
+    rockBlock.setSerial(&rockBlockSerial);
 }
 
 void loop() {
-    fona.tick();
+    rockBlock.tick();
 }
 
 // vim: set ft=cpp:

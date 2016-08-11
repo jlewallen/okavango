@@ -3,6 +3,7 @@
 #include "protocol.h"
 #include "network.h"
 #include "fona.h"
+#include "RockBlock.h"
 #include "config.h"
 #include "TransmissionStatus.h"
 #include "WeatherStation.h"
@@ -108,6 +109,7 @@ void handleTransmissionIfNecessary() {
 
     TransmissionStatus status;
     if (status.shouldWe()) {
+        #ifdef FONA
         FonaChild fona(NUMBER_TO_SMS, "");
         Serial1.begin(4800);
         SerialType &fonaSerial = Serial1;
@@ -116,6 +118,16 @@ void handleTransmissionIfNecessary() {
             fona.tick();
             delay(10);
         }
+        #else
+        RockBlock rockBlock("");
+        Serial1.begin(19200);
+        SerialType &rockBlockSerial = Serial1;
+        rockBlock.setSerial(&rockBlockSerial);
+        while (!rockBlock.isDone() && !rockBlock.isFailed()) {
+            rockBlock.tick();
+            delay(10);
+        }
+        #endif
     }
 }
 
