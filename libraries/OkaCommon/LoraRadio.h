@@ -33,6 +33,10 @@ public:
         return recvBuffer;
     }
 
+    uint8_t getPacketSize() {
+        return recvLength;
+    }
+
     bool hasPacket() {
         return recvLength > 0;
     }

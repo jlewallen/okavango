@@ -107,7 +107,7 @@ void NetworkProtocolState::tick() {
     }
 }
 
-void NetworkProtocolState::handle(fk_network_packet_t *packet) {
+void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize) {
     packetsReceived++;
 
     lastPacketTime = millis();
@@ -203,7 +203,7 @@ void NetworkProtocolState::checkForPacket() {
     radio->tick();
 
     if (radio->hasPacket()) {
-        handle((fk_network_packet_t *)radio->getPacket());
+        handle((fk_network_packet_t *)radio->getPacket(), radio->getPacketSize());
         radio->clear();
     }
 }

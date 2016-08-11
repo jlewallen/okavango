@@ -54,7 +54,7 @@ private:
     void sendAck();
     void dequeueAndSend();
     void checkForPacket();
-    void handle(fk_network_packet_t *packet);
+    void handle(fk_network_packet_t *packet, size_t packetSize);
     void transition(NetworkState newState, uint32_t delay);
     bool is(NetworkState aState) {
         return state == aState;
