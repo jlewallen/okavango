@@ -10,31 +10,57 @@ typedef struct fk_transmission_status_t {
     uint32_t elapsed;
 } fk_transmission_status_t;
 
-
-bool TransmissionStatus::shouldWe() {
-    CorePlatform corePlatform;
-
-    File file = SD.open(FK_SETTINGS_TRANSMISSION_STATUS_FILENAME, FILE_WRITE);
-    if (!file) {
-        DEBUG_PRINTLN(F("Status unavailable"));
-        return false;
-    }
-
-    fk_transmission_status_t status;
-
-    file.seek(0);
-
-    if (file.size() > 0) {
-        if (file.read(&status, sizeof(fk_transmission_status_t)) != sizeof(fk_transmission_status_t)) {
+bool read(fk_transmission_status_t *status) {
+    if (SD.exists(FK_SETTINGS_TRANSMISSION_STATUS_FILENAME)) {
+        File file = SD.open(FK_SETTINGS_TRANSMISSION_STATUS_FILENAME, FILE_READ);
+        if (!file) {
+            DEBUG_PRINTLN(F("TS: unavailable"));
+            return false;
+        }
+        if (file.size() != sizeof(fk_transmission_status_t)) {
             file.close();
-            DEBUG_PRINTLN("Read TS error");
+            DEBUG_PRINTLN(F("TS: bad size "));
             SD.remove(FK_SETTINGS_TRANSMISSION_STATUS_FILENAME);
             return false;
         }
+        if (file.read((uint8_t *)status, sizeof(fk_transmission_status_t)) != sizeof(fk_transmission_status_t)) {
+            file.close();
+            DEBUG_PRINTLN(F("TS: read error"));
+            SD.remove(FK_SETTINGS_TRANSMISSION_STATUS_FILENAME);
+            return false;
+        }
+
+        return true;
     }
-    else {
-        DEBUG_PRINTLN("New TS");
-        status.time = corePlatform.now();
+}
+
+bool write(fk_transmission_status_t *status) {
+    File file = SD.open(FK_SETTINGS_TRANSMISSION_STATUS_FILENAME, FILE_WRITE);
+    if (!file) {
+        DEBUG_PRINTLN(F("TS: unavailable"));
+        return false;
+    }
+
+    file.seek(0);
+
+    if (file.write((uint8_t *)&status, sizeof(fk_transmission_status_t)) != sizeof(fk_transmission_status_t)) {
+        file.close();
+        DEBUG_PRINTLN(F("TS: write error"));
+        SD.remove(FK_SETTINGS_TRANSMISSION_STATUS_FILENAME);
+        return false;
+    }
+
+    file.flush();
+    file.close();
+
+    return true;
+}
+
+bool TransmissionStatus::shouldWe() {
+    fk_transmission_status_t status;
+
+    if (!read(&status)) {
+        status.time = SystemClock.now();
         status.millis = millis();
         status.elapsed = 0;
     }
@@ -48,15 +74,7 @@ bool TransmissionStatus::shouldWe() {
         shouldWe = true;
     }
 
-
-    if (file.write((uint8_t *)&status, sizeof(fk_transmission_status_t)) != sizeof(fk_transmission_status_t)) {
-        file.close();
-        DEBUG_PRINTLN("Write TS error");
-        SD.remove(FK_SETTINGS_TRANSMISSION_STATUS_FILENAME);
-        return false;
-    }
-
-    file.close();
+    write(&status);
 
     DEBUG_PRINT("TS: ");
     DEBUG_PRINT(status.time);
