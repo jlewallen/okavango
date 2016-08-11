@@ -1,7 +1,7 @@
 #include "fona.h"
 
-FonaChild::FonaChild(String numberToSms) :
-    numberToSms(numberToSms), NonBlockingSerialProtocol(true, false), tries(0) {
+FonaChild::FonaChild(String phoneNumber, String message) :
+    phoneNumber(phoneNumber), message(message), NonBlockingSerialProtocol(true, false), tries(0) {
 }
 
 bool FonaChild::tick() {
@@ -40,8 +40,13 @@ bool FonaChild::tick() {
             break;
         }
         case SendSms: {
-            String command = "~SMS " + numberToSms + " WORD";
-            sendCommand(command.c_str());
+            if (message.length() > 0) {
+                String command = "~SMS " + phoneNumber + " " + message;
+                sendCommand(command.c_str());
+            }
+            else {
+                sendCommand("~STATUS");
+            }
             break;
         }
         case PowerOffBeforeFailed: {

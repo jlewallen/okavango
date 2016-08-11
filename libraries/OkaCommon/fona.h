@@ -22,10 +22,11 @@ private:
     uint32_t lastStateChange;
     uint8_t tries;
     bool registered;
-    String numberToSms;
+    String phoneNumber;
+    String message;
 
 public:
-    FonaChild(String numberToSms);
+    FonaChild(String phoneNumber, String message);
 
     virtual bool tick();
     virtual bool handle(String reply);
