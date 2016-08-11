@@ -8,12 +8,15 @@ set -x
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+
+
 PROJECT_DIR=${DIR}/..
 ARD_HOME="${PROJECT_DIR}/arduino-1.6.9"
 ARD_BIN="${ARD_HOME}/hardware/tools/avr/bin"
 ROOT_DIR="${PROJECT_DIR}"
 BUILDING_DIR="${PROJECT_DIR}/building"
-BUILD_DIR="${PROJECT_DIR}/build"
+CURRENT_DIR=`pwd`
+BUILD_DIR="${CURRENT_DIR}/build"
 SOURCES=*.ino
 BOSSAC=${PROJECT_DIR}/arduino/packages/arduino/tools/bossac/1.6.1-arduino/bossac.exe
 
