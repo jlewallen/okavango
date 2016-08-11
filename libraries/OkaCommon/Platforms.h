@@ -102,6 +102,7 @@ extern SerialType conductivitySerial;
 #define PIN_SLEEP_LED                                        8
 
 #define PIN_ROCK_BLOCK                                       9
+#define PIN_WEATHER_STATION_RESET                            6
 
 extern Uart Serial2;
 
@@ -128,6 +129,12 @@ extern SerialType &conductivitySerial;
 #define FK_SETTINGS_ATLAS_DATA_FILENAME                      "atlas.csv"
 #define FK_SETTINGS_TRANSMISSION_STATUS_FILENAME             "status.bin"
 #define FK_SETTINGS_TRANSMISSION_INTERVAL                    1 * 60 * 1000
+
+#define TRANSMISSION_KIND_LOCATION  0
+#define TRANSMISSION_KIND_SENSORS   1
+#define TRANSMISSION_KIND_KINDS     2
+
+extern uint32_t TransmissionIntervals[];
 
 #define DEBUG_PRINTLN(msg)                                   Serial.println(msg)
 #define DEBUG_PRINT(msg)                                     Serial.print(msg)

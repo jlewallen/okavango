@@ -4,10 +4,14 @@
 #include "TransmissionStatus.h"
 #include "core.h"
 
-typedef struct fk_transmission_status_t {
-    uint32_t time;
+typedef struct fk_transmission_kind_status_t {
     uint32_t millis;
     uint32_t elapsed;
+} fk_transmission_kind_status_t;
+
+typedef struct fk_transmission_status_t {
+    fk_transmission_kind_status_t kinds[TRANSMISSION_KIND_KINDS];
+    uint32_t time;
 } fk_transmission_status_t;
 
 bool read(fk_transmission_status_t *status) {
@@ -56,22 +60,28 @@ bool write(fk_transmission_status_t *status) {
     return true;
 }
 
-bool TransmissionStatus::shouldWe() {
+int8_t TransmissionStatus::shouldWe() {
     fk_transmission_status_t status;
 
     if (!read(&status)) {
+        memzero((uint8_t *)&status, sizeof(fk_transmission_status_t));
         status.time = SystemClock.now();
-        status.millis = millis();
-        status.elapsed = 0;
+        for (int8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
+            status.kinds[i].millis = millis();
+            status.kinds[i].elapsed = 0;
+        }
     }
 
-    status.elapsed += millis() - status.millis;
-    status.millis = millis();
+    int8_t which = -1;
+    for (int8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
+        status.kinds[i].elapsed += millis() - status.kinds[i].millis;
+        status.kinds[i].millis = millis();
 
-    bool shouldWe = false;
-    if (status.elapsed > FK_SETTINGS_TRANSMISSION_INTERVAL) {
-        status.elapsed = 0;
-        shouldWe = true;
+        if (status.kinds[i].elapsed > TransmissionIntervals[i]) {
+            status.kinds[i].elapsed = 0;
+            which = i;
+            break;
+        }
     }
 
     write(&status);
@@ -79,12 +89,8 @@ bool TransmissionStatus::shouldWe() {
     DEBUG_PRINT("TS: ");
     DEBUG_PRINT(status.time);
     DEBUG_PRINT(" ");
-    DEBUG_PRINT(status.millis);
-    DEBUG_PRINT(" ");
-    DEBUG_PRINT(status.elapsed);
-    DEBUG_PRINT(" ");
-    DEBUG_PRINT(shouldWe);
+    DEBUG_PRINT(which);
     DEBUG_PRINTLN();
 
-    return shouldWe;
+    return which;
 }

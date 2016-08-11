@@ -137,18 +137,11 @@ void singleTransmission(String message) {
     #endif
 }
 
-void handleTransmissionIfNecessary() {
+void handleSensorTransmission() {
     Queue queue;
 
     if (queue.size() == 0) {
         DEBUG_PRINTLN("Queue empty");
-        return;
-    }
-
-    Serial.println(platformFreeMemory());
-
-    TransmissionStatus status;
-    if (!status.shouldWe()) {
         return;
     }
 
@@ -182,6 +175,20 @@ void handleTransmissionIfNecessary() {
 
     if (weather_station_sensors.fk.kind == FK_PACKET_KIND_WEATHER_STATION) {
         singleTransmission(weatherStationPacketToMessage(&weather_station_sensors));
+    }
+}
+
+void handleLocationTransmission() {
+}
+
+void handleTransmissionIfNecessary() {
+    TransmissionStatus status;
+    int8_t kind = status.shouldWe();
+    if (kind == TRANSMISSION_KIND_SENSORS) {
+        handleSensorTransmission();
+    }
+    else if (kind == TRANSMISSION_KIND_SENSORS) {
+        handleLocationTransmission();
     }
 }
 

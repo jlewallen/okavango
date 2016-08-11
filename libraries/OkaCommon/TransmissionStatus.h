@@ -3,7 +3,7 @@
 
 class TransmissionStatus {
 public:
-    bool shouldWe();
+    int8_t shouldWe();
 };
 
 #endif
