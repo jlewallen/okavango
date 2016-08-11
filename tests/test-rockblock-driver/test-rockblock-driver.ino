@@ -1,7 +1,7 @@
 #include "RockBlock.h"
 #include "config.h"
 
-RockBlock rockBlock("");
+RockBlock rockBlock("1,334.0,123,344.0,3243.0,3243");
 
 void setup() {
     Serial.begin(115200);
@@ -24,7 +24,13 @@ void setup() {
 }
 
 void loop() {
-    rockBlock.tick();
+    while (!rockBlock.isDone() && !rockBlock.isFailed()) {
+        rockBlock.tick();
+        delay(10);
+    }
+
+    while (1) {
+    }
 }
 
 // vim: set ft=cpp:

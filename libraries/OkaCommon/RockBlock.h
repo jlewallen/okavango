@@ -5,21 +5,22 @@
 #include "NonBlockingSerial.h"
 
 enum RockBlockState {
-    Start,
-    Power,
-    SignalStrength,
-    WaitForNetwork,
-    PrepareMessage,
-    SendMessage,
-    PowerOffBeforeFailed,
-    PowerOffBeforeDone,
-    Failed,
-    Done
+    RockBlockStart,
+    RockBlockPowerOn,
+    RockBlockConfigure,
+    RockBlockSignalStrength,
+    RockBlockWaitForNetwork,
+    RockBlockPrepareMessage,
+    RockBlockSendMessage,
+    RockBlockPowerOffBeforeFailed,
+    RockBlockPowerOffBeforeDone,
+    RockBlockFailed,
+    RockBlockDone
 };
 
 class RockBlock : public NonBlockingSerialProtocol {
 private:
-    RockBlockState state = Start;
+    RockBlockState state = RockBlockStart;
     uint32_t lastStateChange;
     uint8_t tries;
     bool available;
@@ -37,11 +38,11 @@ public:
     }
 
     bool isDone() {
-        return state == Done;
+        return state == RockBlockDone;
     }
 
     bool isFailed() {
-        return state == Failed;
+        return state == RockBlockFailed;
     }
 
 };

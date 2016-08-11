@@ -10,36 +10,36 @@ bool FonaChild::tick() {
     }
 
     switch (state) {
-        case Start: {
+        case FonaStart: {
             registered = false;
             if (tries++ > 3) {
-                transition(PowerOffBeforeFailed);
+                transition(FonaPowerOffBeforeFailed);
             }
             else {
                 sendCommand("~HELLO");
             }
             break;
         }
-        case Power: {
+        case FonaPower: {
             sendCommand("~POWER");
             break;
         }
-        case NetworkStatus: {
+        case FonaNetworkStatus: {
             if (tries++ > 10) {
-                transition(Failed);
+                transition(FonaFailed);
             }
             else {
                 sendCommand("~STATUS");
             }
             break;
         }
-        case WaitForNetwork: {
+        case FonaWaitForNetwork: {
             if (millis() - lastStateChange > 2000) {
-                transition(NetworkStatus);
+                transition(FonaNetworkStatus);
             }
             break;
         }
-        case SendSms: {
+        case FonaSendSms: {
             if (message.length() > 0) {
                 String command = "~SMS " + phoneNumber + " " + message;
                 sendCommand(command.c_str());
@@ -49,11 +49,11 @@ bool FonaChild::tick() {
             }
             break;
         }
-        case PowerOffBeforeFailed: {
+        case FonaPowerOffBeforeFailed: {
             sendCommand("~OFF");
             break;
         }
-        case PowerOffBeforeDone: {
+        case FonaPowerOffBeforeDone: {
             sendCommand("~OFF");
             break;
         }
@@ -68,37 +68,37 @@ bool FonaChild::handle(String reply) {
     }
     if (reply.startsWith("OK")) {
         switch (state) {
-            case Start: {
-                transition(Power);
+            case FonaStart: {
+                transition(FonaPower);
                 break;
             }
-            case Power: {
-                transition(NetworkStatus);
+            case FonaPower: {
+                transition(FonaNetworkStatus);
                 tries = 0;
                 break;
             }
-            case NetworkStatus: {
+            case FonaNetworkStatus: {
                 if (registered) {
-                    transition(SendSms);
+                    transition(FonaSendSms);
                 }
                 else {
-                    transition(WaitForNetwork);
+                    transition(FonaWaitForNetwork);
                 }
                 break;
             }
-            case SendSms: {
-                transition(Done);
+            case FonaSendSms: {
+                transition(FonaDone);
                 break;
             }
-            case PowerOffBeforeFailed: {
-                transition(Failed);
+            case FonaPowerOffBeforeFailed: {
+                transition(FonaFailed);
                 break;
             }
-            case PowerOffBeforeDone: {
-                transition(Done);
+            case FonaPowerOffBeforeDone: {
+                transition(FonaDone);
                 break;
             }
-            case Done: {
+            case FonaDone: {
                 break;
             }
         }
@@ -106,13 +106,13 @@ bool FonaChild::handle(String reply) {
     }
     else if (reply.startsWith("ER")) {
         switch (state) {
-            case SendSms: {
-                transition(PowerOffBeforeFailed);
+            case FonaSendSms: {
+                transition(FonaPowerOffBeforeFailed);
                 break;
             }
-            case PowerOffBeforeDone:
-            case PowerOffBeforeFailed: {
-                transition(Failed);
+            case FonaPowerOffBeforeDone:
+            case FonaPowerOffBeforeFailed: {
+                transition(FonaFailed);
                 break;
             }
         }

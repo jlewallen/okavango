@@ -101,6 +101,8 @@ extern SerialType conductivitySerial;
 #define PIN_GREEN_LED                                        8
 #define PIN_SLEEP_LED                                        8
 
+#define PIN_ROCK_BLOCK                                       9
+
 extern Uart Serial2;
 
 typedef Uart SerialType;

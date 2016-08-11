@@ -5,20 +5,20 @@
 #include "NonBlockingSerial.h"
 
 enum FonaChildState {
-    Start,
-    Power,
-    NetworkStatus,
-    WaitForNetwork,
-    SendSms,
-    PowerOffBeforeFailed,
-    PowerOffBeforeDone,
-    Failed,
-    Done
+    FonaStart,
+    FonaPower,
+    FonaNetworkStatus,
+    FonaWaitForNetwork,
+    FonaSendSms,
+    FonaPowerOffBeforeFailed,
+    FonaPowerOffBeforeDone,
+    FonaFailed,
+    FonaDone
 };
 
 class FonaChild : public NonBlockingSerialProtocol {
 private:
-    FonaChildState state = Start;
+    FonaChildState state = FonaStart;
     uint32_t lastStateChange;
     uint8_t tries;
     bool registered;
@@ -37,11 +37,11 @@ public:
     }
 
     bool isDone() {
-        return state == Done;
+        return state == FonaDone;
     }
 
     bool isFailed() {
-        return state == Failed;
+        return state == FonaFailed;
     }
 
 };

@@ -10,33 +10,70 @@ bool RockBlock::tick() {
     }
 
     switch (state) {
-        case Start: {
+        case RockBlockStart: {
             available = false;
+            transition(RockBlockPowerOn);
+            break;
+        }
+        case RockBlockPowerOn: {
+            pinMode(PIN_ROCK_BLOCK, OUTPUT);
+            digitalWrite(PIN_ROCK_BLOCK, HIGH);
+
+            transition(RockBlockConfigure);
+            break;
+        }
+        case RockBlockConfigure: {
             sendCommand("AT");
             break;
         }
-        case SignalStrength: {
-            sendCommand("AT+CSQ");
-            break;
-        }
-        case WaitForNetwork: {
-            if (millis() - lastStateChange > 2000) {
-                transition(SignalStrength);
+        case RockBlockSignalStrength: {
+            if (tries++ > 10) {
+                transition(RockBlockPowerOffBeforeFailed);
+            }
+            else {
+                sendCommand("AT+CSQ");
             }
             break;
         }
-        case PrepareMessage: {
-            sendCommand("AT+SBDWT=0,1.0,2.0,3.0");
+        case RockBlockWaitForNetwork: {
+            if (millis() - lastStateChange > 5000) {
+                transition(RockBlockSignalStrength);
+            }
             break;
         }
-        case SendMessage: {
+        case RockBlockPrepareMessage: {
+            if (message.length() > 0) {
+                String command = "AT+SBDWT=" + message;
+                sendCommand(command.c_str());
+            }
+            else {
+                DEBUG_PRINTLN("No message");
+                transition(RockBlockPowerOffBeforeDone);
+            }
+            break;
+        }
+        case RockBlockSendMessage: {
             sendCommand("AT+SBDIX");
             break;
         }
-        case PowerOffBeforeFailed: {
+        case RockBlockPowerOffBeforeFailed: {
+            pinMode(PIN_ROCK_BLOCK, OUTPUT);
+            digitalWrite(PIN_ROCK_BLOCK, LOW);
+            transition(RockBlockFailed);
             break;
         }
-        case PowerOffBeforeDone: {
+        case RockBlockPowerOffBeforeDone: {
+            pinMode(PIN_ROCK_BLOCK, OUTPUT);
+            digitalWrite(PIN_ROCK_BLOCK, LOW);
+            transition(RockBlockDone);
+            break;
+        }
+        case RockBlockFailed: {
+            DEBUG_PRINTLN("Failed");
+            break;
+        }
+        case RockBlockDone: {
+            DEBUG_PRINTLN("Done");
             break;
         }
     }
@@ -53,39 +90,25 @@ bool RockBlock::handle(String reply) {
     }
     if (reply.indexOf("OK") >= 0) {
         switch (state) {
-            case Start: {
-                transition(SignalStrength);
+            case RockBlockConfigure: {
+                transition(RockBlockSignalStrength);
                 break;
             }
-            case Power: {
-                break;
-            }
-            case SignalStrength: {
+            case RockBlockSignalStrength: {
                 if (available) {
-                    transition(PrepareMessage);
+                    transition(RockBlockPrepareMessage);
                 }
                 else {
-                    transition(WaitForNetwork);
+                    transition(RockBlockWaitForNetwork);
                 }
                 break;
             }
-            case PrepareMessage: {
-                transition(SendMessage);
+            case RockBlockPrepareMessage: {
+                transition(RockBlockSendMessage);
                 break;
             }
-            case SendMessage: {
-                transition(Done);
-                break;
-            }
-            case PowerOffBeforeFailed: {
-                transition(Failed);
-                break;
-            }
-            case PowerOffBeforeDone: {
-                transition(Done);
-                break;
-            }
-            case Done: {
+            case RockBlockSendMessage: {
+                transition(RockBlockPowerOffBeforeDone);
                 break;
             }
         }
