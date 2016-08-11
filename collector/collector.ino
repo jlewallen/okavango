@@ -95,8 +95,46 @@ void checkAirwaves() {
     Serial.println();
 }
 
-String buildTransmission(atlas_sensors_packet_t *atlas) {
-    return "";
+String atlasPacketToMessage(atlas_sensors_packet_t *packet) {
+    String message(packet->time);
+    message += ",";
+    message += String(packet->battery, 2);
+    for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
+        message += ",";
+        message += String(packet->values[i], 2);
+    }
+    return message;
+}
+
+String weatherStationPacketToMessage(weather_station_packet_t *packet) {
+    String message;
+    return message;
+}
+
+void singleTransmission(String message) {
+    Serial.print("Message: ");
+    Serial.println(message);
+    Serial.println(message.length());
+
+    #ifdef FONA
+    FonaChild fona(NUMBER_TO_SMS, message);
+    Serial1.begin(4800);
+    SerialType &fonaSerial = Serial1;
+    fona.setSerial(&fonaSerial);
+    while (!fona.isDone() && !fona.isFailed()) {
+        fona.tick();
+        delay(10);
+    }
+    #else
+    RockBlock rockBlock(message);
+    Serial1.begin(19200);
+    SerialType &rockBlockSerial = Serial1;
+    rockBlock.setSerial(&rockBlockSerial);
+    while (!rockBlock.isDone() && !rockBlock.isFailed()) {
+        rockBlock.tick();
+        delay(10);
+    }
+    #endif
 }
 
 void handleTransmissionIfNecessary() {
@@ -107,31 +145,49 @@ void handleTransmissionIfNecessary() {
         return;
     }
 
+    Serial.println(platformFreeMemory());
+
     TransmissionStatus status;
-    if (status.shouldWe()) {
-        #ifdef FONA
-        FonaChild fona(NUMBER_TO_SMS, "");
-        Serial1.begin(4800);
-        SerialType &fonaSerial = Serial1;
-        fona.setSerial(&fonaSerial);
-        while (!fona.isDone() && !fona.isFailed()) {
-            fona.tick();
-            delay(10);
+    if (!status.shouldWe()) {
+        return;
+    }
+
+    atlas_sensors_packet_t atlas_sensors;
+    memzero((uint8_t *)&atlas_sensors, sizeof(atlas_sensors_packet_t));
+
+    weather_station_packet_t weather_station_sensors;
+    memzero((uint8_t *)&weather_station_sensors, sizeof(weather_station_packet_t));
+
+    while (true) {
+        fk_network_packet_t *packet = (fk_network_packet_t *)queue.dequeue();
+        if (packet == NULL) {
+            break;
         }
-        #else
-        RockBlock rockBlock("");
-        Serial1.begin(19200);
-        SerialType &rockBlockSerial = Serial1;
-        rockBlock.setSerial(&rockBlockSerial);
-        while (!rockBlock.isDone() && !rockBlock.isFailed()) {
-            rockBlock.tick();
-            delay(10);
+
+        switch (packet->kind) {
+        case FK_PACKET_KIND_ATLAS_SENSORS: {
+            memcpy((uint8_t *)&atlas_sensors, (uint8_t *)packet, sizeof(atlas_sensors_packet_t));
+            break;
         }
-        #endif
+        case FK_PACKET_KIND_WEATHER_STATION: {
+            memcpy((uint8_t *)&weather_station_sensors, (uint8_t *)packet, sizeof(weather_station_packet_t));
+            break;
+        }
+        }
+    }
+
+    if (atlas_sensors.fk.kind == FK_PACKET_KIND_ATLAS_SENSORS) {
+        singleTransmission(atlasPacketToMessage(&atlas_sensors));
+    }
+
+    if (weather_station_sensors.fk.kind == FK_PACKET_KIND_WEATHER_STATION) {
+        singleTransmission(weatherStationPacketToMessage(&weather_station_sensors));
     }
 }
 
 void loop() {
+    Serial.println(platformFreeMemory());
+
     checkAirwaves();
     handleTransmissionIfNecessary();
 }
