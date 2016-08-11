@@ -105,6 +105,11 @@ bool FonaChild::handle(String reply) {
                 transition(PowerOffBeforeFailed);
                 break;
             }
+            case PowerOffBeforeDone:
+            case PowerOffBeforeFailed: {
+                transition(Failed);
+                break;
+            }
         }
         return true;
     }
