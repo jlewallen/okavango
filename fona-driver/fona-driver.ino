@@ -6,12 +6,39 @@
 #define PIN_FONA_TX         8
 #define PIN_FONA_RST        4
 
+// #define FONA_DRIVER_USB_SERIAL
+
 SoftwareSerial fonaSerial(PIN_FONA_TX, PIN_FONA_RX);
 Adafruit_FONA fona(PIN_FONA_RST);
-String buffer = "";
 bool available = false;
 
-// #define FONA_DRIVER_USB_SERIAL
+class Buffer {
+private:
+    char buffer[256];
+    size_t length;
+
+public:
+    Buffer() : length(0) {
+        memzero(buffer, sizeof(buffer));
+    }
+
+    void append(char c) {
+        if (length < sizeof(buffer) - 1) {
+            buffer[length++] = c;
+            buffer[length] = 0;
+        }
+    }
+
+    const char *c_str() {
+        return buffer;
+    }
+
+    void clear() {
+        length = 0;
+    }
+};
+
+Buffer buffer;
 
 #ifdef FONA_DRIVER_USB_SERIAL
 Serial_ &commandSerial = Serial;
@@ -54,105 +81,110 @@ void fona_echo_type() {
     commandSerial.print(F("\r"));
 }
 
-void loop() {
-    if (commandSerial.available()) {
-        char c = (char)commandSerial.read();
-        buffer += c;
-        if (c == '\r') {
-            commandSerial.print(F("+ECHO '"));
-            commandSerial.print(buffer);
-            commandSerial.print(F("' "));
-            commandSerial.print(buffer.length());
-            commandSerial.print(F("\r"));
+bool handle(String command) {
+    if (command.startsWith("~HELLO")) {
+        commandSerial.print(F("OK\r"));
+    }
+    else if (command.startsWith("~POWER")) {
+        if (!fona.begin(fonaSerial)) {
+            commandSerial.print(F("ER\r"));
+        }
+        else {
+            fona_echo_type();
 
-            if (buffer.startsWith("~HELLO")) {
-                commandSerial.print(F("OK\r"));
-            }
-            else if (buffer.startsWith("~POWER")) {
-                if (!fona.begin(fonaSerial)) {
-                    commandSerial.print(F("ER\r"));
-                }
-                else {
-                    fona_echo_type();
-
-                    char imei[15] = { 0 };
-                    uint8_t length = fona.getIMEI(imei);
-                    if (length > 0) {
-                        commandSerial.print(F("+IMEI: "));
-                        commandSerial.print(imei);
-                        commandSerial.print(F("\r"));
-                        commandSerial.print(F("OK\r"));
-                    }
-                    else {
-                        commandSerial.print(F("ER\r"));
-                    }
-                }
-            }
-            else if (buffer.startsWith("~TYPE")) {
-                fona_echo_type();
-                commandSerial.print(F("OK\r"));
-            }
-            else if (buffer.startsWith("~STATUS")) {
-                uint8_t n = fona.getNetworkStatus();
-                commandSerial.print(F("+STATUS,"));
-                commandSerial.print(n);
-                commandSerial.print(F(","));
-                if (n == 0) commandSerial.print(F("Not registered"));
-                if (n == 1) commandSerial.print(F("Registered (home)"));
-                if (n == 2) commandSerial.print(F("Not registered (searching)"));
-                if (n == 3) commandSerial.print(F("Denied"));
-                if (n == 4) commandSerial.print(F("Unknown"));
-                if (n == 5) commandSerial.print(F("Registered roaming"));
+            char imei[15] = { 0 };
+            uint8_t length = fona.getIMEI(imei);
+            if (length > 0) {
+                commandSerial.print(F("+IMEI: "));
+                commandSerial.print(imei);
                 commandSerial.print(F("\r"));
-                commandSerial.print(F("OK\r"));
-            }
-            else if (buffer.startsWith("~SMS")) {
-                commandSerial.print(F("+TRY\r"));
-                String end = buffer.substring(5);
-                end.trim();
-                uint32_t i = end.indexOf(' ');
-                String number = end.substring(0, i);
-                String message = end.substring(i + 1);
-
-                commandSerial.print(F("+NUMBER="));
-                commandSerial.print(number);
-                commandSerial.print(F("\r"));
-
-                commandSerial.print(F("+MESSAGE="));
-                commandSerial.print(message);
-                commandSerial.print(F("\r"));
-
-                if (fona.sendSMS((char *)number.c_str(), (char *)message.c_str())) {
-                    commandSerial.print(F("OK\r"));
-                }
-                else {
-                    commandSerial.print(F("ER\r"));
-                }
-            }
-            else if (buffer.startsWith("~OFF")) {
-                commandSerial.print(F("OK\r"));
-            }
-            else if (buffer.startsWith("~ON")) {
                 commandSerial.print(F("OK\r"));
             }
             else {
-                buffer.trim();
-
-                commandSerial.print(F("+UNKNOWN '"));
-                commandSerial.print(buffer);
-                commandSerial.print(F("' "));
-                commandSerial.print(buffer.length());
-                commandSerial.print(F("\r"));
                 commandSerial.print(F("ER\r"));
             }
+        }
+    }
+    else if (command.startsWith("~TYPE")) {
+        fona_echo_type();
+        commandSerial.print(F("OK\r"));
+    }
+    else if (command.startsWith("~STATUS")) {
+        uint8_t n = fona.getNetworkStatus();
+        commandSerial.print(F("+STATUS,"));
+        commandSerial.print(n);
+        commandSerial.print(F(","));
+        if (n == 0) commandSerial.print(F("Not registered"));
+        if (n == 1) commandSerial.print(F("Registered (home)"));
+        if (n == 2) commandSerial.print(F("Not registered (searching)"));
+        if (n == 3) commandSerial.print(F("Denied"));
+        if (n == 4) commandSerial.print(F("Unknown"));
+        if (n == 5) commandSerial.print(F("Registered roaming"));
+        commandSerial.print(F("\r"));
+        commandSerial.print(F("OK\r"));
+    }
+    else if (command.startsWith("~SMS")) {
+        commandSerial.print(F("+TRY\r"));
+        String end = command.substring(5);
+        end.trim();
+        uint32_t i = end.indexOf(' ');
+        String number = end.substring(0, i);
+        String message = end.substring(i + 1);
+
+        commandSerial.print(F("+NUMBER="));
+        commandSerial.print(number);
+        commandSerial.print(F("\r"));
+
+        commandSerial.print(F("+MESSAGE="));
+        commandSerial.print(message);
+        commandSerial.print(F("\r"));
+
+        if (fona.sendSMS((char *)number.c_str(), (char *)message.c_str())) {
+            commandSerial.print(F("OK\r"));
+        }
+        else {
+            commandSerial.print(F("ER\r"));
+        }
+    }
+    else if (command.startsWith("~OFF")) {
+        commandSerial.print(F("OK\r"));
+    }
+    else if (command.startsWith("~ON")) {
+        commandSerial.print(F("OK\r"));
+    }
+    else {
+        commandSerial.print(F("+UNKNOWN '"));
+        commandSerial.print(command);
+        commandSerial.print(F("' "));
+        commandSerial.print(command.length());
+        commandSerial.print(F("\r"));
+        commandSerial.print(F("ER\r"));
+    }
+
+    return true;
+}
+
+void loop() {
+    delay(10);
+
+    if (commandSerial.available()) {
+        int16_t c = (int16_t)commandSerial.read();
+        if (c < 0) {
+            return;
+        }
+
+        if (c == '\r') {
+            handle(buffer.c_str());
 
             #ifdef FONA_DRIVER_USB_SERIAL
             Serial.println();
             #endif
-            buffer = "";
+            buffer.clear();
+        }
+        else {
+            buffer.append((char)c);
         }
     }
-    delay(10);
 }
 
 // vim: set ft=cpp:
