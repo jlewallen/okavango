@@ -1,8 +1,8 @@
 #include <String.h>
 #include "NonBlockingSerial.h"
 
-NonBlockingSerialProtocol::NonBlockingSerialProtocol(bool emptyBufferAfterEveryLine, bool addNewLine) :
-    emptyBufferAfterEveryLine(emptyBufferAfterEveryLine), addNewLines(addNewLine) {
+NonBlockingSerialProtocol::NonBlockingSerialProtocol(uint16_t replyWait, bool emptyBufferAfterEveryLine, bool addNewLine) :
+    replyWait(replyWait), emptyBufferAfterEveryLine(emptyBufferAfterEveryLine), addNewLines(addNewLine) {
 }
 
 void NonBlockingSerialProtocol::setup() {
@@ -18,7 +18,7 @@ bool NonBlockingSerialProtocol::tick() {
                 appendToBuffer((char)c);
             }
         }
-        if (millis() - lastStateChangeAt > 5000) {
+        if (millis() - lastStateChangeAt > replyWait) {
             transition(NonBlockingSerialProtocolState::Idle);
             buffer = "";
         }

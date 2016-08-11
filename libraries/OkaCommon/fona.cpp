@@ -1,7 +1,8 @@
 #include "fona.h"
 
 FonaChild::FonaChild(String phoneNumber, String message) :
-    phoneNumber(phoneNumber), message(message), NonBlockingSerialProtocol(true, false), tries(0) {
+    phoneNumber(phoneNumber), message(message),
+    NonBlockingSerialProtocol(5000, true, false), tries(0) {
 }
 
 bool FonaChild::tick() {

@@ -1,7 +1,7 @@
 #include "RockBlock.h"
 
 RockBlock::RockBlock(String message) :
-    message(message), NonBlockingSerialProtocol(true, false), tries(0) {
+    message(message), NonBlockingSerialProtocol(10 * 1000, true, false), tries(0) {
 }
 
 bool RockBlock::tick() {
