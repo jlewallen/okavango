@@ -15,6 +15,7 @@ private:
     NonBlockingSerialProtocolState state = Idle;
     uint32_t lastStateChangeAt;
     uint16_t replyWait;
+    uint8_t sendsCounter;
     bool emptyBufferAfterEveryLine;
     bool addNewLines;
     String buffer;
@@ -22,30 +23,25 @@ private:
 public:
     NonBlockingSerialProtocol(uint16_t replyWait = 5000, bool emptyBufferAfterEveryLine = false, bool addNewLine = true);
 
-    void setSerial(SerialType *newSerial) {
-        serial = newSerial;
-    }
-
-    void drain() {
-        uint16_t to = 0;
-        while (to++ < 40) {
-            while (serial->available()) {
-                serial->read();
-                to = 0;
-            }
-            delay(1);
-        }
-    }
-
     void setup();
 
     virtual bool tick();
+
+    void setSerial(SerialType *newSerial) {
+        serial = newSerial;
+    }
 
     void open() {
         transition(Idle);
     }
 
 protected:
+    void clearSendsCounter() {
+        sendsCounter = 0;
+    }
+    int8_t getSendsCounter() {
+        return sendsCounter;
+    }
     void sendCommand(const char *cmd);
     void transition(NonBlockingSerialProtocolState newState);
     virtual bool handle(String reply);

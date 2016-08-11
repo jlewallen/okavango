@@ -10,6 +10,11 @@ bool FonaChild::tick() {
         return true;
     }
 
+    if (getSendsCounter() == 5) {
+        transition(FonaDone);
+        return true;
+    }
+
     switch (state) {
         case FonaStart: {
             registered = false;

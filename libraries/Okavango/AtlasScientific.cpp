@@ -12,8 +12,18 @@ const char *CMD_READ = "R";
 AtlasScientificBoard::AtlasScientificBoard() {
 }
 
+void AtlasScientificBoard::transition(AtlasScientificBoardState newState) {
+    state = newState;
+    clearSendsCounter();
+}
+
+
 bool AtlasScientificBoard::tick() {
     if (NonBlockingSerialProtocol::tick()) {
+        return true;
+    }
+    if (getSendsCounter() == 5) {
+        transition(Done);
         return true;
     }
     switch (state) {

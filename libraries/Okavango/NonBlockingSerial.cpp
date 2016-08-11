@@ -56,6 +56,7 @@ void NonBlockingSerialProtocol::sendCommand(const char *cmd) {
     serial->print('\r');
     transition(NonBlockingSerialProtocolState::Reading);
     Serial.println(cmd);
+    sendsCounter++;
 }
 
 bool NonBlockingSerialProtocol::handle(String reply) {

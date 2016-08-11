@@ -5,7 +5,7 @@
 #include "NonBlockingSerial.h"
 
 enum FonaChildState {
-    FonaStart,
+    FonaStart = 0,
     FonaPower,
     FonaNetworkStatus,
     FonaWaitForNetwork,
@@ -34,6 +34,7 @@ public:
     void transition(FonaChildState newState) {
         state = newState;
         lastStateChange = millis();
+        clearSendsCounter();
     }
 
     bool isDone() {

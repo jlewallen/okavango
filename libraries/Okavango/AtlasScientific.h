@@ -50,10 +50,7 @@ public:
     }
 
 protected:
-    void transition(AtlasScientificBoardState newState) {
-        state = newState;
-    }
-
+    void transition(AtlasScientificBoardState newState);
     virtual bool handle(String reply);
 };
 
