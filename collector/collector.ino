@@ -142,7 +142,7 @@ void singleTransmission(String message) {
 void handleSensorTransmission() {
     Queue queue;
 
-    if (queue.size() == 0) {
+    if (queue.size() <= 0) {
         DEBUG_PRINTLN("Queue empty");
         return;
     }
