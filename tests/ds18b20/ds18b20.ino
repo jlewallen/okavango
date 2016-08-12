@@ -2,7 +2,7 @@
 
 #define PIN_DS18S20 19
 
-OneWire ds(DS18S20_Pin);
+OneWire ds(PIN_DS18S20);
 
 void setup(void) {
     Serial.begin(115200);
