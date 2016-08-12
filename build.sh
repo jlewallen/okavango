@@ -18,7 +18,15 @@ pushd sensors
 $BUILD -m -b
 popd 
 
+pushd collector
+$BUILD -m -b
+popd
+
 pushd weather-shield
 $BUILD -a -b
+popd
+
+pushd fona-driver
+$BUILD -f -b
 popd
 

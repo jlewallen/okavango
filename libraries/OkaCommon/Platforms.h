@@ -27,6 +27,8 @@
 #define PIN_GREEN_LED                                        13
 #define PIN_SLEEP_LED                                        13
 
+#define PIN_ROCK_BLOCK                                       -1
+
 typedef SoftwareSerial SerialType;
 
 #endif

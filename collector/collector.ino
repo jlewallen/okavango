@@ -118,9 +118,7 @@ String atlasPacketToMessage(atlas_sensors_packet_t *packet) {
     message += String(packet->battery, 2);
     for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
         String field = "," + String(packet->values[i], 2);
-        if (message.length() + field.length() <= 50) {
-            message += field;
-        }
+        message += field;
     }
 
     return message;
@@ -136,25 +134,27 @@ void singleTransmission(String message) {
     Serial.println(message);
     Serial.println(message.length());
 
-    #ifdef FONA
-    FonaChild fona(NUMBER_TO_SMS, message);
-    Serial1.begin(4800);
-    SerialType &fonaSerial = Serial1;
-    fona.setSerial(&fonaSerial);
-    while (!fona.isDone() && !fona.isFailed()) {
-        fona.tick();
-        delay(10);
+    if (message.length() > 0) {
+        #ifdef FONA
+        FonaChild fona(NUMBER_TO_SMS, message);
+        Serial1.begin(4800);
+        SerialType &fonaSerial = Serial1;
+        fona.setSerial(&fonaSerial);
+        while (!fona.isDone() && !fona.isFailed()) {
+            fona.tick();
+            delay(10);
+        }
+        #else
+        RockBlock rockBlock(message);
+        Serial1.begin(19200);
+        SerialType &rockBlockSerial = Serial1;
+        rockBlock.setSerial(&rockBlockSerial);
+        while (!rockBlock.isDone() && !rockBlock.isFailed()) {
+            rockBlock.tick();
+            delay(10);
+        }
+        #endif
     }
-    #else
-    RockBlock rockBlock(message);
-    Serial1.begin(19200);
-    SerialType &rockBlockSerial = Serial1;
-    rockBlock.setSerial(&rockBlockSerial);
-    while (!rockBlock.isDone() && !rockBlock.isFailed()) {
-        rockBlock.tick();
-        delay(10);
-    }
-    #endif
 }
 
 void handleSensorTransmission() {

@@ -1,5 +1,54 @@
 #include "RockBlock.h"
 
+#ifndef CUSTOM_ROCKBLOCK
+
+#include <IridiumSBD.h>
+
+RockBlock::RockBlock(String message) :
+    message(message), NonBlockingSerialProtocol(10 * 1000, true, false),
+    sendTries(0), signalTries(0) {
+}
+
+bool RockBlock::tick() {
+    IridiumSBD rockBlock(Serial1, PIN_ROCK_BLOCK);
+
+    rockBlock.attachConsole(Serial);
+    rockBlock.setPowerProfile(1);
+    rockBlock.begin();
+
+    int signalQuality = 0;
+    int32_t error = rockBlock.getSignalQuality(signalQuality);
+    if (error != 0) {
+        Serial.print("RB: getSignalQuality failed");
+        Serial.println(error);
+        transition(RockBlockFailed);
+        return false;
+    }
+
+    Serial.print("Signal quality: ");
+    Serial.println(signalQuality);
+
+    error = rockBlock.sendSBDText(message.c_str());
+    if (error != 0) {
+        Serial.print("SB: send failed: ");
+        Serial.println(error);
+        transition(RockBlockFailed);
+        return false;
+    }
+
+    Serial.println("Done");
+    transition(RockBlockDone);
+    return true;
+}
+
+bool RockBlock::handle(String reply) {
+    return false;
+}
+
+#else
+
+// Also, this kept trying after it sent.
+
 RockBlock::RockBlock(String message) :
     message(message), NonBlockingSerialProtocol(10 * 1000, true, false),
     sendTries(0), signalTries(0) {
@@ -183,4 +232,4 @@ bool RockBlock::handle(String reply) {
     return false;
 }
 
-
+#endif
