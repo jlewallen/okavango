@@ -4,6 +4,8 @@
 #include "TransmissionStatus.h"
 #include "core.h"
 
+#define DEBUG_TS
+
 typedef struct fk_transmission_kind_status_t {
     uint32_t millis;
     uint32_t elapsed;
@@ -36,6 +38,8 @@ bool read(fk_transmission_status_t *status) {
 
         return true;
     }
+
+    return false;
 }
 
 bool write(fk_transmission_status_t *status) {
@@ -47,7 +51,7 @@ bool write(fk_transmission_status_t *status) {
 
     file.seek(0);
 
-    if (file.write((uint8_t *)&status, sizeof(fk_transmission_status_t)) != sizeof(fk_transmission_status_t)) {
+    if (file.write((uint8_t *)status, sizeof(fk_transmission_status_t)) != sizeof(fk_transmission_status_t)) {
         file.close();
         DEBUG_PRINTLN(F("TS: write error"));
         SD.remove(FK_SETTINGS_TRANSMISSION_STATUS_FILENAME);
@@ -60,29 +64,58 @@ bool write(fk_transmission_status_t *status) {
     return true;
 }
 
+void log(fk_transmission_status_t *status) {
+    for (int8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
+        Serial.print(i);
+        Serial.print(": ");
+        Serial.print(status->kinds[i].elapsed);
+        Serial.print(", ");
+        Serial.print(status->kinds[i].millis);
+        Serial.print(", ");
+        Serial.print(millis() - status->kinds[i].millis);
+        Serial.println();
+    }
+}
+
+void TransmissionStatus::remove() {
+    SD.remove(FK_SETTINGS_TRANSMISSION_STATUS_FILENAME);
+}
+
 int8_t TransmissionStatus::shouldWe() {
     fk_transmission_status_t status;
 
     if (!read(&status)) {
         memzero((uint8_t *)&status, sizeof(fk_transmission_status_t));
-        status.time = SystemClock.now();
         for (int8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
             status.kinds[i].millis = millis();
             status.kinds[i].elapsed = 0;
         }
     }
 
+    #ifdef DEBUG_TS
+    log(&status);
+    #endif
+
     int8_t which = -1;
     for (int8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
-        status.kinds[i].elapsed += millis() - status.kinds[i].millis;
+        int32_t change = millis() - status.kinds[i].millis;
+
+        status.kinds[i].elapsed += change;
         status.kinds[i].millis = millis();
 
         if (status.kinds[i].elapsed > TransmissionIntervals[i]) {
             status.kinds[i].elapsed = 0;
-            which = i;
-            break;
+            if (which < 0) {
+                which = i;
+            }
         }
     }
+
+    #ifdef DEBUG_TS
+    log(&status);
+    #endif
+
+    status.time = SystemClock.now();
 
     write(&status);
 
@@ -94,3 +127,5 @@ int8_t TransmissionStatus::shouldWe() {
 
     return which;
 }
+
+// vim: set ft=cpp:
