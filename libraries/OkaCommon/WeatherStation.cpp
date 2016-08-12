@@ -10,6 +10,12 @@ WeatherStation::WeatherStation() {
 }
 
 void WeatherStation::setup() {
+
+    pinMode(PIN_WEATHER_STATION_RESET, OUTPUT);
+    digitalWrite(PIN_WEATHER_STATION_RESET, LOW);
+    delay(500);
+    digitalWrite(PIN_WEATHER_STATION_RESET, HIGH);
+
     Serial2.begin(9600);
 }
 
@@ -51,7 +57,7 @@ bool WeatherStation::tick() {
 void WeatherStation::logReadingLocally() {
     File file = Logger::open(FK_SETTINGS_WEATHER_STATION_DATA_FILENAME);
     if (file) {
-        Serial.println("Logging");
+        Serial.print("*");
         for (uint8_t i = 0; i < numberOfValues; ++i) {
             if (i > 0) {
                 file.print(",");
