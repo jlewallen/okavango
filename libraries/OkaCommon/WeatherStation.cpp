@@ -12,7 +12,7 @@ WeatherStation::WeatherStation() {
 void WeatherStation::setup() {
     hup();
 
-    Serial2.begin(9600);
+    platformSerial2Begin(9600);
 }
 
 void WeatherStation::clear() {

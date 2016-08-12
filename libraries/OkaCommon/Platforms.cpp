@@ -9,9 +9,6 @@ uint32_t TransmissionIntervals[] = {
 
 #ifdef ARDUINO_AVR_FEATHER32U4
 
-void platformPostSetup() {
-}
-
 void platformRestart() {
     (*(void(*)())0)();
 }
@@ -26,9 +23,6 @@ float platformBatteryVoltage() {
 
 SerialType portExpanderSerial(PORT_EXPANDER_RX_PIN, PORT_EXPANDER_TX_PIN);
 SerialType conductivitySerial(CONDUCTIVITY_RX_PIN, CONDUCTIVITY_TX_PIN);
-
-void platformPostSetup() {
-}
 
 void platformRestart() {
     (*(void(*)())0)();
@@ -56,10 +50,8 @@ void SERCOM1_Handler()
 SerialType &portExpanderSerial = Serial1;
 SerialType &conductivitySerial = Serial2;
 
-void platformPostSetup() {
-    // We have to do this before the pinPeripheral calls. On other platforms
-    // it's done later by AtlasScientificBoard.
-    conductivitySerial.begin(9600);
+void platformSerial2Begin(int32_t baud) {
+    Serial2.begin(baud);
 
     // Order is very important here. This has to happen after the call to begin.
     pinPeripheral(10, PIO_SERCOM);

@@ -237,8 +237,7 @@ void setup() {
 
     corePlatform.setup();
     atlasSensorBoard.setup();
-
-    platformPostSetup();
+    platformSerial2Begin(9600);
 
     Serial.println("Loop");
 }

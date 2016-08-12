@@ -110,6 +110,8 @@ typedef Uart SerialType;
 extern SerialType &portExpanderSerial;
 extern SerialType &conductivitySerial;
 
+void platformSerial2Begin(int32_t baud);
+
 #define F(text)                                              text
 
 #endif /* ARDUINO_SAMD_FEATHER_M0 */
