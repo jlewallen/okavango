@@ -52,7 +52,7 @@ bool WeatherStation::tick() {
                 if (c == ',' || c == '\r' || c == '\n') {
                     if (length > 0) {
                         buffer[length] = 0;
-                        if (numberOfValues < WEATHER_STATION_MAX_VALUES) {
+                        if (numberOfValues < FK_WEATHER_STATION_MAX_VALUES) {
                             values[numberOfValues++] = atof(buffer);
                         }
                         length = 0;;
@@ -61,7 +61,7 @@ bool WeatherStation::tick() {
                         return numberOfValues == FK_WEATHER_STATION_PACKET_NUMBER_VALUES;
                     }
                 }
-                else if (length < WEATHER_STATION_MAX_BUFFER - 1) {
+                else if (length < FK_WEATHER_STATION_MAX_BUFFER - 1) {
                     buffer[length++] = (char)c;
                     buffer[length] = 0;
                 }

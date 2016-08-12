@@ -10,6 +10,16 @@
 
 bool radioSetup = false;
 
+typedef struct gps_location_t {
+    float latitude;
+    float longitude;
+    float altitude;
+    uint8_t satellites;
+    uint32_t time;
+} gps_location_t;
+
+gps_location_t location;
+
 void setup() {
     platformLowPowerSleep(LOW_POWER_SLEEP_BEGIN);
 
@@ -29,6 +39,8 @@ void setup() {
     CorePlatform corePlatform;
     corePlatform.setup();
 
+    memzero((uint8_t *)&location, sizeof(gps_location_t));
+
     Serial.println(F("Loop"));
 }
 
@@ -38,7 +50,7 @@ void checkAirwaves() {
     NetworkProtocolState networkProtocol(NetworkState::EnqueueFromNetwork, &radio, &queue);
     WeatherStation weatherStation;
 
-    Serial.println("Checking airwaves...");
+    Serial.println("Checking Airwaves...");
     
     weatherStation.setup();
 
@@ -83,7 +95,13 @@ void checkAirwaves() {
             weatherStation.logReadingLocally();
 
             float *values = weatherStation.getValues();
-            SystemClock.set((uint32_t)values[0]);
+            SystemClock.set((uint32_t)values[FK_WEATHER_STATION_FIELD_UNIXTIME]);
+
+            location.time = values[FK_WEATHER_STATION_FIELD_UNIXTIME];
+            location.latitude = values[FK_WEATHER_STATION_FIELD_LATITUDE];
+            location.longitude = values[FK_WEATHER_STATION_FIELD_LONGITUDE];
+            location.altitude = values[FK_WEATHER_STATION_FIELD_ALTITUDE];
+            location.satellites = values[FK_WEATHER_STATION_FIELD_SATELLITES];
 
             weather_station_packet_t packet;
             memzero((uint8_t *)&packet, sizeof(weather_station_packet_t));
@@ -106,26 +124,34 @@ void checkAirwaves() {
     weatherStation.off();
 }
 
-class Transmitter {
-private:
-
-public:
-};
-
 String atlasPacketToMessage(atlas_sensors_packet_t *packet) {
     String message(packet->time);
-    message += ",";
+    message += ",JL,";
     message += String(packet->battery, 2);
     for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
         String field = "," + String(packet->values[i], 2);
         message += field;
     }
-
     return message;
 }
 
 String weatherStationPacketToMessage(weather_station_packet_t *packet) {
-    String message;
+    String message(packet->time);
+    message += ",JL";
+    uint8_t fields[] = {
+        FK_WEATHER_STATION_FIELD_TEMPERATURE,
+        FK_WEATHER_STATION_FIELD_HUMIDITY,
+        FK_WEATHER_STATION_FIELD_PRESSURE,
+        FK_WEATHER_STATION_FIELD_WIND_SPEED_2M,
+        FK_WEATHER_STATION_FIELD_WIND_DIR_2M,
+        FK_WEATHER_STATION_FIELD_WIND_GUST_10M,
+        FK_WEATHER_STATION_FIELD_WIND_GUST_DIR_10m,
+        FK_WEATHER_STATION_FIELD_DAILY_RAIN
+    };
+    for (uint8_t i = 0; i < sizeof(fields) / sizeof(uint8_t); ++i) {
+        String field = "," + String(packet->values[fields[i]], 2);
+        message += field;
+    }
     return message;
 }
 
@@ -178,12 +204,12 @@ void handleSensorTransmission() {
         }
 
         switch (packet->kind) {
-        case FK_PACKET_KIND_ATLAS_SENSORS: {
-            memcpy((uint8_t *)&atlas_sensors, (uint8_t *)packet, sizeof(atlas_sensors_packet_t));
-            break;
-        }
         case FK_PACKET_KIND_WEATHER_STATION: {
             memcpy((uint8_t *)&weather_station_sensors, (uint8_t *)packet, sizeof(weather_station_packet_t));
+            break;
+        }
+        case FK_PACKET_KIND_ATLAS_SENSORS: {
+            memcpy((uint8_t *)&atlas_sensors, (uint8_t *)packet, sizeof(atlas_sensors_packet_t));
             break;
         }
         }
@@ -198,7 +224,19 @@ void handleSensorTransmission() {
     }
 }
 
+String locationToMessage(gps_location_t *location) {
+    String message(location->time);
+    message += ",JL";
+    message += "," + String(location->latitude, 2);
+    message += "," + String(location->longitude, 2);
+    message += "," + String(location->altitude, 2);
+    return message;
+}
+
 void handleLocationTransmission() {
+    if (location.time > 0) {
+        singleTransmission(locationToMessage(&location));
+    }
 }
 
 void handleTransmissionIfNecessary() {
@@ -212,9 +250,32 @@ void handleTransmissionIfNecessary() {
     }
 }
 
+typedef enum CollectorState {
+    Airwaves,
+    WeatherStation,
+    Transmission
+} CollectorState;
+
 void loop() {
-    checkAirwaves();
-    handleTransmissionIfNecessary();
+    CollectorState state = Airwaves;
+
+    while (1) {
+        switch (state) {
+        case Airwaves: {
+            checkAirwaves();
+            state = Transmission;
+            break;
+        }
+        case WeatherStation: {
+            break;
+        }
+        case Transmission: {
+            handleTransmissionIfNecessary();
+            state = Airwaves;
+            break;
+        }
+        }
+    }
 }
 
 // vim: set ft=cpp:
