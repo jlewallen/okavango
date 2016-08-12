@@ -195,8 +195,6 @@ void handleTransmissionIfNecessary() {
 }
 
 void loop() {
-    Serial.println(platformFreeMemory());
-
     checkAirwaves();
     handleTransmissionIfNecessary();
 }
