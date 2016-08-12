@@ -19,6 +19,7 @@ public:
 
 public:
     void setup();
+    void hup();
     void clear();
     bool tick();
     float *getValues() { return values; }

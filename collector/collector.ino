@@ -44,6 +44,8 @@ void checkAirwaves() {
     WeatherStation weatherStation;
 
     Serial.println("Checking airwaves...");
+    
+    weatherStation.hup();
 
     // Can't call this more than 3 times or so because we use up all the IRQs and
     // so this would be nice to have a kind of memory?

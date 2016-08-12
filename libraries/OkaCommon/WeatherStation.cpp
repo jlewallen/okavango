@@ -10,11 +10,7 @@ WeatherStation::WeatherStation() {
 }
 
 void WeatherStation::setup() {
-
-    pinMode(PIN_WEATHER_STATION_RESET, OUTPUT);
-    digitalWrite(PIN_WEATHER_STATION_RESET, LOW);
-    delay(500);
-    digitalWrite(PIN_WEATHER_STATION_RESET, HIGH);
+    hup();
 
     Serial2.begin(9600);
 }
@@ -22,6 +18,13 @@ void WeatherStation::setup() {
 void WeatherStation::clear() {
     numberOfValues = 0;
     length = 0;
+}
+
+void WeatherStation::hup() {
+    pinMode(PIN_WEATHER_STATION_RESET, OUTPUT);
+    digitalWrite(PIN_WEATHER_STATION_RESET, LOW);
+    delay(500);
+    digitalWrite(PIN_WEATHER_STATION_RESET, HIGH);
 }
 
 bool WeatherStation::tick() {
