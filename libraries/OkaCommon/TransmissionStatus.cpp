@@ -84,10 +84,12 @@ void TransmissionStatus::remove() {
 int8_t TransmissionStatus::shouldWe() {
     fk_transmission_status_t status;
 
+    uint32_t now = millis();
+
     if (!read(&status)) {
         memzero((uint8_t *)&status, sizeof(fk_transmission_status_t));
         for (int8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
-            status.kinds[i].millis = millis();
+            status.kinds[i].millis = now;
             status.kinds[i].elapsed = 0;
         }
     }
@@ -98,10 +100,10 @@ int8_t TransmissionStatus::shouldWe() {
 
     int8_t which = -1;
     for (int8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
-        int32_t change = millis() - status.kinds[i].millis;
+        int32_t change = now > status.kinds[i].millis ? now - status.kinds[i].millis : 0;
 
         status.kinds[i].elapsed += change;
-        status.kinds[i].millis = millis();
+        status.kinds[i].millis = now;
 
         if (status.kinds[i].elapsed > TransmissionIntervals[i]) {
             status.kinds[i].elapsed = 0;
