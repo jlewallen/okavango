@@ -1,7 +1,7 @@
 #include <SPI.h>
 #include <SD.h>
-#include <Ds18B20.h>
 #include <Adafruit_BME280.h>
+#include <OneWire.h>
 
 #include "Platforms.h"
 
@@ -21,7 +21,6 @@ private:
     CorePlatform *corePlatform;
     SerialPortExpander portExpander;
     AtlasScientificBoard board;
-    Ds18B20 ds18b20;
     Adafruit_BME280 bme;
     atlas_sensors_packet_t packet;
     uint8_t packet_value_index = 0;
@@ -34,6 +33,7 @@ public:
     void setup();
 
 private:
+    float getWaterTemperature();
     void populatePacket();
     void logPacketLocally();
     void tryAndSendLocalQueue(Queue *queue);
@@ -41,7 +41,7 @@ private:
 };
 
 AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform)
-    : corePlatform(corePlatform), portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1), ds18b20(PIN_DS18B20) {
+    : corePlatform(corePlatform), portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1) {
     memzero((uint8_t *)&packet, sizeof(atlas_sensors_packet_t));
 }
 
@@ -72,6 +72,46 @@ void AtlasSensorBoard::tryAndSendLocalQueue(Queue *queue) {
     else {
         Serial.println("No radio available");
     }
+}
+
+float AtlasSensorBoard::getWaterTemperature() {
+    OneWire ds(PIN_DS18B20);
+
+    uint8_t data[12];
+    uint8_t address[8];
+
+    if (!ds.search(address)) {
+        ds.reset_search();
+        return -1000;
+    }
+
+    if (OneWire::crc8(address, 7) != address[7]) {
+        return -1000;
+    }
+
+    if (address[0] != 0x10 && address[0] != 0x28) {
+        return -1000;
+    }
+
+    ds.reset();
+    ds.select(address);
+    ds.write(0x44, 1);
+
+    uint8_t present = ds.reset();
+    ds.select(address);  
+    ds.write(0xbe);
+
+    for (uint8_t i = 0; i < 9; i++) {
+        data[i] = ds.read();
+    }
+
+    ds.reset_search();
+
+    uint8_t msb = data[1];
+    uint8_t lsb = data[0];
+
+    float value = ((msb << 8) | lsb);
+    return value / 16;
 }
 
 bool AtlasSensorBoard::tick() {
@@ -105,15 +145,9 @@ bool AtlasSensorBoard::tick() {
             }
             #endif
 
-            #ifdef DS18B20
-            if (ds18b20.setup()) {
-                Serial.println("Ds18B20 detected!");
-                packet.values[packet_value_index++] = ds18b20.getTemperature();
-            }
-            else {
-                Serial.println("Ds18B20 missing");
-                packet.values[packet_value_index++] = 0.0f;
-            }
+            #ifdef PIN_DS18B20
+            Serial.println("DS18B20");
+            packet.values[packet_value_index++] = getWaterTemperature();
             #endif
 
             Serial.println("Metrics");

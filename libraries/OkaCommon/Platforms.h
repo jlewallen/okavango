@@ -95,14 +95,13 @@ extern SerialType conductivitySerial;
 #define PIN_SD_CS                                            PIN_FEATHER_M0_ADALOGGER_EXTERNAL_LORA_SD_CS
 #endif
 
-#define PIN_DS18B20                                          14
-
 #define PIN_RED_LED                                          13
 #define PIN_GREEN_LED                                        8
 #define PIN_SLEEP_LED                                        8
 
 #define PIN_ROCK_BLOCK                                       9
 #define PIN_WEATHER_STATION_RESET                            6
+#define PIN_DS18B20                                          19
 
 extern Uart Serial2;
 
