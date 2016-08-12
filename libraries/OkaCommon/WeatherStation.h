@@ -20,8 +20,10 @@ public:
 public:
     void setup();
     void hup();
+    void off();
     void clear();
     bool tick();
+    void ignore();
     float *getValues() { return values; }
     uint8_t getNumberOfValues() { return numberOfValues; }
     void logReadingLocally();

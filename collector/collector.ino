@@ -60,6 +60,9 @@ void checkAirwaves() {
     uint32_t last = 0;
     while (true) {
         networkProtocol.tick();
+
+        weatherStation.ignore();
+
         delay(10);
 
         if (millis() - last > 5000) {
@@ -71,7 +74,17 @@ void checkAirwaves() {
             break;
         }
 
+    }
+
+    radio.sleep();
+
+    Serial.println();
+
+    started = millis();
+    while (millis() - started < 10 * 1000) {
         if (weatherStation.tick()) {
+            Serial.print("&");
+
             weatherStation.logReadingLocally();
 
             float *values = weatherStation.getValues();
@@ -89,22 +102,32 @@ void checkAirwaves() {
             queue.enqueue((uint8_t *)&packet);
 
             weatherStation.clear();
+            Serial.print("^");
+
+            break;
         }
     }
 
-    radio.sleep();
-
-    Serial.println();
+    weatherStation.off();
 }
+
+class Transmitter {
+private:
+
+public:
+};
 
 String atlasPacketToMessage(atlas_sensors_packet_t *packet) {
     String message(packet->time);
     message += ",";
     message += String(packet->battery, 2);
     for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
-        message += ",";
-        message += String(packet->values[i], 2);
+        String field = "," + String(packet->values[i], 2);
+        if (message.length() + field.length() <= 50) {
+            message += field;
+        }
     }
+
     return message;
 }
 
