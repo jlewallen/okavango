@@ -4,7 +4,7 @@
 #include "TransmissionStatus.h"
 #include "core.h"
 
-#define DEBUG_TS
+// #define DEBUG_TS
 
 typedef struct fk_transmission_kind_status_t {
     uint32_t millis;
