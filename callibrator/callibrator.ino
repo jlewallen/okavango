@@ -11,7 +11,10 @@ String phScript[] = {
     "c,0",
     "c,0",
     "L,1",
-    "R",
+    "cal,mid,7.00",
+    "cal,low,4.00",
+    "cal,high,10.00",
+    "L,0",
     "STATUS"
 };
 
@@ -19,7 +22,9 @@ String doScript[] = {
     "c,0",
     "c,0",
     "L,1",
-    "R",
+    "cal",
+    "cal,0",
+    "L,0",
     "STATUS"
 };
 
@@ -27,7 +32,8 @@ String orpScript[] = {
     "c,0",
     "c,0",
     "L,1",
-    "R",
+    "cal,",
+    "L,0",
     "STATUS"
 };
 
@@ -35,7 +41,10 @@ String ecScript[] = {
     "c,0",
     "c,0",
     "L,1",
-    "R",
+    "cal,dry",
+    "cal,low,",
+    "cal,high,",
+    "L,0",
     "STATUS"
 };
 
@@ -61,21 +70,25 @@ private:
     SerialPortExpander *portExpander;
     ScriptRunnerState state;
     uint8_t position;
-    const char *activeCommand;
-    const char *expectedResponse;
+    char activeCommand[64];
+    char expectedResponse[64];
     String *commands;
     size_t length;
     uint8_t nextPort;
 
 public:
     ScriptRunner(SerialPortExpander *portExpander) :
-        NonBlockingSerialProtocol(10000, true), portExpander(portExpander), expectedResponse(NULL),
-        commands(NULL), activeCommand(NULL), position(0), length(0), nextPort(0) {
+        NonBlockingSerialProtocol(10000, true), portExpander(portExpander),
+        commands(NULL), position(0), length(0), nextPort(0) {
+        activeCommand[0] = 0;
+        expectedResponse[0] = 0;
     }
 
     void select(uint8_t port) {
         portExpander->select(port);
-        setSerial(getSerialForPort(port));
+        SerialType *serial = getSerialForPort(port);
+        setSerial(serial);
+        drain();
     }
 
     template<size_t N>
@@ -109,8 +122,8 @@ public:
     }
 
     void send(const char *command, const char *expected) {
-        activeCommand = command;
-        expectedResponse = expected;
+        strncpy(activeCommand, command, sizeof(activeCommand));
+        strncpy(expectedResponse, expected, sizeof(expectedResponse));
         state = ScriptRunnerState::WaitingOnReply;
         sendCommand(command);
     }
@@ -134,20 +147,28 @@ public:
     }
 
     bool handle(String reply) {
-        Serial.println(reply);
+        if (reply.length() > 0) {
+            Serial.print("# ");
+            Serial.print(reply);
+        }
         if (expectedResponse != NULL && reply.indexOf(expectedResponse) == 0) {
             if (nextPort >= 4) {
                 state = ScriptRunnerState::DeviceIdle;
                 return true;
             }
             else if (nextPort > 0) {
-                Serial.print("Port: ");
+                Serial.print("PORT ");
                 Serial.println(nextPort);
                 select(nextPort);
                 send(activeCommand, expectedResponse);
                 nextPort++;
                 return false;
             }
+        }
+        else if (reply.indexOf("*W") == 0) {
+            Serial.println("Woke up, resend...");
+            send(activeCommand, expectedResponse);
+            return true;
         }
         else if (reply.indexOf("*ER") == 0) {
             state = ScriptRunnerState::DeviceIdle;
