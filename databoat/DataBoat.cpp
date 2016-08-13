@@ -54,10 +54,13 @@ bool DataBoat::tick() {
 
     reading.water_temperature = atlasPacket->values[FK_ATLAS_SENSORS_FIELD_WATER_TEMPERATURE];
     reading.conductivity      = atlasPacket->values[FK_ATLAS_SENSORS_FIELD_EC];
-    reading.salinity          = atlasPacket->values[FK_ATLAS_SENSORS_FIELD_SAL];
+    reading.salinity          = atlasPacket->values[FK_ATLAS_SENSORS_FIELD_SALINITY];
     reading.ph                = atlasPacket->values[FK_ATLAS_SENSORS_FIELD_PH];
     reading.dissolved_oxygen  = atlasPacket->values[FK_ATLAS_SENSORS_FIELD_DO];
     reading.orp               = atlasPacket->values[FK_ATLAS_SENSORS_FIELD_ORP];
+    reading.temperature       = atlasPacket->values[FK_ATLAS_SENSORS_FIELD_AIR_TEMPERATURE];
+    reading.humidity          = atlasPacket->values[FK_ATLAS_SENSORS_FIELD_HUMIDITY];
+    reading.pressure          = atlasPacket->values[FK_ATLAS_SENSORS_FIELD_PRESSURE]; // If Bme280
 
     if (gps.tick(&reading)) {
         String json = readingToJson(&reading);

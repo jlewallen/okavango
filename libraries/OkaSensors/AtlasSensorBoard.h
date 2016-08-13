@@ -19,9 +19,13 @@
 #define FK_ATLAS_SENSORS_FIELD_DO                            2
 #define FK_ATLAS_SENSORS_FIELD_EC                            3
 #define FK_ATLAS_SENSORS_FIELD_TDS                           4
-#define FK_ATLAS_SENSORS_FIELD_SAL                           5
+#define FK_ATLAS_SENSORS_FIELD_SALINITY                      5
 #define FK_ATLAS_SENSORS_FIELD_SG                            6
-#define FK_ATLAS_SENSORS_FIELD_WATER_TEMPERATURE             11
+
+#define FK_ATLAS_SENSORS_FIELD_HUMIDITY                      7
+#define FK_ATLAS_SENSORS_FIELD_PRESSURE                      8
+#define FK_ATLAS_SENSORS_FIELD_AIR_TEMPERATURE               9
+#define FK_ATLAS_SENSORS_FIELD_WATER_TEMPERATURE             10
 
 typedef enum ConductivityConfig {
     None,
