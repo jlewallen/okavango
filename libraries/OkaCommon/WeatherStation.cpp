@@ -5,8 +5,7 @@
 #ifdef ARDUINO_SAMD_FEATHER_M0
 
 WeatherStation::WeatherStation() {
-    numberOfValues = 0;
-    length = 0;
+    clear();
 }
 
 void WeatherStation::setup() {
@@ -17,6 +16,7 @@ void WeatherStation::setup() {
 
 void WeatherStation::clear() {
     numberOfValues = 0;
+    buffer[0] = 0;
     length = 0;
 }
 
@@ -58,7 +58,9 @@ bool WeatherStation::tick() {
                         length = 0;;
                     }
                     if (c == '\r' || c == '\n') {
-                        return numberOfValues == FK_WEATHER_STATION_PACKET_NUMBER_VALUES;
+                        bool success = numberOfValues == FK_WEATHER_STATION_PACKET_NUMBER_VALUES;
+                        numberOfValues = 0;
+                        return success;
                     }
                 }
                 else if (length < FK_WEATHER_STATION_MAX_BUFFER - 1) {

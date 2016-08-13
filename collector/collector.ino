@@ -8,6 +8,8 @@
 #include "TransmissionStatus.h"
 #include "WeatherStation.h"
 
+#define FONA
+
 bool radioSetup = false;
 
 typedef struct gps_location_t {
@@ -88,8 +90,13 @@ void checkAirwaves() {
     Serial.println();
 
     started = millis();
+    bool success = false;
+    weatherStation.clear();
+
     while (millis() - started < 10 * 1000) {
         if (weatherStation.tick()) {
+            Serial.println();
+
             Serial.print("&");
 
             weatherStation.logReadingLocally();
@@ -117,8 +124,14 @@ void checkAirwaves() {
             weatherStation.clear();
             Serial.print("^");
 
+            success = true;
+
             break;
         }
+    }
+
+    if (!success) {
+        Serial.println("Unable to get Weather Station reading.");
     }
 
     weatherStation.off();
