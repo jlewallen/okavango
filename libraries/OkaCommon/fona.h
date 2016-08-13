@@ -37,8 +37,6 @@ public:
         clearSendsCounter();
     }
 
-    void drain();
-
     bool isDone() {
         return state == FonaDone;
     }

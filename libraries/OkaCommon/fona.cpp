@@ -5,17 +5,6 @@ FonaChild::FonaChild(String phoneNumber, String message) :
     NonBlockingSerialProtocol(60 * 1000, true, false), tries(0) {
 }
 
-void FonaChild::drain() {
-    uint32_t started = millis();
-
-    while (millis() - started < 500) {
-        delay(10);
-        while (getSerial()->available()) {
-            getSerial()->read();
-        }
-    }
-}
-
 bool FonaChild::tick() {
     if (NonBlockingSerialProtocol::tick()) {
         return true;

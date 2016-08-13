@@ -9,6 +9,17 @@ void NonBlockingSerialProtocol::setup() {
     serial->begin(9600);
 }
 
+void NonBlockingSerialProtocol::drain() {
+    uint32_t started = millis();
+
+    while (millis() - started < 500) {
+        delay(10);
+        while (getSerial()->available()) {
+            getSerial()->read();
+        }
+    }
+}
+
 bool NonBlockingSerialProtocol::tick() {
     switch (state) {
     case Reading: {

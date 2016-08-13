@@ -23,6 +23,8 @@ private:
 public:
     NonBlockingSerialProtocol(uint16_t replyWait = 5000, bool emptyBufferAfterEveryLine = false, bool addNewLine = true);
 
+    void drain();
+
     void setup();
 
     virtual bool tick();
