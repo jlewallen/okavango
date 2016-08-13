@@ -8,14 +8,14 @@ public:
     LoraAtlasSensorBoard(CorePlatform *corePlatform);
 
 public:
-    void doneReadingSensors(Queue *queue);
+    void doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) override;
     void tryAndSendLocalQueue(Queue *queue);
 };
 
 LoraAtlasSensorBoard::LoraAtlasSensorBoard(CorePlatform *corePlatform) : AtlasSensorBoard(corePlatform) {
 }
 
-void LoraAtlasSensorBoard::doneReadingSensors(Queue *queue) {
+void LoraAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) {
     tryAndSendLocalQueue(queue);
 }
 

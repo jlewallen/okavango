@@ -11,17 +11,15 @@ public:
     WifiAtlasSensorBoard(CorePlatform *corePlatform);
 
 public:
-    void doneReadingSensors(Queue *queue);
+    void doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) override;
 };
 
 WifiAtlasSensorBoard::WifiAtlasSensorBoard(CorePlatform *corePlatform) :
     AtlasSensorBoard(corePlatform, false) {
 }
 
-void WifiAtlasSensorBoard::doneReadingSensors(Queue *queue) {
-
-
-    DataBoat dataBoat(&Serial2, 9);
+void WifiAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) {
+    DataBoat dataBoat(&Serial2, 9, packet);
     dataBoat.setup();
     while (dataBoat.tick()) {
         delay(10);

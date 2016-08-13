@@ -96,7 +96,7 @@ bool AtlasSensorBoard::tick() {
             queue.enqueue((uint8_t *)&packet);
             queue.startAtBeginning();
 
-            doneReadingSensors(&queue);
+            doneReadingSensors(&queue, &packet);
 
             Serial.println("Done");
 
@@ -109,7 +109,7 @@ bool AtlasSensorBoard::tick() {
     return true;
 }
 
-void AtlasSensorBoard::doneReadingSensors(Queue *queue) {
+void AtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) {
 }
 
 void AtlasSensorBoard::setup() {

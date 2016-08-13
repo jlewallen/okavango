@@ -8,9 +8,10 @@ class DataBoat {
 private:
     CorePlatform corePlatform;
     AttachedGps gps;
+    atlas_sensors_packet_t *atlasPacket;
 
 public:
-    DataBoat(HardwareSerial *gpsStream, uint8_t pinGpsEnable);
+    DataBoat(HardwareSerial *gpsStream, uint8_t pinGpsEnable, atlas_sensors_packet_t *atlasPacket);
     bool setup();
     bool tick();
 

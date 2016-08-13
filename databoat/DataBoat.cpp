@@ -3,6 +3,7 @@
 
 #include "DataBoat.h"
 #include "WifiConnection.h"
+#include "AtlasSensorBoard.h"
 
 class DataBoatConfiguration {
 private:
@@ -37,8 +38,8 @@ bool DataBoatConfiguration::read() {
 }
 
 
-DataBoat::DataBoat(HardwareSerial *gpsStream, uint8_t pinGpsEnable) :
-    gps(gpsStream, pinGpsEnable) {
+DataBoat::DataBoat(HardwareSerial *gpsStream, uint8_t pinGpsEnable, atlas_sensors_packet_t *atlasPacket) :
+    gps(gpsStream, pinGpsEnable), atlasPacket(atlasPacket) {
 }
 
 bool DataBoat::setup() {
@@ -50,6 +51,13 @@ bool DataBoat::setup() {
 bool DataBoat::tick() {
     data_boat_packet_t reading;
     memzero((uint8_t *)&reading, sizeof(data_boat_packet_t));
+
+    reading.water_temperature = atlasPacket->values[FK_ATLAS_SENSORS_FIELD_WATER_TEMPERATURE];
+    reading.conductivity      = atlasPacket->values[FK_ATLAS_SENSORS_FIELD_EC];
+    reading.salinity          = atlasPacket->values[FK_ATLAS_SENSORS_FIELD_SAL];
+    reading.ph                = atlasPacket->values[FK_ATLAS_SENSORS_FIELD_PH];
+    reading.dissolved_oxygen  = atlasPacket->values[FK_ATLAS_SENSORS_FIELD_DO];
+    reading.orp               = atlasPacket->values[FK_ATLAS_SENSORS_FIELD_ORP];
 
     if (gps.tick(&reading)) {
         String json = readingToJson(&reading);
