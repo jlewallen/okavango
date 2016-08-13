@@ -2,7 +2,7 @@
 
 FonaChild::FonaChild(String phoneNumber, String message) :
     phoneNumber(phoneNumber), message(message),
-    NonBlockingSerialProtocol(5000, true, false), tries(0) {
+    NonBlockingSerialProtocol(20 * 1000, true, false), tries(0) {
 }
 
 void FonaChild::drain() {
@@ -44,7 +44,7 @@ bool FonaChild::tick() {
         }
         case FonaNetworkStatus: {
             if (tries++ > 10) {
-                transition(FonaFailed);
+                transition(FonaPowerOffBeforeFailed);
             }
             else {
                 sendCommand("~STATUS");
@@ -106,7 +106,7 @@ bool FonaChild::handle(String reply) {
                 break;
             }
             case FonaSendSms: {
-                transition(FonaDone);
+                transition(FonaPowerOffBeforeDone);
                 break;
             }
             case FonaPowerOffBeforeFailed: {

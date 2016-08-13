@@ -13,7 +13,7 @@ class NonBlockingSerialProtocol {
 private:
     SerialType *serial;
     NonBlockingSerialProtocolState state = Idle;
-    uint32_t lastStateChangeAt;
+    uint32_t lastStateChangeOrReplyAt;
     uint16_t replyWait;
     uint8_t sendsCounter;
     bool emptyBufferAfterEveryLine;

@@ -18,7 +18,7 @@ bool NonBlockingSerialProtocol::tick() {
                 appendToBuffer((char)c);
             }
         }
-        if (millis() - lastStateChangeAt > replyWait) {
+        if (millis() - lastStateChangeOrReplyAt > replyWait) {
             transition(NonBlockingSerialProtocolState::Idle);
             buffer = "";
         }
@@ -39,6 +39,8 @@ void NonBlockingSerialProtocol::appendToBuffer(char newChar) {
         if (addNewLines) {
             buffer += '\n';
         }
+
+        lastStateChangeOrReplyAt = millis();
 
         if (handle(buffer)) {
             transition(NonBlockingSerialProtocolState::Idle);
@@ -65,7 +67,7 @@ bool NonBlockingSerialProtocol::handle(String reply) {
 
 void NonBlockingSerialProtocol::transition(NonBlockingSerialProtocolState newState) {
     state = newState;
-    lastStateChangeAt = millis();
+    lastStateChangeOrReplyAt = millis();
 }
 
 void NonBlockingSerialProtocol::close() {
