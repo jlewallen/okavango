@@ -240,8 +240,8 @@ void handleSensorTransmission() {
 String locationToMessage(gps_location_t *location) {
     String message(location->time);
     message += ",JL";
-    message += "," + String(location->latitude, 2);
-    message += "," + String(location->longitude, 2);
+    message += "," + String(location->latitude, 6);
+    message += "," + String(location->longitude, 6);
     message += "," + String(location->altitude, 2);
     return message;
 }
