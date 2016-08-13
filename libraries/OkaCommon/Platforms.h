@@ -105,6 +105,9 @@ extern SerialType conductivitySerial;
 #define PIN_WEATHER_STATION_RESET                            6
 #define PIN_DS18B20                                          19
 
+#define HAVE_DHT22
+#define PIN_DHT                                              18
+
 extern Uart Serial2;
 
 typedef Uart SerialType;

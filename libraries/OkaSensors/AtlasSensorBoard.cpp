@@ -1,3 +1,4 @@
+#include "DHT.h"
 #include "AtlasSensorBoard.h"
 
 AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform, ConductivityConfig conductivityConfig) :
@@ -65,8 +66,8 @@ bool AtlasSensorBoard::tick() {
             board.start(OPEN_CONDUCTIVITY_SERIAL_ON_START);
         }
         else {
-            #ifdef BME280
-            Serial.println("Bme");
+            #ifdef HAVE_BME280
+            DEBUG_PRINTLN("Bme");
 
             if (!bme.begin()) {
                 float temperature = bme.readTemperature();
@@ -77,6 +78,28 @@ bool AtlasSensorBoard::tick() {
                 packet.values[packetValueIndex++] = pressure;
                 packet.values[packetValueIndex++] = humidity;
             }
+            else {
+                packet.values[packetValueIndex++] = 0.0f;
+                packet.values[packetValueIndex++] = 0.0f;
+                packet.values[packetValueIndex++] = 0.0f;
+            }
+            #endif
+
+            #ifdef HAVE_DHT22
+            Serial.println("DHT22");
+            DHT dht(PIN_DHT, DHT22);
+            dht.begin();
+            float humidity = dht.readHumidity();
+            float temperature = dht.readTemperature();
+
+            packet.values[packetValueIndex++] = humidity;
+            packet.values[packetValueIndex++] = 0.0;
+            packet.values[packetValueIndex++] = temperature;
+
+            DEBUG_PRINT("DHT ");
+            DEBUG_PRINT(humidity);
+            DEBUG_PRINT(" ");
+            DEBUG_PRINTLN(temperature);
             #endif
 
             #ifdef PIN_DS18B20
