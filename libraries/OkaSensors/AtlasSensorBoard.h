@@ -25,9 +25,10 @@ private:
     Adafruit_BME280 bme;
     atlas_sensors_packet_t packet;
     uint8_t packetValueIndex = 0;
+    bool hasConductivity;
 
 public:
-    AtlasSensorBoard(CorePlatform *corePlatform);
+    AtlasSensorBoard(CorePlatform *corePlatform, bool hasConductivity = true);
 
 public:
     bool tick();

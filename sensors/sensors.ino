@@ -8,7 +8,7 @@ public:
     LoraAtlasSensorBoard(CorePlatform *corePlatform);
 
 public:
-    virtual void doneReadingSensors(Queue *queue);
+    void doneReadingSensors(Queue *queue);
     void tryAndSendLocalQueue(Queue *queue);
 };
 

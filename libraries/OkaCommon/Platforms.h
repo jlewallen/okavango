@@ -131,6 +131,7 @@ void platformSerial2Begin(int32_t baud);
 #define FK_SETTINGS_WEATHER_STATION_DATA_FILENAME            "weather.csv"
 #define FK_SETTINGS_ATLAS_DATA_FILENAME                      "atlas.csv"
 #define FK_SETTINGS_TRANSMISSION_STATUS_FILENAME             "status.bin"
+#define FK_DATA_BOAT_CONFIGURATION_FILENAME                  "databoat.cfg"
 #define FK_SETTINGS_TRANSMISSION_INTERVAL                    1 * 60 * 1000
 
 #define TRANSMISSION_KIND_LOCATION  0

@@ -1,7 +1,8 @@
 #include "AtlasSensorBoard.h"
 
-AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform)
-    : corePlatform(corePlatform), portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1) {
+AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform, bool hasConductivity) :
+    corePlatform(corePlatform), portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1),
+    hasConductivity(hasConductivity) {
     memzero((uint8_t *)&packet, sizeof(atlas_sensors_packet_t));
 }
 
@@ -56,7 +57,7 @@ bool AtlasSensorBoard::tick() {
             Serial.println("Next sensor");
             board.start();
         }
-        else if (newPort == 3) {
+        else if (newPort == 3 && hasConductivity) {
             Serial.println("Conductivity");
             board.setSerial(&conductivitySerial);
             board.start(OPEN_CONDUCTIVITY_SERIAL_ON_START);
