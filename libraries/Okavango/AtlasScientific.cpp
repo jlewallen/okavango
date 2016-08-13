@@ -83,6 +83,17 @@ uint8_t numberOfOccurences(String &str, char chr) {
     return number;
 }
 
+String getFirstLine(String &str) {
+    str.trim();
+
+    uint8_t cr = str.indexOf('\r');
+    if (cr >= 0) return str.substring(0, cr + 1);
+
+    uint8_t nl = str.indexOf('\n');
+    if (nl >= 0) return str.substring(0, nl + 1);
+    return str;
+}
+
 bool AtlasScientificBoard::handle(String reply) {
     if (reply.indexOf("*") >= 0) {
         if (reply.length() > 0) {
@@ -119,18 +130,29 @@ bool AtlasScientificBoard::handle(String reply) {
             case Read2: {
                 int8_t position = 0;
                 numberOfValues = 0;
+
+                String firstLine = getFirstLine(reply);
+
+                // DEBUG_PRINT("'");
+                // DEBUG_PRINT(firstLine);
+                // DEBUG_PRINTLN("'");
+
                 while (true) {
-                    int16_t index = reply.indexOf(',', position);
+                    int16_t index = firstLine.indexOf(',', position);
                     if (index < 0) {
-                        index = reply.indexOf('\r', position);
+                        index = firstLine.indexOf('\r', position);
                     }
                     if (index < 0) {
-                        index = reply.indexOf('\n', position);
+                        index = firstLine.indexOf('\n', position);
                     }
                     if (index > position && numberOfValues < MAX_VALUES) {
-                        String part = reply.substring(position, index);
+                        String part = firstLine.substring(position, index);
                         values[numberOfValues++] = part.toFloat();
                         position = index + 1;
+
+                        // DEBUG_PRINT("Parse: '");
+                        // DEBUG_PRINT(part);
+                        // DEBUG_PRINTLN("'");
                     }
                     else {
                         break;

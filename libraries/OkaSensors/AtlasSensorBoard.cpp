@@ -123,7 +123,8 @@ bool AtlasSensorBoard::tick() {
 
             doneReadingSensors(&queue, &packet);
 
-            Serial.println("Done");
+            DEBUG_PRINT("Done: ");
+            DEBUG_PRINTLN(packetValueIndex);
 
             platformLowPowerSleep(LOW_POWER_SLEEP_END);
 
@@ -148,6 +149,8 @@ void AtlasSensorBoard::setup() {
 }
 
 void AtlasSensorBoard::populatePacket() {
+    DEBUG_PRINT("NumberOfValues: ");
+    DEBUG_PRINTLN(board.getNumberOfValues());
     for (uint8_t i = 0; i < board.getNumberOfValues(); ++i) {
         if (packetValueIndex < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES) {
             packet.values[packetValueIndex++] = board.getValues()[i];
@@ -161,7 +164,13 @@ void AtlasSensorBoard::populatePacket() {
 void AtlasSensorBoard::logPacketLocally() {
     File file = Logger::open(FK_SETTINGS_ATLAS_DATA_FILENAME);
     if (file) {
-        Serial.println("Logging");
+        #define VERBOSE_LOGGING
+        #ifdef VERBOSE_LOGGING
+        DEBUG_PRINT("Packet:");
+        #else
+        DEBUG_PRINTLN("Logging");
+        #endif
+
         file.print(packet.fk.kind);
         file.print(",");
         file.print(packet.time);
@@ -170,9 +179,16 @@ void AtlasSensorBoard::logPacketLocally() {
         for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
             file.print(",");
             file.print(packet.values[i]);
+
+            DEBUG_PRINT(" ");
+            DEBUG_PRINT(packet.values[i]);
         }
         file.println();
         file.close();
+
+        #ifdef VERBOSE_LOGGING
+        DEBUG_PRINTLN("");
+        #endif
     }
 }
 
