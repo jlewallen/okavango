@@ -56,7 +56,7 @@ int winddir_avg2m = 0; // [0-360 2 minute average wind direction]
 float windgustmph_10m = 0; // [mph past 10 minutes wind gust mph ]
 int windgustdir_10m = 0; // [0-360 past 10 minutes wind gust direction]
 float humidity = 0; // [%]
-float tempf = 0; // [temperature F]
+float temperature = 0; // [temperature F]
 float rainin = 0; // [rain inches over the past hour)] -- the accumulated rainfall in the past 60 min
 volatile float dailyrainin = 0; // [rain inches so far today in local time]
 float pressure = 0;
@@ -227,7 +227,7 @@ void calculate_weather() {
 
     humidity = myHumidity.readHumidity();
 
-    tempf = myPressure.readTempF();
+    temperature = myPressure.readTemp();
 
     rainin = 0;
 
@@ -320,8 +320,8 @@ void print_weather() {
     PRINT_VALUE_INT(windgustdir_10m);
     PRINT_LABEL(",humidity=");
     PRINT_VALUE_FLT(humidity, 1);
-    PRINT_LABEL(",tempf=");
-    PRINT_VALUE_FLT(tempf, 1);
+    PRINT_LABEL(",temp=");
+    PRINT_VALUE_FLT(temperature, 1);
     PRINT_LABEL(",rainin=");
     PRINT_VALUE_FLT(rainin, 2);
     PRINT_LABEL(",dailyrainin=");
