@@ -1,5 +1,6 @@
-#include "Adafruit_FONA.h"
 #include <SoftwareSerial.h>
+#include "Adafruit_FONA.h"
+#include "SimpleBuffer.h"
 
 #define PIN_FONA_RX         9
 #define PIN_FONA_TX         8
@@ -13,33 +14,7 @@ SoftwareSerial fonaSerial(PIN_FONA_TX, PIN_FONA_RX);
 Adafruit_FONA fona(PIN_FONA_RST);
 bool available = false;
 
-class Buffer {
-private:
-    char buffer[256];
-    size_t length;
-
-public:
-    Buffer() : length(0) {
-        memset(buffer, 0, sizeof(buffer));
-    }
-
-    void append(char c) {
-        if (length < sizeof(buffer) - 1) {
-            buffer[length++] = c;
-            buffer[length] = 0;
-        }
-    }
-
-    const char *c_str() {
-        return buffer;
-    }
-
-    void clear() {
-        length = 0;
-    }
-};
-
-Buffer buffer;
+SimpleBuffer buffer;
 
 #ifdef FONA_DRIVER_USB_SERIAL
 Serial_ &commandSerial = Serial;
