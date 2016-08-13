@@ -31,6 +31,10 @@ public:
         serial = newSerial;
     }
 
+    SerialType *getSerial() {
+        return serial;
+    }
+
     void open() {
         transition(Idle);
     }

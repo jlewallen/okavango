@@ -1,10 +1,11 @@
 #include "Adafruit_FONA.h"
 #include <SoftwareSerial.h>
-#include "Platforms.h"
 
 #define PIN_FONA_RX         9
 #define PIN_FONA_TX         8
 #define PIN_FONA_RST        4
+
+#define PIN_KEY             12
 
 // #define FONA_DRIVER_USB_SERIAL
 
@@ -19,7 +20,7 @@ private:
 
 public:
     Buffer() : length(0) {
-        memzero(buffer, sizeof(buffer));
+        memset(buffer, 0, sizeof(buffer));
     }
 
     void append(char c) {
@@ -47,21 +48,13 @@ HardwareSerial &commandSerial = Serial1;
 #endif
 
 void setup() {
-    fonaSerial.begin(4800);
+    pinMode(PIN_KEY, OUTPUT);
+    digitalWrite(PIN_KEY, HIGH);
+
     Serial1.begin(4800);
     #ifdef FONA_DRIVER_USB_SERIAL
     Serial.begin(115200);
     #endif
-
-    if (!fona.begin(fonaSerial)) {
-        #ifdef FONA_DRIVER_USB_SERIAL
-        Serial.println(F("No FONA"));
-        #endif
-        available = false;
-    }
-    else {
-        available = true;
-    }
 }
 
 void fona_echo_type() {
@@ -81,28 +74,64 @@ void fona_echo_type() {
     commandSerial.print(F("\r"));
 }
 
+#define FONA_KEY_ON_DURATION        2100
+#define FONA_KEY_OFF_DURATION       2100
+
+void fona_power_on() {
+    fona_pulse_key(FONA_KEY_ON_DURATION);
+}
+
+void fona_power_off() {
+    fona_pulse_key(FONA_KEY_OFF_DURATION);
+}
+
+void fona_pulse_key(uint16_t duration) {
+    digitalWrite(PIN_KEY, LOW);
+    delay(duration);
+    digitalWrite(PIN_KEY, HIGH);
+    delay(100);
+}
+
 bool handle(String command) {
     if (command.startsWith("~HELLO")) {
         commandSerial.print(F("OK\r"));
     }
     else if (command.startsWith("~POWER")) {
-        if (!fona.begin(fonaSerial)) {
-            commandSerial.print(F("ER\r"));
-        }
-        else {
-            fona_echo_type();
+        bool success = false;
 
-            char imei[15] = { 0 };
-            uint8_t length = fona.getIMEI(imei);
-            if (length > 0) {
-                commandSerial.print(F("+IMEI: "));
-                commandSerial.print(imei);
-                commandSerial.print(F("\r"));
-                commandSerial.print(F("OK\r"));
+        for (uint8_t i = 0; i < 2; ++i) {
+            commandSerial.print(F("+KEY\r"));
+
+            fona_power_on();
+
+            commandSerial.print(F("+TRYING\r"));
+
+            fonaSerial.begin(4800);
+
+            if (!fona.begin(fonaSerial)) {
+                commandSerial.print(F("+NO FONA\r"));
             }
             else {
-                commandSerial.print(F("ER\r"));
+                fona_echo_type();
+
+                char imei[15] = { 0 };
+                uint8_t length = fona.getIMEI(imei);
+                if (length > 0) {
+                    commandSerial.print(F("+IMEI: "));
+                    commandSerial.print(imei);
+                    commandSerial.print(F("\r"));
+                    commandSerial.print(F("OK\r"));
+                    success = true;
+                }
+                else {
+                    commandSerial.print(F("+NO IMEI\r"));
+                }
+
+                break;
             }
+        }
+        if (!success) {
+            commandSerial.print(F("ER\r"));
         }
     }
     else if (command.startsWith("~TYPE")) {
@@ -147,9 +176,11 @@ bool handle(String command) {
         }
     }
     else if (command.startsWith("~OFF")) {
+        fona_power_off();
         commandSerial.print(F("OK\r"));
     }
     else if (command.startsWith("~ON")) {
+        fona_power_on();
         commandSerial.print(F("OK\r"));
     }
     else {
