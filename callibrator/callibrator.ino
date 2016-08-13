@@ -41,6 +41,15 @@ String ecScript[] = {
 
 ConductivityConfig conductivityConfig = ConductivityConfig::OnExpanderPort4;
 
+SerialType *getSerialForPort(uint8_t port) {
+    if (port < 3 || conductivityConfig != ConductivityConfig::OnSerial2) {
+        return &Serial1;
+    }
+    else if (port == 4) {
+        return &Serial2;
+    }
+    return &Serial1;
+}
 
 typedef enum ScriptRunnerState {
     WaitingOnReply,
@@ -49,13 +58,24 @@ typedef enum ScriptRunnerState {
 
 class ScriptRunner : public NonBlockingSerialProtocol {
 private:
+    SerialPortExpander *portExpander;
     ScriptRunnerState state;
     uint8_t position;
+    const char *activeCommand;
+    const char *expectedResponse;
     String *commands;
     size_t length;
+    uint8_t nextPort;
 
 public:
-    ScriptRunner() : commands(NULL), position(0), length(0) {
+    ScriptRunner(SerialPortExpander *portExpander) :
+        NonBlockingSerialProtocol(10000, true), portExpander(portExpander), expectedResponse(NULL),
+        commands(NULL), activeCommand(NULL), position(0), length(0), nextPort(0) {
+    }
+
+    void select(uint8_t port) {
+        portExpander->select(port);
+        setSerial(getSerialForPort(port));
     }
 
     template<size_t N>
@@ -77,16 +97,22 @@ public:
     }
 
     void send() {
-        send(currentCommand());
-
+        send(currentCommand(), "*OK");
         if (position < length) {
             position++;
         }
     }
 
-    void send(const char *command) {
-        sendCommand(command);
+    void sendEverywhere(const char *command, const char *expected) {
+        nextPort = 1;
+        send(command, expected);
+    }
+
+    void send(const char *command, const char *expected) {
+        activeCommand = command;
+        expectedResponse = expected;
         state = ScriptRunnerState::WaitingOnReply;
+        sendCommand(command);
     }
 
     bool isIdle() {
@@ -109,11 +135,25 @@ public:
 
     bool handle(String reply) {
         Serial.println(reply);
-        if (reply.indexOf("*") == 0) {
+        if (expectedResponse != NULL && reply.indexOf(expectedResponse) == 0) {
+            if (nextPort >= 4) {
+                state = ScriptRunnerState::DeviceIdle;
+                return true;
+            }
+            else if (nextPort > 0) {
+                Serial.print("Port: ");
+                Serial.println(nextPort);
+                select(nextPort);
+                send(activeCommand, expectedResponse);
+                nextPort++;
+                return false;
+            }
+        }
+        else if (reply.indexOf("*ER") == 0) {
             state = ScriptRunnerState::DeviceIdle;
             return true;
         }
-        return true;
+        return false;
     }
 };
 
@@ -127,12 +167,10 @@ class Repl {
 private:
     ReplState state = ReplState::Command;
     SimpleBuffer buffer;
-    SerialPortExpander *portExpander;
     ScriptRunner *scriptRunner;
 
 public:
-    Repl(SerialPortExpander *portExpander, ScriptRunner *scriptRunner) :
-        portExpander(portExpander), scriptRunner(scriptRunner) {
+    Repl(ScriptRunner *scriptRunner) : scriptRunner(scriptRunner) {
     }
 
     bool tick() {
@@ -186,41 +224,41 @@ public:
     void handle(String command) {
         if (command.startsWith("p ")) {
             uint8_t number = command.substring(2).toInt();
-            portExpander->select(number);
-            if (number < 3 || conductivityConfig != ConductivityConfig::OnSerial2) {
-                scriptRunner->setSerial(&Serial1);
-            }
-            else if (number == 4) {
-                scriptRunner->setSerial(&Serial2);
-            }
-            return;
+            scriptRunner->select(number);
         }
         else if (command.startsWith("ph")) {
             Serial.println("Ph Mode");
             scriptRunner->setScript(phScript);
-            return;
         }
         else if (command.startsWith("do")) {
             Serial.println("Do Mode");
             scriptRunner->setScript(doScript);
-            return;
         }
         else if (command.startsWith("orp")) {
             Serial.println("Orp Mode");
             scriptRunner->setScript(orpScript);
-            return;
         }
         else if (command.startsWith("ec")) {
             Serial.println("Ec Mode");
             scriptRunner->setScript(ecScript);
-            return;
+        }
+        else if (command.startsWith("factory")) {
+            Serial.println("Factory Reset All The Things!");
+            scriptRunner->select(0);
+            scriptRunner->sendEverywhere("factory", "*RE");
+            state = ReplState::WaitingOnDevice;
+        }
+        else if (command.startsWith("!")) {
+            scriptRunner->select(0);
+            scriptRunner->sendEverywhere(command.substring(1).c_str(), "*OK");
+            state = ReplState::WaitingOnDevice;
         }
         else if (command == "") {
             scriptRunner->send();
             state = ReplState::WaitingOnDevice;
         }
         else {
-            scriptRunner->send(command.c_str());
+            scriptRunner->send(command.c_str(), "*OK");
             state = ReplState::WaitingOnDevice;
         }
     }
@@ -252,8 +290,8 @@ void setup() {
 
 void loop() {
     SerialPortExpander portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1);
-    ScriptRunner scriptRunner;
-    Repl repl(&portExpander, &scriptRunner);
+    ScriptRunner scriptRunner(&portExpander);
+    Repl repl(&scriptRunner);
 
     repl.showPrompt();
 
