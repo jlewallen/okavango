@@ -129,21 +129,27 @@ bool handle(String command) {
     }
     else if (command.startsWith("~SMS")) {
         commandSerial.print(F("+TRY\r"));
+
         String end = command.substring(5);
-        end.trim();
-        uint32_t i = end.indexOf(' ');
+
+        int32_t i = end.indexOf(' ');
         String number = end.substring(0, i);
-        String message = end.substring(i + 1);
+        String message = end.substring(i + 1, end.length() - 1);
 
         commandSerial.print(F("+NUMBER="));
         commandSerial.print(number);
         commandSerial.print(F("\r"));
 
-        commandSerial.print(F("+MESSAGE="));
-        commandSerial.print(message);
-        commandSerial.print(F("\r"));
+        delay(250);
 
-        if (fona.sendSMS((char *)number.c_str(), (char *)message.c_str())) {
+        commandSerial.print(F("+MESSAGE=\""));
+        commandSerial.print(message);
+        commandSerial.print(F("\"\r"));
+
+        delay(250);
+
+        bool success = fona.sendSMS((char *)number.c_str(), (char *)message.c_str());
+        if (success) {
             commandSerial.print(F("OK\r"));
         }
         else {

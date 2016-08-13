@@ -2,7 +2,7 @@
 
 FonaChild::FonaChild(String phoneNumber, String message) :
     phoneNumber(phoneNumber), message(message),
-    NonBlockingSerialProtocol(20 * 1000, true, false), tries(0) {
+    NonBlockingSerialProtocol(60 * 1000, true, false), tries(0) {
 }
 
 void FonaChild::drain() {
@@ -138,8 +138,8 @@ bool FonaChild::handle(String reply) {
         return true;
     }
     else if (reply.startsWith("+STATUS")) {
-        uint8_t comma = reply.indexOf(",");
-        uint8_t status = reply.substring(comma + 1, comma + 2).toInt(); 
+        int8_t comma = reply.indexOf(",");
+        int8_t status = reply.substring(comma + 1, comma + 2).toInt(); 
         registered = status == 1 || status == 5; // Home or Roaming
     }
     return false;
