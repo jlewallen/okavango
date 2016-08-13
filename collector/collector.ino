@@ -258,7 +258,7 @@ void handleTransmissionIfNecessary() {
     if (kind == TRANSMISSION_KIND_SENSORS) {
         handleSensorTransmission();
     }
-    else if (kind == TRANSMISSION_KIND_SENSORS) {
+    else if (kind == TRANSMISSION_KIND_LOCATION) {
         handleLocationTransmission();
     }
 }
