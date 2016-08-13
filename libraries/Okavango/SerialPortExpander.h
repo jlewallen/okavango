@@ -1,3 +1,6 @@
+#ifndef SERIAL_PORT_EXPANDER_H
+#define SERIAL_PORT_EXPANDER_H
+
 #include "Platforms.h"
 
 /**
@@ -22,3 +25,4 @@ public:
     void select(byte port);
 };
 
+#endif
