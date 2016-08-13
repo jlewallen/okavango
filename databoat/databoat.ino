@@ -15,7 +15,7 @@ public:
 };
 
 WifiAtlasSensorBoard::WifiAtlasSensorBoard(CorePlatform *corePlatform) :
-    AtlasSensorBoard(corePlatform, false) {
+    AtlasSensorBoard(corePlatform, ConductivityConfig::OnExpanderPort4) {
 }
 
 void WifiAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) {

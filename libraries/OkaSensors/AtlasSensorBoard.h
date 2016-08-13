@@ -23,6 +23,11 @@
 #define FK_ATLAS_SENSORS_FIELD_SG                            6
 #define FK_ATLAS_SENSORS_FIELD_WATER_TEMPERATURE             11
 
+typedef enum ConductivityConfig {
+    None,
+    OnSerial2,
+    OnExpanderPort4
+} ConductivityConfig;
 /**
  * A board containing primarily Atlas sensors and a few others, including water temperature.
  */
@@ -34,10 +39,10 @@ private:
     Adafruit_BME280 bme;
     atlas_sensors_packet_t packet;
     uint8_t packetValueIndex = 0;
-    bool hasConductivity;
+    ConductivityConfig conductivityConfig;
 
 public:
-    AtlasSensorBoard(CorePlatform *corePlatform, bool hasConductivity = true);
+    AtlasSensorBoard(CorePlatform *corePlatform, ConductivityConfig conductivityConfig);
 
 public:
     bool tick();

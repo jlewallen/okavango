@@ -1,8 +1,8 @@
 #include "AtlasSensorBoard.h"
 
-AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform, bool hasConductivity) :
+AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform, ConductivityConfig conductivityConfig) :
     corePlatform(corePlatform), portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1),
-    hasConductivity(hasConductivity) {
+    conductivityConfig(conductivityConfig) {
     memzero((uint8_t *)&packet, sizeof(atlas_sensors_packet_t));
 }
 
@@ -49,15 +49,17 @@ float AtlasSensorBoard::getWaterTemperature() {
 bool AtlasSensorBoard::tick() {
     board.tick();
 
+    uint8_t maxPort = conductivityConfig == OnExpanderPort4 ? 4 : 3;
+
     if (board.isDone()) {
         populatePacket();
         byte newPort = portExpander.getPort() + 1;
         portExpander.select(newPort);
-        if (newPort < 3) {
+        if (newPort < maxPort) {
             Serial.println("Next sensor");
             board.start();
         }
-        else if (newPort == 3 && hasConductivity) {
+        else if (newPort == 3 && conductivityConfig == OnSerial2) {
             Serial.println("Conductivity");
             board.setSerial(&conductivitySerial);
             board.start(OPEN_CONDUCTIVITY_SERIAL_ON_START);
