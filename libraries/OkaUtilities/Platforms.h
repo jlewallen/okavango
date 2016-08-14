@@ -156,4 +156,10 @@ void platformLowPowerSleep(uint32_t numberOfMs);
 void platformBlink(uint8_t pin);
 uint32_t platformFreeMemory();
 
+typedef enum ConductivityConfig {
+    None,
+    OnSerial2,
+    OnExpanderPort4
+} ConductivityConfig;
+
 #endif

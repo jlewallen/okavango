@@ -27,11 +27,6 @@
 #define FK_ATLAS_SENSORS_FIELD_AIR_TEMPERATURE               9
 #define FK_ATLAS_SENSORS_FIELD_WATER_TEMPERATURE             10
 
-typedef enum ConductivityConfig {
-    None,
-    OnSerial2,
-    OnExpanderPort4
-} ConductivityConfig;
 /**
  * A board containing primarily Atlas sensors and a few others, including water temperature.
  */

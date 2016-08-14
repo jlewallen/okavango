@@ -4,7 +4,7 @@
 #include "Platforms.h"
 #include "core.h"
 #include "SerialPortExpander.h"
-#include "AtlasSensorBoard.h"
+#include "NonBlockingSerial.h"
 #include "SimpleBuffer.h"
 
 String phScript[] = {
