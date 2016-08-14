@@ -62,7 +62,7 @@ bool WifiConnection::open() {
 
 bool WifiConnection::post(const char *server, const char *path, const char *contentType, const char *body) {
     if (client.connect(server, 80)) {
-        Serial.println("connected to server");
+        DEBUG_PRINTLN("connected to server");
 
         client.print("POST ");
         client.print(path);
@@ -73,6 +73,22 @@ bool WifiConnection::post(const char *server, const char *path, const char *cont
         client.println("Connection: close");
         client.println();
         client.println(body);
+
+        uint32_t started = millis();
+        while (millis() - started < 10 * 1000) {
+            delay(10);
+
+            while (client.available()) {
+                Serial.write(client.read());
+            }
+
+            if (!client.connected()) {
+                DEBUG_PRINTLN();
+                DEBUG_PRINTLN("disconnecting");
+                client.stop();
+                break;
+            }
+        }
     }
     return true;
 }

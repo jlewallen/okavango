@@ -1,11 +1,8 @@
-#include <SPI.h>
-#include <SD.h>
-
 #include "Platforms.h"
 #include "core.h"
 #include "SerialPortExpander.h"
 #include "NonBlockingSerial.h"
-#include "SimpleBuffer.h"
+#include "Repl.h"
 
 String phScript[] = {
     "c,0",
@@ -178,68 +175,20 @@ public:
     }
 };
 
-typedef enum ReplState {
-    WaitingOnDevice,
-    ShowPrompt,
-    Command
-} ReplState;
-
-class Repl {
+class CalibratorRepl : public Repl {
 private:
-    ReplState state = ReplState::Command;
-    SimpleBuffer buffer;
     ScriptRunner *scriptRunner;
 
 public:
-    Repl(ScriptRunner *scriptRunner) : scriptRunner(scriptRunner) {
+    CalibratorRepl(ScriptRunner *scriptRunner) : scriptRunner(scriptRunner) {
     }
 
-    bool tick() {
-        switch (state) {
-        case ReplState::WaitingOnDevice: {
-            if (!scriptRunner->tick()) {
-                state = ReplState::ShowPrompt;
-            }
-
-            break;
-        }
-        case ReplState::ShowPrompt: {
-            showPrompt();
-            state = ReplState::Command;
-            break;
-        }
-        case ReplState::Command: {
-            if (Serial.available()) {
-                int16_t c = (int16_t)Serial.read();
-                if (c < 0) {
-                    return false;
-                }
-
-                char newChar = (char)c;
-
-                Serial.print(newChar);
-
-                if (newChar == '\r') {
-                    Serial.println();
-
-                    state = ReplState::ShowPrompt;
-
-                    handle(buffer.c_str());
-                    buffer.clear();
-                }
-                else {
-                    buffer.append(newChar);
-                }
-            }
-            break;
-        }
-        }
-        return false;
+    const char *getPromptPrefix() {
+        return scriptRunner->currentCommand();
     }
 
-    void showPrompt() {
-        Serial.print(scriptRunner->currentCommand());
-        Serial.print("> ");
+    bool doWork() {
+        return scriptRunner->tick();
     }
     
     void handle(String command) {
@@ -267,20 +216,20 @@ public:
             Serial.println("Factory Reset All The Things!");
             scriptRunner->select(0);
             scriptRunner->sendEverywhere("factory", "*RE");
-            state = ReplState::WaitingOnDevice;
+            transition(ReplState::Working);
         }
         else if (command.startsWith("!")) {
             scriptRunner->select(0);
             scriptRunner->sendEverywhere(command.substring(1).c_str(), "*OK");
-            state = ReplState::WaitingOnDevice;
+            transition(ReplState::Working);
         }
         else if (command == "") {
             scriptRunner->send();
-            state = ReplState::WaitingOnDevice;
+            transition(ReplState::Working);
         }
         else {
             scriptRunner->send(command.c_str(), "*OK");
-            state = ReplState::WaitingOnDevice;
+            transition(ReplState::Working);
         }
     }
 };
@@ -312,9 +261,7 @@ void setup() {
 void loop() {
     SerialPortExpander portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1);
     ScriptRunner scriptRunner(&portExpander);
-    Repl repl(&scriptRunner);
-
-    repl.showPrompt();
+    CalibratorRepl repl(&scriptRunner);
 
     while (1) {
         repl.tick();
