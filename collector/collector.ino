@@ -7,6 +7,7 @@
 #include "config.h"
 #include "TransmissionStatus.h"
 #include "WeatherStation.h"
+#include "Configuration.h"
 
 #define FONA
 
@@ -20,6 +21,7 @@ typedef struct gps_location_t {
     uint32_t time;
 } gps_location_t;
 
+Configuration configuration(FK_SETTINGS_CONFIGURATION_FILENAME);
 gps_location_t location;
 
 void setup() {
@@ -40,6 +42,11 @@ void setup() {
 
     CorePlatform corePlatform;
     corePlatform.setup();
+
+    if (!configuration.read()) {
+        Serial.println("Error reading configuration");
+        platformCatastrophe(PIN_RED_LED);
+    }
 
     memzero((uint8_t *)&location, sizeof(gps_location_t));
 
@@ -139,7 +146,9 @@ void checkAirwaves() {
 
 String atlasPacketToMessage(atlas_sensors_packet_t *packet) {
     String message(packet->time);
-    message += ",JL,";
+    message += ",";
+    message += configuration.getName();
+    message += ",";
     message += String(packet->battery, 2);
     for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
         String field = "," + String(packet->values[i], 2);
@@ -150,7 +159,8 @@ String atlasPacketToMessage(atlas_sensors_packet_t *packet) {
 
 String weatherStationPacketToMessage(weather_station_packet_t *packet) {
     String message(packet->time);
-    message += ",JL";
+    message += ",";
+    message += configuration.getName();
     uint8_t fields[] = {
         FK_WEATHER_STATION_FIELD_TEMPERATURE,
         FK_WEATHER_STATION_FIELD_HUMIDITY,
@@ -174,25 +184,26 @@ void singleTransmission(String message) {
     Serial.println(message.length());
 
     if (message.length() > 0) {
-        #ifdef FONA
-        FonaChild fona(NUMBER_TO_SMS, message);
-        Serial1.begin(4800);
-        SerialType &fonaSerial = Serial1;
-        fona.setSerial(&fonaSerial);
-        while (!fona.isDone() && !fona.isFailed()) {
-            fona.tick();
-            delay(10);
+        if (configuration.hasFonaAttached()) {
+            FonaChild fona(NUMBER_TO_SMS, message);
+            Serial1.begin(4800);
+            SerialType &fonaSerial = Serial1;
+            fona.setSerial(&fonaSerial);
+            while (!fona.isDone() && !fona.isFailed()) {
+                fona.tick();
+                delay(10);
+            }
         }
-        #else
-        RockBlock rockBlock(message);
-        Serial1.begin(19200);
-        SerialType &rockBlockSerial = Serial1;
-        rockBlock.setSerial(&rockBlockSerial);
-        while (!rockBlock.isDone() && !rockBlock.isFailed()) {
-            rockBlock.tick();
-            delay(10);
+        if (configuration.hasRockBlockAttached()) {
+            RockBlock rockBlock(message);
+            Serial1.begin(19200);
+            SerialType &rockBlockSerial = Serial1;
+            rockBlock.setSerial(&rockBlockSerial);
+            while (!rockBlock.isDone() && !rockBlock.isFailed()) {
+                rockBlock.tick();
+                delay(10);
+            }
         }
-        #endif
     }
 }
 
@@ -239,7 +250,8 @@ void handleSensorTransmission() {
 
 String locationToMessage(gps_location_t *location) {
     String message(location->time);
-    message += ",JL";
+    message += ",";
+    message += configuration.getName();
     message += "," + String(location->latitude, 6);
     message += "," + String(location->longitude, 6);
     message += "," + String(location->altitude, 2);
