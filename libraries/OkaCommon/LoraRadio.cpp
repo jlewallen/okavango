@@ -38,6 +38,13 @@ bool LoraRadio::send(uint8_t *packet, uint8_t size) {
     return resend();
 }
 
+bool LoraRadio::reply(uint8_t *packet, uint8_t size) {
+    rf95.setHeaderTo(rf95.headerFrom());
+    bool success = send(packet, size);
+    rf95.setHeaderTo(RH_BROADCAST_ADDRESS);
+    return success;
+}
+
 bool LoraRadio::resend() {
     if (tries == MAX_RETRIES) {
         tries = 0;

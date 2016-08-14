@@ -123,7 +123,7 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize
         memzero((uint8_t *)&pong, sizeof(fk_network_pong_t));
         pong.fk.kind = FK_PACKET_KIND_PONG;
         pong.time = SystemClock.now();
-        radio->send((uint8_t *)&pong, sizeof(fk_network_pong_t));
+        radio->reply((uint8_t *)&pong, sizeof(fk_network_pong_t));
         radio->waitPacketSent();
         checkForPacket();
         break;
@@ -199,7 +199,7 @@ void NetworkProtocolState::sendAck() {
     fk_network_ack_t ack;
     memzero((uint8_t *)&ack, sizeof(fk_network_ack_t));
     ack.fk.kind = FK_PACKET_KIND_ACK;
-    radio->send((uint8_t *)&ack, sizeof(fk_network_ack_t));
+    radio->reply((uint8_t *)&ack, sizeof(fk_network_ack_t));
     radio->waitPacketSent();
     checkForPacket();
 }
@@ -234,7 +234,7 @@ void NetworkProtocolState::dequeueAndSend() {
                     packet->kind != FK_PACKET_KIND_PONG) {
 
                     size_t packetSize = fk_packet_get_size(packet);
-                    radio->send((uint8_t *)packet, packetSize);
+                    radio->reply((uint8_t *)packet, packetSize);
                     radio->waitPacketSent();
                     checkForPacket();
                     packet = NULL;

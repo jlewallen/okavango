@@ -21,7 +21,9 @@ public:
     bool setup();
     void tick();
     bool send(uint8_t *packet, uint8_t size);
+    bool reply(uint8_t *packet, uint8_t size);
     bool resend();
+
     uint8_t numberOfTries() {
         return tries;
     }
