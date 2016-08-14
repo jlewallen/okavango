@@ -12,7 +12,8 @@ public:
     void tryAndSendLocalQueue(Queue *queue);
 };
 
-LoraAtlasSensorBoard::LoraAtlasSensorBoard(CorePlatform *corePlatform) : AtlasSensorBoard(corePlatform) {
+LoraAtlasSensorBoard::LoraAtlasSensorBoard(CorePlatform *corePlatform) :
+    AtlasSensorBoard(corePlatform, ConductivityConfig::OnSerial2) {
 }
 
 void LoraAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) {
