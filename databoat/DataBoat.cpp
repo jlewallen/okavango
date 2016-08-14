@@ -23,11 +23,11 @@ public:
 };
 
 bool DataBoatConfiguration::read() {
-    if (!SD.exists(FK_DATA_BOAT_CONFIGURATION_FILENAME)) {
+    if (!SD.exists(FK_SETTINGS_CONFIGURATION_FILENAME)) {
         return false;
     }
 
-    File file = SD.open(FK_DATA_BOAT_CONFIGURATION_FILENAME, FILE_READ);
+    File file = SD.open(FK_SETTINGS_CONFIGURATION_FILENAME, FILE_READ);
     if (!file) {
         return false;
     }

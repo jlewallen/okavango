@@ -69,7 +69,9 @@ void platformRestart() {
 }
 
 float platformBatteryVoltage() {
-    return 0.0f;
+    analogRead(A1);
+    delay(2);
+    return analogRead(A1);
 }
 
 #endif

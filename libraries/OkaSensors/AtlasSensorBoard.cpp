@@ -176,6 +176,12 @@ void AtlasSensorBoard::logPacketLocally() {
         file.print(packet.time);
         file.print(",");
         file.print(packet.battery);
+        DEBUG_PRINT(" ");
+        DEBUG_PRINT(packet.fk.kind);
+        DEBUG_PRINT(" ");
+        DEBUG_PRINT(packet.time);
+        DEBUG_PRINT(" ");
+        DEBUG_PRINT(packet.battery);
         for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
             file.print(",");
             file.print(packet.values[i]);

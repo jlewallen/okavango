@@ -121,7 +121,7 @@ void checkAirwaves() {
             memzero((uint8_t *)&packet, sizeof(weather_station_packet_t));
             packet.fk.kind = FK_PACKET_KIND_WEATHER_STATION;
             packet.time = SystemClock.now();
-            packet.battery = 0.0f;
+            packet.battery = platformBatteryVoltage();
             for (uint8_t i = 0; i < FK_WEATHER_STATION_PACKET_NUMBER_VALUES; ++i) {
                 packet.values[i] = values[i];
             }
@@ -175,6 +175,8 @@ String weatherStationPacketToMessage(weather_station_packet_t *packet) {
         String field = "," + String(packet->values[fields[i]], 2);
         message += field;
     }
+    message += ",";
+    message += String(packet->battery, 2);
     return message;
 }
 
