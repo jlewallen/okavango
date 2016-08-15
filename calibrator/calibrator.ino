@@ -188,7 +188,7 @@ public:
         return scriptRunner->currentCommand();
     }
 
-    bool doWork() {
+    virtual bool doWork() override {
         return scriptRunner->tick();
     }
     
