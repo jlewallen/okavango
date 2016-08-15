@@ -162,6 +162,8 @@ public:
                 nextPort++;
                 return false;
             }
+            state = ScriptRunnerState::DeviceIdle;
+            return true;
         }
         else if (reply.indexOf("*W") == 0) {
             Serial.println("Woke up, resend...");
@@ -228,12 +230,12 @@ public:
             scriptRunner->sendEverywhere(command.substring(1).c_str(), "*OK");
             transition(ReplState::Working);
         }
-        else if (command == "") {
-            scriptRunner->send();
-            transition(ReplState::Working);
-        }
         else if (command.startsWith("$")) {
             scriptRunner->send(command.substring(1).c_str(), "*OK");
+            transition(ReplState::Working);
+        }
+        else if (command == "") {
+            scriptRunner->send();
             transition(ReplState::Working);
         }
     }
