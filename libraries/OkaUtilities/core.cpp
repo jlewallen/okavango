@@ -10,7 +10,9 @@ void CorePlatform::setup() {
 
     pinMode(PIN_GREEN_LED, OUTPUT);
     digitalWrite(PIN_GREEN_LED, LOW);
-    
+   
+    // Important, the SDI CS' should be ready to go before we start using any
+    // of them.
     pinMode(PIN_SD_CS, OUTPUT);
     digitalWrite(PIN_SD_CS, HIGH);
 
