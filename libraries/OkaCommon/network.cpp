@@ -163,7 +163,7 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize
     case FK_PACKET_KIND_FORCE_TRANSMISSION: {
         if (networkCallbacks != NULL) {
             DEBUG_PRINTLN(F("FORCE_TX"));
-            networkCallbacks->forceTransmission();
+            networkCallbacks->forceTransmission(this);
         }
         break;
     }

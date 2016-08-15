@@ -21,6 +21,7 @@ enum NetworkState {
 class NetworkProtocolState;
 
 class NetworkCallbacks {
+public:
     virtual bool forceTransmission(NetworkProtocolState *networknetworkProtocol) = 0;
 };
 
