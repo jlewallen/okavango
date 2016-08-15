@@ -9,8 +9,8 @@ class DataBoatConfiguration {
 private:
     String ssid = "Cottonwood";
     String psk = "asdfasdf";
-    String server = "requestb.in";
-    String path = "/14njc7b1";
+    String server = "intotheokavango.org";
+    String path = "/ingest/databoat";
 
 public:
     const char *getSsid() { return ssid.c_str(); }
@@ -76,10 +76,14 @@ bool DataBoat::tick() {
 
 String DataBoat::readingToJson(data_boat_packet_t *reading) {
     StaticJsonBuffer<1024> jsonBuffer;
-    JsonObject &root = jsonBuffer.createObject();
-    root["t_local"] = reading->time;
+    jsonBuffer.c
+    JsonObject &root = jsonBuffer.createArray();
 
-    JsonObject &data = root.createNestedObject("data");
+    JsonObject &data = jsonBuffer.createObject();
+    root.add(data);
+    data["t_local"] = reading->time;
+
+    JsonObject &data = data.createNestedObject("data");
     data["conductivity"] = reading->conductivity;
     data["salinity"] = reading->salinity;
     data["ph"] = reading->ph;
