@@ -46,10 +46,24 @@ bool FonaChild::tick() {
             }
             break;
         }
+        case FonaNumber: {
+            String command = "~NUMBER " + phoneNumber;
+            sendCommand(command.c_str());
+            break;
+        }
+        case FonaMessage: {
+            if (message.length() > 0) {
+                String command = "~MESSAGE " + message;
+                sendCommand(command.c_str());
+            }
+            else {
+                sendCommand("~STATUS");
+            }
+            break;
+        }
         case FonaSendSms: {
             if (message.length() > 0) {
-                String command = "~SMS " + phoneNumber + " " + message;
-                sendCommand(command.c_str());
+                sendCommand("~SEND");
             }
             else {
                 sendCommand("~STATUS");
@@ -87,11 +101,19 @@ bool FonaChild::handle(String reply) {
             }
             case FonaNetworkStatus: {
                 if (registered) {
-                    transition(FonaSendSms);
+                    transition(FonaNumber);
                 }
                 else {
                     transition(FonaWaitForNetwork);
                 }
+                break;
+            }
+            case FonaNumber: {
+                transition(FonaMessage);
+                break;
+            }
+            case FonaMessage: {
+                transition(FonaSendSms);
                 break;
             }
             case FonaSendSms: {

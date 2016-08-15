@@ -22,11 +22,14 @@ Serial_ &commandSerial = Serial;
 HardwareSerial &commandSerial = Serial1;
 #endif
 
+String number;
+String message;
+
 void setup() {
     pinMode(PIN_KEY, OUTPUT);
     digitalWrite(PIN_KEY, HIGH);
 
-    Serial1.begin(4800);
+    Serial1.begin(9600);
     #ifdef FONA_DRIVER_USB_SERIAL
     Serial.begin(115200);
     #endif
@@ -128,26 +131,46 @@ bool handle(String command) {
         commandSerial.print(F("OK\r"));
     }
     else if (command.startsWith("~SMS")) {
+        delay(100);
+
         commandSerial.print(F("+TRY\r"));
 
         String end = command.substring(5);
 
         int32_t i = end.indexOf(' ');
-        String number = end.substring(0, i);
-        String message = end.substring(i + 1, end.length() - 1);
+        number = end.substring(0, i);
+        message = end.substring(i + 1, end.length() - 1);
 
-        commandSerial.print(F("+NUMBER="));
-        commandSerial.print(number);
-        commandSerial.print(F("\r"));
+        // commandSerial.print(F("+NUMBER="));
+        // commandSerial.print(number);
+        // commandSerial.print(F("\r"));
+        // delay(500);
+        // commandSerial.print(F("+MESSAGE=\""));
+        // commandSerial.print(message);
+        // commandSerial.print(F("\"\r"));
+        // delay(500);
 
-        delay(250);
+        bool success = fona.sendSMS((char *)number.c_str(), (char *)message.c_str());
+        if (success) {
+            commandSerial.print(F("OK\r"));
+        }
+        else {
+            commandSerial.print(F("ER\r"));
+        }
+    }
+    else if (command.startsWith("~NUMBER")) {
+        int32_t i = command.indexOf(' ');
+        number = command.substring(i + 1);
 
-        commandSerial.print(F("+MESSAGE=\""));
-        commandSerial.print(message);
-        commandSerial.print(F("\"\r"));
+        commandSerial.print(F("OK\r"));
+    }
+    else if (command.startsWith("~MESSAGE")) {
+        int32_t i = command.indexOf(' ');
+        message = command.substring(i + 1);
 
-        delay(250);
-
+        commandSerial.print(F("OK\r"));
+    }
+    else if (command.startsWith("~SEND")) {
         bool success = fona.sendSMS((char *)number.c_str(), (char *)message.c_str());
         if (success) {
             commandSerial.print(F("OK\r"));
@@ -180,21 +203,23 @@ void loop() {
     delay(10);
 
     if (commandSerial.available()) {
-        int16_t c = (int16_t)commandSerial.read();
-        if (c < 0) {
-            return;
-        }
+        while (commandSerial.available()) {
+            int16_t c = (int16_t)commandSerial.read();
+            if (c < 0) {
+                break;
+            }
 
-        if (c == '\r') {
-            handle(buffer.c_str());
+            if (c == '\r') {
+                handle(buffer.c_str());
 
-            #ifdef FONA_DRIVER_USB_SERIAL
-            Serial.println();
-            #endif
-            buffer.clear();
-        }
-        else {
-            buffer.append((char)c);
+                #ifdef FONA_DRIVER_USB_SERIAL
+                Serial.println();
+                #endif
+                buffer.clear();
+            }
+            else {
+                buffer.append((char)c);
+            }
         }
     }
 }

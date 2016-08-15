@@ -188,7 +188,7 @@ void singleTransmission(String message) {
     if (message.length() > 0) {
         if (configuration.hasFonaAttached()) {
             FonaChild fona(NUMBER_TO_SMS, message);
-            Serial1.begin(4800);
+            Serial1.begin(9600);
             SerialType &fonaSerial = Serial1;
             fona.setSerial(&fonaSerial);
             while (!fona.isDone() && !fona.isFailed()) {

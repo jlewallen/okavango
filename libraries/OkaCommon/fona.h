@@ -9,6 +9,8 @@ enum FonaChildState {
     FonaPower,
     FonaNetworkStatus,
     FonaWaitForNetwork,
+    FonaNumber,
+    FonaMessage,
     FonaSendSms,
     FonaPowerOffBeforeFailed,
     FonaPowerOffBeforeDone,
