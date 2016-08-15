@@ -29,7 +29,8 @@ String orpScript[] = {
     "c,0",
     "c,0",
     "L,1",
-    "cal,",
+    "cal,clear",
+    "cal,225",
     "L,0",
     "STATUS"
 };
