@@ -23,6 +23,7 @@ private:
     FonaChildState state = FonaStart;
     uint32_t lastStateChange;
     uint8_t tries;
+    uint8_t smsTries;
     bool registered;
     String phoneNumber;
     String message;
