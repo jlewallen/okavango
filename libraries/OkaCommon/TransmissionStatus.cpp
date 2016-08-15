@@ -102,7 +102,9 @@ int8_t TransmissionStatus::shouldWe() {
     for (int8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
         int32_t change = now > status.kinds[i].millis ? now - status.kinds[i].millis : 0;
 
-        status.kinds[i].elapsed += change;
+        if (change > 0) {
+            status.kinds[i].elapsed += change;
+        }
         status.kinds[i].millis = now;
 
         if (status.kinds[i].elapsed > TransmissionIntervals[i]) {
