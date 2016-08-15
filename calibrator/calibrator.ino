@@ -46,13 +46,13 @@ String ecScript[] = {
     "STATUS"
 };
 
-ConductivityConfig conductivityConfig = ConductivityConfig::OnExpanderPort4;
+ConductivityConfig conductivityConfig = ConductivityConfig::OnSerial2;
 
 SerialType *getSerialForPort(uint8_t port) {
     if (port < 3 || conductivityConfig != ConductivityConfig::OnSerial2) {
         return &Serial1;
     }
-    else if (port == 4) {
+    else if (port == 3) {
         return &Serial2;
     }
     return &Serial1;
@@ -162,6 +162,8 @@ public:
                 nextPort++;
                 return false;
             }
+            state = ScriptRunnerState::DeviceIdle;
+            return true;
         }
         else if (reply.indexOf("*W") == 0) {
             Serial.println("Woke up, resend...");
@@ -188,7 +190,7 @@ public:
         return scriptRunner->currentCommand();
     }
 
-    bool doWork() {
+    virtual bool doWork() override {
         return scriptRunner->tick();
     }
     
@@ -200,18 +202,22 @@ public:
         else if (command.startsWith("ph")) {
             Serial.println("Ph Mode");
             scriptRunner->setScript(phScript);
+            scriptRunner->select(1);
         }
         else if (command.startsWith("do")) {
             Serial.println("Do Mode");
             scriptRunner->setScript(doScript);
+            scriptRunner->select(2);
         }
         else if (command.startsWith("orp")) {
             Serial.println("Orp Mode");
             scriptRunner->setScript(orpScript);
+            scriptRunner->select(0);
         }
         else if (command.startsWith("ec")) {
             Serial.println("Ec Mode");
             scriptRunner->setScript(ecScript);
+            scriptRunner->select(3);
         }
         else if (command.startsWith("factory")) {
             Serial.println("Factory Reset All The Things!");
@@ -224,12 +230,12 @@ public:
             scriptRunner->sendEverywhere(command.substring(1).c_str(), "*OK");
             transition(ReplState::Working);
         }
-        else if (command == "") {
-            scriptRunner->send();
+        else if (command.startsWith("$")) {
+            scriptRunner->send(command.substring(1).c_str(), "*OK");
             transition(ReplState::Working);
         }
-        else {
-            scriptRunner->send(command.c_str(), "*OK");
+        else if (command == "") {
+            scriptRunner->send();
             transition(ReplState::Working);
         }
     }

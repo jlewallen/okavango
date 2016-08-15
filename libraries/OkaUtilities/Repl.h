@@ -26,7 +26,7 @@ public:
         state = newState;
     }
 
-    bool doWork() {
+    virtual bool doWork() {
         return false;
     }
 
