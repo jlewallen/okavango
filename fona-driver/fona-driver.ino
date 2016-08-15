@@ -25,6 +25,28 @@ HardwareSerial &commandSerial = Serial1;
 String number;
 String message;
 
+#define FONA_KEY_ON_DURATION        2100
+#define FONA_KEY_OFF_DURATION       2100
+
+extern void fona_pulse_key(uint16_t duration);
+extern void fona_power_on();
+extern void fona_power_off();
+
+void fona_pulse_key(uint16_t duration) {
+    digitalWrite(PIN_KEY, LOW);
+    delay(duration);
+    digitalWrite(PIN_KEY, HIGH);
+    delay(100);
+}
+
+void fona_power_on() {
+    fona_pulse_key(FONA_KEY_ON_DURATION);
+}
+
+void fona_power_off() {
+    fona_pulse_key(FONA_KEY_OFF_DURATION);
+}
+
 void setup() {
     pinMode(PIN_KEY, OUTPUT);
     digitalWrite(PIN_KEY, HIGH);
@@ -50,24 +72,6 @@ void fona_echo_type() {
         default:         commandSerial.print(F("?")); break;
     }
     commandSerial.print(F("\r"));
-}
-
-#define FONA_KEY_ON_DURATION        2100
-#define FONA_KEY_OFF_DURATION       2100
-
-void fona_power_on() {
-    fona_pulse_key(FONA_KEY_ON_DURATION);
-}
-
-void fona_power_off() {
-    fona_pulse_key(FONA_KEY_OFF_DURATION);
-}
-
-void fona_pulse_key(uint16_t duration) {
-    digitalWrite(PIN_KEY, LOW);
-    delay(duration);
-    digitalWrite(PIN_KEY, HIGH);
-    delay(100);
 }
 
 bool handle(String command) {
@@ -224,4 +228,4 @@ void loop() {
     }
 }
 
-// vim: set ft=cpp:
+// vim: set ft=cpp:

@@ -64,8 +64,12 @@ float light_lvl = 455;
 
 volatile unsigned long raintime, rainlast, raininterval, rain;
 
-float get_wind_speed();
-uint32_t get_wind_direction();
+extern float get_wind_speed();
+extern uint32_t get_wind_direction();
+extern float get_light_level();
+extern void print_weather();
+extern void calculate_weather();
+extern void delay_and_check_gps(uint32_t ms);
 
 // Activated by the magnet and reed switch in the rain gauge.
 void irq_handler_rain() {
@@ -170,7 +174,7 @@ void loop() {
 }
 
 // While we delay for a given amount of time, gather GPS data
-static void delay_and_check_gps(uint32_t ms) {
+void delay_and_check_gps(uint32_t ms) {
     uint32_t start = millis();
     do {
         while (gpsSerial.available()) {
