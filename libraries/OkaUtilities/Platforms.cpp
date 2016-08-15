@@ -3,8 +3,8 @@
 #include "Platforms.h"
 
 uint32_t TransmissionIntervals[] = {
-    1000 * 60 * 60 * 2, // * 24 * 7,
-    1000 * 60 * 10
+    1000 * 60 * 60 * 12, // * 24 * 7,
+    1000 * 60 * 60 * 12
 };
 
 #ifdef ARDUINO_AVR_FEATHER32U4
