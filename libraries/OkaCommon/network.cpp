@@ -3,9 +3,10 @@
 
 #define RETRY_DELAY         2500
 
-NetworkProtocolState::NetworkProtocolState(NetworkState state, LoraRadio *radio, Queue *queue) :
+NetworkProtocolState::NetworkProtocolState(NetworkState state, LoraRadio *radio, Queue *queue, NetworkCallbacks *networkCallbacks) :
     state(state), radio(radio), queue(queue), stateDelay(0), lastTick(0), lastTickNonDelayed(0),
-    pingAgainAfterDequeue(true), packetsReceived(0), lastPacketTime(0) {
+    pingAgainAfterDequeue(true), packetsReceived(0), lastPacketTime(0),
+    networkCallbacks(networkCallbacks) {
 }
 
 void NetworkProtocolState::tick() {
@@ -56,11 +57,6 @@ void NetworkProtocolState::tick() {
         }
         case NetworkState::ListenForAck: {
             if (!inDelay) {
-                /*
-                if (wasDelayed) {
-                    DEBUG_PRINT(F("DELAYED "));
-                }
-                */
                 if (radio->resend()) {
                     DEBUG_PRINTLN(F("Nack, rx"));
                     transition(NetworkState::ListenForAck, RETRY_DELAY);
@@ -78,11 +74,6 @@ void NetworkProtocolState::tick() {
         case NetworkState::ListenForPong: {
             if (!inDelay) {
                 if (radio->resend()) {
-                    /*
-                    if (wasDelayed) {
-                        DEBUG_PRINT(F("DELAYED "));
-                    }
-                    */
                     DEBUG_PRINTLN(F("Ping retry"));
                     transition(NetworkState::ListenForPong, RETRY_DELAY);
                 }
@@ -167,6 +158,13 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize
     case FK_PACKET_KIND_ACK: {
         DEBUG_PRINTLN(F("Ack"));
         dequeueAndSend();
+        break;
+    }
+    case FK_PACKET_KIND_FORCE_TRANSMISSION: {
+        if (networkCallbacks != NULL) {
+            DEBUG_PRINTLN(F("FORCE_TX"));
+            networkCallbacks->forceTransmission();
+        }
         break;
     }
     default: {

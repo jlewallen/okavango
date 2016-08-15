@@ -82,6 +82,12 @@ public:
         rf95.printRegisters();
     }
 
+    uint8_t headerFrom() { return rf95.headerFrom(); }
+    uint8_t headerTo() { return rf95.headerTo(); }
+    uint8_t headerFlags() { return rf95.headerFlags(); }
+    uint8_t headerId() { return rf95.headerId(); }
+    uint8_t lastRssi() { return rf95.lastRssi(); }
+
     RHGenericDriver::RHMode mode() {
         return rf95.mode();
     }

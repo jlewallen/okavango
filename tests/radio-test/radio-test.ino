@@ -11,7 +11,9 @@ void setup() {
     Serial.begin(115200);
     delay(100);
 
-    radio.setup();
+    if (radio.setup()) {
+        platformCatastrophe(PIN_RED_LED);
+    }
 
     Serial.println("LoRa Radio Demo");
 }

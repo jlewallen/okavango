@@ -23,6 +23,14 @@ typedef struct gps_location_t {
 
 Configuration configuration(FK_SETTINGS_CONFIGURATION_FILENAME);
 gps_location_t location;
+bool transmissionForced = false;
+
+class CollectorNetworkCallbacks : public NetworkCallbacks {
+    virtual bool forceTransmission(NetworkProtocolState *networkProtocol) {
+        transmissionForced = true;
+        return true;
+    }
+};
 
 void setup() {
     platformLowPowerSleep(LOW_POWER_SLEEP_BEGIN);
@@ -56,7 +64,7 @@ void setup() {
 void checkAirwaves() {
     Queue queue;
     LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST);
-    NetworkProtocolState networkProtocol(NetworkState::EnqueueFromNetwork, &radio, &queue);
+    NetworkProtocolState networkProtocol(NetworkState::EnqueueFromNetwork, &radio, &queue, new CollectorNetworkCallbacks());
     WeatherStation weatherStation;
 
     Serial.println("Checking Airwaves...");
@@ -87,6 +95,10 @@ void checkAirwaves() {
         }
 
         if (millis() - started > 2 * 60 * 1000 && networkProtocol.isQuiet()) {
+            break;
+        }
+
+        if (transmissionForced) {
             break;
         }
 
@@ -268,12 +280,19 @@ void handleLocationTransmission() {
 
 void handleTransmissionIfNecessary() {
     TransmissionStatus status;
+
     int8_t kind = status.shouldWe();
     if (kind == TRANSMISSION_KIND_SENSORS) {
         handleSensorTransmission();
     }
     else if (kind == TRANSMISSION_KIND_LOCATION) {
         handleLocationTransmission();
+    }
+
+    if (transmissionForced) {
+        handleSensorTransmission();
+        handleLocationTransmission();
+        transmissionForced = false;
     }
 }
 
