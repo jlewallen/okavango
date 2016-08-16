@@ -164,6 +164,7 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize
         if (networkCallbacks != NULL) {
             DEBUG_PRINTLN(F("FORCE_TX"));
             networkCallbacks->forceTransmission(this);
+            sendAck();
         }
         break;
     }

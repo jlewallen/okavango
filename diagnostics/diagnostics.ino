@@ -170,9 +170,12 @@ public:
     }
     
     void handle(String command) {
-        if (command == "ping") {
-        }
-        else if (command == "tx") {
+        if (command == "tx") {
+            fk_network_force_transmission_t  force_transmission;
+            memzero((uint8_t *)&force_transmission, sizeof(fk_network_force_transmission_t));
+            force_transmission.fk.kind = FK_PACKET_KIND_FORCE_TRANSMISSION;
+            radio->send((uint8_t *)&force_transmission, sizeof(fk_network_force_transmission_t));
+            radio->waitPacketSent();
         }
     }
 };
