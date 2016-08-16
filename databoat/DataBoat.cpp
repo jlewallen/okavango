@@ -76,14 +76,14 @@ bool DataBoat::tick() {
 
 String DataBoat::readingToJson(data_boat_packet_t *reading) {
     StaticJsonBuffer<1024> jsonBuffer;
-    jsonBuffer.c
-    JsonObject &root = jsonBuffer.createArray();
 
-    JsonObject &data = jsonBuffer.createObject();
-    root.add(data);
-    data["t_local"] = reading->time;
+    JsonArray &root = jsonBuffer.createArray();
 
-    JsonObject &data = data.createNestedObject("data");
+    JsonObject &rootData = jsonBuffer.createObject();
+    root.add(rootData);
+    rootData["t_local"] = reading->time;
+
+    JsonObject &data = rootData.createNestedObject("data");
     data["conductivity"] = reading->conductivity;
     data["salinity"] = reading->salinity;
     data["ph"] = reading->ph;
