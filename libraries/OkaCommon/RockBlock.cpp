@@ -30,6 +30,7 @@ bool RockBlock::tick() {
         Serial.print("RB: getSignalQuality failed");
         Serial.println(error);
         transition(RockBlockFailed);
+        rockBlock.sleep();
         return false;
     }
 
@@ -45,11 +46,11 @@ bool RockBlock::tick() {
         Serial.print("SB: send failed: ");
         Serial.println(error);
         transition(RockBlockFailed);
+        rockBlock.sleep();
         return false;
     }
 
     rockBlock.sleep();
-
     Serial.println("Done");
     transition(RockBlockDone);
     return true;

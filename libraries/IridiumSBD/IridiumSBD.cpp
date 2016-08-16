@@ -110,13 +110,9 @@ int IridiumSBD::sleep()
    if (this->sleepPin == -1)
       return ISBD_NO_SLEEP_PIN;
 
-   this->reentrant = true;
-   int ret = internalSleep();
-   this->reentrant = false;
+   power(false);
 
-   if (ret == ISBD_SUCCESS)
-      power(false); // power off
-   return ret;
+   return ISBD_SUCCESS;
 }
 
 // Return sleep state
@@ -615,8 +611,6 @@ void IridiumSBD::power(bool on)
 
    if (this->sleepPin == -1)
       return;
-
-   pinMode(this->sleepPin, OUTPUT);
 
    if (on)
    {
