@@ -10,6 +10,8 @@
 #include "Configuration.h"
 #include <Adafruit_SleepyDog.h>
 
+#define THIRTY_MINUTES      (60 * 1000 * 30)
+
 bool radioSetup = false;
 
 typedef struct gps_location_t {
@@ -53,6 +55,11 @@ void setup() {
     if (!configuration.read()) {
         Serial.println("Error reading configuration");
         platformCatastrophe(PIN_RED_LED);
+    }
+
+    if (configuration.hasRockBlockAttached()) {
+        pinMode(PIN_ROCK_BLOCK, OUTPUT);
+        digitalWrite(PIN_ROCK_BLOCK, LOW);
     }
 
     memzero((uint8_t *)&location, sizeof(gps_location_t));
@@ -206,8 +213,6 @@ String weatherStationPacketToMessage(weather_station_packet_t *packet) {
     message += String(packet->battery, 2);
     return message;
 }
-
-#define THIRTY_MINUTES      (60 * 1000 * 30)
 
 void singleTransmission(String message) {
     Serial.print("Message: ");
