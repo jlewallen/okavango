@@ -8,8 +8,7 @@
 #include "TransmissionStatus.h"
 #include "WeatherStation.h"
 #include "Configuration.h"
-
-#define FONA
+#include "Adafruit_SleepyDog.h"
 
 bool radioSetup = false;
 
@@ -69,6 +68,11 @@ void checkAirwaves() {
 
     Serial.println("Checking Airwaves...");
     
+    int32_t watchdogMs = Watchdog.enable();
+
+    Serial.print("Watchdog enabled: ");
+    Serial.println(watchdogMs);
+
     weatherStation.setup();
 
     // Can't call this more than 3 times or so because we use up all the IRQs and
@@ -83,6 +87,8 @@ void checkAirwaves() {
     uint32_t started = millis();
     uint32_t last = 0;
     while (true) {
+        Watchdog.reset();
+
         networkProtocol.tick();
 
         weatherStation.ignore();
@@ -121,13 +127,18 @@ void checkAirwaves() {
             weatherStation.logReadingLocally();
 
             float *values = weatherStation.getValues();
+            Serial.print("%");
             SystemClock.set((uint32_t)values[FK_WEATHER_STATION_FIELD_UNIXTIME]);
+
+            Serial.print("%");
 
             location.time = values[FK_WEATHER_STATION_FIELD_UNIXTIME];
             location.latitude = values[FK_WEATHER_STATION_FIELD_LATITUDE];
             location.longitude = values[FK_WEATHER_STATION_FIELD_LONGITUDE];
             location.altitude = values[FK_WEATHER_STATION_FIELD_ALTITUDE];
             location.satellites = values[FK_WEATHER_STATION_FIELD_SATELLITES];
+
+            Serial.print("%");
 
             weather_station_packet_t packet;
             memzero((uint8_t *)&packet, sizeof(weather_station_packet_t));
@@ -137,6 +148,8 @@ void checkAirwaves() {
             for (uint8_t i = 0; i < FK_WEATHER_STATION_PACKET_NUMBER_VALUES; ++i) {
                 packet.values[i] = values[i];
             }
+
+            Serial.print("%");
 
             queue.enqueue((uint8_t *)&packet);
 
@@ -154,6 +167,8 @@ void checkAirwaves() {
     }
 
     weatherStation.off();
+
+    Watchdog.disable();
 }
 
 String atlasPacketToMessage(atlas_sensors_packet_t *packet) {
@@ -197,6 +212,7 @@ void singleTransmission(String message) {
     Serial.println(message);
     Serial.println(message.length());
 
+    int32_t watchdogMs = Watchdog.enable();
     if (message.length() > 0) {
         if (configuration.hasFonaAttached()) {
             FonaChild fona(NUMBER_TO_SMS, message);
@@ -204,6 +220,7 @@ void singleTransmission(String message) {
             SerialType &fonaSerial = Serial1;
             fona.setSerial(&fonaSerial);
             while (!fona.isDone() && !fona.isFailed()) {
+                Watchdog.reset();
                 fona.tick();
                 delay(10);
             }
@@ -214,11 +231,13 @@ void singleTransmission(String message) {
             SerialType &rockBlockSerial = Serial1;
             rockBlock.setSerial(&rockBlockSerial);
             while (!rockBlock.isDone() && !rockBlock.isFailed()) {
+                Watchdog.reset();
                 rockBlock.tick();
                 delay(10);
             }
         }
     }
+    Watchdog.disable();
 }
 
 void handleSensorTransmission() {
