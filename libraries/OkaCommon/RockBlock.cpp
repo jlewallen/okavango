@@ -20,7 +20,7 @@ public:
 bool RockBlock::tick() {
     IridiumSBD rockBlock(Serial1, PIN_ROCK_BLOCK, new WatchdogCallbacks());
 
-    rockBlock.sleep();
+    // rockBlock.sleep();
     rockBlock.attachConsole(Serial);
     rockBlock.setPowerProfile(1);
     rockBlock.begin();
@@ -47,7 +47,7 @@ bool RockBlock::tick() {
         return false;
     }
 
-    rockBlock.sleep();
+    // rockBlock.sleep();
 
     Serial.println("Done");
     transition(RockBlockDone);
