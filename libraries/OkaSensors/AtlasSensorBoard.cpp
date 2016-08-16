@@ -1,5 +1,6 @@
 #include "DHT.h"
 #include "AtlasSensorBoard.h"
+#include <Adafruit_SleepyDog.h>
 
 AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform, ConductivityConfig conductivityConfig) :
     corePlatform(corePlatform), portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1),
@@ -48,6 +49,8 @@ float AtlasSensorBoard::getWaterTemperature() {
 }
 
 bool AtlasSensorBoard::tick() {
+    Watchdog.reset();
+
     board.tick();
 
     uint8_t maxPort = conductivityConfig == OnExpanderPort4 ? 4 : 3;
@@ -85,6 +88,8 @@ bool AtlasSensorBoard::tick() {
             }
             #endif
 
+            Watchdog.reset();
+
             #ifdef HAVE_DHT22
             Serial.println("DHT22");
             DHT dht(PIN_DHT, DHT22);
@@ -102,12 +107,16 @@ bool AtlasSensorBoard::tick() {
             DEBUG_PRINTLN(temperature);
             #endif
 
+            Watchdog.reset();
+
             #ifdef PIN_DS18B20
             Serial.println("DS18B20");
             packet.values[packetValueIndex++] = getWaterTemperature();
             #endif
 
             Serial.println("Metrics");
+
+            Watchdog.reset();
 
             packet.time = SystemClock.now();
             packet.battery = platformBatteryVoltage();
@@ -121,10 +130,9 @@ bool AtlasSensorBoard::tick() {
             queue.enqueue((uint8_t *)&packet);
             queue.startAtBeginning();
 
-            doneReadingSensors(&queue, &packet);
+            Watchdog.disable();
 
-            DEBUG_PRINT("Done: ");
-            DEBUG_PRINTLN(packetValueIndex);
+            doneReadingSensors(&queue, &packet);
 
             platformLowPowerSleep(LOW_POWER_SLEEP_END);
 
@@ -146,6 +154,10 @@ void AtlasSensorBoard::setup() {
     board.start();
 
     memset((void *)&packet, 0, sizeof(atlas_sensors_packet_t));
+
+    int32_t watchdogMs = Watchdog.enable();
+    Serial.print("Watchdog enabled: ");
+    Serial.println(watchdogMs);
 }
 
 void AtlasSensorBoard::populatePacket() {

@@ -87,6 +87,9 @@ void WeatherStation::logReadingLocally() {
         file.println();
         file.close();
     }
+    else {
+        Serial.println("Unable to open WeatherStation log");
+    }
 }
 
 

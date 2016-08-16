@@ -1,5 +1,6 @@
 #include <SPI.h>
 #include <SD.h>
+#include <Adafruit_SleepyDog.h>
 
 #include "AtlasSensorBoard.h"
 
@@ -24,29 +25,37 @@ void LoraAtlasSensorBoard::tryAndSendLocalQueue(Queue *queue) {
     LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST);
     NetworkProtocolState networkProtocol(NetworkState::PingForListener, &radio, queue, NULL);
 
+    int32_t watchdogMs = Watchdog.enable();
+    Serial.print("Watchdog enabled: ");
+    Serial.println(watchdogMs);
+
     if (radio.setup()) {
         Serial.println("Enabling radio");
 
-        radio.setup();
+        if (radio.setup()) {
+            Serial.print("Queue: ");
+            Serial.println(queue->size());
 
-        Serial.print("Queue: ");
-        Serial.println(queue->size());
+            while (true) {
+                Watchdog.reset();
 
-        while (1) {
-            networkProtocol.tick();
+                networkProtocol.tick();
 
-            if (networkProtocol.isQueueEmpty() || networkProtocol.isNobodyListening()) {
-                break;
+                if (networkProtocol.isQueueEmpty() || networkProtocol.isNobodyListening()) {
+                    break;
+                }
+
+                delay(10);
             }
 
-            delay(10);
+            radio.sleep();
         }
-
-        radio.sleep();
     }
     else {
         Serial.println("No radio available");
     }
+
+    Watchdog.disable();
 }
 
 CorePlatform corePlatform;
