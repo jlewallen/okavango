@@ -115,7 +115,7 @@ typedef Uart SerialType;
 extern SerialType &portExpanderSerial;
 extern SerialType &conductivitySerial;
 
-void platformSerial2Begin(int32_t baud);
+extern void platformSerial2Begin(int32_t baud);
 
 #define F(text)                                              text
 

@@ -18,6 +18,13 @@ enum NetworkState {
     Quiet
 };
 
+class NetworkProtocolState;
+
+class NetworkCallbacks {
+public:
+    virtual bool forceTransmission(NetworkProtocolState *networknetworkProtocol) = 0;
+};
+
 class NetworkProtocolState {
 private:
     LoraRadio *radio;
@@ -29,9 +36,10 @@ private:
     uint32_t lastTick;
     uint32_t lastTickNonDelayed;
     bool pingAgainAfterDequeue;
+    NetworkCallbacks *networkCallbacks;
     
 public:
-    NetworkProtocolState(NetworkState state, LoraRadio *radio, Queue *queue);
+    NetworkProtocolState(NetworkState state, LoraRadio *radio, Queue *queue, NetworkCallbacks *networkCallbacks);
 
 public:
     void tick();
