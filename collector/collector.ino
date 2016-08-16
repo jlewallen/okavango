@@ -207,11 +207,14 @@ String weatherStationPacketToMessage(weather_station_packet_t *packet) {
     return message;
 }
 
+#define THIRTY_MINUTES      (60 * 1000 * 30)
+
 void singleTransmission(String message) {
     Serial.print("Message: ");
     Serial.println(message);
     Serial.println(message.length());
 
+    uint32_t started = millis();
     int32_t watchdogMs = Watchdog.enable();
     if (message.length() > 0) {
         if (configuration.hasFonaAttached()) {
@@ -220,7 +223,9 @@ void singleTransmission(String message) {
             SerialType &fonaSerial = Serial1;
             fona.setSerial(&fonaSerial);
             while (!fona.isDone() && !fona.isFailed()) {
-                Watchdog.reset();
+                if (millis() - started < THIRTY_MINUTES) {
+                    Watchdog.reset();
+                }
                 fona.tick();
                 delay(10);
             }
@@ -231,7 +236,9 @@ void singleTransmission(String message) {
             SerialType &rockBlockSerial = Serial1;
             rockBlock.setSerial(&rockBlockSerial);
             while (!rockBlock.isDone() && !rockBlock.isFailed()) {
-                Watchdog.reset();
+                if (millis() - started < THIRTY_MINUTES) {
+                    Watchdog.reset();
+                }
                 rockBlock.tick();
                 delay(10);
             }
