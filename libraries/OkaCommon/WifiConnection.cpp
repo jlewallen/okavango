@@ -63,6 +63,8 @@ bool WifiConnection::open() {
 }
 
 bool WifiConnection::post(const char *server, const char *path, const char *contentType, const char *body) {
+    Watchdog.disable();
+
     if (client.connect(server, 80)) {
         DEBUG_PRINTLN("connected to server");
 

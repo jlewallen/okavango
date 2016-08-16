@@ -120,4 +120,6 @@ void DataBoat::upload(String &json) {
     }
 
     wifi.off();
+
+    DEBUG_PRINTLN("DataBoat Done");
 }
