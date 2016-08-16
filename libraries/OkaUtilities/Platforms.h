@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-// #define FEATHER_WING_ADALOGGER
+#define FEATHER_WING_ADALOGGER
 
 // Primarily for Feather FONA with the Adalogger wing, though we
 // could use the Lora version too.
