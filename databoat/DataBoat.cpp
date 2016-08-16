@@ -108,8 +108,7 @@ String DataBoat::readingToJson(data_boat_packet_t *reading) {
 void DataBoat::upload(String &json) {
     DataBoatConfiguration configuration;
     
-    if (configuration.read()) {
-    }
+    configuration.read();
 
     Serial.println("JSON: ");
     Serial.println(json);

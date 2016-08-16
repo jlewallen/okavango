@@ -10,8 +10,6 @@
 #include "Configuration.h"
 #include <Adafruit_SleepyDog.h>
 
-#define THIRTY_MINUTES      (60 * 1000 * 30)
-
 bool radioSetup = false;
 
 typedef struct gps_location_t {

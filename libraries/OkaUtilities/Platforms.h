@@ -162,4 +162,8 @@ typedef enum ConductivityConfig {
     OnExpanderPort4
 } ConductivityConfig;
 
+#define FIVE_MINUTES                                         (1000 * 60 * 5)
+#define THIRTY_MINUTES                                       (60 * 1000 * 30)
+#define ONE_MINUTE                                           (60 * 1000)
+
 #endif

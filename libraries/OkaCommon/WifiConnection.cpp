@@ -1,4 +1,5 @@
 #include <SPI.h>
+#include <Adafruit_SleepyDog.h>
 #include "WifiConnection.h"
 
 #define PIN_WINC_CS   8
@@ -40,12 +41,13 @@ bool WifiConnection::open() {
         status = WiFi.begin(ssid, psk);
 
         uint8_t seconds = 10;
-        while (seconds && (WiFi.status() != WL_CONNECTED)) {
+        while (seconds > 0 && (WiFi.status() != WL_CONNECTED)) {
             seconds--;
             delay(1000);
+            Watchdog.reset();
         }
 
-        if (millis() - started > 60 * 1000) {
+        if (millis() - started > ONE_MINUTE) {
             break;
         }
     }
@@ -75,8 +77,10 @@ bool WifiConnection::post(const char *server, const char *path, const char *cont
         client.println(body);
 
         uint32_t started = millis();
-        while (millis() - started < 10 * 1000) {
+        while (millis() - started < ONE_MINUTE) {
             delay(10);
+
+            Watchdog.reset();
 
             while (client.available()) {
                 Serial.write(client.read());

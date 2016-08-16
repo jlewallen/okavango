@@ -19,9 +19,17 @@ WifiAtlasSensorBoard::WifiAtlasSensorBoard(CorePlatform *corePlatform) :
 }
 
 void WifiAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) {
+    int32_t watchdogMs = Watchdog.enable();
+    Serial.print("Watchdog enabled: ");
+    Serial.println(watchdogMs);
+
+    uint32_t started = millis();
     DataBoat dataBoat(&Serial2, 9, packet);
     dataBoat.setup();
     while (dataBoat.tick()) {
+        if (millis() - started < FIVE_MINUTES) {
+            Watchdog.reset();
+        }
         delay(10);
     }
 }
