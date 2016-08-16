@@ -93,8 +93,8 @@ String DataBoat::readingToJson(data_boat_packet_t *reading) {
     data["air_temp"] = reading->temperature;
     data["altitude"] = reading->altitude;
     data["barometric_pressure"] = reading->pressure;
-    data.set("gps_lat", reading->latitude, 9);
-    data.set("gps_long", reading->longitude, 9);
+    data["gps_lat"] = reading->latitude;
+    data["gps_long"] = reading->longitude;
     data["speed"] = reading->speed;
 
     String json;

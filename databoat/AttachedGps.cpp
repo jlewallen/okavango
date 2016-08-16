@@ -27,8 +27,8 @@ bool AttachedGps::tick(data_boat_packet_t *packet) {
                 DateTime dateTime = DateTime(gps.year, gps.month, gps.year, gps.hour, gps.minute, gps.seconds);
                 uint32_t time = dateTime.unixtime();
                 packet->time = time;
-                packet->latitude = gps.latitude;
-                packet->longitude = gps.longitude;
+                packet->latitude = gps.latitudeDegrees;
+                packet->longitude = gps.longitudeDegrees;
                 packet->altitude = gps.altitude;
                 packet->angle = gps.angle;
                 packet->speed = gps.speed;
