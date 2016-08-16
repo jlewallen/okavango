@@ -1,5 +1,6 @@
 #include <ArduinoJson.h>
 #include <SD.h>
+#include <Adafruit_SleepyDog.h>
 
 #include "DataBoat.h"
 #include "WifiConnection.h"

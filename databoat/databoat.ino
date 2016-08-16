@@ -1,5 +1,6 @@
 #include <SPI.h>
 #include <SD.h>
+#include <Adafruit_SleepyDog.h>
 
 #include "Platforms.h"
 #include "core.h"
@@ -32,6 +33,8 @@ void WifiAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet
         }
         delay(10);
     }
+
+    Watchdog.disable();
 }
 
 CorePlatform corePlatform;
