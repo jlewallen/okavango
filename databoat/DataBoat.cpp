@@ -80,11 +80,9 @@ String DataBoat::readingToJson(data_boat_packet_t *reading) {
 
     JsonArray &root = jsonBuffer.createArray();
 
-    JsonObject &rootData = jsonBuffer.createObject();
-    root.add(rootData);
-    rootData["t_local"] = reading->time;
-
-    JsonObject &data = rootData.createNestedObject("data");
+    JsonObject &data = jsonBuffer.createObject();
+    root.add(data);
+    data["t_utc"] = reading->time;
     data["conductivity"] = reading->conductivity;
     data["salinity"] = reading->salinity;
     data["ph"] = reading->ph;
