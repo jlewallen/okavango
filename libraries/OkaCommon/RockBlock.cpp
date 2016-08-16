@@ -38,7 +38,9 @@ bool RockBlock::tick() {
     Serial.print("Signal quality: ");
     Serial.println(signalQuality);
 
-    error = rockBlock.sendSBDText(message.c_str());
+    uint8_t *data = (uint8_t *)message.c_str();
+    size_t size = message.length();
+    error = rockBlock.sendSBDBinary(data, size);
     if (error != 0) {
         Serial.print("SB: send failed: ");
         Serial.println(error);
