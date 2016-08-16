@@ -421,10 +421,11 @@ int IridiumSBD::internalSleep()
 
 bool IridiumSBD::smartWait(int seconds)
 {
-   for (unsigned long start=millis(); millis() - start < 1000UL * seconds;)
+   for (unsigned long start=millis(); millis() - start < 1000UL * seconds;) {
+      callbacks->tick();
       if (cancelled())
          return false;
-
+   }
    return true;
 }
 
@@ -450,6 +451,8 @@ bool IridiumSBD::waitForATResponse(char *response, int responseSize, const char 
    {
       if (cancelled())
          return false;
+
+      callbacks->tick();
 
       while (stream.available() > 0)
       {
@@ -542,6 +545,8 @@ int IridiumSBD::doSBDRB(uint8_t *rxBuffer, size_t *prxBufferSize)
    unsigned long start = millis();
    while (millis() - start < 1000UL * atTimeout)
    {
+      callbacks->tick();
+
       if (cancelled())
          return ISBD_CANCELLED;
       if (stream.available() >= 2)

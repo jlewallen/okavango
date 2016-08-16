@@ -57,6 +57,11 @@ extern void ConsoleCallback(uint8_t c) __attribute__((weak));
 extern void DiagsCallback(uint8_t c) __attribute__((weak));
 typedef const __FlashStringHelper *FlashString;
 
+class IridiumCallbacks {
+public:
+    virtual void tick() = 0;
+};
+
 class IridiumSBD
 {
 public:
@@ -82,7 +87,7 @@ public:
    void attachDiags(Stream &stream);
 #endif
 
-   IridiumSBD(Stream &str, int sleepPinNo = -1) :
+   IridiumSBD(Stream &str, int sleepPinNo, IridiumCallbacks *callbacks) :
       stream(str),
       pConsoleStream(NULL),
 #if ISBD_DIAGS
@@ -92,6 +97,7 @@ public:
       sbdixInterval(ISBD_DEFAULT_SBDIX_INTERVAL),
       atTimeout(ISBD_DEFAULT_AT_TIMEOUT),
       sendReceiveTimeout(ISBD_DEFAULT_SENDRECEIVE_TIME),
+      callbacks(callbacks),
       remainingMessages(-1),
       asleep(true),
       reentrant(false),
@@ -107,6 +113,7 @@ public:
    }
 
 private:
+   IridiumCallbacks *callbacks;
    Stream &stream; // Communicating with the Iridium
    Stream *pConsoleStream; // user provided; for debugging the serial stream
 #if ISBD_DIAGS

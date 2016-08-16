@@ -8,7 +8,7 @@
 #include "TransmissionStatus.h"
 #include "WeatherStation.h"
 #include "Configuration.h"
-#include "Adafruit_SleepyDog.h"
+#include <Adafruit_SleepyDog.h>
 
 bool radioSetup = false;
 

@@ -1,4 +1,5 @@
 #include "RockBlock.h"
+#include <Adafruit_SleepyDog.h>
 
 #ifndef CUSTOM_ROCKBLOCK
 
@@ -9,9 +10,17 @@ RockBlock::RockBlock(String message) :
     sendTries(0), signalTries(0) {
 }
 
-bool RockBlock::tick() {
-    IridiumSBD rockBlock(Serial1, PIN_ROCK_BLOCK);
+class WatchdogCallbacks : public IridiumCallbacks  {
+public:
+    virtual void tick() override {
+        Watchdog.reset();
+    }
+};
 
+bool RockBlock::tick() {
+    IridiumSBD rockBlock(Serial1, PIN_ROCK_BLOCK, new WatchdogCallbacks());
+
+    rockBlock.sleep();
     rockBlock.attachConsole(Serial);
     rockBlock.setPowerProfile(1);
     rockBlock.begin();
@@ -25,6 +34,8 @@ bool RockBlock::tick() {
         return false;
     }
 
+    Watchdog.reset();
+
     Serial.print("Signal quality: ");
     Serial.println(signalQuality);
 
@@ -35,6 +46,8 @@ bool RockBlock::tick() {
         transition(RockBlockFailed);
         return false;
     }
+
+    rockBlock.sleep();
 
     Serial.println("Done");
     transition(RockBlockDone);
