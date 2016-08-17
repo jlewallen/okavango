@@ -41,7 +41,7 @@ private:
     ConductivityConfig conductivityConfig;
 
 public:
-    AtlasSensorBoard(CorePlatform *corePlatform, ConductivityConfig conductivityConfig);
+    AtlasSensorBoard(CorePlatform *corePlatform, ConductivityConfig conductivityConfig, bool disableSleep);
 
 public:
     bool tick();

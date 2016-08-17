@@ -9,7 +9,8 @@ const char *CMD_CONTINUOUS_OFF = "C,0";
 const char *CMD_SLEEP = "SLEEP";
 const char *CMD_READ = "R";
 
-AtlasScientificBoard::AtlasScientificBoard() {
+AtlasScientificBoard::AtlasScientificBoard(bool disableSleep) :
+    disableSleep(disableSleep) {
 }
 
 void AtlasScientificBoard::transition(AtlasScientificBoardState newState) {
@@ -40,7 +41,7 @@ bool AtlasScientificBoard::tick() {
             sendCommand(CMD_STATUS);
             break;
         }
-        case Leds: {
+        case LedsOn: {
             sendCommand(CMD_LED_ON);
             break;
         }
@@ -58,6 +59,10 @@ bool AtlasScientificBoard::tick() {
         }
         case Read2: {
             sendCommand(CMD_READ);
+            break;
+        }
+        case LedsOff: {
+            sendCommand(CMD_LED_OFF);
             break;
         }
         case Sleeping: {
@@ -108,10 +113,10 @@ bool AtlasScientificBoard::handle(String reply) {
                 break;
             }
             case Status1: {
-                transition(Leds);
+                transition(LedsOn);
                 break;
             }
-            case Leds: {
+            case LedsOn: {
                 transition(Configure);
                 break;
             }
@@ -159,8 +164,17 @@ bool AtlasScientificBoard::handle(String reply) {
                     }
                 }
 
-                transition(Sleeping);
+                if (disableSleep) {
+                    transition(LedsOff);
+                }
+                else {
+                    transition(Sleeping);
+                }
 
+                break;
+            }
+            case LedsOff: {
+                transition(Done);
                 break;
             }
             case Sleeping: {

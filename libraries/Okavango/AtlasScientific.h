@@ -8,11 +8,12 @@ enum AtlasScientificBoardState {
     Start,
     Status0,
     Status1,
-    Leds,
+    LedsOn,
     Configure,
     Read0,
     Read1,
     Read2,
+    LedsOff,
     Sleeping,
     Done
 };
@@ -23,9 +24,10 @@ private:
     AtlasScientificBoardState state = Start;
     float values[MAX_VALUES];
     uint8_t numberOfValues;
+    bool disableSleep;
 
 public:
-    AtlasScientificBoard();
+    AtlasScientificBoard(bool disableSleep);
 
     virtual bool tick();
 

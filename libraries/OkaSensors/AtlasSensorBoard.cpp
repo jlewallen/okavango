@@ -2,9 +2,9 @@
 #include "AtlasSensorBoard.h"
 #include <Adafruit_SleepyDog.h>
 
-AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform, ConductivityConfig conductivityConfig) :
+AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform, ConductivityConfig conductivityConfig, bool disableSleep) :
     corePlatform(corePlatform), portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1),
-    conductivityConfig(conductivityConfig) {
+    conductivityConfig(conductivityConfig), board(disableSleep) {
     memzero((uint8_t *)&packet, sizeof(atlas_sensors_packet_t));
 }
 
