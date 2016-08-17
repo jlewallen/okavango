@@ -8,8 +8,8 @@
 
 class DataBoatConfiguration {
 private:
-    String ssid = "Cottonwood";
-    String psk = "asdfasdf";
+    String ssid = "EXPLORER510";
+    String psk = "13454684";
     String server = "intotheokavango.org";
     String path = "/ingest/databoat";
 

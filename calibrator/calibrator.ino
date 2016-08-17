@@ -46,7 +46,7 @@ String ecScript[] = {
     "STATUS"
 };
 
-ConductivityConfig conductivityConfig = ConductivityConfig::OnSerial2;
+ConductivityConfig conductivityConfig = ConductivityConfig::OnExpanderPort4;
 
 SerialType *getSerialForPort(uint8_t port) {
     if (port < 3 || conductivityConfig != ConductivityConfig::OnSerial2) {
