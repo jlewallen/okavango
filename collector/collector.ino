@@ -86,6 +86,9 @@ void checkAirwaves() {
         if (radio.setup()) {
             radio.sleep();
         }
+        else {
+            platformCatastrophe();
+        }
         radioSetup = true;
     }
 
