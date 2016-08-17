@@ -134,8 +134,6 @@ bool AtlasSensorBoard::tick() {
 
             doneReadingSensors(&queue, &packet);
 
-            platformLowPowerSleep(LOW_POWER_SLEEP_END);
-
             Serial.println("Bye!");
             delay(100);
 

@@ -19,6 +19,8 @@ LoraAtlasSensorBoard::LoraAtlasSensorBoard(CorePlatform *corePlatform) :
 
 void LoraAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) {
     tryAndSendLocalQueue(queue);
+
+    platformLowPowerSleep(LOW_POWER_SLEEP_SENSORS_END);
 }
 
 void LoraAtlasSensorBoard::tryAndSendLocalQueue(Queue *queue) {

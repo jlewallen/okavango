@@ -35,6 +35,8 @@ void WifiAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet
     }
 
     Watchdog.disable();
+
+    platformLowPowerSleep(LOW_POWER_SLEEP_DATA_BOAT_END);
 }
 
 CorePlatform corePlatform;
