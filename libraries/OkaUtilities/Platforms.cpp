@@ -86,7 +86,15 @@ void platformBlink(uint8_t pin) {
 }
 
 void platformCatastrophe(uint8_t pin) {
+    uint32_t watchdogMs = Watchdog.enable();
+    uint32_t restartAfter = (30 * 1000) - watchdogMs;
+    Serial.print("Holding WD For: ");
+    Serial.println(restartAfter);
+    uint32_t started = millis();
     while (true) {
+        if (millis() - started < restartAfter) {
+            Watchdog.reset();
+        }
         platformBlink(pin);
     }
 }
