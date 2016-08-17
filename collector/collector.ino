@@ -87,7 +87,7 @@ void checkAirwaves() {
             radio.sleep();
         }
         else {
-            platformCatastrophe();
+            platformCatastrophe(PIN_RED_LED);
         }
         radioSetup = true;
     }
