@@ -136,6 +136,9 @@ bool AtlasSensorBoard::tick() {
 
             platformLowPowerSleep(LOW_POWER_SLEEP_END);
 
+            Serial.println("Bye!");
+            delay(100);
+
             platformRestart();
         }
     }
