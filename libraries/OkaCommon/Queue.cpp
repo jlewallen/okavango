@@ -104,3 +104,12 @@ uint8_t *Queue::dequeue() {
     }
 }
 
+void Queue::copyInto(Queue *into) {
+    while (true) {
+        uint8_t *data = dequeue();
+        if (data == NULL) {
+            return;
+        }
+        into->enqueue(data);
+    }
+}

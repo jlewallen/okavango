@@ -19,6 +19,7 @@ public:
     uint8_t *dequeue();
     void enqueue(uint8_t *buffer);
     void startAtBeginning();
+    void copyInto(Queue *into);
 
 private:
     File open();

@@ -65,6 +65,8 @@ bool WifiConnection::open() {
 bool WifiConnection::post(const char *server, const char *path, const char *contentType, const char *body) {
     Watchdog.disable();
 
+    bool success = false;
+
     if (client.connect(server, 80)) {
         DEBUG_PRINTLN("connected to server");
 
@@ -90,11 +92,14 @@ bool WifiConnection::post(const char *server, const char *path, const char *cont
 
             if (!client.connected()) {
                 DEBUG_PRINTLN();
-                DEBUG_PRINTLN("disconnecting");
+                DEBUG_PRINTLN("Yay");
                 client.stop();
+                success = true;
                 break;
             }
         }
     }
-    return true;
+
+    Watchdog.enable();
+    return success;
 }
