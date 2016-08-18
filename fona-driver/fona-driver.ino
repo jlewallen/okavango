@@ -121,6 +121,7 @@ bool handle(String command) {
         commandSerial.print(F("OK\r"));
     }
     else if (command.startsWith("~STATUS")) {
+        commandSerial.println(F("+TRYING"));
         uint8_t n = fona.getNetworkStatus();
         commandSerial.print(F("+STATUS,"));
         commandSerial.print(n);
