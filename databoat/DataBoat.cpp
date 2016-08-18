@@ -66,6 +66,7 @@ bool DataBoat::tick() {
 
     if (gps.tick(&reading)) {
         Queue *writeQueue = NULL;
+        Queue backupQueue(FK_SETTINGS_BACKUP_DATA_FILENAME);
 
         DEBUG_PRINTLN("Ok");
 
@@ -80,6 +81,7 @@ bool DataBoat::tick() {
             DEBUG_PRINT("Ignore A: "); DEBUG_PRINTLN(queueA.size());
         }
         writeQueue->enqueue((uint8_t *)&reading);
+        backupQueue.enqueue((uint8_t *)&reading);
         logDataBoatPacketLocally(&reading);
 
         delay(1000);
