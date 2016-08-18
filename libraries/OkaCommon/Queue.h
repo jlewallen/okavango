@@ -7,11 +7,13 @@
 
 class Queue {
 private:
+    const char *filename;
     uint8_t buffer[FK_QUEUE_ENTRY_SIZE];
     uint32_t dequeuePosition;
 
 public:
     Queue();
+    Queue(const char *filename);
     int16_t size();
     void removeAll();
     uint8_t *dequeue();

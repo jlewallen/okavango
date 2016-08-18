@@ -7,11 +7,14 @@ typedef struct header_t {
 
 #define FK_QUEUE_ENTRY_SIZE_ON_DISK    (sizeof(header_t) + FK_QUEUE_ENTRY_SIZE)
 
-Queue::Queue() : dequeuePosition(0) {
+Queue::Queue() : filename(FK_SETTINGS_QUEUE_FILENAME), dequeuePosition(0) {
+}
+
+Queue::Queue(const char *filename) : filename(filename), dequeuePosition(0) {
 }
 
 File Queue::open() {
-    File file = SD.open(FK_SETTINGS_QUEUE_FILENAME, FILE_WRITE);
+    File file = SD.open(filename, FILE_WRITE);
     if (!file) {
         DEBUG_PRINTLN(F("Queue unavailable"));
         return file;
@@ -49,7 +52,7 @@ void Queue::enqueue(uint8_t *buffer) {
 }
 
 void Queue::removeAll() {
-    SD.remove(FK_SETTINGS_QUEUE_FILENAME);
+    SD.remove(filename);
 }
 
 uint8_t *Queue::dequeue() {
