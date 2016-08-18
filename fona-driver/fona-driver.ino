@@ -121,7 +121,7 @@ bool handle(String command) {
         commandSerial.print(F("OK\r"));
     }
     else if (command.startsWith("~STATUS")) {
-        commandSerial.println(F("+TRYING"));
+        commandSerial.print(F("+TRYING\r"));
         uint8_t n = fona.getNetworkStatus();
         commandSerial.print(F("+STATUS,"));
         commandSerial.print(n);
@@ -145,15 +145,6 @@ bool handle(String command) {
         int32_t i = end.indexOf(' ');
         number = end.substring(0, i);
         message = end.substring(i + 1, end.length() - 1);
-
-        // commandSerial.print(F("+NUMBER="));
-        // commandSerial.print(number);
-        // commandSerial.print(F("\r"));
-        // delay(500);
-        // commandSerial.print(F("+MESSAGE=\""));
-        // commandSerial.print(message);
-        // commandSerial.print(F("\"\r"));
-        // delay(500);
 
         bool success = fona.sendSMS((char *)number.c_str(), (char *)message.c_str());
         if (success) {
