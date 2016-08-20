@@ -46,6 +46,7 @@ DataBoat::DataBoat(HardwareSerial *gpsStream, uint8_t pinGpsEnable, atlas_sensor
 
 bool DataBoat::setup() {
     gps.setup();
+    log.open();
 
     return true;
 }
@@ -88,6 +89,8 @@ bool DataBoat::tick() {
 
         upload();
 
+        log.close();
+
         return false;
     }
 
@@ -127,7 +130,7 @@ void DataBoat::upload() {
     DataBoatConfiguration configuration;
     configuration.read();
 
-    WifiConnection wifi(configuration.getSsid(), configuration.getPsk());
+    WifiConnection wifi(configuration.getSsid(), configuration.getPsk(), log.stream());
     if (wifi.open()) {
         data_boat_packet_t reading;
 
@@ -173,6 +176,7 @@ void DataBoat::upload() {
     }
 
     wifi.off();
+    log.flush();
 
     DEBUG_PRINTLN("DataBoat Done");
 }

@@ -5,11 +5,40 @@
 #include "AttachedGps.h"
 #include "Queue.h"
 
+class DataBoatLog {
+private:
+    File file;
+
+public:
+    DataBoatLog() {
+    }
+
+    void open() {
+        file = SD.open("DB.log", FILE_WRITE);
+        if (!file) {
+            DEBUG_PRINTLN("No log file!");
+        }
+    }
+
+    Stream &stream() {
+        return file;
+    }
+
+    void flush() {
+        file.flush();
+    }
+
+    void close() {
+        file.close();
+    }
+};
+
 class DataBoat {
 private:
     CorePlatform corePlatform;
     AttachedGps gps;
     atlas_sensors_packet_t *atlasPacket;
+    DataBoatLog log;
     Queue queueA;
     Queue queueB;
 

@@ -9,9 +9,10 @@ private:
     const char *ssid;
     const char *psk;
     int32_t status;
+    Stream &logStream;
 
 public:
-    WifiConnection(const char *ssid, const char *psk);
+    WifiConnection(const char *ssid, const char *psk, Stream &logStream);
 
 public:
     void off();
