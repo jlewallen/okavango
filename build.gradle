@@ -1,0 +1,11 @@
+buildscript {
+  repositories {
+    mavenLocal()
+  }
+  dependencies {
+    classpath group: 'com.github.jlewallen.arduino', name: 'arduino-gradle', version: '1.0'
+  }
+}
+
+// vim: set ft=groovy:
+
