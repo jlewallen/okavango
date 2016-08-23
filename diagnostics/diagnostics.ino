@@ -34,7 +34,7 @@ public:
                 header.from = radio->headerFrom();
                 header.flags = radio->headerFlags();
                 header.id = radio->headerId();
-                header.rssi =radio->lastRssi(); 
+                header.rssi = radio->lastRssi();
                 log(&header, (fk_network_packet_t *)radio->getPacket(), radio->getPacketSize());
                 radio->clear();
             }
