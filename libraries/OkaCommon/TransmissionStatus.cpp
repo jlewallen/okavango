@@ -4,8 +4,6 @@
 #include "TransmissionStatus.h"
 #include "core.h"
 
-// #define DEBUG_TS
-
 typedef struct fk_transmission_kind_status_t {
     uint32_t millis;
     uint32_t elapsed;
@@ -69,12 +67,14 @@ bool write(fk_transmission_status_t *status) {
 void log(fk_transmission_status_t *status) {
     for (int8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
         DEBUG_PRINT(i);
-        DEBUG_PRINT(": ");
+        DEBUG_PRINT(": acc=");
         DEBUG_PRINT(status->kinds[i].elapsed);
-        DEBUG_PRINT(", ");
+        DEBUG_PRINT(", prv=");
         DEBUG_PRINT(status->kinds[i].millis);
-        DEBUG_PRINT(", ");
+        DEBUG_PRINT(", dT=");
         DEBUG_PRINT(millis() - status->kinds[i].millis);
+        DEBUG_PRINT(", rem=");
+        DEBUG_PRINT(TransmissionIntervals[i] - status->kinds[i].elapsed);
         DEBUG_PRINTLN();
     }
 }
@@ -96,13 +96,23 @@ int8_t TransmissionStatus::shouldWe() {
         }
     }
 
-    #ifdef DEBUG_TS
-    log(&status);
-    #endif
+    DEBUG_PRINTLN("");
 
     int8_t which = -1;
     for (int8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
         int32_t change = now > status.kinds[i].millis ? now - status.kinds[i].millis : 0;
+
+        DEBUG_PRINT("TS #");
+        DEBUG_PRINT(i);
+        DEBUG_PRINT(": acc=");
+        DEBUG_PRINT(status.kinds[i].elapsed);
+        DEBUG_PRINT(", prv=");
+        DEBUG_PRINT(status.kinds[i].millis);
+        DEBUG_PRINT(", dT=");
+        DEBUG_PRINT(change);
+        DEBUG_PRINT(", rem=");
+        DEBUG_PRINT(TransmissionIntervals[i] - status.kinds[i].elapsed);
+        DEBUG_PRINTLN();
 
         if (change > 0) {
             status.kinds[i].elapsed += change;
@@ -116,10 +126,6 @@ int8_t TransmissionStatus::shouldWe() {
             }
         }
     }
-
-    #ifdef DEBUG_TS
-    log(&status);
-    #endif
 
     status.time = SystemClock.now();
 

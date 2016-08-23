@@ -59,7 +59,7 @@ void platformSerial2Begin(int32_t baud) {
 }
 
 extern "C" char *sbrk(int32_t i);
- 
+
 uint32_t platformFreeMemory() {
     char stack_dummy = 0;
     return &stack_dummy - sbrk(0);
