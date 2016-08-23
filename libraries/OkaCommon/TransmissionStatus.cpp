@@ -36,6 +36,8 @@ bool read(fk_transmission_status_t *status) {
             return false;
         }
 
+        file.close();
+
         return true;
     }
 

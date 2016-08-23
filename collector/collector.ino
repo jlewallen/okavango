@@ -124,6 +124,10 @@ void checkAirwaves() {
 
     radio.sleep();
 
+    #ifdef FK_WRITE_LOG_FILE
+    logPrinter.flush();
+    #endif
+
     DEBUG_PRINTLN("");
 
     started = millis();
@@ -180,6 +184,10 @@ void checkAirwaves() {
 
     weatherStation.off();
 
+    #ifdef FK_WRITE_LOG_FILE
+    logPrinter.flush();
+    #endif
+
     Watchdog.disable();
 }
 
@@ -221,7 +229,7 @@ String weatherStationPacketToMessage(weather_station_packet_t *packet) {
 
 bool singleTransmission(String message) {
     DEBUG_PRINT("Message: ");
-    DEBUG_PRINTLN(message);
+    DEBUG_PRINTLN(message.c_str());
 
     bool success = false;
     uint32_t started = millis();
@@ -268,6 +276,8 @@ void handleSensorTransmission() {
         DEBUG_PRINTLN("Queue empty");
         return;
     }
+
+    Watchdog.enable();
 
     atlas_sensors_packet_t atlas_sensors;
     memzero((uint8_t *)&atlas_sensors, sizeof(atlas_sensors_packet_t));

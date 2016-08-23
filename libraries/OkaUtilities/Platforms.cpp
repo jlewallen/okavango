@@ -121,10 +121,12 @@ LogPrinter logPrinter;
 
 bool LogPrinter::open() {
     fileLog = SD.open("DEBUG.LOG", FILE_WRITE);
-    if (fileLog) {
-    }
 
     return fileLog;
+}
+
+void LogPrinter::flush() {
+    fileLog.flush();
 }
 
 size_t LogPrinter::write(uint8_t c) {

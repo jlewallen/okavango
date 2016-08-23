@@ -151,6 +151,7 @@ extern uint32_t TransmissionIntervals[];
 class LogPrinter : public Print {
 public:
     bool open();
+    void flush();
 
 public:
     virtual size_t write(uint8_t) override;
