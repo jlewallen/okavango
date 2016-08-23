@@ -37,7 +37,7 @@ bool RockBlock::tick() {
     Watchdog.reset();
 
     DEBUG_PRINT("Signal quality: ");
-    DEBUG_PRINTLN(signalQuality);
+    DEBUG_PRINTLN((int32_t)signalQuality);
 
     uint8_t *data = (uint8_t *)message.c_str();
     size_t size = message.length();

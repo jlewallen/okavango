@@ -112,3 +112,31 @@ void platformLowPowerSleep(uint32_t numberOfMs) {
     }
 }
 
+
+#ifdef FK_WRITE_LOG_FILE
+#include <SD.h>
+
+File fileLog;
+LogPrinter logPrinter;
+
+bool LogPrinter::open() {
+    fileLog = SD.open("DEBUG.LOG", FILE_WRITE);
+    if (fileLog) {
+    }
+
+    return fileLog;
+}
+
+size_t LogPrinter::write(uint8_t c) {
+    size_t w = fileLog.write(c);
+    Serial.write(c);
+    return w;
+}
+
+size_t LogPrinter::write(const uint8_t *buffer, size_t size) {
+    size_t w = fileLog.write(buffer, size);
+    Serial.write(buffer, size);
+    return w;
+}
+
+#endif

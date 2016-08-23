@@ -146,8 +146,26 @@ extern void platformSerial2Begin(int32_t baud);
 
 extern uint32_t TransmissionIntervals[];
 
-#define DEBUG_PRINTLN(msg)                                   Serial.println(msg)
-#define DEBUG_PRINT(msg)                                     Serial.print(msg)
+#define FK_WRITE_LOG_FILE
+
+class LogPrinter : public Print {
+public:
+    bool open();
+
+public:
+    virtual size_t write(uint8_t) override;
+    virtual size_t write(const uint8_t *buffer, size_t size) override;
+};
+
+extern LogPrinter logPrinter;
+
+#ifdef FK_WRITE_LOG_FILE
+#define DEBUG_PRINTLN(value)                                 logPrinter.println(value)
+#define DEBUG_PRINT(value)                                   logPrinter.print(value)
+#else
+#define DEBUG_PRINTLN(value)                                 Serial.println(value)
+#define DEBUG_PRINT(value)                                   Serial.print(value)
+#endif
 
 #define memzero(ptr, sz)                                     memset(ptr, 0, sz)
 

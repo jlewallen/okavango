@@ -45,10 +45,14 @@ void setup() {
     }
     #endif
 
-    DEBUG_PRINTLN(F("Begin"));
+    Serial.println(F("Begin"));
 
     CorePlatform corePlatform;
     corePlatform.setup();
+
+    #ifdef FK_WRITE_LOG_FILE
+    logPrinter.open();
+    #endif
 
     if (!configuration.read()) {
         DEBUG_PRINTLN("Error reading configuration");
@@ -72,7 +76,7 @@ void checkAirwaves() {
     WeatherStation weatherStation;
 
     DEBUG_PRINTLN("Checking Airwaves...");
-    
+
     int32_t watchdogMs = Watchdog.enable();
 
     DEBUG_PRINT("Watchdog enabled: ");
@@ -218,7 +222,6 @@ String weatherStationPacketToMessage(weather_station_packet_t *packet) {
 bool singleTransmission(String message) {
     DEBUG_PRINT("Message: ");
     DEBUG_PRINTLN(message);
-    DEBUG_PRINTLN(message.length());
 
     bool success = false;
     uint32_t started = millis();
