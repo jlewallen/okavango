@@ -30,6 +30,16 @@ public:
         return false;
     }
 
+    void busy() {
+        transition(ReplState::Working);
+    }
+
+    void promptIfNecessary() {
+        if (state == ReplState::Working) {
+            transition(ReplState::Prompt);
+        }
+    }
+
     bool tick() {
         switch (state) {
         case ReplState::Working: {
@@ -77,7 +87,7 @@ public:
         Serial.print(getPromptPrefix());
         Serial.print("> ");
     }
-    
+
     virtual void handle(String command) {
     }
 };

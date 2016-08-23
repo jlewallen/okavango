@@ -26,6 +26,7 @@ private:
     LoraRadio *radio;
     bool enabled;
     uint32_t lastPacket;
+    bool receiving;
 
 public:
     Sniffer(LoraRadio *radio) : radio(radio), enabled(true), head(NULL), lastPacket(0) {
@@ -35,7 +36,7 @@ public:
         this->enabled = enabled;
     }
 
-    void tick() {
+    bool tick() {
         if (enabled) {
             radio->tick();
 
@@ -69,6 +70,8 @@ public:
                 lastPacket = millis();
 
                 radio->clear();
+
+                receiving = true;
             }
         }
 
@@ -82,7 +85,11 @@ public:
                 iter = newNext;
             }
             head = NULL;
+
+            receiving = false;
         }
+
+        return receiving;
     }
 
 private:
@@ -221,6 +228,13 @@ public:
             radio->send((uint8_t *)&force_transmission, sizeof(fk_network_force_transmission_t));
             radio->waitPacketSent();
         }
+        if (command == "ping") {
+            fk_network_ping_t ping;
+            memzero((uint8_t *)&ping, sizeof(fk_network_ping_t));
+            ping.fk.kind = FK_PACKET_KIND_PING;
+            radio->send((uint8_t *)&ping, sizeof(fk_network_ping_t));
+            radio->waitPacketSent();
+        }
     }
 };
 
@@ -269,9 +283,13 @@ void loop() {
     Watchdog.enable();
 
     while (1) {
-        repl.tick();
-
-        sniffer.tick();
+        if (!sniffer.tick()) {
+            repl.promptIfNecessary();
+            repl.tick();
+        }
+        else {
+            repl.busy();
+        }
 
         Watchdog.reset();
 
