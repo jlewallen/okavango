@@ -1,3 +1,7 @@
 include 'weather-shield'
 include 'fona-driver'
 include 'calibrator'
+include 'diagnostics'
+include 'sensors'
+include 'collector'
+include 'databoat'
