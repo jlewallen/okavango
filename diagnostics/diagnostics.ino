@@ -42,16 +42,18 @@ public:
             if (radio->hasPacket()) {
                 packet_queue_entry_t *entry = (packet_queue_entry_t *)malloc(sizeof(packet_queue_entry_t));
                 memzero((uint8_t *)entry, sizeof(packet_queue_entry_t));
+
                 entry->header.to = radio->headerTo();
                 entry->header.from = radio->headerFrom();
                 entry->header.flags = radio->headerFlags();
                 entry->header.id = radio->headerId();
                 entry->header.rssi = radio->lastRssi();
                 entry->packetSize = radio->getPacketSize();
-                entry->packet = (fk_network_packet_t *)malloc(entry->packetSize);
                 entry->next = NULL;
-                memcpy((uint8_t *)entry->packet, radio->getPacket(), entry->packetSize);
+
+                entry->packet = (fk_network_packet_t *)malloc(entry->packetSize);
                 memzero((uint8_t *)entry->packet, entry->packetSize);
+                memcpy((uint8_t *)entry->packet, radio->getPacket(), entry->packetSize);
 
                 if (head == NULL) {
                     head = entry;

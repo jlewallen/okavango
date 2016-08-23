@@ -161,7 +161,6 @@ void checkAirwaves() {
         if (transmissionForced) {
             break;
         }
-
     }
 
     radio.sleep();
