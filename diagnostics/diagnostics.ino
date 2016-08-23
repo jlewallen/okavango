@@ -3,6 +3,7 @@
 #include "core.h"
 #include "Repl.h"
 #include "LoraRadio.h"
+#include <Adafruit_SleepyDog.h>
 
 typedef struct rf95_header_t {
     uint8_t to;
@@ -12,13 +13,22 @@ typedef struct rf95_header_t {
     uint8_t rssi;
 } rf95_header_t;
 
+typedef struct packet_queue_entry_t {
+    packet_queue_entry_t *next;
+    rf95_header_t header;
+    size_t packetSize;
+    fk_network_packet_t *packet;
+} packet_queue_entry_t;
+
 class Sniffer {
 private:
+    packet_queue_entry_t *head;
     LoraRadio *radio;
     bool enabled;
+    uint32_t lastPacket;
 
 public:
-    Sniffer(LoraRadio *radio) : radio(radio), enabled(true) {
+    Sniffer(LoraRadio *radio) : radio(radio), enabled(true), head(NULL), lastPacket(0) {
     }
 
     void setEnabled(bool enabled) {
@@ -30,15 +40,46 @@ public:
             radio->tick();
 
             if (radio->hasPacket()) {
-                rf95_header_t header;
-                header.to = radio->headerTo();
-                header.from = radio->headerFrom();
-                header.flags = radio->headerFlags();
-                header.id = radio->headerId();
-                header.rssi = radio->lastRssi();
-                log(&header, (fk_network_packet_t *)radio->getPacket(), radio->getPacketSize());
+                packet_queue_entry_t *entry = (packet_queue_entry_t *)malloc(sizeof(packet_queue_entry_t));
+                memzero((uint8_t *)entry, sizeof(packet_queue_entry_t));
+                entry->header.to = radio->headerTo();
+                entry->header.from = radio->headerFrom();
+                entry->header.flags = radio->headerFlags();
+                entry->header.id = radio->headerId();
+                entry->header.rssi = radio->lastRssi();
+                entry->packetSize = radio->getPacketSize();
+                entry->packet = (fk_network_packet_t *)malloc(entry->packetSize);
+                entry->next = NULL;
+                memcpy((uint8_t *)entry->packet, radio->getPacket(), entry->packetSize);
+                memzero((uint8_t *)entry->packet, entry->packetSize);
+
+                if (head == NULL) {
+                    head = entry;
+                }
+                else {
+                    packet_queue_entry_t *iter = head;
+                    while (iter->next != NULL) {
+                        iter = iter->next;
+                    }
+                    iter->next = entry;
+                }
+
+                lastPacket = millis();
+
                 radio->clear();
             }
+        }
+
+        if (millis() - lastPacket > 1000) {
+            packet_queue_entry_t *iter = head;
+            while (iter != NULL) {
+                packet_queue_entry_t *newNext = iter->next;
+                log(&iter->header, iter->packet, iter->packetSize);
+                free(iter->packet);
+                free(iter);
+                iter = newNext;
+            }
+            head = NULL;
         }
     }
 
@@ -223,10 +264,14 @@ void loop() {
         platformCatastrophe(PIN_RED_LED);
     }
 
+    Watchdog.enable();
+
     while (1) {
         repl.tick();
 
         sniffer.tick();
+
+        Watchdog.reset();
 
         delay(50);
     }
