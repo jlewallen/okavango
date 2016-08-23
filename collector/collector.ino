@@ -111,6 +111,7 @@ void checkAirwaves() {
         delay(10);
 
         if (millis() - last > 5000) {
+            platformBlink(PIN_RED_LED);
             DEBUG_PRINT(".");
             last = millis();
         }
@@ -338,7 +339,7 @@ String locationToMessage(gps_location_t *location) {
 void handleLocationTransmission() {
     if (location.time > 0) {
         if (singleTransmission(locationToMessage(&location))) {
-            initialWeatherTransmissionSent = true;
+            initialLocationTransmissionSent = true;
         }
     }
 }
