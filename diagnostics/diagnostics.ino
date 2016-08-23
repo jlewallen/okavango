@@ -70,7 +70,7 @@ public:
             }
         }
 
-        if (millis() - lastPacket > 1000) {
+        if (millis() - lastPacket > 2000) {
             packet_queue_entry_t *iter = head;
             while (iter != NULL) {
                 packet_queue_entry_t *newNext = iter->next;
