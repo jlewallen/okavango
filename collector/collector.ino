@@ -23,6 +23,9 @@ typedef struct gps_location_t {
 Configuration configuration(FK_SETTINGS_CONFIGURATION_FILENAME);
 gps_location_t location;
 bool transmissionForced = false;
+bool initialWeatherTransmissionSent = false;
+bool initialAtlasTransmissionSent = false;
+bool initialLocationTransmissionSent = false;
 
 class CollectorNetworkCallbacks : public NetworkCallbacks {
     virtual bool forceTransmission(NetworkProtocolState *networkProtocol) {
@@ -304,12 +307,18 @@ void handleSensorTransmission() {
     }
 
     if (atlas_sensors.fk.kind == FK_PACKET_KIND_ATLAS_SENSORS) {
-        singleTransmission(atlasPacketToMessage(&atlas_sensors));
+        if (singleTransmission(atlasPacketToMessage(&atlas_sensors))) {
+            initialAtlasTransmissionSent = true;
+        }
     }
 
     if (weather_station_sensors.fk.kind == FK_PACKET_KIND_WEATHER_STATION) {
-        singleTransmission(weatherStationPacketToMessage(&weather_station_sensors));
+        if (singleTransmission(weatherStationPacketToMessage(&weather_station_sensors))) {
+            initialWeatherTransmissionSent = true;
+        }
     }
+
+    Watchdog.disable();
 }
 
 String locationToMessage(gps_location_t *location) {
@@ -324,7 +333,9 @@ String locationToMessage(gps_location_t *location) {
 
 void handleLocationTransmission() {
     if (location.time > 0) {
-        singleTransmission(locationToMessage(&location));
+        if (singleTransmission(locationToMessage(&location))) {
+            initialWeatherTransmissionSent = true;
+        }
     }
 }
 
@@ -343,6 +354,13 @@ void handleTransmissionIfNecessary() {
         handleSensorTransmission();
         handleLocationTransmission();
         transmissionForced = false;
+    }
+
+    if (!initialWeatherTransmissionSent || !initialAtlasTransmissionSent) {
+        handleSensorTransmission();
+    }
+    if (!initialLocationTransmissionSent) {
+        handleLocationTransmission();
     }
 }
 
