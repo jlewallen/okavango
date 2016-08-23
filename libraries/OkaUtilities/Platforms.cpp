@@ -4,7 +4,7 @@
 
 uint32_t TransmissionIntervals[] = {
     1000 * 60 * 60 * 24, // * 24 * 7,
-    1000 * 60 * 60 * 12
+    1000 * 60 * 60 * 6
 };
 
 #ifdef ARDUINO_AVR_FEATHER32U4
