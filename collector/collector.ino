@@ -27,10 +27,39 @@ bool initialWeatherTransmissionSent = false;
 bool initialAtlasTransmissionSent = false;
 bool initialLocationTransmissionSent = false;
 
+#define MANDATORY_RESTART_INTERVAL   (1000 * 60 * 60 * 3)
+#define MANDATORY_RESTART_FILE       "RESUME.INF"
+
 class CollectorNetworkCallbacks : public NetworkCallbacks {
     virtual bool forceTransmission(NetworkProtocolState *networkProtocol) {
         transmissionForced = true;
         return true;
+    }
+};
+
+class SelfRestart {
+public:
+    static void restartIfNecessary() {
+        if (millis() > MANDATORY_RESTART_INTERVAL) {
+            File file = SD.open(MANDATORY_RESTART_FILE, FILE_WRITE);
+            if (!file) {
+                // Consider not doing the restart now? Maybe waiting another interval?
+                DEBUG_PRINTLN("Error creating restart indicator file.");
+            }
+            else {
+                file.close();
+            }
+            DEBUG_PRINTLN("Mandatory restart triggered.");
+            platformRestart();
+        }
+    }
+
+    static bool didWeJustRestart() {
+        if (SD.exists(MANDATORY_RESTART_FILE)) {
+            SD.remove(MANDATORY_RESTART_FILE);
+            return true;
+        }
+        return false;
     }
 };
 
@@ -65,6 +94,13 @@ void setup() {
     if (configuration.hasRockBlockAttached()) {
         pinMode(PIN_ROCK_BLOCK, OUTPUT);
         digitalWrite(PIN_ROCK_BLOCK, LOW);
+    }
+
+    if (SelfRestart::didWeJustRestart()) {
+        DEBUG_PRINTLN("Resume from mandatory restart.");
+        initialWeatherTransmissionSent = true;
+        initialAtlasTransmissionSent = true;
+        initialLocationTransmissionSent = true;
     }
 
     memzero((uint8_t *)&location, sizeof(gps_location_t));
@@ -114,6 +150,8 @@ void checkAirwaves() {
             platformBlink(PIN_RED_LED);
             DEBUG_PRINT(".");
             last = millis();
+
+            SelfRestart::restartIfNecessary();
         }
 
         if (millis() - started > 2 * 60 * 1000 && networkProtocol.isQuiet()) {
