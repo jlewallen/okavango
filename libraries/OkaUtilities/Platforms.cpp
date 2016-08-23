@@ -129,6 +129,18 @@ void LogPrinter::flush() {
     fileLog.flush();
 }
 
+int LogPrinter::available() {
+    return 0;
+}
+
+int LogPrinter::read() {
+    return -1;
+}
+
+int LogPrinter::peek() {
+    return -1;
+}
+
 size_t LogPrinter::write(uint8_t c) {
     size_t w = fileLog.write(c);
     if ((char)c == '\n') {

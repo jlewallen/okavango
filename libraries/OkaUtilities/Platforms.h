@@ -148,12 +148,15 @@ extern uint32_t TransmissionIntervals[];
 
 #define FK_WRITE_LOG_FILE
 
-class LogPrinter : public Print {
+class LogPrinter : public Stream {
 public:
     bool open();
-    void flush();
 
 public:
+    virtual int available() override;
+    virtual int read() override;
+    virtual int peek() override;
+    virtual void flush() override;
     virtual size_t write(uint8_t) override;
     virtual size_t write(const uint8_t *buffer, size_t size) override;
 };

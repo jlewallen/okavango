@@ -251,6 +251,8 @@ bool singleTransmission(String message) {
                 delay(10);
             }
             success = fona.isDone();
+            DEBUG_PRINT("Fona: ");
+            DEBUG_PRINTLN(success);
         }
         if (configuration.hasRockBlockAttached()) {
             RockBlock rockBlock(message);
@@ -265,6 +267,8 @@ bool singleTransmission(String message) {
                 delay(10);
             }
             success = rockBlock.isDone();
+            DEBUG_PRINT("RockBlock: ");
+            DEBUG_PRINTLN(success);
         }
     }
     Watchdog.disable();
