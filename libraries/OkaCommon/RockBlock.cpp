@@ -31,36 +31,44 @@ bool RockBlock::tick() {
     rockBlock.setPowerProfile(1);
     rockBlock.begin();
 
-    int signalQuality = 0;
-    int32_t error = rockBlock.getSignalQuality(signalQuality);
-    if (error != 0) {
-        DEBUG_PRINT("RB: getSignalQuality failed ");
-        DEBUG_PRINTLN(error);
-        transition(RockBlockFailed);
-        rockBlock.sleep();
-        return false;
-    }
+    bool success = false;
 
-    Watchdog.reset();
+    for (uint8_t i = 0; i < 2; ++i) {
+        int signalQuality = 0;
+        int32_t error = rockBlock.getSignalQuality(signalQuality);
+        if (error != 0) {
+            DEBUG_PRINT("RB: getSignalQuality failed ");
+            DEBUG_PRINTLN(error);
+        }
+        else {
+            Watchdog.reset();
 
-    DEBUG_PRINT("Signal quality: ");
-    DEBUG_PRINTLN((int32_t)signalQuality);
+            DEBUG_PRINT("Signal quality: ");
+            DEBUG_PRINTLN((int32_t)signalQuality);
 
-    uint8_t *data = (uint8_t *)message.c_str();
-    size_t size = message.length();
-    error = rockBlock.sendSBDBinary(data, size);
-    if (error != 0) {
-        DEBUG_PRINT("SB: send failed: ");
-        DEBUG_PRINTLN(error);
-        transition(RockBlockFailed);
-        rockBlock.sleep();
-        return false;
+            uint8_t *data = (uint8_t *)message.c_str();
+            size_t size = message.length();
+            error = rockBlock.sendSBDBinary(data, size);
+            if (error == 0) {
+                success = true;
+                break;
+            }
+
+            DEBUG_PRINT("SB: send failed: ");
+            DEBUG_PRINTLN(error);
+        }
     }
 
     rockBlock.sleep();
     DEBUG_PRINTLN("Done");
-    transition(RockBlockDone);
-    return true;
+
+    if (!success) {
+        transition(RockBlockFailed);
+    }
+    else {
+        transition(RockBlockDone);
+    }
+    return success;
 }
 
 bool RockBlock::handle(String reply) {
