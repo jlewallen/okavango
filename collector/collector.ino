@@ -24,7 +24,7 @@ Configuration configuration(FK_SETTINGS_CONFIGURATION_FILENAME);
 gps_location_t location;
 bool transmissionForced = false;
 bool initialWeatherTransmissionSent = false;
-bool initialAtlasTransmissionSent = true;
+bool initialAtlasTransmissionSent = false;
 bool initialLocationTransmissionSent = false;
 
 #define MANDATORY_RESTART_INTERVAL   (1000 * 60 * 60 * 3)
@@ -315,7 +315,7 @@ bool singleTransmission(String message) {
     return success;
 }
 
-void handleSensorTransmission() {
+void handleSensorTransmission(bool sendAtlas, bool sendWeather) {
     Queue queue;
 
     if (queue.size() <= 0) {
@@ -349,15 +349,19 @@ void handleSensorTransmission() {
         }
     }
 
-    if (atlas_sensors.fk.kind == FK_PACKET_KIND_ATLAS_SENSORS) {
-        if (singleTransmission(atlasPacketToMessage(&atlas_sensors))) {
-            initialAtlasTransmissionSent = true;
+    if (sendAtlas) {
+        if (atlas_sensors.fk.kind == FK_PACKET_KIND_ATLAS_SENSORS) {
+            if (singleTransmission(atlasPacketToMessage(&atlas_sensors))) {
+                initialAtlasTransmissionSent = true;
+            }
         }
     }
 
-    if (weather_station_sensors.fk.kind == FK_PACKET_KIND_WEATHER_STATION) {
-        if (singleTransmission(weatherStationPacketToMessage(&weather_station_sensors))) {
-            initialWeatherTransmissionSent = true;
+    if (sendWeather) {
+        if (weather_station_sensors.fk.kind == FK_PACKET_KIND_WEATHER_STATION) {
+            if (singleTransmission(weatherStationPacketToMessage(&weather_station_sensors))) {
+                initialWeatherTransmissionSent = true;
+            }
         }
     }
 
@@ -387,20 +391,20 @@ void handleTransmissionIfNecessary() {
 
     int8_t kind = status.shouldWe();
     if (kind == TRANSMISSION_KIND_SENSORS) {
-        handleSensorTransmission();
+        handleSensorTransmission(true, true);
     }
     else if (kind == TRANSMISSION_KIND_LOCATION) {
         handleLocationTransmission();
     }
 
     if (transmissionForced) {
-        handleSensorTransmission();
+        handleSensorTransmission(true, true);
         handleLocationTransmission();
         transmissionForced = false;
     }
 
-    if (!initialWeatherTransmissionSent || !initialAtlasTransmissionSent) {
-        handleSensorTransmission();
+    if (!initialAtlasTransmissionSent || !initialWeatherTransmissionSent) {
+        handleSensorTransmission(!initialAtlasTransmissionSent, !initialWeatherTransmissionSent);
     }
     if (!initialLocationTransmissionSent) {
         handleLocationTransmission();
