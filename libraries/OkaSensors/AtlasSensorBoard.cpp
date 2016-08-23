@@ -32,7 +32,7 @@ float AtlasSensorBoard::getWaterTemperature() {
     ds.write(0x44, 1);
 
     uint8_t present = ds.reset();
-    ds.select(address);  
+    ds.select(address);
     ds.write(0xbe);
 
     for (uint8_t i = 0; i < 9; i++) {
@@ -60,11 +60,11 @@ bool AtlasSensorBoard::tick() {
         byte newPort = portExpander.getPort() + 1;
         portExpander.select(newPort);
         if (newPort < maxPort) {
-            Serial.println("Next sensor");
+            DEBUG_PRINTLN("Next sensor");
             board.start();
         }
         else if (newPort == 3 && conductivityConfig == OnSerial2) {
-            Serial.println("Conductivity");
+            DEBUG_PRINTLN("Conductivity");
             board.setSerial(&conductivitySerial);
             board.start(OPEN_CONDUCTIVITY_SERIAL_ON_START);
         }
@@ -91,7 +91,7 @@ bool AtlasSensorBoard::tick() {
             Watchdog.reset();
 
             #ifdef HAVE_DHT22
-            Serial.println("DHT22");
+            DEBUG_PRINTLN("DHT22");
             DHT dht(PIN_DHT, DHT22);
             dht.begin();
             float humidity = dht.readHumidity();
@@ -110,11 +110,11 @@ bool AtlasSensorBoard::tick() {
             Watchdog.reset();
 
             #ifdef PIN_DS18B20
-            Serial.println("DS18B20");
+            DEBUG_PRINTLN("DS18B20");
             packet.values[packetValueIndex++] = getWaterTemperature();
             #endif
 
-            Serial.println("Metrics");
+            DEBUG_PRINTLN("Metrics");
 
             Watchdog.reset();
 
@@ -122,7 +122,7 @@ bool AtlasSensorBoard::tick() {
             packet.battery = platformBatteryVoltage();
             packet.fk.kind = FK_PACKET_KIND_ATLAS_SENSORS;
 
-            Serial.println(packet.time);
+            DEBUG_PRINTLN(packet.time);
 
             logPacketLocally();
 
@@ -134,7 +134,7 @@ bool AtlasSensorBoard::tick() {
 
             doneReadingSensors(&queue, &packet);
 
-            Serial.println("Bye!");
+            DEBUG_PRINTLN("Bye!");
             delay(100);
 
             platformRestart();
@@ -157,8 +157,8 @@ void AtlasSensorBoard::setup() {
     memset((void *)&packet, 0, sizeof(atlas_sensors_packet_t));
 
     int32_t watchdogMs = Watchdog.enable();
-    Serial.print("Watchdog enabled: ");
-    Serial.println(watchdogMs);
+    DEBUG_PRINT("Watchdog enabled: ");
+    DEBUG_PRINTLN(watchdogMs);
 }
 
 void AtlasSensorBoard::populatePacket() {
@@ -169,7 +169,7 @@ void AtlasSensorBoard::populatePacket() {
             packet.values[packetValueIndex++] = board.getValues()[i];
         }
         else {
-            Serial.println("Not enough room for values.");
+            DEBUG_PRINTLN("Not enough room for values.");
         }
     }
 }
@@ -210,4 +210,3 @@ void AtlasSensorBoard::logPacketLocally() {
         #endif
     }
 }
-

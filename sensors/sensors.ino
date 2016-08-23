@@ -28,15 +28,15 @@ void LoraAtlasSensorBoard::tryAndSendLocalQueue(Queue *queue) {
     NetworkProtocolState networkProtocol(NetworkState::PingForListener, &radio, queue, NULL);
 
     int32_t watchdogMs = Watchdog.enable();
-    Serial.print("Watchdog enabled: ");
-    Serial.println(watchdogMs);
+    DEBUG_PRINT("Watchdog enabled: ");
+    DEBUG_PRINTLN(watchdogMs);
 
     if (radio.setup()) {
-        Serial.println("Enabling radio");
+        DEBUG_PRINTLN("Enabling radio");
 
         if (radio.setup()) {
-            Serial.print("Queue: ");
-            Serial.println(queue->size());
+            DEBUG_PRINT("Queue: ");
+            DEBUG_PRINTLN(queue->size());
 
             while (true) {
                 Watchdog.reset();
@@ -54,7 +54,7 @@ void LoraAtlasSensorBoard::tryAndSendLocalQueue(Queue *queue) {
         }
     }
     else {
-        Serial.println("No radio available");
+        DEBUG_PRINTLN("No radio available");
     }
 
     Watchdog.disable();
@@ -78,10 +78,15 @@ void setup() {
     Serial.println("Begin");
 
     corePlatform.setup();
+
+    #ifdef FK_WRITE_LOG_FILE
+    logPrinter.open();
+    #endif
+
     loraAtlasSensorBoard.setup();
     platformSerial2Begin(9600);
 
-    Serial.println("Loop");
+    DEBUG_PRINTLN("Loop");
 }
 
 void loop() {
