@@ -24,7 +24,7 @@ Configuration configuration(FK_SETTINGS_CONFIGURATION_FILENAME);
 gps_location_t location;
 bool transmissionForced = false;
 bool initialWeatherTransmissionSent = false;
-bool initialAtlasTransmissionSent = false;
+bool initialAtlasTransmissionSent = true;
 bool initialLocationTransmissionSent = false;
 
 #define MANDATORY_RESTART_INTERVAL   (1000 * 60 * 60 * 3)
