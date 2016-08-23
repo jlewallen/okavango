@@ -66,14 +66,14 @@ bool write(fk_transmission_status_t *status) {
 
 void log(fk_transmission_status_t *status) {
     for (int8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
-        Serial.print(i);
-        Serial.print(": ");
-        Serial.print(status->kinds[i].elapsed);
-        Serial.print(", ");
-        Serial.print(status->kinds[i].millis);
-        Serial.print(", ");
-        Serial.print(millis() - status->kinds[i].millis);
-        Serial.println();
+        DEBUG_PRINT(i);
+        DEBUG_PRINT(": ");
+        DEBUG_PRINT(status->kinds[i].elapsed);
+        DEBUG_PRINT(", ");
+        DEBUG_PRINT(status->kinds[i].millis);
+        DEBUG_PRINT(", ");
+        DEBUG_PRINT(millis() - status->kinds[i].millis);
+        DEBUG_PRINTLN();
     }
 }
 

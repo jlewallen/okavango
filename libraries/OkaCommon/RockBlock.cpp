@@ -27,8 +27,8 @@ bool RockBlock::tick() {
     int signalQuality = 0;
     int32_t error = rockBlock.getSignalQuality(signalQuality);
     if (error != 0) {
-        Serial.print("RB: getSignalQuality failed");
-        Serial.println(error);
+        DEBUG_PRINT("RB: getSignalQuality failed ");
+        DEBUG_PRINTLN(error);
         transition(RockBlockFailed);
         rockBlock.sleep();
         return false;
@@ -36,22 +36,22 @@ bool RockBlock::tick() {
 
     Watchdog.reset();
 
-    Serial.print("Signal quality: ");
-    Serial.println(signalQuality);
+    DEBUG_PRINT("Signal quality: ");
+    DEBUG_PRINTLN(signalQuality);
 
     uint8_t *data = (uint8_t *)message.c_str();
     size_t size = message.length();
     error = rockBlock.sendSBDBinary(data, size);
     if (error != 0) {
-        Serial.print("SB: send failed: ");
-        Serial.println(error);
+        DEBUG_PRINT("SB: send failed: ");
+        DEBUG_PRINTLN(error);
         transition(RockBlockFailed);
         rockBlock.sleep();
         return false;
     }
 
     rockBlock.sleep();
-    Serial.println("Done");
+    DEBUG_PRINTLN("Done");
     transition(RockBlockDone);
     return true;
 }

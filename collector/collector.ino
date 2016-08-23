@@ -45,13 +45,13 @@ void setup() {
     }
     #endif
 
-    Serial.println(F("Begin"));
+    DEBUG_PRINTLN(F("Begin"));
 
     CorePlatform corePlatform;
     corePlatform.setup();
 
     if (!configuration.read()) {
-        Serial.println("Error reading configuration");
+        DEBUG_PRINTLN("Error reading configuration");
         platformCatastrophe(PIN_RED_LED);
     }
 
@@ -62,7 +62,7 @@ void setup() {
 
     memzero((uint8_t *)&location, sizeof(gps_location_t));
 
-    Serial.println(F("Loop"));
+    DEBUG_PRINTLN(F("Loop"));
 }
 
 void checkAirwaves() {
@@ -71,12 +71,12 @@ void checkAirwaves() {
     NetworkProtocolState networkProtocol(NetworkState::EnqueueFromNetwork, &radio, &queue, new CollectorNetworkCallbacks());
     WeatherStation weatherStation;
 
-    Serial.println("Checking Airwaves...");
+    DEBUG_PRINTLN("Checking Airwaves...");
     
     int32_t watchdogMs = Watchdog.enable();
 
-    Serial.print("Watchdog enabled: ");
-    Serial.println(watchdogMs);
+    DEBUG_PRINT("Watchdog enabled: ");
+    DEBUG_PRINTLN(watchdogMs);
 
     weatherStation.setup();
 
@@ -104,7 +104,7 @@ void checkAirwaves() {
         delay(10);
 
         if (millis() - last > 5000) {
-            Serial.print(".");
+            DEBUG_PRINT(".");
             last = millis();
         }
 
@@ -120,7 +120,7 @@ void checkAirwaves() {
 
     radio.sleep();
 
-    Serial.println();
+    DEBUG_PRINTLN("");
 
     started = millis();
     bool success = false;
@@ -128,17 +128,17 @@ void checkAirwaves() {
 
     while (millis() - started < 10 * 1000) {
         if (weatherStation.tick()) {
-            Serial.println();
+            DEBUG_PRINTLN("");
 
-            Serial.print("&");
+            DEBUG_PRINT("&");
 
             weatherStation.logReadingLocally();
 
             float *values = weatherStation.getValues();
-            Serial.print("%");
+            DEBUG_PRINT("%");
             SystemClock.set((uint32_t)values[FK_WEATHER_STATION_FIELD_UNIXTIME]);
 
-            Serial.print("%");
+            DEBUG_PRINT("%");
 
             location.time = values[FK_WEATHER_STATION_FIELD_UNIXTIME];
             location.latitude = values[FK_WEATHER_STATION_FIELD_LATITUDE];
@@ -146,7 +146,7 @@ void checkAirwaves() {
             location.altitude = values[FK_WEATHER_STATION_FIELD_ALTITUDE];
             location.satellites = values[FK_WEATHER_STATION_FIELD_SATELLITES];
 
-            Serial.print("%");
+            DEBUG_PRINT("%");
 
             weather_station_packet_t packet;
             memzero((uint8_t *)&packet, sizeof(weather_station_packet_t));
@@ -157,12 +157,12 @@ void checkAirwaves() {
                 packet.values[i] = values[i];
             }
 
-            Serial.print("%");
+            DEBUG_PRINT("%");
 
             queue.enqueue((uint8_t *)&packet);
 
             weatherStation.clear();
-            Serial.print("^");
+            DEBUG_PRINT("^");
 
             success = true;
 
@@ -171,7 +171,7 @@ void checkAirwaves() {
     }
 
     if (!success) {
-        Serial.println("Unable to get Weather Station reading.");
+        DEBUG_PRINTLN("Unable to get Weather Station reading.");
     }
 
     weatherStation.off();
@@ -215,11 +215,12 @@ String weatherStationPacketToMessage(weather_station_packet_t *packet) {
     return message;
 }
 
-void singleTransmission(String message) {
-    Serial.print("Message: ");
-    Serial.println(message);
-    Serial.println(message.length());
+bool singleTransmission(String message) {
+    DEBUG_PRINT("Message: ");
+    DEBUG_PRINTLN(message);
+    DEBUG_PRINTLN(message.length());
 
+    bool success = false;
     uint32_t started = millis();
     int32_t watchdogMs = Watchdog.enable();
     if (message.length() > 0) {
@@ -235,6 +236,7 @@ void singleTransmission(String message) {
                 fona.tick();
                 delay(10);
             }
+            success = fona.isDone();
         }
         if (configuration.hasRockBlockAttached()) {
             RockBlock rockBlock(message);
@@ -248,9 +250,12 @@ void singleTransmission(String message) {
                 rockBlock.tick();
                 delay(10);
             }
+            success = rockBlock.isDone();
         }
     }
     Watchdog.disable();
+
+    return success;
 }
 
 void handleSensorTransmission() {
