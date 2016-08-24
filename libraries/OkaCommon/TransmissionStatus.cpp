@@ -7,6 +7,7 @@
 typedef struct fk_transmission_kind_status_t {
     uint32_t millis;
     uint32_t elapsed;
+    uint32_t time;
 } fk_transmission_kind_status_t;
 
 typedef struct fk_transmission_status_t {
@@ -101,13 +102,27 @@ void TransmissionStatus::remove() {
 int8_t TransmissionStatus::shouldWe() {
     fk_transmission_status_t status;
 
-    uint32_t now = millis();
+    // We use 0 here until we're initialized so that we can be sure to assign
+    // a propert time. Then we set 0's to a good time. This will cause problems
+    // if we go long periods of time w/o getting a GPS fix at startup.
+    uint32_t rtcNow = SystemClock.initialized() ? SystemClock.now() : 0;
+    uint32_t millisNow = millis();
 
     if (!read(&status)) {
         memzero((uint8_t *)&status, sizeof(fk_transmission_status_t));
         for (int8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
-            status.kinds[i].millis = now;
+            status.kinds[i].millis = millisNow;
             status.kinds[i].elapsed = 0;
+            status.kinds[i].time = rtcNow;
+        }
+    }
+
+    status.time = rtcNow;
+
+    // Assign a proper now to those that are uninitialized.
+    for (int8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
+        if (status.kinds[i].time == 0) {
+            status.kinds[i].time = rtcNow;
         }
     }
 
@@ -118,7 +133,7 @@ int8_t TransmissionStatus::shouldWe() {
         // I was worried about some kind of weird situation where we were always
         // 0 here. Or even usually 0 here. If millis() is less than the old
         // millis we know that millis() has passed since, so that works.
-        uint32_t change = now > status.kinds[i].millis ? (now - status.kinds[i].millis) : millis();
+        uint32_t change = millisNow > status.kinds[i].millis ? (millisNow - status.kinds[i].millis) : millis();
 
         DEBUG_PRINT("TS #");
         DEBUG_PRINT(i);
@@ -135,18 +150,29 @@ int8_t TransmissionStatus::shouldWe() {
         if (change > 0) { // Should never be < 0, but meh.
             status.kinds[i].elapsed += change;
         }
-        status.kinds[i].millis = now;
+        status.kinds[i].millis = millisNow;
 
-        if (status.kinds[i].elapsed > TransmissionIntervals[i]) {
+        uint32_t intervalMs = TransmissionIntervals[i];
+
+        // Don't bother if this time is 0, and therefore uninitialized.
+        int32_t rtcElapsed = status.kinds[i].time > 0 ? rtcNow - status.kinds[i].time : 0;
+
+        if (status.kinds[i].elapsed > intervalMs || rtcElapsed > (intervalMs / 1000)) {
             // If we don't 0 we'll get done next time.
             if (which < 0) {
+                DEBUG_PRINT("Trigger #");
+                DEBUG_PRINT(i);
+                DEBUG_PRINT(": ");
+                DEBUG_PRINT(rtcNow - status.kinds[i].time);
+                DEBUG_PRINT(" ");
+                DEBUG_PRINT(status.kinds[i].elapsed);
+                DEBUG_PRINTLN();
                 status.kinds[i].elapsed = 0;
+                status.kinds[i].time = rtcNow;
                 which = i;
             }
         }
     }
-
-    status.time = SystemClock.now();
 
     write(&status);
 

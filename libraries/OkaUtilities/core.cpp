@@ -1,6 +1,6 @@
 #include <SD.h>
 #include "core.h"
-#include "protocol.h" 
+#include "protocol.h"
 
 RtcSystemClock SystemClock;
 
@@ -10,7 +10,7 @@ void CorePlatform::setup() {
 
     pinMode(PIN_GREEN_LED, OUTPUT);
     digitalWrite(PIN_GREEN_LED, LOW);
-   
+
     // Important, the SDI CS' should be ready to go before we start using any
     // of them.
     pinMode(PIN_SD_CS, OUTPUT);
@@ -49,16 +49,21 @@ bool RtcSystemClock::setup() {
     return true;
 }
 
+bool RtcSystemClock::initialized() {
+    return rtc.initialized();
+}
+
 uint32_t RtcSystemClock::now() {
     return rtc.now().unixtime();
 }
 
 bool RtcSystemClock::set(uint32_t now) {
     if (adjusted == 0) {
+        bool uninitialized = !rtc.initialized();
         DEBUG_PRINTLN("SystemClock Adjusted");
         rtc.adjust(now);
         adjusted = now;
-        return true;
+        return uninitialized;
     }
     return false;
 }
