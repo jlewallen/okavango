@@ -49,6 +49,10 @@ bool RtcSystemClock::setup() {
     return true;
 }
 
+bool RtcSystemClock::initialized() {
+    return rtc.initialized();
+}
+
 uint32_t RtcSystemClock::now() {
     return rtc.now().unixtime();
 }

@@ -16,6 +16,7 @@ class RtcSystemClock {
 
 public:
     bool setup();
+    bool initialized();
     uint32_t now();
     bool set(uint32_t now);
 };
