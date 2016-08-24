@@ -76,6 +76,8 @@ void log(fk_transmission_status_t *status) {
         DEBUG_PRINT(status->kinds[i].elapsed);
         DEBUG_PRINT(", prv=");
         DEBUG_PRINT(status->kinds[i].millis);
+        DEBUG_PRINT(", time=");
+        DEBUG_PRINT(status->kinds[i].time);
         DEBUG_PRINT(", dT=");
         DEBUG_PRINT(millis() - status->kinds[i].millis);
         DEBUG_PRINT(", rem=");
@@ -122,6 +124,9 @@ int8_t TransmissionStatus::shouldWe() {
     // Assign a proper now to those that are uninitialized.
     for (int8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
         if (status.kinds[i].time == 0) {
+            DEBUG_PRINT("TS #");
+            DEBUG_PRINT(i);
+            DEBUG_PRINTLN(" fixing 0 value uninitialized time.")
             status.kinds[i].time = rtcNow;
         }
     }
@@ -141,6 +146,8 @@ int8_t TransmissionStatus::shouldWe() {
         DEBUG_PRINT(status.kinds[i].elapsed);
         DEBUG_PRINT(", prv=");
         DEBUG_PRINT(status.kinds[i].millis);
+        DEBUG_PRINT(", time=");
+        DEBUG_PRINT(status.kinds[i].time);
         DEBUG_PRINT(", dT=");
         DEBUG_PRINT(change);
         DEBUG_PRINT(", rem=");
