@@ -86,6 +86,8 @@ uint8_t *Queue::dequeue() {
 
                 dequeuePosition += FK_QUEUE_ENTRY_SIZE_ON_DISK;
 
+                file.close();
+
                 // DEBUG_PRINTLN(F(" returning"));
                 return buffer;
             }
@@ -99,9 +101,9 @@ uint8_t *Queue::dequeue() {
         file.close();
 
         removeAll();
-
-        return NULL;
     }
+
+    return NULL;
 }
 
 void Queue::copyInto(Queue *into) {

@@ -78,7 +78,7 @@ void WeatherStation::logReadingLocally() {
     File file = Logger::open(FK_SETTINGS_WEATHER_STATION_DATA_FILENAME);
     if (file) {
         Serial.print("*");
-        for (uint8_t i = 0; i < numberOfValues; ++i) {
+        for (uint8_t i = 0; i < FK_WEATHER_STATION_PACKET_NUMBER_VALUES; ++i) {
             if (i > 0) {
                 file.print(",");
             }

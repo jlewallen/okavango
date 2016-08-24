@@ -65,10 +65,10 @@ void NonBlockingSerialProtocol::appendToBuffer(char newChar) {
 
 void NonBlockingSerialProtocol::sendCommand(const char *cmd) {
     // Precondition: state == Idle
-    serial->print(cmd);  
+    serial->print(cmd);
     serial->print('\r');
     transition(NonBlockingSerialProtocolState::Reading);
-    Serial.println(cmd);
+    DEBUG_PRINTLN(cmd);
     sendsCounter++;
 }
 

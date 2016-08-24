@@ -4,7 +4,7 @@
 
 uint32_t TransmissionIntervals[] = {
     1000 * 60 * 60 * 24, // * 24 * 7,
-    1000 * 60 * 60 * 12
+    1000 * 60 * 60 * 6
 };
 
 #ifdef ARDUINO_AVR_FEATHER32U4
@@ -59,7 +59,7 @@ void platformSerial2Begin(int32_t baud) {
 }
 
 extern "C" char *sbrk(int32_t i);
- 
+
 uint32_t platformFreeMemory() {
     char stack_dummy = 0;
     return &stack_dummy - sbrk(0);
@@ -112,3 +112,49 @@ void platformLowPowerSleep(uint32_t numberOfMs) {
     }
 }
 
+
+#ifdef FK_WRITE_LOG_FILE
+#include <SD.h>
+
+File fileLog;
+LogPrinter logPrinter;
+
+bool LogPrinter::open() {
+    fileLog = SD.open("DEBUG.LOG", FILE_WRITE);
+
+    return fileLog;
+}
+
+void LogPrinter::flush() {
+    fileLog.flush();
+}
+
+int LogPrinter::available() {
+    return 0;
+}
+
+int LogPrinter::read() {
+    return -1;
+}
+
+int LogPrinter::peek() {
+    return -1;
+}
+
+size_t LogPrinter::write(uint8_t c) {
+    size_t w = fileLog.write(c);
+    if ((char)c == '\n') {
+        flush();
+    }
+    Serial.write(c);
+    return w;
+}
+
+size_t LogPrinter::write(const uint8_t *buffer, size_t size) {
+    size_t w = fileLog.write(buffer, size);
+    flush();
+    Serial.write(buffer, size);
+    return w;
+}
+
+#endif

@@ -70,7 +70,7 @@ bool AtlasScientificBoard::tick() {
             break;
         }
         case Done: {
-            Serial.println("DONE");
+            DEBUG_PRINTLN("DONE");
             return false;
         }
     }
@@ -102,9 +102,9 @@ String getFirstLine(String &str) {
 bool AtlasScientificBoard::handle(String reply) {
     if (reply.indexOf("*") >= 0) {
         if (reply.length() > 0) {
-            Serial.print(state);
-            Serial.print(">");
-            Serial.println(reply);
+            DEBUG_PRINT(state);
+            DEBUG_PRINT(">");
+            DEBUG_PRINTLN(reply);
         }
 
         switch (state) {
@@ -187,4 +187,3 @@ bool AtlasScientificBoard::handle(String reply) {
     }
     return false;
 }
-

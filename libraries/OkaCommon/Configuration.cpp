@@ -1,5 +1,7 @@
-#include "Configuration.h"
 #include <SD.h>
+
+#include "Configuration.h"
+#include "Platforms.h"
 
 Configuration::Configuration(const char *filename) : filename(filename) {
 }
@@ -7,14 +9,14 @@ Configuration::Configuration(const char *filename) : filename(filename) {
 bool Configuration::read() {
     File file = SD.open(filename);
     if (!file) {
-        Serial.println("No configuration");
+        DEBUG_PRINTLN("No configuration");
         return false;
     }
 
     String data = file.readString();
     int32_t i = data.indexOf(' ');
     if (i <= 0) {
-        Serial.println("Malformed configuration");
+        DEBUG_PRINTLN("Malformed configuration");
         return false;
     }
 
@@ -25,13 +27,13 @@ bool Configuration::read() {
     hasFona = fonaOrRb == "FONA";
     hasRockBlock = fonaOrRb == "ROCKBLOCK";
 
-    Serial.print("Config: ");
-    Serial.print(name);
-    Serial.print(" ");
-    Serial.print(hasFona);
-    Serial.print(" ");
-    Serial.print(hasRockBlock);
-    Serial.println();
+    DEBUG_PRINT("Config: ");
+    DEBUG_PRINT(name);
+    DEBUG_PRINT(" ");
+    DEBUG_PRINT(hasFona);
+    DEBUG_PRINT(" ");
+    DEBUG_PRINT(hasRockBlock);
+    DEBUG_PRINTLN("");
 
     file.close();
     
