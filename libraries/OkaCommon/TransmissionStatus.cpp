@@ -126,7 +126,7 @@ int8_t TransmissionStatus::shouldWe() {
         if (status.kinds[i].time == 0) {
             DEBUG_PRINT("TS #");
             DEBUG_PRINT(i);
-            DEBUG_PRINTLN(" fixing 0 value uninitialized time.")
+            DEBUG_PRINTLN(" fixing 0 value uninitialized time.");
             status.kinds[i].time = rtcNow;
         }
     }
