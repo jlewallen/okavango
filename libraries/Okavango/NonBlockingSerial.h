@@ -29,7 +29,7 @@ public:
 
     virtual bool tick();
 
-    void setSerial(SerialType *newSerial) {
+    virtual void setSerial(SerialType *newSerial) {
         serial = newSerial;
     }
 
