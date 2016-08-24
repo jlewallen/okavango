@@ -2,6 +2,7 @@
 #define ATLAS_SCIENTIFIC_H
 
 #include <Arduino.h>
+#include "SensorBoard.h"
 #include "NonBlockingSerial.h"
 
 enum class AtlasScientificBoardState {
@@ -18,7 +19,7 @@ enum class AtlasScientificBoardState {
     Done
 };
 
-class AtlasScientificBoard : public NonBlockingSerialProtocol {
+class AtlasScientificBoard : public NonBlockingSerialProtocol, public SensorBoard {
 private:
     const static int8_t MAX_VALUES = 4;
     AtlasScientificBoardState state = AtlasScientificBoardState::Start;

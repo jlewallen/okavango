@@ -11,8 +11,10 @@
 #include "network.h"
 #include "Logger.h"
 
+#include "SensorBoard.h"
 #include "AtlasScientific.h"
 #include "SerialPortExpander.h"
+#include "ParallelizedAtlasScientificSensors.h"
 
 #define FK_ATLAS_SENSORS_FIELD_ORP                           0
 #define FK_ATLAS_SENSORS_FIELD_PH                            1
@@ -34,14 +36,14 @@ class AtlasSensorBoard {
 private:
     CorePlatform *corePlatform;
     SerialPortExpander portExpander;
-    AtlasScientificBoard board;
+    SensorBoard *board;
     Adafruit_BME280 bme;
     atlas_sensors_packet_t packet;
     uint8_t packetValueIndex = 0;
     ConductivityConfig conductivityConfig;
 
 public:
-    AtlasSensorBoard(CorePlatform *corePlatform, ConductivityConfig conductivityConfig, bool disableSleep);
+    AtlasSensorBoard(CorePlatform *corePlatform, SensorBoard *board, ConductivityConfig conductivityConfig);
 
 public:
     bool tick();

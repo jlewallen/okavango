@@ -14,7 +14,7 @@ public:
 };
 
 LoraAtlasSensorBoard::LoraAtlasSensorBoard(CorePlatform *corePlatform) :
-    AtlasSensorBoard(corePlatform, ConductivityConfig::OnSerial2, false) {
+    AtlasSensorBoard(corePlatform, new AtlasScientificBoard(false), ConductivityConfig::OnSerial2) {
 }
 
 void LoraAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) {
