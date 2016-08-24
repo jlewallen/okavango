@@ -115,7 +115,10 @@ int8_t TransmissionStatus::shouldWe() {
 
     int8_t which = -1;
     for (int8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
-        int32_t change = now > status.kinds[i].millis ? now - status.kinds[i].millis : 0;
+        // I was worried about some kind of weird situation where we were always
+        // 0 here. Or even usually 0 here. If millis() is less than the old
+        // millis we know that millis() has passed since, so that works.
+        uint32_t change = now > status.kinds[i].millis ? (now - status.kinds[i].millis) : millis();
 
         DEBUG_PRINT("TS #");
         DEBUG_PRINT(i);
@@ -129,14 +132,15 @@ int8_t TransmissionStatus::shouldWe() {
         DEBUG_PRINT(TransmissionIntervals[i] - status.kinds[i].elapsed);
         DEBUG_PRINTLN();
 
-        if (change > 0) {
+        if (change > 0) { // Should never be < 0, but meh.
             status.kinds[i].elapsed += change;
         }
         status.kinds[i].millis = now;
 
         if (status.kinds[i].elapsed > TransmissionIntervals[i]) {
-            status.kinds[i].elapsed = 0;
+            // If we don't 0 we'll get done next time.
             if (which < 0) {
+                status.kinds[i].elapsed = 0;
                 which = i;
             }
         }
