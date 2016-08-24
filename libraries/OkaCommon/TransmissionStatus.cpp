@@ -7,6 +7,7 @@
 typedef struct fk_transmission_kind_status_t {
     uint32_t millis;
     uint32_t elapsed;
+    uint32_t time;
 } fk_transmission_kind_status_t;
 
 typedef struct fk_transmission_status_t {
@@ -101,15 +102,20 @@ void TransmissionStatus::remove() {
 int8_t TransmissionStatus::shouldWe() {
     fk_transmission_status_t status;
 
+    // TODO: Use 0 here if uninitialized and then just set any 0 value.
     uint32_t now = millis();
+    uint32_t rtcNow = SystemClock.now();
 
     if (!read(&status)) {
         memzero((uint8_t *)&status, sizeof(fk_transmission_status_t));
         for (int8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
             status.kinds[i].millis = now;
             status.kinds[i].elapsed = 0;
+            status.kinds[i].time = rtcNow;
         }
     }
+
+    status.time = rtcNow;
 
     DEBUG_PRINTLN("");
 
@@ -137,16 +143,23 @@ int8_t TransmissionStatus::shouldWe() {
         }
         status.kinds[i].millis = now;
 
-        if (status.kinds[i].elapsed > TransmissionIntervals[i]) {
+        uint32_t intervalMs = TransmissionIntervals[i];
+        if (status.kinds[i].elapsed > intervalMs || rtcNow - status.kinds[i].time > (intervalMs / 1000)) {
             // If we don't 0 we'll get done next time.
             if (which < 0) {
+                DEBUG_PRINT("Trigger #");
+                DEBUG_PRINT(i);
+                DEBUG_PRINT(": ");
+                DEBUG_PRINT(rtcNow - status.kinds[i].time);
+                DEBUG_PRINT(" ");
+                DEBUG_PRINT(status.kinds[i].elapsed);
+                DEBUG_PRINTLN();
                 status.kinds[i].elapsed = 0;
+                status.kinds[i].time = rtcNow;
                 which = i;
             }
         }
     }
-
-    status.time = SystemClock.now();
 
     write(&status);
 

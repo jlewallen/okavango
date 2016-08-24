@@ -185,7 +185,11 @@ void checkAirwaves() {
 
             float *values = weatherStation.getValues();
             DEBUG_PRINT("%");
-            SystemClock.set((uint32_t)values[FK_WEATHER_STATION_FIELD_UNIXTIME]);
+            if (SystemClock.set((uint32_t)values[FK_WEATHER_STATION_FIELD_UNIXTIME])) {
+                // DEBUG_PRINTLN("Removing TransmissionStatus due to clock change.")
+                // TransmissionStatus status;
+                // status.remove();
+            }
 
             DEBUG_PRINT("%");
 
