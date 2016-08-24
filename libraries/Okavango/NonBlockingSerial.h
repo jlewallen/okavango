@@ -3,7 +3,7 @@
 
 #include "Platforms.h"
 
-enum NonBlockingSerialProtocolState {
+enum class NonBlockingSerialProtocolState {
     Reading,
     Idle,
     Closed
@@ -12,7 +12,7 @@ enum NonBlockingSerialProtocolState {
 class NonBlockingSerialProtocol {
 private:
     SerialType *serial;
-    NonBlockingSerialProtocolState state = Idle;
+    NonBlockingSerialProtocolState nbsState = NonBlockingSerialProtocolState::Idle;
     uint32_t lastStateChangeOrReplyAt;
     uint16_t replyWait;
     uint8_t sendsCounter;
@@ -38,7 +38,7 @@ public:
     }
 
     void open() {
-        transition(Idle);
+        transition(NonBlockingSerialProtocolState::Idle);
     }
 
 protected:

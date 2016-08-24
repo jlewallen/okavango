@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include "NonBlockingSerial.h"
 
-enum AtlasScientificBoardState {
+enum class AtlasScientificBoardState {
     Start,
     Status0,
     Status1,
@@ -21,7 +21,7 @@ enum AtlasScientificBoardState {
 class AtlasScientificBoard : public NonBlockingSerialProtocol {
 private:
     const static int8_t MAX_VALUES = 4;
-    AtlasScientificBoardState state = Start;
+    AtlasScientificBoardState state = AtlasScientificBoardState::Start;
     float values[MAX_VALUES];
     uint8_t numberOfValues;
     bool disableSleep;
@@ -40,11 +40,11 @@ public:
     }
 
     bool isDone() {
-        return state == Done;
+        return state == AtlasScientificBoardState::Done;
     }
 
     void start(bool setupSerial = true) {
-        state = Start;
+        state = AtlasScientificBoardState::Start;
         if (setupSerial) {
             setup();
         }
