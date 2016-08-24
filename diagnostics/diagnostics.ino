@@ -1,9 +1,11 @@
 #include <SD.h>
+#include <Adafruit_SleepyDog.h>
 #include "Platforms.h"
 #include "core.h"
 #include "Repl.h"
 #include "LoraRadio.h"
-#include <Adafruit_SleepyDog.h>
+#include "Queue.h"
+#include "TransmissionStatus.h"
 
 typedef struct rf95_header_t {
     uint8_t to;
@@ -290,6 +292,48 @@ void loop() {
 
     if (!radio.setup()) {
         platformCatastrophe(PIN_RED_LED);
+    }
+
+    TransmissionStatus transmissionStatus;
+    transmissionStatus.dump();
+
+    Queue queue;
+
+    if (queue.size() > 0) {
+        DEBUG_PRINT("Queue Size: ");
+        DEBUG_PRINTLN(queue.size());
+
+        atlas_sensors_packet_t atlas_sensors;
+        memzero((uint8_t *)&atlas_sensors, sizeof(atlas_sensors_packet_t));
+        weather_station_packet_t weather_station_sensors;
+        memzero((uint8_t *)&weather_station_sensors, sizeof(weather_station_packet_t));
+
+        while (true) {
+            fk_network_packet_t *packet = (fk_network_packet_t *)queue.dequeue();
+            if (packet == NULL) {
+                break;
+            }
+
+            switch (packet->kind) {
+            case FK_PACKET_KIND_WEATHER_STATION: {
+                memcpy((uint8_t *)&weather_station_sensors, (uint8_t *)packet, sizeof(weather_station_packet_t));
+                DEBUG_PRINT("Weather: ");
+                DEBUG_PRINTLN(weather_station_sensors.time);
+                break;
+            }
+            case FK_PACKET_KIND_ATLAS_SENSORS: {
+                memcpy((uint8_t *)&atlas_sensors, (uint8_t *)packet, sizeof(atlas_sensors_packet_t));
+                DEBUG_PRINT("Atlas: ");
+                DEBUG_PRINTLN(atlas_sensors.time);
+                break;
+            }
+            default: {
+                DEBUG_PRINT("Unknown: ");
+                DEBUG_PRINTLN(packet->kind);
+                break;
+            }
+            }
+        }
     }
 
     Watchdog.enable();

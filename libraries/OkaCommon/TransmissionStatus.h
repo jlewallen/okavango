@@ -4,6 +4,7 @@
 class TransmissionStatus {
 public:
     int8_t shouldWe();
+    void dump();
     void remove();
 };
 

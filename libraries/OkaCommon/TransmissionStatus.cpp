@@ -65,6 +65,10 @@ bool write(fk_transmission_status_t *status) {
 }
 
 void log(fk_transmission_status_t *status) {
+    DEBUG_PRINT("TS: ");
+    DEBUG_PRINT(status->time);
+    DEBUG_PRINTLN("");
+
     for (int8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
         DEBUG_PRINT(i);
         DEBUG_PRINT(": acc=");
@@ -77,6 +81,17 @@ void log(fk_transmission_status_t *status) {
         DEBUG_PRINT(TransmissionIntervals[i] - status->kinds[i].elapsed);
         DEBUG_PRINTLN();
     }
+}
+
+void TransmissionStatus::dump() {
+    fk_transmission_status_t status;
+
+    if (!read(&status)) {
+        DEBUG_PRINTLN("TS: Nothing to dump.");
+        return;
+    }
+
+    log(&status);
 }
 
 void TransmissionStatus::remove() {
