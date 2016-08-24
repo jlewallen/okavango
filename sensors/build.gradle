@@ -1,0 +1,31 @@
+apply plugin: 'com.github.jlewallen.arduino'
+
+arduino {
+    libraries = [
+        "SPI",
+        "RadioHead",
+        "RTClib",
+        "OkaUtilities",
+        "Okavango",
+        "SimpleBuffer",
+        "Wire",
+        "SD",
+        "OkaCommon",
+        "Adafruit_SleepyDog",
+        "OneWire",
+        "Arduino-Temperature-Control-Library",
+        "IridiumSBD",
+        "Adafruit_WINC1500",
+        "OkaSensors",,
+        "Adafruit_Sensor",
+        "Adafruit_BME280_Library",
+        "DHT-sensor-library"
+        ]
+
+    defaultBoard = "adafruit:samd:adafruit_feather_m0"
+    boards = [
+        "adafruit:samd:adafruit_feather_m0"
+        ]
+    projectName = "sensors.ino"
+    projectLibrariesDir = "$projectDir/../libraries"
+}

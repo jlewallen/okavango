@@ -1,0 +1,16 @@
+apply plugin: 'com.github.jlewallen.arduino'
+
+arduino {
+    libraries = [
+        "SoftwareSerial",
+        "Adafruit_FONA-master",
+        "SimpleBuffer"
+        ]
+
+    defaultBoard = "adafruit:avr:feather32u4"
+    boards = [
+        "adafruit:avr:feather32u4"
+        ]
+    projectName = "fona-driver.ino"
+    projectLibrariesDir = "$projectDir/../libraries"
+}

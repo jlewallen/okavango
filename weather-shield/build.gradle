@@ -1,0 +1,19 @@
+apply plugin: 'com.github.jlewallen.arduino'
+
+arduino {
+    libraries = [
+        "SoftwareSerial",
+        "Wire",
+        "SparkFun_MPL3115A2",
+        "SparkFun_HTU21D",
+        "TinyGPSPlus",
+        "RTClib"
+        ]
+
+    defaultBoard = "arduino:avr:uno"
+    boards = [
+        "arduino:avr:uno"
+        ]
+    projectName = "weather-shield.ino"
+    projectLibrariesDir = "$projectDir/../libraries"
+}
