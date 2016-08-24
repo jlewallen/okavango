@@ -206,17 +206,26 @@ private:
     }
 };
 
+typedef enum DiagnosticsReplState {
+    Normal,
+    Stressing
+} DiagnosticsReplState;
+
 class DiagnosticsRepl : public Repl {
 private:
     Sniffer *sniffer;
     LoraRadio *radio;
+    uint8_t pingsLeft;
 
 public:
     DiagnosticsRepl(Sniffer *sniffer, LoraRadio *radio) :
-        sniffer(sniffer), radio(radio) {
+        sniffer(sniffer), radio(radio), pingsLeft(0) {
     }
 
     bool doWork() {
+        if (pingsLeft > 0) {
+            return true;
+        }
         return false;
     }
 
@@ -228,12 +237,15 @@ public:
             radio->send((uint8_t *)&force_transmission, sizeof(fk_network_force_transmission_t));
             radio->waitPacketSent();
         }
-        if (command == "ping") {
+        else if (command == "ping") {
             fk_network_ping_t ping;
             memzero((uint8_t *)&ping, sizeof(fk_network_ping_t));
             ping.fk.kind = FK_PACKET_KIND_PING;
             radio->send((uint8_t *)&ping, sizeof(fk_network_ping_t));
             radio->waitPacketSent();
+        }
+        else if (command = "stress") {
+            pingsLeft = 5;
         }
     }
 };
