@@ -11,9 +11,11 @@ enum class ParallelizedAtlasScientificSensorsState {
     Status1,
     LedsOn,
     Configure,
+    Waiting,
     Read0,
     Read1,
     Read2,
+    Read3,
     LedsOff,
     Sleeping,
     Done
@@ -21,10 +23,10 @@ enum class ParallelizedAtlasScientificSensorsState {
 
 class ParallelizedAtlasScientificSensors : public NonBlockingSerialProtocol, public SensorBoard {
 private:
-    const static int8_t MAX_VALUES = 4;
     ParallelizedAtlasScientificSensorsState state = ParallelizedAtlasScientificSensorsState::Start;
     SerialPortExpander *serialPortExpander;
-    float values[MAX_VALUES];
+    float values[FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES];
+    uint32_t lastTransisitonAt;
     uint8_t numberOfValues;
     uint8_t portNumber;
     bool disableSleep;

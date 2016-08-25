@@ -26,6 +26,7 @@ public:
 
         }
         else {
+            Serial1.begin(9600);
             return &Serial1;
         }
     }
