@@ -58,6 +58,7 @@ bool ParallelizedAtlasScientificSensors::tick() {
         }
         case ParallelizedAtlasScientificSensorsState::Waiting: {
             if (millis() - lastTransisitonAt > 5000) {
+                numberOfRead0s = 0;
                 transition(ParallelizedAtlasScientificSensorsState::Read0);
             }
             break;
@@ -69,14 +70,6 @@ bool ParallelizedAtlasScientificSensors::tick() {
             break;
         }
         case ParallelizedAtlasScientificSensorsState::Read1: {
-            sendCommand(CMD_READ);
-            break;
-        }
-        case ParallelizedAtlasScientificSensorsState::Read2: {
-            sendCommand(CMD_READ);
-            break;
-        }
-        case ParallelizedAtlasScientificSensorsState::Read3: {
             sendCommand(CMD_READ);
             break;
         }
@@ -132,18 +125,27 @@ bool ParallelizedAtlasScientificSensors::handle(String reply) {
                 break;
             }
             case ParallelizedAtlasScientificSensorsState::Read0: {
-                transition(ParallelizedAtlasScientificSensorsState::Read1);
+                portNumber++;
+                if (portNumber < 4) {
+                    transition(ParallelizedAtlasScientificSensorsState::Read0);
+                }
+                else if (numberOfRead0s < 16) {
+                    portNumber = 0;
+                    numberOfRead0s++;
+                    DEBUG_PRINT("Read0: ");
+                    DEBUG_PRINTLN(numberOfRead0s);
+                    transition(ParallelizedAtlasScientificSensorsState::Read0);
+                }
+                else {
+                    portNumber = 0;
+                    DEBUG_PRINTLN("Starting Real Reads");
+                    transition(ParallelizedAtlasScientificSensorsState::Read1);
+                }
+                serialPortExpander->select(portNumber);
+                setSerial(serialPortExpander->getSerial());
                 break;
             }
             case ParallelizedAtlasScientificSensorsState::Read1: {
-                transition(ParallelizedAtlasScientificSensorsState::Read2);
-                break;
-            }
-            case ParallelizedAtlasScientificSensorsState::Read2: {
-                transition(ParallelizedAtlasScientificSensorsState::Read3);
-                break;
-            }
-            case ParallelizedAtlasScientificSensorsState::Read3: {
                 int8_t position = 0;
 
                 String firstLine = getFirstLine(reply);
@@ -178,7 +180,7 @@ bool ParallelizedAtlasScientificSensors::handle(String reply) {
             case ParallelizedAtlasScientificSensorsState::LedsOff: {
                 portNumber++;
                 if (portNumber < 4) {
-                    transition(ParallelizedAtlasScientificSensorsState::Read0);
+                    transition(ParallelizedAtlasScientificSensorsState::Read1);
                 }
                 else {
                     transition(ParallelizedAtlasScientificSensorsState::Done);
@@ -191,7 +193,7 @@ bool ParallelizedAtlasScientificSensors::handle(String reply) {
                 if (reply.indexOf("*SL") >= 0) {
                     portNumber++;
                     if (portNumber < 4) {
-                        transition(ParallelizedAtlasScientificSensorsState::Read0);
+                        transition(ParallelizedAtlasScientificSensorsState::Read1);
                     }
                     else {
                         transition(ParallelizedAtlasScientificSensorsState::Done);

@@ -14,8 +14,6 @@ enum class ParallelizedAtlasScientificSensorsState {
     Waiting,
     Read0,
     Read1,
-    Read2,
-    Read3,
     LedsOff,
     Sleeping,
     Done
@@ -27,6 +25,7 @@ private:
     SerialPortExpander *serialPortExpander;
     float values[FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES];
     uint32_t lastTransisitonAt;
+    uint8_t numberOfRead0s;
     uint8_t numberOfValues;
     uint8_t portNumber;
     bool disableSleep;
