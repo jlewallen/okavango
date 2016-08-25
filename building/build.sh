@@ -11,7 +11,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 
 PROJECT_DIR=${DIR}/..
-ARD_HOME="${PROJECT_DIR}/arduino-1.6.9"
+ARD_HOME="${PROJECT_DIR}/../page5of4/arduino-1.6.9"
 ARD_BIN="${ARD_HOME}/hardware/tools/avr/bin"
 ROOT_DIR="${PROJECT_DIR}"
 BUILDING_DIR="${PROJECT_DIR}/building"
