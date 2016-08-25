@@ -9,14 +9,14 @@
 
 class WifiAtlasSensorBoard : public AtlasSensorBoard {
 public:
-    WifiAtlasSensorBoard(CorePlatform *corePlatform);
+    WifiAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard);
 
 public:
     void doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) override;
 };
 
-WifiAtlasSensorBoard::WifiAtlasSensorBoard(CorePlatform *corePlatform) :
-    AtlasSensorBoard(corePlatform, ConductivityConfig::OnExpanderPort4, true) {
+WifiAtlasSensorBoard::WifiAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard) :
+    AtlasSensorBoard(corePlatform, serialPortExpander, sensorBoard) {
 }
 
 void WifiAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) {
@@ -40,7 +40,9 @@ void WifiAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet
 }
 
 CorePlatform corePlatform;
-WifiAtlasSensorBoard wifiAtlasSensorBoard(&corePlatform);
+SerialPortExpander serialPortExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1, ConductivityConfig::OnExpanderPort4);
+AtlasScientificBoard sensorBoard(&serialPortExpander, false);
+WifiAtlasSensorBoard wifiAtlasSensorBoard(&corePlatform, &serialPortExpander, &sensorBoard);
 
 void setup() {
     Serial.begin(115200);
@@ -69,4 +71,3 @@ void loop() {
 }
 
 // vim: set ft=cpp:
-
