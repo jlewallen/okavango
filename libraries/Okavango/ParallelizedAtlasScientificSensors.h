@@ -1,35 +1,38 @@
-#ifndef ATLAS_SCIENTIFIC_H
-#define ATLAS_SCIENTIFIC_H
+#ifndef PARALLIZED_ATLAS_SCIENTIFICS_SENSORS_H
+#define PARALLIZED_ATLAS_SCIENTIFICS_SENSORS_H
 
-#include <Arduino.h>
 #include "SensorBoard.h"
-#include "NonBlockingSerial.h"
 #include "SerialPortExpander.h"
+#include "NonBlockingSerial.h"
 
-enum class AtlasScientificBoardState {
+enum class ParallelizedAtlasScientificSensorsState {
     Start,
     Status0,
     Status1,
     LedsOn,
     Configure,
+    Waiting,
     Read0,
     Read1,
     Read2,
+    Read3,
     LedsOff,
     Sleeping,
     Done
 };
 
-class AtlasScientificBoard : public NonBlockingSerialProtocol, public SensorBoard {
+class ParallelizedAtlasScientificSensors : public NonBlockingSerialProtocol, public SensorBoard {
 private:
-    AtlasScientificBoardState state = AtlasScientificBoardState::Start;
+    ParallelizedAtlasScientificSensorsState state = ParallelizedAtlasScientificSensorsState::Start;
     SerialPortExpander *serialPortExpander;
     float values[FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES];
+    uint32_t lastTransisitonAt;
     uint8_t numberOfValues;
+    uint8_t portNumber;
     bool disableSleep;
 
 public:
-    AtlasScientificBoard(SerialPortExpander *serialPortExpander, bool disableSleep);
+    ParallelizedAtlasScientificSensors(SerialPortExpander *serialPortExpander, bool disableSleep);
 
     virtual bool tick() override;
 
@@ -42,17 +45,17 @@ public:
     }
 
     virtual bool isDone() override {
-        return state == AtlasScientificBoardState::Done;
+        return state == ParallelizedAtlasScientificSensorsState::Done;
     }
 
     virtual void start() override {
-        state = AtlasScientificBoardState::Start;
+        state = ParallelizedAtlasScientificSensorsState::Start;
         setSerial(serialPortExpander->getSerial());
         open();
     }
 
 protected:
-    void transition(AtlasScientificBoardState newState);
+    void transition(ParallelizedAtlasScientificSensorsState newState);
     virtual bool handle(String reply);
 };
 

@@ -1,0 +1,211 @@
+#include "Platforms.h"
+#include "ParallelizedAtlasScientificSensors.h"
+
+extern const char *CMD_STATUS;
+extern const char *CMD_LED_ON;
+extern const char *CMD_LED_OFF;
+extern const char *CMD_CONTINUOUS_OFF;
+extern const char *CMD_SLEEP;
+extern const char *CMD_READ;
+
+extern uint8_t numberOfOccurences(String &str, char chr);
+
+extern String getFirstLine(String &str);
+
+ParallelizedAtlasScientificSensors::ParallelizedAtlasScientificSensors(SerialPortExpander *serialPortExpander, bool disableSleep) :
+    serialPortExpander(serialPortExpander), portNumber(0), disableSleep(disableSleep), numberOfValues(0) {
+}
+
+void ParallelizedAtlasScientificSensors::transition(ParallelizedAtlasScientificSensorsState newState) {
+    state = newState;
+    lastTransisitonAt = millis();
+    clearSendsCounter();
+}
+
+bool ParallelizedAtlasScientificSensors::tick() {
+    if (NonBlockingSerialProtocol::tick()) {
+        return true;
+    }
+    if (getSendsCounter() == 5) {
+        transition(ParallelizedAtlasScientificSensorsState::Done);
+        return true;
+    }
+    switch (state) {
+        case ParallelizedAtlasScientificSensorsState::Start: {
+            portNumber = 0;
+            serialPortExpander->select(portNumber);
+            setSerial(serialPortExpander->getSerial());
+            transition(ParallelizedAtlasScientificSensorsState::Status0);
+            break;
+        }
+        case ParallelizedAtlasScientificSensorsState::Status0: {
+            DEBUG_PRINT("PORT: ");
+            DEBUG_PRINTLN(portNumber);
+            sendCommand(CMD_STATUS);
+            break;
+        }
+        case ParallelizedAtlasScientificSensorsState::Status1: {
+            sendCommand(CMD_STATUS);
+            break;
+        }
+        case ParallelizedAtlasScientificSensorsState::LedsOn: {
+            sendCommand(CMD_LED_ON);
+            break;
+        }
+        case ParallelizedAtlasScientificSensorsState::Configure: {
+            sendCommand(CMD_CONTINUOUS_OFF);
+            break;
+        }
+        case ParallelizedAtlasScientificSensorsState::Waiting: {
+            if (millis() - lastTransisitonAt > 5000) {
+                transition(ParallelizedAtlasScientificSensorsState::Read0);
+            }
+            break;
+        }
+        case ParallelizedAtlasScientificSensorsState::Read0: {
+            DEBUG_PRINT("PORT: ");
+            DEBUG_PRINTLN(portNumber);
+            sendCommand(CMD_READ);
+            break;
+        }
+        case ParallelizedAtlasScientificSensorsState::Read1: {
+            sendCommand(CMD_READ);
+            break;
+        }
+        case ParallelizedAtlasScientificSensorsState::Read2: {
+            sendCommand(CMD_READ);
+            break;
+        }
+        case ParallelizedAtlasScientificSensorsState::Read3: {
+            sendCommand(CMD_READ);
+            break;
+        }
+        case ParallelizedAtlasScientificSensorsState::LedsOff: {
+            sendCommand(CMD_LED_OFF);
+            break;
+        }
+        case ParallelizedAtlasScientificSensorsState::Sleeping: {
+            sendCommand(CMD_SLEEP);
+            break;
+        }
+        case ParallelizedAtlasScientificSensorsState::Done: {
+            DEBUG_PRINTLN("DONE");
+            return false;
+        }
+    }
+    return true;
+}
+
+bool ParallelizedAtlasScientificSensors::handle(String reply) {
+    if (reply.indexOf("*") >= 0) {
+        if (reply.length() > 0) {
+            DEBUG_PRINT(uint32_t(state));
+            DEBUG_PRINT(">");
+            DEBUG_PRINTLN(reply);
+        }
+
+        switch (state) {
+            case ParallelizedAtlasScientificSensorsState::Status0: {
+                transition(ParallelizedAtlasScientificSensorsState::Status1);
+                break;
+            }
+            case ParallelizedAtlasScientificSensorsState::Status1: {
+                transition(ParallelizedAtlasScientificSensorsState::LedsOn);
+                break;
+            }
+            case ParallelizedAtlasScientificSensorsState::LedsOn: {
+                transition(ParallelizedAtlasScientificSensorsState::Configure);
+                break;
+            }
+            case ParallelizedAtlasScientificSensorsState::Configure: {
+                portNumber++;
+                if (portNumber < 4) {
+                    transition(ParallelizedAtlasScientificSensorsState::Status0);
+                }
+                else {
+                    DEBUG_PRINTLN("Waiting...");
+                    portNumber = 0;
+                    transition(ParallelizedAtlasScientificSensorsState::Waiting);
+                }
+                serialPortExpander->select(portNumber);
+                setSerial(serialPortExpander->getSerial());
+                break;
+            }
+            case ParallelizedAtlasScientificSensorsState::Read0: {
+                transition(ParallelizedAtlasScientificSensorsState::Read1);
+                break;
+            }
+            case ParallelizedAtlasScientificSensorsState::Read1: {
+                transition(ParallelizedAtlasScientificSensorsState::Read2);
+                break;
+            }
+            case ParallelizedAtlasScientificSensorsState::Read2: {
+                transition(ParallelizedAtlasScientificSensorsState::Read3);
+                break;
+            }
+            case ParallelizedAtlasScientificSensorsState::Read3: {
+                int8_t position = 0;
+
+                String firstLine = getFirstLine(reply);
+
+                while (true) {
+                    int16_t index = firstLine.indexOf(',', position);
+                    if (index < 0) {
+                        index = firstLine.indexOf('\r', position);
+                    }
+                    if (index < 0) {
+                        index = firstLine.indexOf('\n', position);
+                    }
+                    if (index > position && numberOfValues < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES) {
+                        String part = firstLine.substring(position, index);
+                        values[numberOfValues++] = part.toFloat();
+                        position = index + 1;
+                    }
+                    else {
+                        break;
+                    }
+                }
+
+                if (disableSleep) {
+                    transition(ParallelizedAtlasScientificSensorsState::LedsOff);
+                }
+                else {
+                    transition(ParallelizedAtlasScientificSensorsState::Sleeping);
+                }
+
+                break;
+            }
+            case ParallelizedAtlasScientificSensorsState::LedsOff: {
+                portNumber++;
+                if (portNumber < 4) {
+                    transition(ParallelizedAtlasScientificSensorsState::Read0);
+                }
+                else {
+                    transition(ParallelizedAtlasScientificSensorsState::Done);
+                }
+                serialPortExpander->select(portNumber);
+                setSerial(serialPortExpander->getSerial());
+                break;
+            }
+            case ParallelizedAtlasScientificSensorsState::Sleeping: {
+                if (reply.indexOf("*SL") >= 0) {
+                    portNumber++;
+                    if (portNumber < 4) {
+                        transition(ParallelizedAtlasScientificSensorsState::Read0);
+                    }
+                    else {
+                        transition(ParallelizedAtlasScientificSensorsState::Done);
+                    }
+                    serialPortExpander->select(portNumber);
+                    setSerial(serialPortExpander->getSerial());
+                }
+                else {
+                    return false;
+                }
+                break;
+            }
+        }
+        return true;
+    }
+    return false;
+}

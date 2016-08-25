@@ -9,8 +9,8 @@ const char *CMD_CONTINUOUS_OFF = "C,0";
 const char *CMD_SLEEP = "SLEEP";
 const char *CMD_READ = "R";
 
-AtlasScientificBoard::AtlasScientificBoard(bool disableSleep) :
-    disableSleep(disableSleep) {
+AtlasScientificBoard::AtlasScientificBoard(SerialPortExpander *serialPortExpander, bool disableSleep) :
+    serialPortExpander(serialPortExpander), disableSleep(disableSleep), numberOfValues(0) {
 }
 
 void AtlasScientificBoard::transition(AtlasScientificBoardState newState) {
@@ -18,58 +18,57 @@ void AtlasScientificBoard::transition(AtlasScientificBoardState newState) {
     clearSendsCounter();
 }
 
-
 bool AtlasScientificBoard::tick() {
     if (NonBlockingSerialProtocol::tick()) {
         return true;
     }
     if (getSendsCounter() == 5) {
-        transition(Done);
+        transition(AtlasScientificBoardState::Done);
         return true;
     }
     switch (state) {
-        case Start: {
-            numberOfValues = 0;
-            transition(Status0);
+        case AtlasScientificBoardState::Start: {
+            setSerial(serialPortExpander->getSerial());
+            transition(AtlasScientificBoardState::Status0);
             break;
         }
-        case Status0: {
+        case AtlasScientificBoardState::Status0: {
             sendCommand(CMD_STATUS);
             break;
         }
-        case Status1: {
+        case AtlasScientificBoardState::Status1: {
             sendCommand(CMD_STATUS);
             break;
         }
-        case LedsOn: {
+        case AtlasScientificBoardState::LedsOn: {
             sendCommand(CMD_LED_ON);
             break;
         }
-        case Configure: {
+        case AtlasScientificBoardState::Configure: {
             sendCommand(CMD_CONTINUOUS_OFF);
             break;
         }
-        case Read0: {
+        case AtlasScientificBoardState::Read0: {
             sendCommand(CMD_READ);
             break;
         }
-        case Read1: {
+        case AtlasScientificBoardState::Read1: {
             sendCommand(CMD_READ);
             break;
         }
-        case Read2: {
+        case AtlasScientificBoardState::Read2: {
             sendCommand(CMD_READ);
             break;
         }
-        case LedsOff: {
+        case AtlasScientificBoardState::LedsOff: {
             sendCommand(CMD_LED_OFF);
             break;
         }
-        case Sleeping: {
+        case AtlasScientificBoardState::Sleeping: {
             sendCommand(CMD_SLEEP);
             break;
         }
-        case Done: {
+        case AtlasScientificBoardState::Done: {
             DEBUG_PRINTLN("DONE");
             return false;
         }
@@ -102,37 +101,37 @@ String getFirstLine(String &str) {
 bool AtlasScientificBoard::handle(String reply) {
     if (reply.indexOf("*") >= 0) {
         if (reply.length() > 0) {
-            DEBUG_PRINT(state);
+            DEBUG_PRINT(uint32_t(state));
             DEBUG_PRINT(">");
             DEBUG_PRINTLN(reply);
         }
 
         switch (state) {
-            case Status0: {
-                transition(Status1);
+            case AtlasScientificBoardState::Status0: {
+                transition(AtlasScientificBoardState::Status1);
                 break;
             }
-            case Status1: {
-                transition(LedsOn);
+            case AtlasScientificBoardState::Status1: {
+                transition(AtlasScientificBoardState::LedsOn);
                 break;
             }
-            case LedsOn: {
-                transition(Configure);
+            case AtlasScientificBoardState::LedsOn: {
+                transition(AtlasScientificBoardState::Configure);
                 break;
             }
-            case Configure: {
-                transition(Read0);
+            case AtlasScientificBoardState::Configure: {
+                transition(AtlasScientificBoardState::Read0);
                 break;
             }
-            case Read0: {
-                transition(Read1);
+            case AtlasScientificBoardState::Read0: {
+                transition(AtlasScientificBoardState::Read1);
                 break;
             }
-            case Read1: {
-                transition(Read2);
+            case AtlasScientificBoardState::Read1: {
+                transition(AtlasScientificBoardState::Read2);
                 break;
             }
-            case Read2: {
+            case AtlasScientificBoardState::Read2: {
                 int8_t position = 0;
                 numberOfValues = 0;
 
@@ -150,7 +149,7 @@ bool AtlasScientificBoard::handle(String reply) {
                     if (index < 0) {
                         index = firstLine.indexOf('\n', position);
                     }
-                    if (index > position && numberOfValues < MAX_VALUES) {
+                    if (index > position && numberOfValues < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES) {
                         String part = firstLine.substring(position, index);
                         values[numberOfValues++] = part.toFloat();
                         position = index + 1;
@@ -165,20 +164,20 @@ bool AtlasScientificBoard::handle(String reply) {
                 }
 
                 if (disableSleep) {
-                    transition(LedsOff);
+                    transition(AtlasScientificBoardState::LedsOff);
                 }
                 else {
-                    transition(Sleeping);
+                    transition(AtlasScientificBoardState::Sleeping);
                 }
 
                 break;
             }
-            case LedsOff: {
-                transition(Done);
+            case AtlasScientificBoardState::LedsOff: {
+                transition(AtlasScientificBoardState::Done);
                 break;
             }
-            case Sleeping: {
-                transition(Done);
+            case AtlasScientificBoardState::Sleeping: {
+                transition(AtlasScientificBoardState::Done);
                 close();
                 break;
             }

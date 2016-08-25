@@ -2,9 +2,8 @@
 #include "AtlasSensorBoard.h"
 #include <Adafruit_SleepyDog.h>
 
-AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform, ConductivityConfig conductivityConfig, bool disableSleep) :
-    corePlatform(corePlatform), portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1),
-    conductivityConfig(conductivityConfig), board(disableSleep) {
+AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *portExpander, SensorBoard *board) :
+    corePlatform(corePlatform), board(board), portExpander(portExpander) {
     memzero((uint8_t *)&packet, sizeof(atlas_sensors_packet_t));
 }
 
@@ -51,24 +50,18 @@ float AtlasSensorBoard::getWaterTemperature() {
 bool AtlasSensorBoard::tick() {
     Watchdog.reset();
 
-    board.tick();
+    board->tick();
 
-    uint8_t maxPort = conductivityConfig == OnExpanderPort4 ? 4 : 3;
-
-    if (board.isDone()) {
-        populatePacket();
-        byte newPort = portExpander.getPort() + 1;
-        portExpander.select(newPort);
-        if (newPort < maxPort) {
+    if (board->isDone()) {
+        byte newPort = portExpander->getPort() + 1;
+        portExpander->select(newPort);
+        if (newPort < 4) {
             DEBUG_PRINTLN("Next sensor");
-            board.start();
-        }
-        else if (newPort == 3 && conductivityConfig == OnSerial2) {
-            DEBUG_PRINTLN("Conductivity");
-            board.setSerial(&conductivitySerial);
-            board.start(OPEN_CONDUCTIVITY_SERIAL_ON_START);
+            board->start();
         }
         else {
+            populatePacket();
+
             #ifdef HAVE_BME280
             DEBUG_PRINTLN("Bme");
 
@@ -148,11 +141,10 @@ void AtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *
 }
 
 void AtlasSensorBoard::setup() {
-    portExpander.setup();
-    portExpander.select(0);
+    portExpander->setup();
+    portExpander->select(0);
 
-    board.setSerial(&portExpanderSerial);
-    board.start();
+    board->start();
 
     memset((void *)&packet, 0, sizeof(atlas_sensors_packet_t));
 
@@ -163,10 +155,10 @@ void AtlasSensorBoard::setup() {
 
 void AtlasSensorBoard::populatePacket() {
     DEBUG_PRINT("NumberOfValues: ");
-    DEBUG_PRINTLN(board.getNumberOfValues());
-    for (uint8_t i = 0; i < board.getNumberOfValues(); ++i) {
+    DEBUG_PRINTLN(board->getNumberOfValues());
+    for (uint8_t i = 0; i < board->getNumberOfValues(); ++i) {
         if (packetValueIndex < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES) {
-            packet.values[packetValueIndex++] = board.getValues()[i];
+            packet.values[packetValueIndex++] = board->getValues()[i];
         }
         else {
             DEBUG_PRINTLN("Not enough room for values.");

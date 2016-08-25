@@ -5,10 +5,6 @@ NonBlockingSerialProtocol::NonBlockingSerialProtocol(uint16_t replyWait, bool em
     replyWait(replyWait), emptyBufferAfterEveryLine(emptyBufferAfterEveryLine), addNewLines(addNewLine) {
 }
 
-void NonBlockingSerialProtocol::setup() {
-    serial->begin(9600);
-}
-
 void NonBlockingSerialProtocol::drain() {
     uint32_t started = millis();
 
@@ -21,8 +17,8 @@ void NonBlockingSerialProtocol::drain() {
 }
 
 bool NonBlockingSerialProtocol::tick() {
-    switch (state) {
-    case Reading: {
+    switch (nbsState) {
+    case NonBlockingSerialProtocolState::Reading: {
         if (serial->available() > 0) {
             int16_t c = serial->read();
             if (c >= 0) {
@@ -35,7 +31,7 @@ bool NonBlockingSerialProtocol::tick() {
         }
         return true;
     }
-    case Idle: {
+    case NonBlockingSerialProtocolState::Idle: {
         break;
     }
     }
@@ -77,7 +73,7 @@ bool NonBlockingSerialProtocol::handle(String reply) {
 }
 
 void NonBlockingSerialProtocol::transition(NonBlockingSerialProtocolState newState) {
-    state = newState;
+    nbsState = newState;
     lastStateChangeOrReplyAt = millis();
 }
 
