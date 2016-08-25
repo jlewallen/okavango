@@ -25,11 +25,9 @@ public:
 
     void drain();
 
-    void setup();
-
     virtual bool tick();
 
-    virtual void setSerial(SerialType *newSerial) {
+    void setSerial(SerialType *newSerial) {
         serial = newSerial;
     }
 

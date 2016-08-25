@@ -35,15 +35,14 @@
 class AtlasSensorBoard {
 private:
     CorePlatform *corePlatform;
-    SerialPortExpander portExpander;
+    SerialPortExpander *portExpander;
     SensorBoard *board;
     Adafruit_BME280 bme;
     atlas_sensors_packet_t packet;
     uint8_t packetValueIndex = 0;
-    ConductivityConfig conductivityConfig;
 
 public:
-    AtlasSensorBoard(CorePlatform *corePlatform, SensorBoard *board, ConductivityConfig conductivityConfig);
+    AtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *portExpander, SensorBoard *board);
 
 public:
     bool tick();

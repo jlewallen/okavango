@@ -9,14 +9,25 @@
  */
 class SerialPortExpander {
 private:
+    ConductivityConfig conductivityConfig;
     byte selector[2];
     byte port;
 
 public:
-    SerialPortExpander(byte p0, byte p1);
+    SerialPortExpander(byte p0, byte p1, ConductivityConfig conductivityConfig);
 
     byte getPort() {
         return port;
+    }
+
+    SerialType *getSerial() {
+        if (port == 3 && conductivityConfig == OnSerial2) {
+            return &Serial2;
+
+        }
+        else {
+            return &Serial1;
+        }
     }
 
 public:

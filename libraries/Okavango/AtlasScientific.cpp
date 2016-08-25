@@ -9,8 +9,8 @@ const char *CMD_CONTINUOUS_OFF = "C,0";
 const char *CMD_SLEEP = "SLEEP";
 const char *CMD_READ = "R";
 
-AtlasScientificBoard::AtlasScientificBoard(bool disableSleep) :
-    disableSleep(disableSleep) {
+AtlasScientificBoard::AtlasScientificBoard(SerialPortExpander *serialPortExpander, bool disableSleep) :
+    serialPortExpander(serialPortExpander), disableSleep(disableSleep) {
 }
 
 void AtlasScientificBoard::transition(AtlasScientificBoardState newState) {
@@ -29,6 +29,7 @@ bool AtlasScientificBoard::tick() {
     switch (state) {
         case AtlasScientificBoardState::Start: {
             numberOfValues = 0;
+            setSerial(serialPortExpander->getSerial());
             transition(AtlasScientificBoardState::Status0);
             break;
         }

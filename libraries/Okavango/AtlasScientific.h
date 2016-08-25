@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include "SensorBoard.h"
 #include "NonBlockingSerial.h"
+#include "SerialPortExpander.h"
 
 enum class AtlasScientificBoardState {
     Start,
@@ -23,32 +24,31 @@ class AtlasScientificBoard : public NonBlockingSerialProtocol, public SensorBoar
 private:
     const static int8_t MAX_VALUES = 4;
     AtlasScientificBoardState state = AtlasScientificBoardState::Start;
+    SerialPortExpander *serialPortExpander;
     float values[MAX_VALUES];
     uint8_t numberOfValues;
     bool disableSleep;
 
 public:
-    AtlasScientificBoard(bool disableSleep);
+    AtlasScientificBoard(SerialPortExpander *serialPortExpander, bool disableSleep);
 
-    virtual bool tick();
+    virtual bool tick() override;
 
-    const float *getValues() {
+    virtual const float *getValues() override {
         return values;
     }
 
-    uint8_t getNumberOfValues() {
+    virtual uint8_t getNumberOfValues() override {
         return numberOfValues;
     }
 
-    bool isDone() {
+    virtual bool isDone() override {
         return state == AtlasScientificBoardState::Done;
     }
 
-    void start(bool setupSerial = true) {
+    virtual void start() override {
         state = AtlasScientificBoardState::Start;
-        if (setupSerial) {
-            setup();
-        }
+        setSerial(serialPortExpander->getSerial());
         open();
     }
 

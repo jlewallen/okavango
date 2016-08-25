@@ -3,12 +3,11 @@
 
 class SensorBoard {
 public:
+    virtual void start() = 0;
     virtual bool tick() = 0;
     virtual bool isDone() = 0;
-    virtual void start(bool setupSerial = true) = 0;
     virtual const float *getValues() = 0;
     virtual uint8_t getNumberOfValues() = 0;
-    virtual void setSerial(SerialType *newSerial);
 };
 
 #endif

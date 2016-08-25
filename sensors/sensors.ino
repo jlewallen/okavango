@@ -6,15 +6,15 @@
 
 class LoraAtlasSensorBoard : public AtlasSensorBoard {
 public:
-    LoraAtlasSensorBoard(CorePlatform *corePlatform);
+    LoraAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard);
 
 public:
     void doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) override;
     void tryAndSendLocalQueue(Queue *queue);
 };
 
-LoraAtlasSensorBoard::LoraAtlasSensorBoard(CorePlatform *corePlatform) :
-    AtlasSensorBoard(corePlatform, new AtlasScientificBoard(false), ConductivityConfig::OnSerial2) {
+LoraAtlasSensorBoard::LoraAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard) :
+    AtlasSensorBoard(corePlatform, serialPortExpander, sensorBoard) {
 }
 
 void LoraAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) {
@@ -61,7 +61,9 @@ void LoraAtlasSensorBoard::tryAndSendLocalQueue(Queue *queue) {
 }
 
 CorePlatform corePlatform;
-LoraAtlasSensorBoard loraAtlasSensorBoard(&corePlatform);
+SerialPortExpander serialPortExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1, ConductivityConfig::OnSerial2);
+AtlasScientificBoard sensorBoard(&serialPortExpander, false);
+LoraAtlasSensorBoard loraAtlasSensorBoard(&corePlatform, &serialPortExpander, &sensorBoard);
 
 void setup() {
     Serial.begin(115200);

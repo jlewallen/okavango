@@ -1,6 +1,8 @@
 #include "SerialPortExpander.h"
 
-SerialPortExpander::SerialPortExpander(byte p0, byte p1) {
+SerialPortExpander::SerialPortExpander(byte p0, byte p1, ConductivityConfig conductivityConfig) :
+    conductivityConfig(conductivityConfig) {
+
     selector[0] = p0;
     selector[1] = p1;
 }

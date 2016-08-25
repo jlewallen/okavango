@@ -5,10 +5,6 @@ NonBlockingSerialProtocol::NonBlockingSerialProtocol(uint16_t replyWait, bool em
     replyWait(replyWait), emptyBufferAfterEveryLine(emptyBufferAfterEveryLine), addNewLines(addNewLine) {
 }
 
-void NonBlockingSerialProtocol::setup() {
-    serial->begin(9600);
-}
-
 void NonBlockingSerialProtocol::drain() {
     uint32_t started = millis();
 

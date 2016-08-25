@@ -19,7 +19,7 @@ enum class ParallelizedAtlasScientificSensorsState {
     Done
 };
 
-class ParallelizedAtlasScientificSensors : public NonBlockingSerialProtocol {
+class ParallelizedAtlasScientificSensors : public NonBlockingSerialProtocol, public SensorBoard {
 private:
     const static int8_t MAX_VALUES = 4;
     ParallelizedAtlasScientificSensorsState state = ParallelizedAtlasScientificSensorsState::Start;
@@ -32,25 +32,23 @@ private:
 public:
     ParallelizedAtlasScientificSensors(SerialPortExpander *serialPortExpander, bool disableSleep);
 
-    virtual bool tick();
+    virtual bool tick() override;
 
-    const float *getValues() {
+    virtual const float *getValues() override {
         return values;
     }
 
-    uint8_t getNumberOfValues() {
+    virtual uint8_t getNumberOfValues() override {
         return numberOfValues;
     }
 
-    bool isDone() {
+    virtual bool isDone() override {
         return state == ParallelizedAtlasScientificSensorsState::Done;
     }
 
-    void start(bool setupSerial = true) {
+    virtual void start() override {
         state = ParallelizedAtlasScientificSensorsState::Start;
-        if (setupSerial) {
-            setup();
-        }
+        setSerial(serialPortExpander->getSerial());
         open();
     }
 

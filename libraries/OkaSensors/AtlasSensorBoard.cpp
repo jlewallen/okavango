@@ -2,9 +2,8 @@
 #include "AtlasSensorBoard.h"
 #include <Adafruit_SleepyDog.h>
 
-AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform, SensorBoard *board, ConductivityConfig conductivityConfig) :
-    corePlatform(corePlatform), board(board), portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1),
-    conductivityConfig(conductivityConfig) {
+AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *portExpander, SensorBoard *board) :
+    corePlatform(corePlatform), board(board), portExpander(portExpander) {
     memzero((uint8_t *)&packet, sizeof(atlas_sensors_packet_t));
 }
 
@@ -53,20 +52,13 @@ bool AtlasSensorBoard::tick() {
 
     board->tick();
 
-    uint8_t maxPort = conductivityConfig == OnExpanderPort4 ? 4 : 3;
-
     if (board->isDone()) {
         populatePacket();
-        byte newPort = portExpander.getPort() + 1;
-        portExpander.select(newPort);
-        if (newPort < maxPort) {
+        byte newPort = portExpander->getPort() + 1;
+        portExpander->select(newPort);
+        if (newPort < 4) {
             DEBUG_PRINTLN("Next sensor");
             board->start();
-        }
-        else if (newPort == 3 && conductivityConfig == OnSerial2) {
-            DEBUG_PRINTLN("Conductivity");
-            board->setSerial(&conductivitySerial);
-            board->start(OPEN_CONDUCTIVITY_SERIAL_ON_START);
         }
         else {
             #ifdef HAVE_BME280
@@ -148,10 +140,9 @@ void AtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *
 }
 
 void AtlasSensorBoard::setup() {
-    portExpander.setup();
-    portExpander.select(0);
+    portExpander->setup();
+    portExpander->select(0);
 
-    board->setSerial(&portExpanderSerial);
     board->start();
 
     memset((void *)&packet, 0, sizeof(atlas_sensors_packet_t));

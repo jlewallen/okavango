@@ -77,27 +77,9 @@ bool ParallelizedAtlasScientificSensors::tick() {
     return true;
 }
 
-uint8_t numberOfOccurences(String &str, char chr) {
-    uint8_t number = 0;
-    for (uint16_t i = 0; i < str.length(); ++i) {
-        if (str[i] == chr) {
-            number++;
-        }
-    }
+extern uint8_t numberOfOccurences(String &str, char chr);
 
-    return number;
-}
-
-String getFirstLine(String &str) {
-    str.trim();
-
-    uint8_t cr = str.indexOf('\r');
-    if (cr >= 0) return str.substring(0, cr + 1);
-
-    uint8_t nl = str.indexOf('\n');
-    if (nl >= 0) return str.substring(0, nl + 1);
-    return str;
-}
+extern String getFirstLine(String &str);
 
 bool ParallelizedAtlasScientificSensors::handle(String reply) {
     if (reply.indexOf("*") >= 0) {
@@ -131,6 +113,7 @@ bool ParallelizedAtlasScientificSensors::handle(String reply) {
                     serialPortExpander->select(portNumber);
                     transition(ParallelizedAtlasScientificSensorsState::Read0);
                 }
+                setSerial(serialPortExpander->getSerial());
                 break;
             }
             case ParallelizedAtlasScientificSensorsState::Read0: {
@@ -186,6 +169,7 @@ bool ParallelizedAtlasScientificSensors::handle(String reply) {
                     serialPortExpander->select(portNumber);
                     transition(ParallelizedAtlasScientificSensorsState::Done);
                 }
+                setSerial(serialPortExpander->getSerial());
                 break;
             }
             case ParallelizedAtlasScientificSensorsState::Sleeping: {
@@ -200,6 +184,7 @@ bool ParallelizedAtlasScientificSensors::handle(String reply) {
                     serialPortExpander->select(portNumber);
                     transition(ParallelizedAtlasScientificSensorsState::Done);
                 }
+                setSerial(serialPortExpander->getSerial());
                 close();
                 break;
             }
