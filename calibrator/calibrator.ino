@@ -46,7 +46,7 @@ String ecScript[] = {
     "STATUS"
 };
 
-ConductivityConfig conductivityConfig = ConductivityConfig::OnExpanderPort4;
+ConductivityConfig conductivityConfig = ConductivityConfig::OnSerial2;
 
 SerialType *getSerialForPort(uint8_t port) {
     if (port < 3 || conductivityConfig != ConductivityConfig::OnSerial2) {
@@ -193,7 +193,7 @@ public:
     virtual bool doWork() override {
         return scriptRunner->tick();
     }
-    
+
     void handle(String command) {
         if (command.startsWith("p ")) {
             uint8_t number = command.substring(2).toInt();
@@ -266,7 +266,7 @@ void setup() {
 }
 
 void loop() {
-    SerialPortExpander portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1);
+    SerialPortExpander portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1, conductivityConfig);
     ScriptRunner scriptRunner(&portExpander);
     CalibratorRepl repl(&scriptRunner);
 
