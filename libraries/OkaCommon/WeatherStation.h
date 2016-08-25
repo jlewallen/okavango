@@ -30,23 +30,30 @@
 #define FK_WEATHER_STATION_MAX_VALUES                        32
 #define FK_WEATHER_STATION_MAX_BUFFER                        20
 
+enum class WeatherStationState {
+    Reading,
+    Ignoring,
+    HaveReading,
+    Off
+};
+
 class WeatherStation {
 private:
+    WeatherStationState state;
+    uint32_t lastTransitionAt;
     uint8_t numberOfValues;
     float values[FK_WEATHER_STATION_MAX_VALUES];
     char buffer[FK_WEATHER_STATION_MAX_BUFFER];
     uint8_t length;
+    bool on;
 
 public:
     WeatherStation();
 
 public:
     void setup();
-    void hup();
-    void off();
     void clear();
     bool tick();
-    void ignore();
     void logReadingLocally();
     float *getValues() {
         return values;
@@ -54,7 +61,18 @@ public:
     uint8_t getNumberOfValues() {
         return numberOfValues;
     }
+    bool hasReading() {
+        return state == WeatherStationState::HaveReading;
+    }
 
+private:
+    void hup();
+    void off();
+    void ignore();
+    void transition(WeatherStationState newState) {
+        state = newState;
+        lastTransitionAt = millis();
+    }
 };
 
 #endif
