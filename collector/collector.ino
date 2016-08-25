@@ -21,6 +21,7 @@ typedef struct gps_location_t {
 } gps_location_t;
 
 Configuration configuration(FK_SETTINGS_CONFIGURATION_FILENAME);
+WeatherStation weatherStation;
 gps_location_t location;
 bool transmissionForced = false;
 bool initialWeatherTransmissionSent = false;
@@ -103,6 +104,8 @@ void setup() {
         initialLocationTransmissionSent = true;
     }
 
+    weatherStation.setup();
+
     memzero((uint8_t *)&location, sizeof(gps_location_t));
 
     DEBUG_PRINTLN(F("Loop"));
@@ -112,7 +115,6 @@ void checkAirwaves() {
     Queue queue;
     LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST);
     NetworkProtocolState networkProtocol(NetworkState::EnqueueFromNetwork, &radio, &queue, new CollectorNetworkCallbacks());
-    WeatherStation weatherStation;
 
     DEBUG_PRINTLN("Checking Airwaves...");
 
@@ -120,8 +122,6 @@ void checkAirwaves() {
 
     DEBUG_PRINT("Watchdog enabled: ");
     DEBUG_PRINTLN(watchdogMs);
-
-    weatherStation.setup();
 
     // Can't call this more than 3 times or so because we use up all the IRQs and
     // so this would be nice to have a kind of memory?
@@ -142,41 +142,9 @@ void checkAirwaves() {
 
         networkProtocol.tick();
 
-        weatherStation.ignore();
+        weatherStation.tick();
 
-        delay(10);
-
-        if (millis() - last > 5000) {
-            platformBlink(PIN_RED_LED);
-            DEBUG_PRINT(".");
-            last = millis();
-
-            SelfRestart::restartIfNecessary();
-        }
-
-        if (millis() - started > 2 * 60 * 1000 && networkProtocol.isQuiet()) {
-            break;
-        }
-
-        if (transmissionForced) {
-            break;
-        }
-    }
-
-    radio.sleep();
-
-    #ifdef FK_WRITE_LOG_FILE
-    logPrinter.flush();
-    #endif
-
-    DEBUG_PRINTLN("");
-
-    started = millis();
-    bool success = false;
-    weatherStation.clear();
-
-    while (millis() - started < 10 * 1000) {
-        if (weatherStation.tick()) {
+        if (weatherStation.hasReading()) {
             DEBUG_PRINTLN("");
 
             DEBUG_PRINT("&");
@@ -216,18 +184,30 @@ void checkAirwaves() {
 
             weatherStation.clear();
             DEBUG_PRINT("^");
+        }
 
-            success = true;
+        delay(10);
 
+        if (millis() - last > 5000) {
+            platformBlink(PIN_RED_LED);
+            DEBUG_PRINT(".");
+            last = millis();
+
+            SelfRestart::restartIfNecessary();
+        }
+
+        if (millis() - started > 2 * 60 * 1000 && networkProtocol.isQuiet()) {
+            break;
+        }
+
+        if (transmissionForced) {
             break;
         }
     }
 
-    if (!success) {
-        DEBUG_PRINTLN("Unable to get Weather Station reading.");
-    }
+    radio.sleep();
 
-    weatherStation.off();
+    DEBUG_PRINTLN("");
 
     #ifdef FK_WRITE_LOG_FILE
     logPrinter.flush();
@@ -289,6 +269,7 @@ bool singleTransmission(String message) {
                 if (millis() - started < THIRTY_MINUTES) {
                     Watchdog.reset();
                 }
+                weatherStation.tick();
                 fona.tick();
                 delay(10);
             }
@@ -305,6 +286,8 @@ bool singleTransmission(String message) {
                 if (millis() - started < THIRTY_MINUTES) {
                     Watchdog.reset();
                 }
+                weatherStation.tick(); // Remember with the IridiumSBD library
+                                       // this loop is only happens once.
                 rockBlock.tick();
                 delay(10);
             }
@@ -416,7 +399,6 @@ void handleTransmissionIfNecessary() {
 
 typedef enum CollectorState {
     Airwaves,
-    WeatherStation,
     Transmission
 } CollectorState;
 
@@ -428,9 +410,6 @@ void loop() {
         case Airwaves: {
             checkAirwaves();
             state = Transmission;
-            break;
-        }
-        case WeatherStation: {
             break;
         }
         case Transmission: {
