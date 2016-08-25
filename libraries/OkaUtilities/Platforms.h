@@ -125,7 +125,7 @@ extern void platformSerial2Begin(int32_t baud);
 #include <RH_RF95.h>
 
 #define LOW_POWER_SLEEP_DATA_BOAT_END                        (1000 * 30 * 5)
-#define LOW_POWER_SLEEP_SENSORS_END                          (1000 * 60 * 5)
+#define LOW_POWER_SLEEP_SENSORS_END                          (1000 * 60 * 5 * 4)
 #define LOW_POWER_SLEEP_BEGIN                                0
 #define WAIT_FOR_SERIAL                                      1000 * 10
 
