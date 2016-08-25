@@ -10,7 +10,7 @@ const char *CMD_SLEEP = "SLEEP";
 const char *CMD_READ = "R";
 
 AtlasScientificBoard::AtlasScientificBoard(SerialPortExpander *serialPortExpander, bool disableSleep) :
-    serialPortExpander(serialPortExpander), disableSleep(disableSleep) {
+    serialPortExpander(serialPortExpander), disableSleep(disableSleep), numberOfValues(0) {
 }
 
 void AtlasScientificBoard::transition(AtlasScientificBoardState newState) {
@@ -28,7 +28,6 @@ bool AtlasScientificBoard::tick() {
     }
     switch (state) {
         case AtlasScientificBoardState::Start: {
-            numberOfValues = 0;
             setSerial(serialPortExpander->getSerial());
             transition(AtlasScientificBoardState::Status0);
             break;
@@ -150,7 +149,7 @@ bool AtlasScientificBoard::handle(String reply) {
                     if (index < 0) {
                         index = firstLine.indexOf('\n', position);
                     }
-                    if (index > position && numberOfValues < MAX_VALUES) {
+                    if (index > position && numberOfValues < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES) {
                         String part = firstLine.substring(position, index);
                         values[numberOfValues++] = part.toFloat();
                         position = index + 1;

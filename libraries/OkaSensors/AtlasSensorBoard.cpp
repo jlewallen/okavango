@@ -53,7 +53,6 @@ bool AtlasSensorBoard::tick() {
     board->tick();
 
     if (board->isDone()) {
-        populatePacket();
         byte newPort = portExpander->getPort() + 1;
         portExpander->select(newPort);
         if (newPort < 4) {
@@ -61,6 +60,8 @@ bool AtlasSensorBoard::tick() {
             board->start();
         }
         else {
+            populatePacket();
+
             #ifdef HAVE_BME280
             DEBUG_PRINTLN("Bme");
 

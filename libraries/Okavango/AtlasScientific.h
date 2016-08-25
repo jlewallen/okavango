@@ -22,10 +22,9 @@ enum class AtlasScientificBoardState {
 
 class AtlasScientificBoard : public NonBlockingSerialProtocol, public SensorBoard {
 private:
-    const static int8_t MAX_VALUES = 4;
     AtlasScientificBoardState state = AtlasScientificBoardState::Start;
     SerialPortExpander *serialPortExpander;
-    float values[MAX_VALUES];
+    float values[FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES];
     uint8_t numberOfValues;
     bool disableSleep;
 

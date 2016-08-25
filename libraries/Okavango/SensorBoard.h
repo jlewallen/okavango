@@ -1,6 +1,8 @@
 #ifndef SENSOR_BOARD_H
 #define SENSOR_BOARD_H
 
+#include "protocol.h"
+
 class SensorBoard {
 public:
     virtual void start() = 0;
