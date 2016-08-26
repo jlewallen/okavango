@@ -355,13 +355,15 @@ void handleSensorTransmission(bool sendAtlas, bool sendWeather) {
 }
 
 String locationToMessage(gps_location_t *location) {
+    uint32_t uptime = millis() / (1000 * 60);
     String message(location->time);
     message += ",";
     message += configuration.getName();
     message += "," + String(location->latitude, 6);
     message += "," + String(location->longitude, 6);
     message += "," + String(location->altitude, 2);
-    message += "," + (millis() / 1000 / 60);
+    message += ",";
+    message += uptime;
     return message;
 }
 
