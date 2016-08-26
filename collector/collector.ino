@@ -361,6 +361,7 @@ String locationToMessage(gps_location_t *location) {
     message += "," + String(location->latitude, 6);
     message += "," + String(location->longitude, 6);
     message += "," + String(location->altitude, 2);
+    message += "," + (millis() / 1000 / 60);
     return message;
 }
 
