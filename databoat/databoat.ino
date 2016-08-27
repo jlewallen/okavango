@@ -41,7 +41,8 @@ void WifiAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet
 
 CorePlatform corePlatform;
 SerialPortExpander serialPortExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1, ConductivityConfig::OnExpanderPort4);
-AtlasScientificBoard sensorBoard(&serialPortExpander, false);
+// AtlasScientificBoard sensorBoard(&serialPortExpander, false);
+ParallelizedAtlasScientificSensors sensorBoard(&serialPortExpander, false);
 WifiAtlasSensorBoard wifiAtlasSensorBoard(&corePlatform, &serialPortExpander, &sensorBoard);
 
 void setup() {
