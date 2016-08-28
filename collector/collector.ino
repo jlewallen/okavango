@@ -364,20 +364,22 @@ void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather) 
         }
     }
 
-    if (noAtlas || noWeather) {
-        uint32_t uptime = millis() / (1000 * 60);
-        String message(SystemClock.now());
-        message += ",";
-        message += noAtlas;
-        message += ",";
-        message += noWeather;
-        message += ",";
-        message += queueSize;
-        message += ",";
-        message += numberOfFailures;
-        message += ",";
-        message += uptime;
-        singleTransmission(message);
+    if (triggered) {
+        if (noAtlas || noWeather) {
+            uint32_t uptime = millis() / (1000 * 60);
+            String message(SystemClock.now());
+            message += ",";
+            message += noAtlas;
+            message += ",";
+            message += noWeather;
+            message += ",";
+            message += queueSize;
+            message += ",";
+            message += numberOfFailures;
+            message += ",";
+            message += uptime;
+            singleTransmission(message);
+        }
     }
 
     Watchdog.disable();
