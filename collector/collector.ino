@@ -306,7 +306,7 @@ bool singleTransmission(String message) {
     return success;
 }
 
-void handleSensorTransmission(bool sendAtlas, bool sendWeather) {
+void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather) {
     Queue queue;
 
     uint32_t queueSize = queue.size();
@@ -409,20 +409,20 @@ void handleTransmissionIfNecessary() {
 
     int8_t kind = status.shouldWe();
     if (kind == TRANSMISSION_KIND_SENSORS) {
-        handleSensorTransmission(true, true);
+        handleSensorTransmission(true, true, true);
     }
     else if (kind == TRANSMISSION_KIND_LOCATION) {
         handleLocationTransmission();
     }
 
     if (transmissionForced) {
-        handleSensorTransmission(true, true);
+        handleSensorTransmission(true, true, true);
         handleLocationTransmission();
         transmissionForced = false;
     }
 
     if (!initialAtlasTransmissionSent || !initialWeatherTransmissionSent) {
-        handleSensorTransmission(!initialAtlasTransmissionSent, !initialWeatherTransmissionSent);
+        handleSensorTransmission(false, !initialAtlasTransmissionSent, !initialWeatherTransmissionSent);
     }
     if (!initialLocationTransmissionSent) {
         handleLocationTransmission();
