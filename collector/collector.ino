@@ -366,7 +366,7 @@ void handleSensorTransmission(bool sendAtlas, bool sendWeather) {
 
     if (noAtlas || noWeather) {
         uint32_t uptime = millis() / (1000 * 60);
-        String message(location.time);
+        String message(SystemClock.now());
         message += ",";
         message += noAtlas;
         message += ",";
