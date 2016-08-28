@@ -27,6 +27,7 @@ bool transmissionForced = false;
 bool initialWeatherTransmissionSent = false;
 bool initialAtlasTransmissionSent = false;
 bool initialLocationTransmissionSent = false;
+uint32_t numberOfFailures = 0;
 
 #define MANDATORY_RESTART_INTERVAL   (1000 * 60 * 60 * 3)
 #define MANDATORY_RESTART_FILE       "RESUME.INF"
@@ -298,16 +299,17 @@ bool singleTransmission(String message) {
     }
     Watchdog.disable();
 
+    if (!success) {
+        numberOfFailures++;
+    }
+
     return success;
 }
 
 void handleSensorTransmission(bool sendAtlas, bool sendWeather) {
     Queue queue;
 
-    if (queue.size() <= 0) {
-        DEBUG_PRINTLN("Queue empty");
-        return;
-    }
+    uint32_t queueSize = queue.size();
 
     Watchdog.enable();
 
@@ -317,29 +319,37 @@ void handleSensorTransmission(bool sendAtlas, bool sendWeather) {
     weather_station_packet_t weather_station_sensors;
     memzero((uint8_t *)&weather_station_sensors, sizeof(weather_station_packet_t));
 
-    while (true) {
-        fk_network_packet_t *packet = (fk_network_packet_t *)queue.dequeue();
-        if (packet == NULL) {
-            break;
-        }
+    if (queueSize > 0) {
+        while (true) {
+            fk_network_packet_t *packet = (fk_network_packet_t *)queue.dequeue();
+            if (packet == NULL) {
+                break;
+            }
 
-        switch (packet->kind) {
-        case FK_PACKET_KIND_WEATHER_STATION: {
-            memcpy((uint8_t *)&weather_station_sensors, (uint8_t *)packet, sizeof(weather_station_packet_t));
-            break;
-        }
-        case FK_PACKET_KIND_ATLAS_SENSORS: {
-            memcpy((uint8_t *)&atlas_sensors, (uint8_t *)packet, sizeof(atlas_sensors_packet_t));
-            break;
-        }
+            switch (packet->kind) {
+            case FK_PACKET_KIND_WEATHER_STATION: {
+                memcpy((uint8_t *)&weather_station_sensors, (uint8_t *)packet, sizeof(weather_station_packet_t));
+                break;
+            }
+            case FK_PACKET_KIND_ATLAS_SENSORS: {
+                memcpy((uint8_t *)&atlas_sensors, (uint8_t *)packet, sizeof(atlas_sensors_packet_t));
+                break;
+            }
+            }
         }
     }
+
+    bool noAtlas = false;
+    bool noWeather = false;
 
     if (sendAtlas) {
         if (atlas_sensors.fk.kind == FK_PACKET_KIND_ATLAS_SENSORS) {
             if (singleTransmission(atlasPacketToMessage(&atlas_sensors))) {
                 initialAtlasTransmissionSent = true;
             }
+        }
+        else {
+            noAtlas = true;
         }
     }
 
@@ -349,6 +359,25 @@ void handleSensorTransmission(bool sendAtlas, bool sendWeather) {
                 initialWeatherTransmissionSent = true;
             }
         }
+        else {
+            noWeather = true;
+        }
+    }
+
+    if (noAtlas || noWeather) {
+        uint32_t uptime = millis() / (1000 * 60);
+        String message(location.time);
+        message += ",";
+        message += noAtlas;
+        message += ",";
+        message += noWeather;
+        message += ",";
+        message += queueSize;
+        message += ",";
+        message += numberOfFailures;
+        message += ",";
+        message += uptime;
+        singleTransmission(message);
     }
 
     Watchdog.disable();
