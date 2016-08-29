@@ -92,6 +92,13 @@ bool WeatherStation::tick() {
                             numberOfValues = 0;
                             if (success) {
                                 DEBUG_PRINTLN("WS: have reading");
+                                for (uint8_t i = 0; i < FK_WEATHER_STATION_PACKET_NUMBER_VALUES; ++i) {
+                                    if (i > 0) {
+                                        DEBUG_PRINT(",");
+                                    }
+                                    DEBUG_PRINT(values[i]);
+                                }
+                                DEBUG_PRINTLN("");
                                 transition(WeatherStationState::HaveReading);
                             }
                             break;
