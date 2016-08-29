@@ -57,13 +57,12 @@ uint32_t RtcSystemClock::now() {
     return rtc.now().unixtime();
 }
 
-bool RtcSystemClock::set(uint32_t now) {
-    if (adjusted == 0) {
-        bool uninitialized = !rtc.initialized();
-        DEBUG_PRINTLN("SystemClock Adjusted");
-        rtc.adjust(now);
-        adjusted = now;
-        return uninitialized;
-    }
-    return false;
+bool RtcSystemClock::set(uint32_t newTime) {
+    uint32_t before = RtcSystemClock::now();
+    bool uninitialized = !rtc.initialized();
+    DEBUG_PRINT("Clock Adjusted before=");
+    DEBUG_PRINTLN(before);
+    rtc.adjust(newTime);
+    adjusted = newTime;
+    return uninitialized;
 }
