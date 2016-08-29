@@ -123,7 +123,7 @@ int8_t TransmissionStatus::shouldWe() {
 
     // Assign a proper now to those that are uninitialized.
     for (int8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
-        if (status.kinds[i].time == 0) {
+        if (status.kinds[i].time == 0 || status.kinds[i].time > rtcNow) {
             DEBUG_PRINT("TS #");
             DEBUG_PRINT(i);
             DEBUG_PRINTLN(" fixing 0 value uninitialized time.");
