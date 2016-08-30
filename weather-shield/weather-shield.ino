@@ -7,7 +7,7 @@
 
 MPL3115A2 myPressure;
 HTU21D myHumidity;
-SoftwareSerial gpsSerial(5, 4); 
+SoftwareSerial gpsSerial(5, 4);
 TinyGPSPlus gps;
 
 const byte PIN_IRQ_WIND_SPEED = 3;
@@ -304,7 +304,12 @@ void print_weather() {
     calculate_weather();
 
     DateTime now = DateTime(gps.date.year(), gps.date.month(), gps.date.day(), gps.time.hour(), gps.time.minute(), gps.time.second());
-    PRINT_VALUE_INT(now.unixtime());
+    if (gps.satellites.value() > 0) {
+        PRINT_VALUE_INT(now.unixtime());
+    }
+    else {
+        PRINT_VALUE_INT(0);
+    }
 
     PRINT_LABEL("winddir=");
     PRINT_VALUE_INT(winddir);
