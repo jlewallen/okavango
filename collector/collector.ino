@@ -131,33 +131,19 @@ void setup() {
     DEBUG_PRINTLN(F("Loop"));
 }
 
-void checkAirwaves() {
+void checkWeatherStation() {
     Queue queue;
-    LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST);
-    NetworkProtocolState networkProtocol(NetworkState::EnqueueFromNetwork, &radio, &queue, new CollectorNetworkCallbacks());
 
     Watchdog.enable();
 
-    DEBUG_PRINTLN("Check Airwaves");
-
-    // Can't call this more than 3 times or so because we use up all the IRQs and
-    // so this would be nice to have a kind of memory?
-    if (!radioSetup) {
-        if (radio.setup()) {
-            radio.sleep();
-        }
-        else {
-            platformCatastrophe(PIN_RED_LED);
-        }
-        radioSetup = true;
-    }
+    DEBUG_PRINTLN("WS: Check");
+    logPrinter.flush();
 
     uint32_t started = millis();
-    uint32_t last = 0;
     while (true) {
-        Watchdog.reset();
-
-        networkProtocol.tick();
+        if (millis() - started > 10 * 1000) {
+            break;
+        }
 
         weatherStation.tick();
 
@@ -200,8 +186,46 @@ void checkAirwaves() {
             queue.enqueue((uint8_t *)&packet);
 
             weatherStation.clear();
-            DEBUG_PRINT("^");
+            DEBUG_PRINTLN("^");
         }
+
+        delay(10);
+    }
+
+    DEBUG_PRINTLN("WS: Done");
+    logPrinter.flush();
+
+    Watchdog.disable();
+}
+
+void checkAirwaves() {
+    Queue queue;
+    LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST);
+    NetworkProtocolState networkProtocol(NetworkState::EnqueueFromNetwork, &radio, &queue, new CollectorNetworkCallbacks());
+
+    Watchdog.enable();
+
+    DEBUG_PRINTLN("AW: Check");
+    logPrinter.flush();
+
+    // Can't call this more than 3 times or so because we use up all the IRQs and
+    // so this would be nice to have a kind of memory?
+    if (!radioSetup) {
+        if (radio.setup()) {
+            radio.sleep();
+        }
+        else {
+            platformCatastrophe(PIN_RED_LED);
+        }
+        radioSetup = true;
+    }
+
+    uint32_t started = millis();
+    uint32_t last = 0;
+    while (true) {
+        networkProtocol.tick();
+
+        weatherStation.ignore();
 
         delay(10);
 
@@ -209,6 +233,8 @@ void checkAirwaves() {
             platformBlink(PIN_RED_LED);
             DEBUG_PRINT(".");
             last = millis();
+
+            Watchdog.reset();
 
             SelfRestart::restartIfNecessary();
         }
@@ -223,8 +249,8 @@ void checkAirwaves() {
     }
 
     radio.sleep();
-    DEBUG_PRINTLN("");
 
+    DEBUG_PRINTLN("AW: Done");
     logPrinter.flush();
 
     Watchdog.disable();
@@ -451,24 +477,30 @@ void handleTransmissionIfNecessary() {
     }
 }
 
-typedef enum CollectorState {
+enum class CollectorState {
     Airwaves,
+    WeatherStation,
     Transmission
-} CollectorState;
+};
 
 void loop() {
-    CollectorState state = Airwaves;
+    CollectorState state = CollectorState::Airwaves;
 
     while (1) {
         switch (state) {
-        case Airwaves: {
+        case CollectorState::Airwaves: {
             checkAirwaves();
-            state = Transmission;
+            state = CollectorState::WeatherStation;
             break;
         }
-        case Transmission: {
+        case CollectorState::WeatherStation: {
+            checkWeatherStation();
+            state = CollectorState::Transmission;
+            break;
+        }
+        case CollectorState::Transmission: {
             handleTransmissionIfNecessary();
-            state = Airwaves;
+            state = CollectorState::Airwaves;
             break;
         }
         }

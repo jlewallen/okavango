@@ -64,11 +64,11 @@ public:
     bool hasReading() {
         return state == WeatherStationState::HaveReading;
     }
+    void ignore();
 
 private:
     void hup();
     void off();
-    void ignore();
     void transition(WeatherStationState newState) {
         state = newState;
         lastTransitionAt = millis();
