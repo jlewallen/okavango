@@ -68,9 +68,7 @@ public:
             }
             DEBUG_PRINTLN("Mandatory restart triggered.");
 
-            #ifdef FK_WRITE_LOG_FILE
             logPrinter.flush();
-            #endif
             platformRestart();
         }
     }
@@ -107,9 +105,7 @@ void setup() {
     CorePlatform corePlatform;
     corePlatform.setup();
 
-    #ifdef FK_WRITE_LOG_FILE
     logPrinter.open();
-    #endif
 
     if (!configuration.read()) {
         DEBUG_PRINTLN("Error reading configuration");
@@ -142,7 +138,7 @@ void checkAirwaves() {
 
     Watchdog.enable();
 
-    DEBUG_PRINTLN("Checking Airwaves...");
+    DEBUG_PRINTLN("Check Airwaves");
 
     // Can't call this more than 3 times or so because we use up all the IRQs and
     // so this would be nice to have a kind of memory?
@@ -227,12 +223,9 @@ void checkAirwaves() {
     }
 
     radio.sleep();
-
     DEBUG_PRINTLN("");
 
-    #ifdef FK_WRITE_LOG_FILE
     logPrinter.flush();
-    #endif
 
     Watchdog.disable();
 }

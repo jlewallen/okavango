@@ -24,9 +24,7 @@ bool RockBlock::tick() {
         rockBlock.attachConsole(Serial);
     }
     else {
-        #ifdef FK_WRITE_LOG_FILE
         rockBlock.attachConsole(logPrinter);
-        #endif
     }
     rockBlock.setPowerProfile(1);
     rockBlock.begin();

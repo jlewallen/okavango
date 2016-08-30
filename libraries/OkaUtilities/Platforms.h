@@ -146,8 +146,6 @@ extern void platformSerial2Begin(int32_t baud);
 
 extern uint32_t TransmissionIntervals[];
 
-#define FK_WRITE_LOG_FILE
-
 class LogPrinter : public Stream {
 public:
     bool open();
@@ -163,13 +161,8 @@ public:
 
 extern LogPrinter logPrinter;
 
-#ifdef FK_WRITE_LOG_FILE
 #define DEBUG_PRINTLN(value)                                 logPrinter.println(value)
 #define DEBUG_PRINT(value)                                   logPrinter.print(value)
-#else
-#define DEBUG_PRINTLN(value)                                 Serial.println(value)
-#define DEBUG_PRINT(value)                                   Serial.print(value)
-#endif
 
 #define memzero(ptr, sz)                                     memset(ptr, 0, sz)
 

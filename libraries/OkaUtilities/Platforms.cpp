@@ -113,7 +113,6 @@ void platformLowPowerSleep(uint32_t numberOfMs) {
 }
 
 
-#ifdef FK_WRITE_LOG_FILE
 #include <SD.h>
 
 File fileLog;
@@ -156,5 +155,3 @@ size_t LogPrinter::write(const uint8_t *buffer, size_t size) {
     Serial.write(buffer, size);
     return w;
 }
-
-#endif
