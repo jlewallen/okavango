@@ -31,11 +31,26 @@ uint32_t numberOfFailures = 0;
 
 #define MANDATORY_RESTART_INTERVAL   (1000 * 60 * 60 * 3)
 #define MANDATORY_RESTART_FILE       "RESUME.INF"
+#define INITIAL_TRANSMISSIONS_FILE   "ITXDONE.INF"
 
 class CollectorNetworkCallbacks : public NetworkCallbacks {
     virtual bool forceTransmission(NetworkProtocolState *networkProtocol) {
         transmissionForced = true;
         return true;
+    }
+};
+
+class InitialTransmissions {
+public:
+    static void markCompleted() {
+        File file = SD.open(INITIAL_TRANSMISSIONS_FILE, FILE_WRITE);
+        if (file) {
+            file.close();
+        }
+    }
+
+    static bool alreadyDone() {
+        return SD.exists(INITIAL_TRANSMISSIONS_FILE);
     }
 };
 
@@ -106,7 +121,7 @@ void setup() {
         digitalWrite(PIN_ROCK_BLOCK, LOW);
     }
 
-    if (SelfRestart::didWeJustRestart() || !configuration.sendInitialTransmissions()) {
+    if (SelfRestart::didWeJustRestart() || !configuration.sendInitialTransmissions() || InitialTransmissions::alreadyDone()) {
         DEBUG_PRINTLN("Resume from mandatory restart.");
         initialWeatherTransmissionSent = true;
         initialAtlasTransmissionSent = true;
@@ -434,6 +449,9 @@ void handleTransmissionIfNecessary() {
 
     if (!initialAtlasTransmissionSent || !initialWeatherTransmissionSent) {
         handleSensorTransmission(false, !initialAtlasTransmissionSent, !initialWeatherTransmissionSent);
+    }
+    else {
+        InitialTransmissions::markCompleted();
     }
     if (!initialLocationTransmissionSent) {
         handleLocationTransmission();
