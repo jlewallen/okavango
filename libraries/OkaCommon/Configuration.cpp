@@ -26,6 +26,7 @@ bool Configuration::read() {
     name = data.substring(0, i);
     hasFona = fonaOrRb == "FONA";
     hasRockBlock = fonaOrRb == "ROCKBLOCK";
+    initialTransmissions = !name.equals("JL");
 
     DEBUG_PRINT("Config: ");
     DEBUG_PRINT(name);
@@ -36,6 +37,6 @@ bool Configuration::read() {
     DEBUG_PRINTLN("");
 
     file.close();
-    
+
     return true;
 }

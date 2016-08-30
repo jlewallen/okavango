@@ -98,7 +98,7 @@ void setup() {
         digitalWrite(PIN_ROCK_BLOCK, LOW);
     }
 
-    if (SelfRestart::didWeJustRestart()) {
+    if (SelfRestart::didWeJustRestart() || !configuration.sendInitialTransmissions()) {
         DEBUG_PRINTLN("Resume from mandatory restart.");
         initialWeatherTransmissionSent = true;
         initialAtlasTransmissionSent = true;

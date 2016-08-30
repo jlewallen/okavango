@@ -9,6 +9,7 @@ private:
     String name;
     bool hasFona;
     bool hasRockBlock;
+    bool initialTransmissions;
 
 public:
     Configuration(const char *filename);
@@ -24,6 +25,10 @@ public:
 
     bool hasFonaAttached() {
         return hasFona;
+    }
+
+    bool sendInitialTransmissions() {
+        return initialTransmissions;
     }
 
     bool read();
