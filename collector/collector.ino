@@ -257,7 +257,7 @@ bool singleTransmission(String message) {
     DEBUG_PRINT("Message: ");
     DEBUG_PRINTLN(message.c_str());
 
-    analogWrite(PIN_RED_LED, 64);
+    analogWrite(PIN_RED_LED, 32);
 
     bool success = false;
     uint32_t started = millis();
