@@ -99,7 +99,19 @@ bool WeatherStation::tick() {
                                     DEBUG_PRINT(values[i]);
                                 }
                                 DEBUG_PRINTLN("");
-                                transition(WeatherStationState::HaveReading);
+                                // Sanity check the reading.
+                                #define JANUARY_1ST_2020   (1577836800)
+                                #define AUGUST_29TH_2016   (1472428800)
+                                if (values[FK_WEATHER_STATION_FIELD_UNIXTIME] > JANUARY_1ST_2020 ||
+                                    values[FK_WEATHER_STATION_FIELD_UNIXTIME] < AUGUST_29TH_2016) {
+                                    DEBUG_PRINTLN("Reject: Time");
+                                }
+                                else if (values[FK_WEATHER_STATION_FIELD_SATELLITES] <= 0) {
+                                    DEBUG_PRINTLN("Reject: Satellites");
+                                }
+                                else {
+                                    transition(WeatherStationState::HaveReading);
+                                }
                             }
                             break;
                         }
