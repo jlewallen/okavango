@@ -52,6 +52,10 @@ public:
                 file.close();
             }
             DEBUG_PRINTLN("Mandatory restart triggered.");
+
+            #ifdef FK_WRITE_LOG_FILE
+            logPrinter.flush();
+            #endif
             platformRestart();
         }
     }
@@ -66,6 +70,8 @@ public:
 };
 
 void setup() {
+    Watchdog.enable();
+
     platformLowPowerSleep(LOW_POWER_SLEEP_BEGIN);
 
     Serial.begin(115200);
@@ -80,6 +86,8 @@ void setup() {
     #endif
 
     Serial.println(F("Begin"));
+
+    Watchdog.reset();
 
     CorePlatform corePlatform;
     corePlatform.setup();
@@ -117,12 +125,9 @@ void checkAirwaves() {
     LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST);
     NetworkProtocolState networkProtocol(NetworkState::EnqueueFromNetwork, &radio, &queue, new CollectorNetworkCallbacks());
 
+    Watchdog.enable();
+
     DEBUG_PRINTLN("Checking Airwaves...");
-
-    int32_t watchdogMs = Watchdog.enable();
-
-    DEBUG_PRINT("Watchdog enabled: ");
-    DEBUG_PRINTLN(watchdogMs);
 
     // Can't call this more than 3 times or so because we use up all the IRQs and
     // so this would be nice to have a kind of memory?
