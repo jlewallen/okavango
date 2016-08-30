@@ -257,6 +257,8 @@ bool singleTransmission(String message) {
     DEBUG_PRINT("Message: ");
     DEBUG_PRINTLN(message.c_str());
 
+    analogWrite(PIN_RED_LED, 64);
+
     bool success = false;
     uint32_t started = millis();
     int32_t watchdogMs = Watchdog.enable();
@@ -298,6 +300,8 @@ bool singleTransmission(String message) {
         }
     }
     Watchdog.disable();
+
+    analogWrite(PIN_RED_LED, 0);
 
     if (!success) {
         numberOfFailures++;
