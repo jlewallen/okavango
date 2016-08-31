@@ -148,8 +148,6 @@ void setup() {
 void checkWeatherStation() {
     Queue queue;
 
-    Watchdog.enable();
-
     DEBUG_PRINTLN("WS: Check");
     logPrinter.flush();
 
@@ -206,16 +204,12 @@ void checkWeatherStation() {
     DEBUG_PRINTLN("");
     DEBUG_PRINTLN("WS: Done");
     logPrinter.flush();
-
-    Watchdog.disable();
 }
 
 void checkAirwaves() {
     Queue queue;
     LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST);
     NetworkProtocolState networkProtocol(NetworkState::EnqueueFromNetwork, &radio, &queue, new CollectorNetworkCallbacks());
-
-    Watchdog.enable();
 
     DEBUG_PRINTLN("AW: Check");
     logPrinter.flush();
@@ -264,8 +258,6 @@ void checkAirwaves() {
     DEBUG_PRINTLN("");
     DEBUG_PRINTLN("AW: Done");
     logPrinter.flush();
-
-    Watchdog.disable();
 }
 
 String atlasPacketToMessage(atlas_sensors_packet_t *packet) {
@@ -312,7 +304,6 @@ bool singleTransmission(String message) {
 
     bool success = false;
     uint32_t started = millis();
-    int32_t watchdogMs = Watchdog.enable();
     if (message.length() > 0) {
         if (configuration.hasFonaAttached()) {
             FonaChild fona(NUMBER_TO_SMS, message);
@@ -350,7 +341,6 @@ bool singleTransmission(String message) {
             DEBUG_PRINTLN(success);
         }
     }
-    Watchdog.disable();
 
     analogWrite(PIN_RED_LED, 0);
 
@@ -365,8 +355,6 @@ void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather) 
     Queue queue;
 
     uint32_t queueSize = queue.size();
-
-    Watchdog.enable();
 
     atlas_sensors_packet_t atlas_sensors;
     memzero((uint8_t *)&atlas_sensors, sizeof(atlas_sensors_packet_t));
@@ -436,8 +424,6 @@ void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather) 
             singleTransmission(message);
         }
     }
-
-    Watchdog.disable();
 }
 
 String locationToMessage(gps_location_t *location) {
