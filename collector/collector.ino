@@ -10,8 +10,6 @@
 #include "Configuration.h"
 #include <Adafruit_SleepyDog.h>
 
-bool radioSetup = false;
-
 typedef struct gps_location_t {
     float latitude;
     float longitude;
@@ -23,11 +21,12 @@ typedef struct gps_location_t {
 Configuration configuration(FK_SETTINGS_CONFIGURATION_FILENAME);
 WeatherStation weatherStation;
 gps_location_t location;
+uint32_t numberOfFailures = 0;
 bool transmissionForced = false;
 bool initialWeatherTransmissionSent = false;
 bool initialAtlasTransmissionSent = false;
 bool initialLocationTransmissionSent = false;
-uint32_t numberOfFailures = 0;
+bool radioSetup = false;
 
 #define IDLE_PERIOD                  (1000 * 60 * 2)
 #define AIRWAVES_CHECK_TIME          (1000 * 60 * 2)
@@ -141,7 +140,7 @@ void setup() {
 
     memzero((uint8_t *)&location, sizeof(gps_location_t));
 
-    DEBUG_PRINTLN(F("Loop"));
+    DEBUG_PRINTLN("Loop");
 
     logPrinter.flush();
 }
@@ -243,8 +242,6 @@ void checkAirwaves() {
             last = millis();
 
             Watchdog.reset();
-
-            SelfRestart::restartIfNecessary();
         }
 
         if (transmissionForced) {
@@ -255,6 +252,8 @@ void checkAirwaves() {
     }
 
     radio.sleep();
+
+    SelfRestart::restartIfNecessary();
 
     DEBUG_PRINTLN("");
     DEBUG_PRINTLN("AW: Done");
