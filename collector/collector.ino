@@ -29,6 +29,7 @@ bool initialAtlasTransmissionSent = false;
 bool initialLocationTransmissionSent = false;
 uint32_t numberOfFailures = 0;
 
+#define IDLE_PERIOD                  (1000 * 60 * 2)
 #define AIRWAVES_CHECK_TIME          (1000 * 60 * 2)
 #define WEATHER_STATION_CHECK_TIME   (1000 * 10)
 #define MANDATORY_RESTART_INTERVAL   (1000 * 60 * 60 * 3)
@@ -475,9 +476,28 @@ void handleTransmissionIfNecessary() {
     }
 }
 
+void idlePeriod() {
+    DEBUG_PRINTLN("Idle: Begin");
+    logPrinter.flush();
+
+    analogWrite(PIN_RED_LED, 16);
+
+    uint32_t started = millis();
+    while (millis() - started < IDLE_PERIOD) {
+        delay(500);
+        Watchdog.reset();
+    }
+
+    analogWrite(PIN_RED_LED, 0);
+
+    DEBUG_PRINTLN("Idle: Done");
+    logPrinter.flush();
+}
+
 enum class CollectorState {
     Airwaves,
     WeatherStation,
+    Idle,
     Transmission
 };
 
@@ -493,6 +513,11 @@ void loop() {
         }
         case CollectorState::WeatherStation: {
             checkWeatherStation();
+            state = CollectorState::Idle;
+            break;
+        }
+        case CollectorState::Idle: {
+            idlePeriod();
             state = CollectorState::Transmission;
             break;
         }
