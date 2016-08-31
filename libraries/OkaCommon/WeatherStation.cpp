@@ -4,7 +4,7 @@
 
 #ifdef ARDUINO_SAMD_FEATHER_M0
 
-
+#define WEATHER_STATION_INTERVAL_START                        (1000 * 60)
 #define WEATHER_STATION_INTERVAL_IGNORE                       (1000 * 60 * 12)
 #define WEATHER_STATION_INTERVAL_OFF                          (1000 * 60 * 18)
 
@@ -13,6 +13,7 @@ WeatherStation::WeatherStation() {
 }
 
 void WeatherStation::setup() {
+    off();
     transition(WeatherStationState::Ignoring);
 }
 
@@ -54,6 +55,15 @@ void WeatherStation::hup() {
 
 bool WeatherStation::tick() {
     switch (state) {
+    case WeatherStationState::Start: {
+        if (on) {
+            off();
+        }
+        if (millis() - lastTransitionAt > WEATHER_STATION_INTERVAL_START) {
+            transition(WeatherStationState::Ignoring);
+        }
+        break;
+    }
     case WeatherStationState::Ignoring: {
         if (!on) {
             hup();

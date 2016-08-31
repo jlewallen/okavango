@@ -31,6 +31,7 @@
 #define FK_WEATHER_STATION_MAX_BUFFER                        20
 
 enum class WeatherStationState {
+    Start,
     Reading,
     Ignoring,
     HaveReading,
