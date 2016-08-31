@@ -518,6 +518,9 @@ void logTransition(const char *name) {
     DEBUG_PRINT(':');
     DEBUG_PRINT(dt.second());
 
+    DEBUG_PRINT(" ");
+    DEBUG_PRINT(platformBatteryVoltage());
+
     DEBUG_PRINT(" >");
     DEBUG_PRINTLN(name);
 }
