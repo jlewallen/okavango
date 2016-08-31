@@ -148,12 +148,16 @@ void setup() {
 void checkWeatherStation() {
     Queue queue;
 
+    Watchdog.reset();
+
     DEBUG_PRINTLN("WS: Check");
     logPrinter.flush();
 
     uint32_t started = millis();
     while (millis() - started < WEATHER_STATION_CHECK_TIME) {
         weatherStation.tick();
+
+        Watchdog.reset();
 
         if (weatherStation.hasReading()) {
             DEBUG_PRINTLN("");
@@ -481,8 +485,8 @@ void idlePeriod() {
 
     uint32_t started = millis();
     while (millis() - started < IDLE_PERIOD) {
-        delay(2000);
         Watchdog.reset();
+        delay(2000);
         platformBlinks(PIN_RED_LED, 2);
     }
 
