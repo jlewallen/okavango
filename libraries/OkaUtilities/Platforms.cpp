@@ -76,13 +76,27 @@ float platformBatteryVoltage() {
 
 #endif
 
+void platformBlinks(uint8_t pin, uint8_t number) {
+    for (uint8_t i = 0; i < number; ++i) {
+        delay(250);
+        digitalWrite(pin, HIGH);
+        delay(250);
+        digitalWrite(pin, LOW);
+    }
+}
+
 void platformBlink(uint8_t pin) {
-    #ifndef LOW_POWER
     delay(500);
     digitalWrite(pin, HIGH);
     delay(500);
     digitalWrite(pin, LOW);
-    #endif
+}
+
+void platformPulse(uint8_t pin) {
+    delay(1000);
+    analogWrite(pin, 256);
+    delay(1000);
+    analogWrite(pin, 128);
 }
 
 void platformCatastrophe(uint8_t pin) {
@@ -94,7 +108,7 @@ void platformCatastrophe(uint8_t pin) {
         if (millis() - started < restartAfter) {
             Watchdog.reset();
         }
-        platformBlink(pin);
+        platformPulse(pin);
     }
 }
 

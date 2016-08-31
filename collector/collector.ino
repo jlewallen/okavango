@@ -300,8 +300,6 @@ bool singleTransmission(String message) {
     DEBUG_PRINT("Message: ");
     DEBUG_PRINTLN(message.c_str());
 
-    analogWrite(PIN_RED_LED, 32);
-
     bool success = false;
     uint32_t started = millis();
     if (message.length() > 0) {
@@ -341,8 +339,6 @@ bool singleTransmission(String message) {
             DEBUG_PRINTLN(success);
         }
     }
-
-    analogWrite(PIN_RED_LED, 0);
 
     if (!success) {
         numberOfFailures++;
@@ -479,15 +475,12 @@ void idlePeriod() {
     DEBUG_PRINTLN("Idle: Begin");
     logPrinter.flush();
 
-    analogWrite(PIN_RED_LED, 16);
-
     uint32_t started = millis();
     while (millis() - started < IDLE_PERIOD) {
-        delay(500);
+        delay(2000);
         Watchdog.reset();
+        platformBlinks(PIN_RED_LED, 2);
     }
-
-    analogWrite(PIN_RED_LED, 0);
 
     DEBUG_PRINTLN("Idle: Done");
     logPrinter.flush();
