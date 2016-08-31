@@ -29,6 +29,8 @@ bool initialAtlasTransmissionSent = false;
 bool initialLocationTransmissionSent = false;
 uint32_t numberOfFailures = 0;
 
+#define AIRWAVES_CHECK_TIME          (1000 * 60 * 2)
+#define WEATHER_STATION_CHECK_TIME   (1000 * 10)
 #define MANDATORY_RESTART_INTERVAL   (1000 * 60 * 60 * 3)
 #define MANDATORY_RESTART_FILE       "RESUME.INF"
 #define INITIAL_TRANSMISSIONS_FILE   "ITXDONE.INF"
@@ -140,11 +142,7 @@ void checkWeatherStation() {
     logPrinter.flush();
 
     uint32_t started = millis();
-    while (true) {
-        if (millis() - started > 10 * 1000) {
-            break;
-        }
-
+    while (millis() - started < WEATHER_STATION_CHECK_TIME) {
         weatherStation.tick();
 
         if (weatherStation.hasReading()) {
@@ -222,7 +220,7 @@ void checkAirwaves() {
 
     uint32_t started = millis();
     uint32_t last = 0;
-    while (true) {
+    while (millis() - started < AIRWAVES_CHECK_TIME || !networkProtocol.isQuiet()) {
         networkProtocol.tick();
 
         weatherStation.ignore();
@@ -237,10 +235,6 @@ void checkAirwaves() {
             Watchdog.reset();
 
             SelfRestart::restartIfNecessary();
-        }
-
-        if (millis() - started > 2 * 60 * 1000 && networkProtocol.isQuiet()) {
-            break;
         }
 
         if (transmissionForced) {
