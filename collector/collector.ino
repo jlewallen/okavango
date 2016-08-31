@@ -300,6 +300,8 @@ bool singleTransmission(String message) {
     DEBUG_PRINT("Message: ");
     DEBUG_PRINTLN(message.c_str());
 
+    digitalWrite(PIN_RED_LED, HIGH);
+
     bool success = false;
     uint32_t started = millis();
     if (message.length() > 0) {
@@ -343,6 +345,8 @@ bool singleTransmission(String message) {
     if (!success) {
         numberOfFailures++;
     }
+
+    digitalWrite(PIN_RED_LED, LOW);
 
     return success;
 }
