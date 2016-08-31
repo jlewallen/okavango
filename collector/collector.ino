@@ -8,6 +8,7 @@
 #include "TransmissionStatus.h"
 #include "WeatherStation.h"
 #include "Configuration.h"
+#include "UptimeTracker.h"
 #include <Adafruit_SleepyDog.h>
 
 typedef struct gps_location_t {
@@ -105,7 +106,20 @@ void setup() {
     CorePlatform corePlatform;
     corePlatform.setup();
 
+    UptimeTracker::started();
+
     logPrinter.open();
+
+    if (UptimeTracker::shouldWeRelax()) {
+        // I would love to be able to reliably tell if we're charging now, but
+        // that may be too much of a hardware change.
+        uint32_t relaxingAt = millis();
+        while (millis() - relaxingAt < FIVE_MINUTES) {
+            Watchdog.reset();
+            delay(1000);
+        }
+        platformRestart();
+    }
 
     logTransition("Begin");
     logPrinter.flush();
@@ -558,6 +572,7 @@ void loop() {
             break;
         }
         }
+        UptimeTracker::remember();
     }
 }
 
