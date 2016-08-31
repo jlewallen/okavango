@@ -126,6 +126,7 @@ bool LogPrinter::open() {
 
 void LogPrinter::flush() {
     fileLog.flush();
+    Serial.flush();
 }
 
 int LogPrinter::available() {
@@ -142,16 +143,12 @@ int LogPrinter::peek() {
 
 size_t LogPrinter::write(uint8_t c) {
     size_t w = fileLog.write(c);
-    if ((char)c == '\n') {
-        flush();
-    }
     Serial.write(c);
     return w;
 }
 
 size_t LogPrinter::write(const uint8_t *buffer, size_t size) {
     size_t w = fileLog.write(buffer, size);
-    flush();
     Serial.write(buffer, size);
     return w;
 }

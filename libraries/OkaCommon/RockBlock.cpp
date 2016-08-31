@@ -14,6 +14,7 @@ class WatchdogCallbacks : public IridiumCallbacks  {
 public:
     virtual void tick() override {
         Watchdog.reset();
+        logPrinter.flush();
     }
 };
 

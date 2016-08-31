@@ -131,8 +131,6 @@ int8_t TransmissionStatus::shouldWe() {
         }
     }
 
-    DEBUG_PRINTLN("");
-
     int8_t which = -1;
     for (int8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
         // I was worried about some kind of weird situation where we were always

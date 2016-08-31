@@ -100,14 +100,15 @@ void setup() {
     }
     #endif
 
-    Serial.println(F("Begin"));
-
     Watchdog.reset();
 
     CorePlatform corePlatform;
     corePlatform.setup();
 
     logPrinter.open();
+
+    DEBUG_PRINTLN(F("Begin"));
+    logPrinter.flush();
 
     if (!configuration.read()) {
         DEBUG_PRINTLN("Error reading configuration");
@@ -119,11 +120,20 @@ void setup() {
         digitalWrite(PIN_ROCK_BLOCK, LOW);
     }
 
-    if (SelfRestart::didWeJustRestart() || !configuration.sendInitialTransmissions() || InitialTransmissions::alreadyDone()) {
-        DEBUG_PRINTLN("Resume from mandatory restart.");
+    // Permanantly disabling these, they frighten me in the field.
+    bool disableInitialTransmissions = true
+        || SelfRestart::didWeJustRestart()
+        || !configuration.sendInitialTransmissions()
+        || InitialTransmissions::alreadyDone();
+
+    if (disableInitialTransmissions) {
         initialWeatherTransmissionSent = true;
         initialAtlasTransmissionSent = true;
         initialLocationTransmissionSent = true;
+    }
+
+    if (SelfRestart::didWeJustRestart()) {
+        DEBUG_PRINTLN("Resume from mandatory restart.");
     }
 
     weatherStation.setup();
@@ -131,6 +141,8 @@ void setup() {
     memzero((uint8_t *)&location, sizeof(gps_location_t));
 
     DEBUG_PRINTLN(F("Loop"));
+
+    logPrinter.flush();
 }
 
 void checkWeatherStation() {
@@ -185,11 +197,13 @@ void checkWeatherStation() {
 
             weatherStation.clear();
             DEBUG_PRINTLN("^");
+            logPrinter.flush();
         }
 
         delay(10);
     }
 
+    DEBUG_PRINTLN("");
     DEBUG_PRINTLN("WS: Done");
     logPrinter.flush();
 
@@ -218,14 +232,15 @@ void checkAirwaves() {
         radioSetup = true;
     }
 
+    DEBUG_PRINTLN("AW: RR");
+    logPrinter.flush();
+
     uint32_t started = millis();
     uint32_t last = 0;
     while (millis() - started < AIRWAVES_CHECK_TIME || !networkProtocol.isQuiet()) {
         networkProtocol.tick();
 
         weatherStation.ignore();
-
-        delay(10);
 
         if (millis() - last > 5000) {
             platformBlink(PIN_RED_LED);
@@ -240,10 +255,13 @@ void checkAirwaves() {
         if (transmissionForced) {
             break;
         }
+
+        delay(10);
     }
 
     radio.sleep();
 
+    DEBUG_PRINTLN("");
     DEBUG_PRINTLN("AW: Done");
     logPrinter.flush();
 
