@@ -108,7 +108,7 @@ void setup() {
 
     logPrinter.open();
 
-    DEBUG_PRINTLN(F("Begin"));
+    logTransition("Begin");
     logPrinter.flush();
 
     if (!configuration.read()) {
@@ -501,28 +501,54 @@ enum class CollectorState {
     Transmission
 };
 
+void logTransition(const char *name) {
+    DateTime dt(SystemClock.now());
+
+    DEBUG_PRINT(dt.unixtime());
+
+    DEBUG_PRINT(' ');
+    DEBUG_PRINT(dt.year());
+    DEBUG_PRINT('/');
+    DEBUG_PRINT(dt.month());
+    DEBUG_PRINT('/');
+    DEBUG_PRINT(dt.day());
+    DEBUG_PRINT(' ');
+    DEBUG_PRINT(dt.hour());
+    DEBUG_PRINT(':');
+    DEBUG_PRINT(dt.minute());
+    DEBUG_PRINT(':');
+    DEBUG_PRINT(dt.second());
+
+    DEBUG_PRINT(" >");
+    DEBUG_PRINTLN(name);
+}
+
 void loop() {
     CollectorState state = CollectorState::Airwaves;
 
-    while (1) {
+    while (true) {
         switch (state) {
         case CollectorState::Airwaves: {
             checkAirwaves();
+            logTransition("WS");
             state = CollectorState::WeatherStation;
             break;
         }
         case CollectorState::WeatherStation: {
             checkWeatherStation();
+            logTransition("ID");
             state = CollectorState::Idle;
             break;
         }
         case CollectorState::Idle: {
             idlePeriod();
+            logTransition("TX");
             state = CollectorState::Transmission;
             break;
         }
         case CollectorState::Transmission: {
             handleTransmissionIfNecessary();
+            logTransition("AW");
             state = CollectorState::Airwaves;
             break;
         }

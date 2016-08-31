@@ -78,7 +78,6 @@ bool WeatherStation::tick() {
             while (Serial2.available()) {
                 int16_t c = Serial2.read();
                 if (c >= 0) {
-                    Serial.print((char)c);
                     if (c == ',' || c == '\r' || c == '\n') {
                         if (length > 0) {
                             buffer[length] = 0;
