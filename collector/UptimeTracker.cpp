@@ -67,7 +67,6 @@ bool write(fk_uptime_status_t *status) {
 }
 
 bool UptimeTracker::shouldWeRelax() {
-    bool relax = false;
     bool hadTroubleStayingUp = true;
 
     fk_uptime_status_t status;
@@ -99,7 +98,7 @@ bool UptimeTracker::shouldWeRelax() {
         return true;
     }
 
-    return relax;
+    return false;
 }
 
 void UptimeTracker::started() {

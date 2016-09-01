@@ -111,6 +111,9 @@ void setup() {
     logPrinter.open();
 
     if (UptimeTracker::shouldWeRelax()) {
+        DEBUG_PRINTLN("Relaxing");
+        logPrinter.flush();
+
         // I would love to be able to reliably tell if we're charging now, but
         // that may be too much of a hardware change.
         uint32_t relaxingAt = millis();
