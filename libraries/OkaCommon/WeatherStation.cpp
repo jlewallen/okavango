@@ -7,6 +7,7 @@
 #define WEATHER_STATION_INTERVAL_START                        (1000 * 60)
 #define WEATHER_STATION_INTERVAL_IGNORE                       (1000 * 60 * 12)
 #define WEATHER_STATION_INTERVAL_OFF                          (1000 * 60 * 18)
+#define WEATHER_STATION_INTERVAL_READING                      (1000 * 60 * 2)
 
 WeatherStation::WeatherStation() {
     clear();
@@ -82,6 +83,10 @@ bool WeatherStation::tick() {
         break;
     }
     case WeatherStationState::Reading: {
+        if (millis() - lastTransitionAt > WEATHER_STATION_INTERVAL_READING) {
+            transition(WeatherStationState::Ignoring);
+            break;
+        }
         if (Serial2.available()) {
             delay(50);
 
