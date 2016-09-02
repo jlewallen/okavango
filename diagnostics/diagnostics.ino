@@ -266,21 +266,25 @@ void setup() {
     }
     #endif
 
+    Serial.println(PIN_SD_CS);
+
     pinMode(PIN_SD_CS, OUTPUT);
     digitalWrite(PIN_SD_CS, HIGH);
 
+    corePlatform.setup();
+
+    /*
     if (!SD.begin(PIN_SD_CS)) {
         DEBUG_PRINTLN(F("SD Missing"));
         platformCatastrophe(PIN_RED_LED);
     }
+    */
 
     #ifdef FK_WRITE_LOG_FILE
     logPrinter.open();
     #endif
 
     Serial.println("Begin");
-
-    // corePlatform.setup();
 
     DEBUG_PRINTLN("Loop");
 }
