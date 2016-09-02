@@ -138,7 +138,7 @@ void setup() {
     }
 
     // Permanantly disabling these, they frighten me in the field.
-    bool disableInitialTransmissions = true
+    bool disableInitialTransmissions = false
         || SelfRestart::didWeJustRestart()
         || !configuration.sendInitialTransmissions()
         || InitialTransmissions::alreadyDone();
