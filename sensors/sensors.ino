@@ -82,9 +82,7 @@ void setup() {
 
     corePlatform.setup();
 
-    #ifdef FK_WRITE_LOG_FILE
     logPrinter.open();
-    #endif
 
     loraAtlasSensorBoard.setup();
     Serial1.begin(9600);
