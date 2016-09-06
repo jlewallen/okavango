@@ -1,3 +1,4 @@
+#include <Adafruit_SleepyDog.h>
 #include "Platforms.h"
 #include "core.h"
 #include "protocol.h"
@@ -9,7 +10,7 @@
 #include "WeatherStation.h"
 #include "Configuration.h"
 #include "UptimeTracker.h"
-#include <Adafruit_SleepyDog.h>
+#include "system.h"
 
 typedef struct gps_location_t {
     float latitude;
@@ -109,6 +110,15 @@ void setup() {
     UptimeTracker::started();
 
     logPrinter.open();
+
+    switch (system_get_reset_cause()) {
+    case SYSTEM_RESET_CAUSE_SOFTWARE: logPrinter.println("Software"); break;
+    case SYSTEM_RESET_CAUSE_WDT: logPrinter.println("WDT"); break;
+    case SYSTEM_RESET_CAUSE_EXTERNAL_RESET: logPrinter.println("External Reset"); break;
+    case SYSTEM_RESET_CAUSE_BOD33: logPrinter.println("BOD13"); break;
+    case SYSTEM_RESET_CAUSE_BOD12: logPrinter.println("BOD12"); break;
+    case SYSTEM_RESET_CAUSE_POR: logPrinter.println("PoR"); break;
+    }
 
     if (UptimeTracker::shouldWeRelax()) {
         // I would love to be able to reliably tell if we're charging now, but
