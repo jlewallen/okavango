@@ -148,8 +148,7 @@ void setup() {
     }
 
     // Permanantly disabling these, they frighten me in the field.
-    bool disableInitialTransmissions = false
-        || SelfRestart::didWeJustRestart()
+    bool disableInitialTransmissions = SelfRestart::didWeJustRestart()
         || !configuration.sendInitialTransmissions()
         || InitialTransmissions::alreadyDone();
 
@@ -157,10 +156,7 @@ void setup() {
         initialWeatherTransmissionSent = true;
         initialAtlasTransmissionSent = true;
         initialLocationTransmissionSent = true;
-    }
-
-    if (SelfRestart::didWeJustRestart()) {
-        DEBUG_PRINTLN("Resume from mandatory restart.");
+        DEBUG_PRINTLN("Initial transmission disabled.");
     }
 
     weatherStation.setup();

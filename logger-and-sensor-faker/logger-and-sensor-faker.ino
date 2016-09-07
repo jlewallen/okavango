@@ -4,9 +4,54 @@
 #include <Adafruit_INA219.h>
 #include <SD.h>
 #include "Platforms.h"
+#include "core.h"
 #include "system.h"
+#include "protocol.h"
+#include "network.h"
+#include "LoraRadio.h"
+
+#define TWENTY_MINUTES  (10 * 1000 * 60 * 20)
 
 Adafruit_INA219 ina219;
+atlas_sensors_packet_t packet;
+
+void sendFakeSensorReading() {
+    Queue queue;
+    LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST);
+    NetworkProtocolState networkProtocol(NetworkState::PingForListener, &radio, &queue, NULL);
+
+    logPrinter.println("Sending fake sensor reading...");
+
+    queue.enqueue((uint8_t *)&packet);
+    queue.startAtBeginning();
+    packet.fk.kind =FK_PACKET_KIND_ATLAS_SENSORS;
+    packet.time = millis();
+    packet.battery = 0;
+    packet.values[0]++;
+
+    if (radio.setup()) {
+        DEBUG_PRINTLN("Enabling radio");
+
+        while (true) {
+            Watchdog.reset();
+
+            networkProtocol.tick();
+
+            if (networkProtocol.isQueueEmpty() || networkProtocol.isNobodyListening()) {
+                break;
+            }
+
+            delay(10);
+        }
+
+        radio.sleep();
+    }
+    else {
+        DEBUG_PRINTLN("No radio available");
+    }
+
+    logPrinter.println("Done");
+}
 
 void setup(void) {
     Watchdog.enable();
@@ -15,9 +60,8 @@ void setup(void) {
 
     uint32_t currentFrequency;
 
-    if (!SD.begin(PIN_SD_CS)) {
-        platformCatastrophe(PIN_RED_LED);
-    }
+    CorePlatform corePlatform;
+    corePlatform.setup();
 
     logPrinter.open();
 
@@ -29,6 +73,8 @@ void setup(void) {
     case SYSTEM_RESET_CAUSE_BOD12: logPrinter.println("BOD12"); break;
     case SYSTEM_RESET_CAUSE_POR: logPrinter.println("PoR"); break;
     }
+
+    memzero((uint8_t *)&packet, sizeof(atlas_sensors_packet_t));
 
     ina219.begin();
     ina219.setCalibration_32V_1A();
@@ -45,23 +91,32 @@ void loop(void) {
     }
 
     while (true) {
-        float shuntVoltage = ina219.getShuntVoltage_mV();
-        float busVoltage = ina219.getBusVoltage_V();
-        float current = ina219.getCurrent_mA();
-        float loadVoltage = busVoltage + (shuntVoltage / 1000);
+        sendFakeSensorReading();
 
-        file.print(millis());
-        file.print(",");
-        file.print(busVoltage);
-        file.print(",");
-        file.print(shuntVoltage);
-        file.print(",");
-        file.print(loadVoltage);
-        file.print(",");
-        file.print(current);
-        file.println("");
-        file.flush();
+        uint32_t started = millis();
+        while (millis() - started < TWENTY_MINUTES) {
+            float shuntVoltage = ina219.getShuntVoltage_mV();
+            float busVoltage = ina219.getBusVoltage_V();
+            float current = ina219.getCurrent_mA();
+            float loadVoltage = busVoltage + (shuntVoltage / 1000);
 
-        delay(1000);
+            Serial.print(".");
+
+            file.print(millis());
+            file.print(",");
+            file.print(busVoltage);
+            file.print(",");
+            file.print(shuntVoltage);
+            file.print(",");
+            file.print(loadVoltage);
+            file.print(",");
+            file.print(current);
+            file.println("");
+            file.flush();
+
+            delay(1000);
+        }
+
+        Serial.println("");
     }
 }
