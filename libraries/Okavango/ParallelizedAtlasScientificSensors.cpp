@@ -14,6 +14,12 @@ extern String getFirstLine(String &str);
 
 ParallelizedAtlasScientificSensors::ParallelizedAtlasScientificSensors(SerialPortExpander *serialPortExpander, bool disableSleep) :
     serialPortExpander(serialPortExpander), portNumber(0), disableSleep(disableSleep), numberOfValues(0) {
+    for (uint8_t i = 0; i < 4; ++i) {
+        hasPortFailed[i] = false;
+    }
+    for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
+        values[i] = 0.0;
+    }
 }
 
 void ParallelizedAtlasScientificSensors::transition(ParallelizedAtlasScientificSensorsState newState) {
@@ -27,7 +33,17 @@ bool ParallelizedAtlasScientificSensors::tick() {
         return true;
     }
     if (getSendsCounter() == 5) {
-        transition(ParallelizedAtlasScientificSensorsState::Done);
+        hasPortFailed[portNumber] = true;
+        handle("*OK(NOT)\r");
+        return true;
+    }
+    else if (hasPortFailed[portNumber]) {
+        if (state == ParallelizedAtlasScientificSensorsState::Sleeping) {
+            handle("*SL(NOT)\r");
+        }
+        else {
+            handle("*OK(NOT)\r");
+        }
         return true;
     }
     switch (state) {

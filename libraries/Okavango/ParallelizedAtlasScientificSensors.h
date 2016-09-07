@@ -28,6 +28,7 @@ private:
     uint8_t numberOfRead0s;
     uint8_t numberOfValues;
     uint8_t portNumber;
+    uint8_t hasPortFailed[4];
     bool disableSleep;
 
 public:

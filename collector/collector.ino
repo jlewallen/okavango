@@ -121,6 +121,9 @@ void setup() {
     }
 
     if (UptimeTracker::shouldWeRelax()) {
+        DEBUG_PRINTLN("Relaxing");
+        logPrinter.flush();
+
         // I would love to be able to reliably tell if we're charging now, but
         // that may be too much of a hardware change.
         uint32_t relaxingAt = millis();
@@ -145,7 +148,7 @@ void setup() {
     }
 
     // Permanantly disabling these, they frighten me in the field.
-    bool disableInitialTransmissions = true
+    bool disableInitialTransmissions = false
         || SelfRestart::didWeJustRestart()
         || !configuration.sendInitialTransmissions()
         || InitialTransmissions::alreadyDone();
