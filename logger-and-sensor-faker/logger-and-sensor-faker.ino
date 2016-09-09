@@ -66,13 +66,15 @@ void setup(void) {
     logPrinter.open();
 
     switch (system_get_reset_cause()) {
-    case SYSTEM_RESET_CAUSE_SOFTWARE: logPrinter.println("Software"); break;
-    case SYSTEM_RESET_CAUSE_WDT: logPrinter.println("WDT"); break;
-    case SYSTEM_RESET_CAUSE_EXTERNAL_RESET: logPrinter.println("External Reset"); break;
-    case SYSTEM_RESET_CAUSE_BOD33: logPrinter.println("BOD13"); break;
-    case SYSTEM_RESET_CAUSE_BOD12: logPrinter.println("BOD12"); break;
-    case SYSTEM_RESET_CAUSE_POR: logPrinter.println("PoR"); break;
+    case SYSTEM_RESET_CAUSE_SOFTWARE: logPrinter.println("ResetCause: Software"); break;
+    case SYSTEM_RESET_CAUSE_WDT: logPrinter.println("ResetCause: WDT"); break;
+    case SYSTEM_RESET_CAUSE_EXTERNAL_RESET: logPrinter.println("ResetCause: External Reset"); break;
+    case SYSTEM_RESET_CAUSE_BOD33: logPrinter.println("ResetCause: BOD33"); break;
+    case SYSTEM_RESET_CAUSE_BOD12: logPrinter.println("ResetCause: BOD12"); break;
+    case SYSTEM_RESET_CAUSE_POR: logPrinter.println("ResetCause: PoR"); break;
     }
+
+    logPrinter.flush();
 
     memzero((uint8_t *)&packet, sizeof(atlas_sensors_packet_t));
 
