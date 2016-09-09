@@ -100,6 +100,8 @@ void loop(void) {
             float current = ina219.getCurrent_mA();
             float loadVoltage = busVoltage + (shuntVoltage / 1000);
 
+            Watchdog.reset();
+
             Serial.print(".");
 
             file.print(millis());
@@ -118,5 +120,6 @@ void loop(void) {
         }
 
         Serial.println("");
+        logPrinter.flush();
     }
 }
