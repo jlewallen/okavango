@@ -12,12 +12,14 @@
 
 #define TWENTY_MINUTES  (1000 * 60 * 20)
 
+LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST);
+
 Adafruit_INA219 ina219;
 atlas_sensors_packet_t packet;
+bool radioSetup = false;
 
 void sendFakeSensorReading() {
     Queue queue;
-    LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST);
     NetworkProtocolState networkProtocol(NetworkState::PingForListener, &radio, &queue, NULL);
 
     logPrinter.println("Sending fake sensor reading...");
@@ -29,8 +31,18 @@ void sendFakeSensorReading() {
     queue.enqueue((uint8_t *)&packet);
     queue.startAtBeginning();
 
-    if (radio.setup()) {
-        DEBUG_PRINTLN("Enabling radio");
+    if (!radioSetup) {
+        if (!radio.setup()) {
+            logPrinter.println("No radio");
+            platformCatastrophe(PIN_RED_LED);
+            return;
+        }
+        radioSetup = true;
+
+    }
+
+    if (radioSetup) {
+        DEBUG_PRINTLN("Have radio");
 
         while (true) {
             Watchdog.reset();
