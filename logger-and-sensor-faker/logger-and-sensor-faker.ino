@@ -10,7 +10,7 @@
 #include "network.h"
 #include "LoraRadio.h"
 
-#define TWENTY_MINUTES  (10 * 1000 * 60 * 20)
+#define TWENTY_MINUTES  (1000 * 60 * 20)
 
 Adafruit_INA219 ina219;
 atlas_sensors_packet_t packet;
