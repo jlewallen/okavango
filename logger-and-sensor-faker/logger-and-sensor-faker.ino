@@ -22,12 +22,12 @@ void sendFakeSensorReading() {
 
     logPrinter.println("Sending fake sensor reading...");
 
-    queue.enqueue((uint8_t *)&packet);
-    queue.startAtBeginning();
     packet.fk.kind =FK_PACKET_KIND_ATLAS_SENSORS;
     packet.time = millis();
     packet.battery = 0;
     packet.values[0]++;
+    queue.enqueue((uint8_t *)&packet);
+    queue.startAtBeginning();
 
     if (radio.setup()) {
         DEBUG_PRINTLN("Enabling radio");
@@ -77,6 +77,8 @@ void setup(void) {
     logPrinter.flush();
 
     memzero((uint8_t *)&packet, sizeof(atlas_sensors_packet_t));
+
+    delay(5000);
 
     ina219.begin();
     ina219.setCalibration_32V_1A();
