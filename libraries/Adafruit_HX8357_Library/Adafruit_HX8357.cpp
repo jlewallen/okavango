@@ -52,7 +52,7 @@ void Adafruit_HX8357::spiwrite(uint8_t c) {
   //Serial.print("0x"); Serial.print(c, HEX); Serial.print(", ");
 
   if (hwSPI) {
-    SPI.beginTransaction(SPISettings(12000000, MSBFIRST, SPI_MODE0));
+    SPI.beginTransaction(SPISettings(20000000, MSBFIRST, SPI_MODE0));
     SPI.transfer(c);
     SPI.endTransaction();
   } else {

@@ -35,7 +35,12 @@ void setup() {
   pinMode(10, OUTPUT);
   digitalWrite(10, HIGH);
 
-  // while (!Serial);
+  uint32_t started = millis();
+  while (!Serial && millis() - started < 1000 * 5) {
+
+  }
+
+  Serial.println(F_CPU);
 
   Serial.println("HX8357D Test!");
 
@@ -53,12 +58,19 @@ void setup() {
   x = tft.readcommand8(HX8357_RDDSDR);
   Serial.print("Self Diagnostic: 0x"); Serial.println(x, HEX);
 
-  Serial.println(F("Benchmark                Time (microseconds)"));
-
   tft.setRotation(1);
+
+  // tft.writecommand(HX8357_ALLPOFF);
+  // delay(1000);
+  // tft.writecommand(HX8357_ALLPON);
+  // delay(1000);
 
   Serial.print(F("Text                     "));
   Serial.println(testText());
+  delay(500);
+
+  Serial.print(F("Fast Lines               "));
+  Serial.println(testFastLines(HX8357_MAGENTA, HX8357_YELLOW));
   delay(500);
 
   Serial.print(F("Lines                    "));
@@ -74,7 +86,6 @@ void setup() {
   Serial.println(testCircles(10, HX8357_RED));
   delay(500);
 
-
   Serial.print(F("Triangles (outline)      "));
   Serial.println(testTriangles());
   delay(500);
@@ -82,7 +93,6 @@ void setup() {
   Serial.print(F("Triangles (filled)       "));
   Serial.println(testFilledTriangles());
   delay(500);
-
 
   Serial.print(F("Rounded rects (outline)  "));
   Serial.println(testRoundRects());
@@ -94,7 +104,6 @@ void setup() {
 
   Serial.println(F("Done!"));
 }
-
 
 void loop(void) {
   for(uint8_t rotation=0; rotation<4; rotation++) {
