@@ -178,7 +178,7 @@ private:
         return nullptr;
     }
     void drawButton(Rect &rect, const char *label) {
-        uint8_t textSize = 5;
+        uint8_t textSize = 4;
 
         gfx->fillRect(rect.position.x, rect.position.y, rect.size.x, rect.size.y, HX8357_BLACK);
         gfx->drawRect(rect.position.x, rect.position.y, rect.size.x, rect.size.y, HX8357_WHITE);
@@ -189,10 +189,13 @@ private:
     }
 
     Rect getButtonRect(size_t i) {
-        uint8_t row = i / 2;
-        uint8_t column = i % 2;
-        uint16_t w = 240;
-        uint16_t h = 160;
+        const uint8_t numberOfRows = 2;
+        const uint8_t numberOfColumns = 2;
+        uint8_t row = i / numberOfColumns;
+        uint8_t column = i % numberOfColumns;
+        // Note: These are flipped due to the rotation of the TFT.
+        uint16_t w = 480 / numberOfColumns;
+        uint16_t h = 320 / numberOfRows;
         uint16_t x = w * column;
         uint16_t y = h * row;
         return Rect(x, y, w, h);
