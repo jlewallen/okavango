@@ -12,6 +12,8 @@
 #include "UptimeTracker.h"
 #include "system.h"
 
+void logTransition(const char *name);
+
 typedef struct gps_location_t {
     float latitude;
     float longitude;
