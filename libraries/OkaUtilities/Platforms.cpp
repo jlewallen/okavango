@@ -99,7 +99,7 @@ void platformPulse(uint8_t pin) {
     analogWrite(pin, 128);
 }
 
-void platformCatastrophe(uint8_t pin) {
+void platformCatastrophe(uint8_t pin, uint8_t mode) {
     uint32_t watchdogMs = Watchdog.enable();
     uint32_t restartAfter = (30 * 1000) - watchdogMs;
     DEBUG_PRINTLN("Catastrophe!");
@@ -108,7 +108,17 @@ void platformCatastrophe(uint8_t pin) {
         if (millis() - started < restartAfter) {
             Watchdog.reset();
         }
-        platformPulse(pin);
+        switch (mode) {
+        case PLATFORM_CATASTROPHE_FAST_BLINK:
+            delay(100);
+            digitalWrite(pin, HIGH);
+            delay(100);
+            digitalWrite(pin, LOW);
+            break;
+        default:
+            platformPulse(pin);
+            break;
+        }
     }
 }
 
@@ -128,17 +138,25 @@ void platformLowPowerSleep(uint32_t numberOfMs) {
 
 #include <SD.h>
 
+bool fileAvailable = false;
 File fileLog;
 LogPrinter logPrinter;
 
 bool LogPrinter::open() {
     fileLog = SD.open("DEBUG.LOG", FILE_WRITE);
-
-    return fileLog;
+    if (fileLog) {
+        fileAvailable = true;
+    }
+    else {
+        fileAvailable = false;
+    }
+    return fileAvailable;
 }
 
 void LogPrinter::flush() {
-    fileLog.flush();
+    if (fileAvailable) {
+        fileLog.flush();
+    }
     Serial.flush();
 }
 
@@ -155,13 +173,19 @@ int LogPrinter::peek() {
 }
 
 size_t LogPrinter::write(uint8_t c) {
-    size_t w = fileLog.write(c);
-    Serial.write(c);
-    return w;
+    if (fileAvailable) {
+        size_t w = fileLog.write(c);
+        Serial.write(c);
+        return w;
+    }
+    return Serial.write(c);
 }
 
 size_t LogPrinter::write(const uint8_t *buffer, size_t size) {
-    size_t w = fileLog.write(buffer, size);
-    Serial.write(buffer, size);
-    return w;
+    if (fileAvailable) {
+        size_t w = fileLog.write(buffer, size);
+        Serial.write(buffer, size);
+        return w;
+    }
+    return Serial.write(buffer, size);
 }

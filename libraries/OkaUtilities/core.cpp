@@ -21,7 +21,7 @@ void CorePlatform::setup() {
 
     if (!SD.begin(PIN_SD_CS)) {
         DEBUG_PRINTLN(F("SD Missing"));
-        platformCatastrophe(PIN_RED_LED);
+        platformCatastrophe(PIN_RED_LED, PLATFORM_CATASTROPHE_FAST_BLINK);
     }
 
     pinMode(PIN_RFM95_RST, OUTPUT);

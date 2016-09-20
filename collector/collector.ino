@@ -71,7 +71,6 @@ public:
                 file.close();
             }
             DEBUG_PRINTLN("Mandatory restart triggered.");
-
             logPrinter.flush();
             platformRestart();
         }
@@ -139,6 +138,7 @@ void setup() {
 
     if (!configuration.read()) {
         DEBUG_PRINTLN("Error reading configuration");
+        logPrinter.flush();
         platformCatastrophe(PIN_RED_LED);
     }
 
@@ -248,6 +248,7 @@ void checkAirwaves() {
             radio.sleep();
         }
         else {
+            logPrinter.flush();
             platformCatastrophe(PIN_RED_LED);
         }
         radioSetup = true;
@@ -257,7 +258,7 @@ void checkAirwaves() {
     logPrinter.flush();
 
     uint32_t started = millis();
-    uint32_t last = 0;
+    uint32_t last = millis();
     while (millis() - started < AIRWAVES_CHECK_TIME || !networkProtocol.isQuiet()) {
         networkProtocol.tick();
 
@@ -265,7 +266,7 @@ void checkAirwaves() {
 
         if (millis() - last > 5000) {
             platformBlink(PIN_RED_LED);
-            DEBUG_PRINT(".");
+            Serial.print(".");
             last = millis();
 
             Watchdog.reset();
@@ -279,11 +280,15 @@ void checkAirwaves() {
     }
 
     radio.sleep();
-
-    SelfRestart::restartIfNecessary();
+    delay(100);
 
     DEBUG_PRINTLN("");
     DEBUG_PRINTLN("AW: Done");
+    logPrinter.flush();
+
+    SelfRestart::restartIfNecessary();
+
+    DEBUG_PRINTLN("AW: Exit");
     logPrinter.flush();
 }
 

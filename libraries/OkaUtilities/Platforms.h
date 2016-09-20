@@ -166,10 +166,13 @@ extern LogPrinter logPrinter;
 
 #define memzero(ptr, sz)                                     memset(ptr, 0, sz)
 
+#define PLATFORM_CATASTROPHE_FAST_BLINK                      2
+#define PLATFORM_CATASTROPHE_PULSE                           1
+
 void platformPostSetup();
 void platformRestart();
 float platformBatteryVoltage();
-void platformCatastrophe(uint8_t pin);
+void platformCatastrophe(uint8_t pin, uint8_t mode = PLATFORM_CATASTROPHE_PULSE);
 void platformLowPowerSleep(uint32_t numberOfMs);
 void platformBlink(uint8_t pin);
 void platformBlinks(uint8_t pin, uint8_t number);
