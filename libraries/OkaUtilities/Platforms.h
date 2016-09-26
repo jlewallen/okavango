@@ -104,6 +104,7 @@ extern SerialType conductivitySerial;
 #define PIN_ROCK_BLOCK                                       9
 #define PIN_WEATHER_STATION_RESET                            6
 #define PIN_DS18B20                                          19
+#define PIN_POWER_HARD_RESET                                 5
 
 #define HAVE_DHT22
 #define PIN_DHT                                              18

@@ -108,6 +108,9 @@ void platformCatastrophe(uint8_t pin, uint8_t mode) {
         if (millis() - started < restartAfter) {
             Watchdog.reset();
         }
+        else {
+            digitalWrite(PIN_POWER_HARD_RESET, HIGH);
+        }
         switch (mode) {
         case PLATFORM_CATASTROPHE_FAST_BLINK:
             delay(100);
