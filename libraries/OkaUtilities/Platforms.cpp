@@ -109,6 +109,7 @@ void platformCatastrophe(uint8_t pin, uint8_t mode) {
             Watchdog.reset();
         }
         else {
+            pinMode(PIN_POWER_HARD_RESET, OUTPUT);
             digitalWrite(PIN_POWER_HARD_RESET, HIGH);
         }
         switch (mode) {
