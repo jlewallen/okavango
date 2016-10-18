@@ -135,6 +135,7 @@ extern void platformSerial2Begin(int32_t baud);
 #define FK_SETTINGS_QUEUE_FILENAME                           "queue.bin"
 #define FK_SETTINGS_WEATHER_STATION_DATA_FILENAME            "weather.csv"
 #define FK_SETTINGS_ATLAS_DATA_FILENAME                      "atlas.csv"
+#define FK_SETTINGS_SONAR_DATA_FILENAME                      "sonar.csv"
 #define FK_SETTINGS_DATA_BOAT_DATA_FILENAME                  "db.csv"
 #define FK_SETTINGS_TRANSMISSION_STATUS_FILENAME             "status.bin"
 #define FK_SETTINGS_CONFIGURATION_FILENAME                   "fk.cfg"
