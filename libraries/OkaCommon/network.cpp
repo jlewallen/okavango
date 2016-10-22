@@ -14,7 +14,7 @@ void NetworkProtocolState::tick() {
      * Some caveats to this:
      * 1) lastTickNonDelayed should be set on transition or the order here should
      *    be changed. So we would transition to a "delayed" state but the last
-     *    time we recorded the lastTickNonDelayed was long past and so we would 
+     *    time we recorded the lastTickNonDelayed was long past and so we would
           immediately leave it.
      * 2) Avoid more than one transition per tick.
      */
@@ -119,6 +119,7 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize
         checkForPacket();
         break;
     }
+    case FK_PACKET_KIND_SONAR_STATION:
     case FK_PACKET_KIND_ATLAS_SENSORS: {
         if (state == NetworkState::EnqueueFromNetwork) {
             delay(50);
@@ -255,5 +256,3 @@ void NetworkProtocolState::dequeueAndSend() {
         }
     }
 }
-
-
