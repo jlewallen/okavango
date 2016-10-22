@@ -436,7 +436,7 @@ bool singleTransmission(String message) {
     return success;
 }
 
-void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather) {
+void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather, bool sendSonar) {
     Queue queue;
 
     uint32_t queueSize = queue.size();
@@ -487,14 +487,16 @@ void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather) 
         else {
             noAtlas = true;
         }
+    }
 
+    if (sendSonar) {
         if (sonar_station_sensors.fk.kind == FK_PACKET_KIND_SONAR_STATION) {
             if (singleTransmission(sonarPacketToMessage(&sonar_station_sensors))) {
-                initialAtlasTransmissionSent = true;
+
             }
-        }
-        else {
-            noSonar = true;
+            else {
+                noSonar = true;
+            }
         }
     }
 
@@ -515,6 +517,8 @@ void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather) 
             String message(SystemClock.now());
             message += ",";
             message += noAtlas;
+            message += ",";
+            message += noSonar;
             message += ",";
             message += noWeather;
             message += ",";
@@ -554,20 +558,20 @@ void handleTransmissionIfNecessary() {
 
     int8_t kind = status.shouldWe();
     if (kind == TRANSMISSION_KIND_SENSORS) {
-        handleSensorTransmission(true, true, true);
+        handleSensorTransmission(true, true, true, true);
     }
     else if (kind == TRANSMISSION_KIND_LOCATION) {
         handleLocationTransmission();
     }
 
     if (transmissionForced) {
-        handleSensorTransmission(true, true, true);
+        handleSensorTransmission(true, true, true, true);
         handleLocationTransmission();
         transmissionForced = false;
     }
 
     if (!initialAtlasTransmissionSent || !initialWeatherTransmissionSent) {
-        handleSensorTransmission(false, !initialAtlasTransmissionSent, !initialWeatherTransmissionSent);
+        handleSensorTransmission(false, !initialAtlasTransmissionSent, !initialWeatherTransmissionSent, false);
     }
     else {
         InitialTransmissions::markCompleted();
