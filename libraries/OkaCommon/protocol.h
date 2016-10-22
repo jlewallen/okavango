@@ -9,11 +9,12 @@
 #define FK_PACKET_KIND_ATLAS_SENSORS                        0x3
 #define FK_PACKET_KIND_WEATHER_STATION                      0x4
 #define FK_PACKET_KIND_DATA_BOAT_SENSORS                    0x5
-#define FK_PACKET_KIND_SONAR_STATION                        0x6
 
 #define FK_PACKET_KIND_FORCE_TRANSMISSION                   0x6
 #define FK_PACKET_KIND_RUN_DIAGNOSTICS                      0x7
 #define FK_PACKET_KIND_DIAGNOSTICS_COLLECTOR                0x8
+
+#define FK_PACKET_KIND_SONAR_STATION                        0x9
 
 /**
  * Ideas:
