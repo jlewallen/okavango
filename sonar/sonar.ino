@@ -142,4 +142,9 @@ void loop() {
     tryAndSendLocalQueue(&queue);
 
     platformLowPowerSleep(LOW_POWER_SLEEP_SENSORS_END);
+
+    DEBUG_PRINTLN("Bye!");
+    delay(100);
+
+    platformRestart();
 }
