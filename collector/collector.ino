@@ -345,6 +345,19 @@ String atlasPacketToMessage(atlas_sensors_packet_t *packet) {
     return message;
 }
 
+String sonarPacketToMessage(sonar_station_packet_t *packet) {
+    String message(packet->time);
+    message += ",";
+    message += configuration.getName();
+    message += ",";
+    message += String(packet->battery, 2);
+    for (uint8_t i = 0; i < FK_SONAR_STATION_PACKET_NUMBER_VALUES; ++i) {
+        String field = "," + String(packet->values[i], 2);
+        message += field;
+    }
+    return message;
+}
+
 String weatherStationPacketToMessage(weather_station_packet_t *packet) {
     String message(packet->time);
     message += ",";
@@ -434,6 +447,9 @@ void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather) 
     weather_station_packet_t weather_station_sensors;
     memzero((uint8_t *)&weather_station_sensors, sizeof(weather_station_packet_t));
 
+    sonar_station_packet_t sonar_station_sensors;
+    memzero((uint8_t *)&sonar_station_sensors, sizeof(sonar_station_packet_t));
+
     if (queueSize > 0) {
         while (true) {
             fk_network_packet_t *packet = (fk_network_packet_t *)queue.dequeue();
@@ -450,12 +466,17 @@ void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather) 
                 memcpy((uint8_t *)&atlas_sensors, (uint8_t *)packet, sizeof(atlas_sensors_packet_t));
                 break;
             }
+            case FK_PACKET_KIND_SONAR_STATION: {
+                memcpy((uint8_t *)&sonar_station_sensors, (uint8_t *)packet, sizeof(sonar_station_packet_t));
+                break;
+            }
             }
         }
     }
 
     bool noAtlas = false;
     bool noWeather = false;
+    bool noSonar = false;
 
     if (sendAtlas) {
         if (atlas_sensors.fk.kind == FK_PACKET_KIND_ATLAS_SENSORS) {
@@ -465,6 +486,15 @@ void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather) 
         }
         else {
             noAtlas = true;
+        }
+
+        if (sonar_station_sensors.fk.kind == FK_PACKET_KIND_SONAR_STATION) {
+            if (singleTransmission(sonarPacketToMessage(&sonar_station_sensors))) {
+                initialAtlasTransmissionSent = true;
+            }
+        }
+        else {
+            noSonar = true;
         }
     }
 
