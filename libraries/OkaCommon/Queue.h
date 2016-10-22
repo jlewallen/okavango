@@ -17,7 +17,7 @@ public:
     int16_t size();
     void removeAll();
     uint8_t *dequeue();
-    void enqueue(uint8_t *buffer);
+    void enqueue(uint8_t *entry, size_t size = FK_QUEUE_ENTRY_SIZE);
     void startAtBeginning();
     void copyInto(Queue *into);
 
@@ -26,5 +26,3 @@ private:
 };
 
 #endif
-
-

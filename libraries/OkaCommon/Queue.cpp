@@ -39,14 +39,17 @@ int16_t Queue::size() {
     return -1;
 }
 
-void Queue::enqueue(uint8_t *buffer) {
+void Queue::enqueue(uint8_t *entry, size_t size) {
     File file = open();
     if (file) {
         header_t header = { true };
 
+        memzero((uint8_t *)&buffer, FK_QUEUE_ENTRY_SIZE);
+        memcpy((uint8_t *)&buffer, entry, size);
+
         file.seek(file.size());
         uint32_t written = file.write((uint8_t *)&header, sizeof(header_t));
-        written += file.write(buffer, FK_QUEUE_ENTRY_SIZE);
+        written += file.write((uint8_t *)&buffer, FK_QUEUE_ENTRY_SIZE);
         file.close();
     }
 }

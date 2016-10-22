@@ -246,7 +246,7 @@ void checkWeatherStation() {
 
             DEBUG_PRINT("%");
 
-            queue.enqueue((uint8_t *)&packet);
+            queue.enqueue((uint8_t *)&packet, sizeof(weather_station_packet_t));
 
             weatherStation.clear();
             DEBUG_PRINTLN("^");

@@ -120,7 +120,7 @@ bool AtlasSensorBoard::tick() {
             logPacketLocally();
 
             Queue queue;
-            queue.enqueue((uint8_t *)&packet);
+            queue.enqueue((uint8_t *)&packet, sizeof(atlas_sensors_packet_t));
             queue.startAtBeginning();
 
             Watchdog.disable();

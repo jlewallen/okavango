@@ -137,7 +137,7 @@ void loop() {
 
     logPacketLocally();
 
-    queue.enqueue((uint8_t *)&packet);
+    queue.enqueue((uint8_t *)&packet, sizeof(sonar_station_packet_t));
     queue.startAtBeginning();
     tryAndSendLocalQueue(&queue);
 
