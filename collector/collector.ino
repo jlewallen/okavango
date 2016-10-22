@@ -121,6 +121,7 @@ void setup() {
     case SYSTEM_RESET_CAUSE_POR: logPrinter.println("ResetCause: PoR"); break;
     }
 
+    #ifndef TESTING_MODE
     if (UptimeTracker::shouldWeRelax()) {
         DEBUG_PRINTLN("Relaxing");
         logPrinter.flush();
@@ -134,6 +135,7 @@ void setup() {
         }
         platformRestart();
     }
+    #endif
 
     logTransition("Begin");
     logPrinter.flush();
@@ -168,6 +170,42 @@ void setup() {
     DEBUG_PRINTLN("Loop");
 
     logPrinter.flush();
+
+    #ifdef TESTING_MODE
+    bool enabled = false;
+    while (1) {
+        if (Serial.available()) {
+            while (Serial.available()) {
+                char c = Serial.read();
+                switch (c) {
+                case 't': {
+                    enabled = !enabled;
+                    Serial.print("Toggled ");
+                    Serial.println(enabled);
+
+                    digitalWrite(PIN_ROCK_BLOCK, enabled);
+                    break;
+                }
+                case 's': {
+                    RockBlock rockBlock("TEST");
+                    Serial1.begin(19200);
+                    SerialType &rockBlockSerial = Serial1;
+                    rockBlock.setSerial(&rockBlockSerial);
+                    while (!rockBlock.isDone() && !rockBlock.isFailed()) {
+                        rockBlock.tick();
+                        delay(10);
+                    }
+                    break;
+                }
+                }
+            }
+        }
+
+        delay(100);
+
+        Watchdog.reset();
+    }
+    #endif
 }
 
 void checkWeatherStation() {
