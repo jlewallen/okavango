@@ -29,6 +29,7 @@ uint32_t numberOfFailures = 0;
 bool transmissionForced = false;
 bool initialWeatherTransmissionSent = false;
 bool initialAtlasTransmissionSent = false;
+bool initialSonarTransmissionSent = false;
 bool initialLocationTransmissionSent = false;
 bool radioSetup = false;
 
@@ -159,6 +160,7 @@ void setup() {
     if (disableInitialTransmissions) {
         initialWeatherTransmissionSent = true;
         initialAtlasTransmissionSent = true;
+        initialSonarTransmissionSent = true;
         initialLocationTransmissionSent = true;
         DEBUG_PRINTLN("Initial transmission disabled.");
     }
@@ -492,7 +494,7 @@ void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather, 
     if (sendSonar) {
         if (sonar_station_sensors.fk.kind == FK_PACKET_KIND_SONAR_STATION) {
             if (singleTransmission(sonarPacketToMessage(&sonar_station_sensors))) {
-
+                initialSonarTransmissionSent = true;
             }
             else {
                 noSonar = true;
@@ -573,7 +575,7 @@ void handleTransmissionIfNecessary() {
     }
 
     if (!initialAtlasTransmissionSent || !initialWeatherTransmissionSent) {
-        handleSensorTransmission(false, !initialAtlasTransmissionSent, !initialWeatherTransmissionSent, false);
+        handleSensorTransmission(false, !initialAtlasTransmissionSent, !initialWeatherTransmissionSent, !initialSonarTransmissionSent);
     }
     else {
         InitialTransmissions::markCompleted();
