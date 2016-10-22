@@ -7,6 +7,8 @@
 #include "AtlasSensorBoard.h"
 #include "DataBoat.h"
 
+#define UPLOAD_ONLY
+
 class WifiAtlasSensorBoard : public AtlasSensorBoard {
 public:
     WifiAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard);
@@ -41,7 +43,6 @@ void WifiAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet
 
 CorePlatform corePlatform;
 SerialPortExpander serialPortExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1, ConductivityConfig::OnExpanderPort4);
-// AtlasScientificBoard sensorBoard(&serialPortExpander, false);
 ParallelizedAtlasScientificSensors sensorBoard(&serialPortExpander, false);
 WifiAtlasSensorBoard wifiAtlasSensorBoard(&corePlatform, &serialPortExpander, &sensorBoard);
 
@@ -60,7 +61,20 @@ void setup() {
     Serial.println("Begin");
 
     corePlatform.setup();
+    #ifdef UPLOAD_ONLY
+    uint32_t started = millis();
+    DataBoat dataBoat(&Serial2, 9, NULL);
+    Serial.println("Setup");
+    dataBoat.setup(false);
+    dataBoat.upload();
+
+    Watchdog.disable();
+
+    while (1) {
+    }
+    #else
     wifiAtlasSensorBoard.setup();
+    #endif
 
     Serial.println("Loop");
 }

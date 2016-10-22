@@ -44,11 +44,11 @@ private:
 
 public:
     DataBoat(HardwareSerial *gpsStream, uint8_t pinGpsEnable, atlas_sensors_packet_t *atlasPacket);
-    bool setup();
+    bool setup(bool enableGps = true);
     bool tick();
+    void upload();
 
 private:
-    void upload();
     String readingToJson(data_boat_packet_t *reading);
     void logDataBoatPacketLocally(data_boat_packet_t *reading);
 };
