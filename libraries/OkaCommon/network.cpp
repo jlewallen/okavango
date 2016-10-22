@@ -119,20 +119,27 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize
         checkForPacket();
         break;
     }
-    case FK_PACKET_KIND_SONAR_STATION:
+    case FK_PACKET_KIND_SONAR_STATION: {
+        if (state == NetworkState::EnqueueFromNetwork) {
+            delay(50);
+
+            DEBUG_PRINTLN("Queuing");
+
+            queue->enqueue((uint8_t *)packet);
+
+            sendAck();
+        }
+        break;
+    }
     case FK_PACKET_KIND_ATLAS_SENSORS: {
         if (state == NetworkState::EnqueueFromNetwork) {
             delay(50);
 
             DEBUG_PRINTLN("Queuing");
 
-            // Enqueue
             queue->enqueue((uint8_t *)packet);
 
             sendAck();
-        }
-        else {
-            // DEBUG_PRINTLN("Rougue sensors!");
         }
         break;
     }

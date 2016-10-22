@@ -429,8 +429,8 @@ void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather, 
 
     uint32_t queueSize = queue.size();
 
-    atlas_sensors_packet_t atlas_sensors;
-    memzero((uint8_t *)&atlas_sensors, sizeof(atlas_sensors_packet_t));
+    atlas_sensors_packet_t atlas_station_sensors;
+    memzero((uint8_t *)&atlas_station_sensors, sizeof(atlas_sensors_packet_t));
 
     weather_station_packet_t weather_station_sensors;
     memzero((uint8_t *)&weather_station_sensors, sizeof(weather_station_packet_t));
@@ -451,7 +451,7 @@ void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather, 
                 break;
             }
             case FK_PACKET_KIND_ATLAS_SENSORS: {
-                memcpy((uint8_t *)&atlas_sensors, (uint8_t *)packet, sizeof(atlas_sensors_packet_t));
+                memcpy((uint8_t *)&atlas_station_sensors, (uint8_t *)packet, sizeof(atlas_sensors_packet_t));
                 break;
             }
             case FK_PACKET_KIND_SONAR_STATION: {
@@ -467,8 +467,8 @@ void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather, 
     bool noSonar = false;
 
     if (sendAtlas) {
-        if (atlas_sensors.fk.kind == FK_PACKET_KIND_ATLAS_SENSORS) {
-            if (singleTransmission(atlasPacketToMessage(&atlas_sensors))) {
+        if (atlas_station_sensors.fk.kind == FK_PACKET_KIND_ATLAS_SENSORS) {
+            if (singleTransmission(atlasPacketToMessage(&atlas_station_sensors))) {
                 initialAtlasTransmissionSent = true;
                 InitialTransmissions::markCompleted(TRANSMISSION_TYPE_ATLAS);
             }

@@ -69,7 +69,7 @@ void tryAndSendLocalQueue(Queue *queue) {
     Watchdog.disable();
 }
 
-void logPacketLocally() {
+void logPacketLocally(sonar_station_packet_t *packet) {
     File file = Logger::open(FK_SETTINGS_SONAR_DATA_FILENAME);
     if (file) {
         #define VERBOSE_LOGGING
@@ -79,23 +79,23 @@ void logPacketLocally() {
         DEBUG_PRINTLN("Logging");
         #endif
 
-        file.print(packet.fk.kind);
+        file.print(packet->fk.kind);
         file.print(",");
-        file.print(packet.time);
+        file.print(packet->time);
         file.print(",");
-        file.print(packet.battery);
+        file.print(packet->battery);
         DEBUG_PRINT(" ");
-        DEBUG_PRINT(packet.fk.kind);
+        DEBUG_PRINT(packet->fk.kind);
         DEBUG_PRINT(" ");
-        DEBUG_PRINT(packet.time);
+        DEBUG_PRINT(packet->time);
         DEBUG_PRINT(" ");
-        DEBUG_PRINT(packet.battery);
+        DEBUG_PRINT(packet->battery);
         for (uint8_t i = 0; i < FK_SONAR_STATION_PACKET_NUMBER_VALUES; ++i) {
             file.print(",");
-            file.print(packet.values[i]);
+            file.print(packet->values[i]);
 
             DEBUG_PRINT(" ");
-            DEBUG_PRINT(packet.values[i]);
+            DEBUG_PRINT(packet->values[i]);
         }
         file.println();
         file.close();
@@ -135,7 +135,7 @@ void loop() {
         Watchdog.reset();
     }
 
-    logPacketLocally();
+    logPacketLocally(&packet);
 
     queue.enqueue((uint8_t *)&packet, sizeof(sonar_station_packet_t));
     queue.startAtBeginning();
