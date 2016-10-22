@@ -10,6 +10,7 @@
 #include "WeatherStation.h"
 #include "Configuration.h"
 #include "UptimeTracker.h"
+#include "InitialTransmissions.h"
 #include "system.h"
 
 void logTransition(const char *name);
@@ -38,26 +39,11 @@ bool radioSetup = false;
 #define WEATHER_STATION_CHECK_TIME   (1000 * 10)
 #define MANDATORY_RESTART_INTERVAL   (1000 * 60 * 60 * 3)
 #define MANDATORY_RESTART_FILE       "RESUME.INF"
-#define INITIAL_TRANSMISSIONS_FILE   "ITXDONE.INF"
 
 class CollectorNetworkCallbacks : public NetworkCallbacks {
     virtual bool forceTransmission(NetworkProtocolState *networkProtocol) {
         transmissionForced = true;
         return true;
-    }
-};
-
-class InitialTransmissions {
-public:
-    static void markCompleted() {
-        File file = SD.open(INITIAL_TRANSMISSIONS_FILE, FILE_WRITE);
-        if (file) {
-            file.close();
-        }
-    }
-
-    static bool alreadyDone() {
-        return SD.exists(INITIAL_TRANSMISSIONS_FILE);
     }
 };
 
@@ -153,15 +139,15 @@ void setup() {
     }
 
     // Permanantly disabling these, they frighten me in the field.
-    bool disableInitialTransmissions = SelfRestart::didWeJustRestart()
-        || !configuration.sendInitialTransmissions()
-        || InitialTransmissions::alreadyDone();
+    bool disableInitialTransmissions = SelfRestart::didWeJustRestart() || !configuration.sendInitialTransmissions();
+
+
 
     if (disableInitialTransmissions) {
-        initialWeatherTransmissionSent = true;
-        initialAtlasTransmissionSent = true;
-        initialSonarTransmissionSent = true;
-        initialLocationTransmissionSent = true;
+        initialWeatherTransmissionSent = !InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_WEATHER);
+        initialAtlasTransmissionSent = !InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_ATLAS);
+        initialSonarTransmissionSent = !InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_SONAR);
+        initialLocationTransmissionSent = !InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_LOCATION);
         DEBUG_PRINTLN("Initial transmission disabled.");
     }
 
@@ -484,6 +470,7 @@ void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather, 
         if (atlas_sensors.fk.kind == FK_PACKET_KIND_ATLAS_SENSORS) {
             if (singleTransmission(atlasPacketToMessage(&atlas_sensors))) {
                 initialAtlasTransmissionSent = true;
+                InitialTransmissions::markCompleted(TRANSMISSION_TYPE_ATLAS);
             }
         }
         else {
@@ -495,6 +482,7 @@ void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather, 
         if (sonar_station_sensors.fk.kind == FK_PACKET_KIND_SONAR_STATION) {
             if (singleTransmission(sonarPacketToMessage(&sonar_station_sensors))) {
                 initialSonarTransmissionSent = true;
+                InitialTransmissions::markCompleted(TRANSMISSION_TYPE_SONAR);
             }
             else {
                 noSonar = true;
@@ -506,6 +494,7 @@ void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather, 
         if (weather_station_sensors.fk.kind == FK_PACKET_KIND_WEATHER_STATION) {
             if (singleTransmission(weatherStationPacketToMessage(&weather_station_sensors))) {
                 initialWeatherTransmissionSent = true;
+                InitialTransmissions::markCompleted(TRANSMISSION_TYPE_WEATHER);
             }
         }
         else {
@@ -553,6 +542,7 @@ void handleLocationTransmission() {
     if (location.time > 0) {
         if (singleTransmission(locationToMessage(&location))) {
             initialLocationTransmissionSent = true;
+            InitialTransmissions::markCompleted(TRANSMISSION_TYPE_WEATHER);
         }
     }
 }
@@ -574,11 +564,8 @@ void handleTransmissionIfNecessary() {
         transmissionForced = false;
     }
 
-    if (!initialAtlasTransmissionSent || !initialWeatherTransmissionSent) {
+    if (!initialAtlasTransmissionSent || !initialWeatherTransmissionSent || !initialSonarTransmissionSent) {
         handleSensorTransmission(false, !initialAtlasTransmissionSent, !initialWeatherTransmissionSent, !initialSonarTransmissionSent);
-    }
-    else {
-        InitialTransmissions::markCompleted();
     }
     if (!initialLocationTransmissionSent) {
         handleLocationTransmission();
