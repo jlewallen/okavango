@@ -17,7 +17,9 @@ model {
             boards = [ "arduino:avr:mega:cpu=atmega2560" ]
             libraries = [
                 "SPI",
-                "SD"
+                "SD",
+                "Wire",
+                "RTCLib"
             ]
         }
     }

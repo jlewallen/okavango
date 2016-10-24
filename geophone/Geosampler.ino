@@ -11,6 +11,9 @@
 // C:\Source\page5of4\arduino-1.6.10\arduino-builder -dump-prefs -logger=machine -hardware "C:\Source\page5of4\arduino-1.6.10\hardware" -hardware "C:\Users\jlewa\AppData\Local\Arduino15\packages" -tools "C:\Source\page5of4\arduino-1.6.10\tools-builder" -tools "C:\Source\page5of4\arduino-1.6.10\hardware\tools\avr" -tools "C:\Users\jlewa\AppData\Local\Arduino15\packages" -built-in-libraries "C:\Source\page5of4\arduino-1.6.10\libraries" -libraries "C:\Users\jlewa\OneDrive\Documents\Arduino\libraries" -fqbn=arduino:avr:mega:cpu=atmega2560 -ide-version=10610 -build-path "C:\Users\jlewa\AppData\Local\Temp\build8b6c85f44d62e5b0de8d523ea9ca94dc.tmp" -warnings=none -prefs=build.warn_data_percentage=75 -verbose "C:\Source\okavango\geophone\geophone.ino"
 
 #include <Arduino.h>
+#include <SD.h>
+#include <Wire.h>
+#include "RTClib.h"
 
 /* Serial speed for the report generation.  It should be fast enough to
    allow several values to be passed per second.  A speed of 38,400 baud
@@ -33,6 +36,8 @@
 #define LED_PIN             13
 
 #define NUMBER_OF_GEODATA_SAMPLES 256
+
+void error(char *str);
 
 typedef struct geodata_t {
     uint8_t pin;
@@ -223,7 +228,34 @@ void report_blink( bool enabled )
   }
 }
 
+RTC_DS1307 RTC;
+DateTime now;
+File logfile;
+String fileName = "";
+uint8_t fileNameLength = 10;
 
+void makeNewFileName() {
+  now = RTC.now();
+  fileName = String(now.unixtime() - 1451624400, DEC) + ".csv";
+  fileNameLength = fileName.length() + 1;
+}
+
+uint32_t numberOfFlushes = 0;
+
+void makeNewFile() {
+  makeNewFileName();
+  char a[fileNameLength];
+  fileName.toCharArray(a, fileNameLength);
+  logfile = SD.open(a, FILE_WRITE);
+  if (!logfile) {
+    error("couldnt create file");
+  }
+  numberOfFlushes = 0;
+}
+
+void flushLog() {
+  logfile.flush();
+}
 
 /**
  * Send the samples in the most recent buffer over the serial port.
@@ -239,12 +271,16 @@ void report( const short *samples, int length )
     Serial.print( " " );
 	Serial.print( samples[ index ] );
   }
+
   /* Indicate to the report LED blinking that the report was submitted. */
   report_was_created = true;
 }
 
-
-
+void error(char *str) {
+  Serial.print("error: ");
+  Serial.println(str);
+  while (1);
+}
 
 /**
  * Initialize the serial port, setup the sampling, and turn off the on-board
@@ -254,6 +290,16 @@ void setup()
 {
   /* Initialize the serial port with the desired speed. */
   Serial.begin( SERIAL_SPEED );
+
+  pinMode(10, OUTPUT);
+  if (!SD.begin(10)) {
+      error("Card failed, or not present");
+  }
+
+  Wire.begin();
+  if (!RTC.begin()) {
+      error("RTC failed");
+  }
 
   /* Setup the geophone data sampling buffers and sampling interrupt. */
   start_sampling( );
@@ -269,9 +315,9 @@ void setup()
     pinMode( REPORT_BLINK_LED_PIN, OUTPUT );
     digitalWrite( REPORT_BLINK_LED_PIN, LOW );
   }
+
+  makeNewFile();
 }
-
-
 
 /**
  * Main program loop which reports the samples every time the sample buffer
@@ -279,16 +325,41 @@ void setup()
  */
 void loop()
 {
-  /* Analyze the geophone data once it's available. */
-  for (uint8_t i = 0; i < 3; ++i) {
-    geodata_t *gd = &geophones[i];
+  uint16_t lastMinute = 0;
+  while (true) {
+    /* Analyze the geophone data once it's available. */
+    bool allFull = true;
+    for (uint8_t i = 0; i < 3; ++i) {
+      geodata_t *gd = &geophones[i];
+      if( !gd->geodata_buffer_full )
+      {
+        allFull = false;
+      }
+    }
+    if (allFull) {
+      now = RTC.now();
 
-    if( gd->geodata_buffer_full == true )
-    {
-      gd->geodata_buffer_full = false;
+      for (uint32_t i = 0; i < NUMBER_OF_GEODATA_SAMPLES; ++i) {
+        for (uint8_t i = 0; i < 3; ++i) {
+          geodata_t *gd = &geophones[i];
+          logfile.print(gd->geodata_samples[i]);
+          logfile.print(",");
+          logfile.print(gd->geodata_samples[i]);
+          logfile.print(",");
+          logfile.println(gd->geodata_samples[i]);
 
-      /* Transmit the samples over the serial port. */
-      report( gd->geodata_samples, NUMBER_OF_GEODATA_SAMPLES );
+          gd->geodata_buffer_full = false;
+        }
+      }
+
+      flushLog();
+
+      int16_t minute = now.minute();
+      if (minute % 3 == 0 && lastMinute != minute) {
+          flushLog();
+          makeNewFile();
+          lastMinute = minute;
+      }
     }
   }
 }

@@ -129,7 +129,7 @@ void flushLog() {
 
 void setup() {
   Serial.begin(9600);
-  
+
   // use debugging LEDs
   pinMode(redLEDpin, OUTPUT);
   pinMode(greenLEDpin, OUTPUT);
@@ -197,13 +197,13 @@ void loop() {
   unix = now.unixtime(); // seconds since 1/1/1970
   sec = now.second();
   minute = now.minute();
-  
+
   if (sec != lastSec) {
     lastSec = sec;
     printTime(); // every second
     // FLUSH DATA EVERY SECOND
     flushDataArray();
-    
+
     // every m minutes flush the file and make a new one
     if (minute % 3 == 0 && lastMinute != minute) {
       flushLog();
@@ -223,5 +223,3 @@ void readGeo(int geoPin) {
   }
   dataCount++;
 } // end readAxis
-
-
