@@ -43,38 +43,6 @@
    should suffice for worst case reports of about 2,300 bytes. */
 #define SERIAL_SPEED       115200
 
-/* If XBee is enabled, then a report is transmitted over the XBEE_SERIAL_PORT
-   in a binary format in multiple packets with the following slightly
-   compressed format:
-
-   [ ReportID  { Frequency0 Amplitude0 }..{ FrequencyN AmplitudeN }  ]
-      4              8         12       ..       8         12          (bits)
-
-   Identical IDs indicate that packets are part of the same report. The end
-   of a report is indicated by a frequency of 0 and no amplitude. */
-#define XBEE_ENABLED        0
-/* The XBee serial port is for outputting the report in a packed format
-   and embedded in an XBee API frame. The serial port uses two stop bits
-   because I recall reading this is necessary at speeds of 115200 baud and
-   above. */
-#define XBEE_SERIAL_PORT    Serial1
-#define XBEE_SERIAL_SPEED   115200
-#define XBEE_SERIAL_CONFIG  SERIAL_8N2
-/* Pin used to reset the XBee at power-up because that appears to be
-   necessary.  */
-#define XBEE_RESET_PIN      51
-
-/* XBee destination address for the report; in this case the XBee coordinator. */
-#define XBEE_DESTINATION_ADDRESS_64  { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
-#define XBEE_DESTINATION_ADDRESS_16  { 0xff, 0xfe }
-/* An XBee payload size is 84, or 66 if the message is encrypted.  (Otherwise
-   the payload will be fragmented but let's stay in control.) */
-#define MAX_XBEE_PAYLOAD_SIZE        66
-#define MAX_XBEE_FRAME_SIZE          110
-/* Define a delay in milliseconds between packets sent to the XBee radio so that
-   its serial port gets time to flush. */
-#define XBEE_TRANSMIT_DELAY 100
-
 /* Report only frequency components within the range of the geophone sensor
    and the amplifier's bandpass setting.  For example with an SM-24 geophone
    measuring the range between 10 Hz to 240 Hz and an amplifier with a band-
@@ -493,75 +461,6 @@ void fft_radix2_512( short *data_real, short *data_imag )
   }
 }
 
-
-
-/**
- * Transmit a package via an XBee device in API mode.  The package
- * is embedded in a Transmit Request (type 0x10) frame.
- *
- * @param [in] payload Package to send via XBee.
- * @param [in] payload_size Number of bytes in the package.
- * @param [in] address_64 64-bit XBee destination address.
- * @param [in] address_16 16-bit XBee destination address.
- */
-void transmit_xbee_payload( const unsigned char *payload,
-                            int payload_size,
-                            const unsigned char *address_64,
-                            const unsigned char *address_16 )
-{
-  static unsigned char frame_id = 1;
-  const int header_size = 1 + 2 + 1 + 1 + 8 + 2 + 1 + 1;
-  unsigned char xbee_frame[ header_size ];
-  int pos = 0;
-
-  /* Compose the frame header for a transmit request (0x10). */
-  xbee_frame[ pos++ ] = 0x7e;
-  xbee_frame[ pos++ ] = ( ( header_size + payload_size - 3 ) >> 8 ) & 0x00ff;
-  xbee_frame[ pos++ ] = ( header_size + payload_size - 3 ) & 0x00ff;
-  xbee_frame[ pos++ ] = 0x10;
-  /* Setup destination address and transmit options. */
-  xbee_frame[ pos++ ] = frame_id;
-  for ( int i = 0; i < 8; i++ )
-  {
-    xbee_frame[ pos++ ] = address_64[ i ];
-  }
-  xbee_frame[ pos++ ] = address_16[ 0 ];
-  xbee_frame[ pos++ ] = address_16[ 1 ];
-  /* Options:  retry/repair enabled, encryption enabled, no extended timeout. */
-  xbee_frame[ pos++ ] = 0;
-  xbee_frame[ pos++ ] = 0x20;
-
-  /* Copy the payload header header to the XBee. */
-  XBEE_SERIAL_PORT.write( xbee_frame, header_size );
-  /* Copy the payload to the Xbee device. */
-  XBEE_SERIAL_PORT.write( payload, payload_size );
-
-  /* Compute the checksum for the payload header. */
-  unsigned char checksum = 0x00;
-  for ( int i = 3; i < header_size; i++ )
-  {
-    checksum += xbee_frame[ i ];
-  }
-  /* Compute the checksum for the payload. */
-  for ( int i = 0; i < payload_size; i++ )
-  {
-    checksum += payload[ i ];
-  }
-
-  /* Copy the checksum to the XBee, completing the frame. */
-  checksum = 0xff - checksum;
-  XBEE_SERIAL_PORT.write( checksum );
-
-  /* Advance to the next XBee frame. */
-  frame_id = frame_id + 1;
-  if ( frame_id == 0 )
-  {
-    frame_id = 1;
-  }
-}
-
-
-
 /**
  * Append 8 bits in a buffer that is composed of 4-bit values.
  *
@@ -643,7 +542,7 @@ void ftoa( double value, char *string, int decimals )
   }
   fraction = fraction * power + 0.5;
   int int_fraction = (int)fraction;
-  
+
   sprintf( string, "%d.%d", integer, int_fraction );
 }
 
@@ -695,23 +594,6 @@ void report( const short *freq_real, const short *freq_imag, int length,
   bool first_entry       = true;
   unsigned char checksum = 0;
 
-#if XBEE_ENABLED != 0
-  const unsigned char xbee_address_64[ ] = XBEE_DESTINATION_ADDRESS_64;
-  const unsigned char xbee_address_16[ ] = XBEE_DESTINATION_ADDRESS_16;
-
-  static unsigned char report_id = 0;
-  unsigned char        binary_report[ MAX_XBEE_PAYLOAD_SIZE ];
-  int                  binary_report_bitpos = 0;
-
-  /* Make room for the report ID, an array of frequency/amplitude pairs,
-     and a terminating zero byte. */
-  const int max_pairs_per_packet = ( MAX_XBEE_PAYLOAD_SIZE - 2 ) / 3 - 1;
-  int       pairs_in_packet      = 0;
-
-  binary_report[ 0 ]   = report_id << 4;
-  binary_report_bitpos = 4;
-#endif
-
   /* Walk through the frequency components array and report any frequency
      whose amplitude is above the specified threshold. */
   const float frequency_ratio = (float)NUMBER_OF_GEODATA_SAMPLES / (float)SAMPLE_RATE;
@@ -748,29 +630,6 @@ void report( const short *freq_real, const short *freq_imag, int length,
 #if HUMAN_READABLE_REPORT_ENABLED == 1
       checksum = checksum + report_pair( (short)frequency, amplitude );
 #endif
-
-#if XBEE_ENABLED != 0
-      /* Add the frequency component / amplitude pair to the binary report. */
-      binary_report_bitpos = append_8_bits( binary_report,
-                                            (unsigned char)frequency,
-                                            binary_report_bitpos );
-      binary_report_bitpos = append_12_bits( binary_report,
-                                             (short)( amplitude * 4096.0 + 0.5),
-                                             binary_report_bitpos );
-      pairs_in_packet = pairs_in_packet + 1;
-      /* Transmit the packet if the payload size is about to exceed maximum. */
-      if ( pairs_in_packet > max_pairs_per_packet )
-      {
-        transmit_xbee_payload( binary_report, ( binary_report_bitpos + 7 ) >> 3,
-                               xbee_address_64, xbee_address_16 );
-        /* Allow the XBee to flush its serial port. */
-        delay( XBEE_TRANSMIT_DELAY );
-        /* Prepare the header for the next report. */
-        binary_report[ 0 ]   = report_id << 4;
-        binary_report_bitpos = 4;
-        pairs_in_packet = 0;
-      }
-#endif
     }
   }
   /* Terminate the report if any output was reported and indicate to the
@@ -780,16 +639,6 @@ void report( const short *freq_real, const short *freq_imag, int length,
 #if HUMAN_READABLE_REPORT_ENABLED == 1
     SERIAL_PORT.print( "," );
     SERIAL_PORT.println( checksum );
-#endif
-#if XBEE_ENABLED != 0
-    /* Add a frequency component with the value 0 to indicate that this is
-       the last entry for this report. */
-    binary_report_bitpos = append_8_bits( binary_report, 0,
-                                          binary_report_bitpos );
-    transmit_xbee_payload( binary_report, ( binary_report_bitpos + 7 ) >> 3,
-                           xbee_address_64, xbee_address_16 );
-
-    report_id = report_id + 1;
 #endif
     report_was_created = true;
   }
@@ -841,127 +690,6 @@ void save_amplitude_threshold_to_eeprom( double threshold )
     EEPROM.write( AMPLITUDE_THRESHOLD_EEPROM_ADDRESS + i, value );
   }
 #endif
-}
-
-
-
-/**
- * Read an XBee frame from the serial port and verify the checksum.  This
- * function should be called regularly.
- *
- * @param [out] payload Buffer for the frame except the frame delimiter.
- * @param [out] source_address_64 64-bit source address.
- * @param [out] source_address_16 16-bit source address.
- * @return Total number of bytes in the frame (excluding the delimiter), or
- *          -1 if the checksum was invalid.  If 0 bytes are received, then the
- *         frame hasn't been received yet.
- */
-int receive_xbee_frame( unsigned char *frame,
-                        unsigned char *source_address_64,
-                        unsigned char *source_address_16 )
-{
-  static int           position = 0;
-  static int           reported_frame_size;
-  static unsigned char checksum;
-
-  /* Get a byte from the serial port, if any. */
-  if ( XBEE_SERIAL_PORT.available( ) > 0 )
-  {
-    char incoming_byte = XBEE_SERIAL_PORT.read( );
-    /* Wait for a frame delimiter. */
-    if ( position == 0 )
-    {
-      if ( incoming_byte != 0x7e )
-      {
-        return ( 0 );
-      }
-      reported_frame_size = 3;
-      checksum = 0xff;
-    }
-
-    /* Populate the frame. */
-    frame[ position++ ] = incoming_byte;
-
-    /* If the maximum frame size is exceeded, reset the frame and report
-       error. */
-    if ( position == MAX_XBEE_FRAME_SIZE )
-    {
-      position = 0;
-      return ( -1 );
-    }
-
-    /* Read the reported size. */
-    else if ( position == 2 )
-    {
-      reported_frame_size = frame[ 0 ] << 8 | frame[ 1 ];
-    }
-    else if ( position > 2 )
-    {
-      checksum += incoming_byte;
-    }
-
-    /* If the entire frame has been received, the last byte was the
-       checksum. */
-    if ( position == reported_frame_size )
-    {
-      /* Reset the frame and report a checksum error if the checksum is
-         invalid. */
-      if ( incoming_byte != checksum )
-      {
-        position = 0;
-        return ( -1 );
-      }
-      /* The frame is good so return the reported frame size plus the size
-         bytes and the checksum. */
-      else
-      {
-        return ( reported_frame_size + 3 );
-      }
-    }
-  }
-
-  return ( 0 );
-}
-
-
-
-/**
- * Read a new threshold value via an XBee package received from the serial
- * port.  The function is invoked regularly to receive bytes one at a time.
- * If a proper value is received return it.  Otherwise return a negative
- * value, which is an invalid amplitude.
- *
- * The function responds with "OK" if the number was successfully read or
- * provides a brief error message otherwise.
- *
- * @return New threshold value, or negative if no new value was provided.
- */
-double get_new_threshold_xbee_mode( )
-{
-  static unsigned char xbee_frame[ MAX_XBEE_FRAME_SIZE ];
-  unsigned char source_address_64[ 8 ];
-  unsigned char source_address_16[ 2 ];
-
-  /* Receive an XBee frame, if any. */
-  int frame_size = receive_xbee_frame( xbee_frame,
-                                       source_address_64, source_address_16 );
-  if ( frame_size > 14 )
-  {
-    /* Verify that it's a receive data frame. */
-    if ( xbee_frame[ 2 ] == 0x90 )
-    {
-      /* Zero-terminate the frame content because it's a string. */
-      xbee_frame[ frame_size - 1 ] = '\0';
-      /* Read the threshold value. */
-      double new_threshold = atof( (const char*)&xbee_frame[ 14 ] );
-      /* Return the new threshold value if it is valid. */
-      if ( new_threshold >= 0.0 && new_threshold < 1.0 )
-      {
-        return ( new_threshold );
-      }
-    }
-  }
-  return ( -1.0 );
 }
 
 
@@ -1071,10 +799,6 @@ double get_new_threshold( )
   }
 #endif
 
-#if XBEE_ENABLED
-  return ( get_new_threshold_xbee_mode( ) );
-#endif
-
   return ( -1.0 );
 }
 
@@ -1092,21 +816,6 @@ void setup()
 
   /* Initialize the serial port with the desired speed. */
   SERIAL_PORT.begin( SERIAL_SPEED );
-
-#if XBEE_ENABLED != 0
-  /* Reset the XBee because for some reason that's necessary. But actually,
-     even this code doesn't cut it. The XBee needs to be reset from the
-     coordinator via a remote AT command. Must look into this. */
-/*
-  delay( 250 );
-  pinMode( XBEE_RESET_PIN, OUTPUT );
-  digitalWrite( XBEE_RESET_PIN, LOW );
-  delay( 50 );
-  digitalWrite( XBEE_RESET_PIN, HIGH );
-*/
-  /* Initialize the XBee serial port. */
-  XBEE_SERIAL_PORT.begin( XBEE_SERIAL_SPEED, XBEE_SERIAL_CONFIG );
-#endif
 
   /* Setup the analog input. */
   analogReference( DEFAULT );
@@ -1172,4 +881,3 @@ void loop()
     amplitude_threshold = threshold;
   }
 }
-

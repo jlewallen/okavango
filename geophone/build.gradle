@@ -1,0 +1,26 @@
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+    dependencies {
+        classpath group: 'com.github.jlewallen.arduino', name: 'arduino-gradle', version: '1.0'
+    }
+}
+
+apply plugin: 'com.github.jlewallen.arduino'
+
+import com.github.jlewallen.arduino.*
+
+model {
+    components {
+        simon(ArduinoComponentSpec) {
+            boards = [ "arduino:avr:mega:cpu=atmega2560" ]
+            libraries = [
+                "SPI",
+                "SD"
+            ]
+        }
+    }
+}
+
+// vim: set ft=groovy:
