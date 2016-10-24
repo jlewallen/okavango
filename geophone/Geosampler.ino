@@ -6,7 +6,11 @@
  *
  * See the file COPYRIGHT for copyright details.
  ***************************************************************************/
+// Arduino: 1.6.10 (Windows 10), Board: "Arduino/Genuino Mega or Mega 2560, ATmega2560 (Mega 2560)"
 
+// C:\Source\page5of4\arduino-1.6.10\arduino-builder -dump-prefs -logger=machine -hardware "C:\Source\page5of4\arduino-1.6.10\hardware" -hardware "C:\Users\jlewa\AppData\Local\Arduino15\packages" -tools "C:\Source\page5of4\arduino-1.6.10\tools-builder" -tools "C:\Source\page5of4\arduino-1.6.10\hardware\tools\avr" -tools "C:\Users\jlewa\AppData\Local\Arduino15\packages" -built-in-libraries "C:\Source\page5of4\arduino-1.6.10\libraries" -libraries "C:\Users\jlewa\OneDrive\Documents\Arduino\libraries" -fqbn=arduino:avr:mega:cpu=atmega2560 -ide-version=10610 -build-path "C:\Users\jlewa\AppData\Local\Temp\build8b6c85f44d62e5b0de8d523ea9ca94dc.tmp" -warnings=none -prefs=build.warn_data_percentage=75 -verbose "C:\Source\okavango\geophone\geophone.ino"
+
+#include <Arduino.h>
 
 /* Serial speed for the report generation.  It should be fast enough to
    allow several values to be passed per second.  A speed of 38,400 baud
@@ -14,7 +18,9 @@
 #define SERIAL_SPEED    115200
 
 /* The geophone data is sampled on analog pin 5. */
-#define GEODATA_PIN          5
+#define GEODATA_PINX          3
+#define GEODATA_PINY          4
+#define GEODATA_PINZ          5
 
 /* Make an LED blink on every successful report. */
 #define REPORT_BLINK_ENABLED   1
@@ -26,18 +32,24 @@
 /* Define the on-board LED so we can turn it off. */
 #define LED_PIN             13
 
-/* Create a double buffer for geodata samples. */
 #define NUMBER_OF_GEODATA_SAMPLES 256
-short geodata_samples[ NUMBER_OF_GEODATA_SAMPLES * 2 ];
-short *geodata_samples_real;
-/* Indexes used by the interrupt service routine. */
-int  isr_current_geodata_index;
-/* Semaphor indicating that a frame of geophone samples is ready. */
-bool geodata_buffer_full;
+
+typedef struct geodata_t {
+    uint8_t pin;
+    /* Create a double buffer for geodata samples. */
+    short geodata_samples[ NUMBER_OF_GEODATA_SAMPLES * 2 ];
+    short *geodata_samples_real;
+    /* Indexes used by the interrupt service routine. */
+    int  isr_current_geodata_index;
+    /* Semaphor indicating that a frame of geophone samples is ready. */
+    bool geodata_buffer_full;
+} geodata_t;
+
+geodata_t geophones[3];
+
 /* Flag that indicates that a report with amplitude information was
    created.  It is used by the report LED blinking. */
 bool report_was_created;
-
 
 /**
  * Setup the timer interrupt and prepare the geodata sample buffers for
@@ -49,9 +61,17 @@ bool report_was_created;
  */
 void start_sampling( )
 {
+  geophones[0].pin = GEODATA_PINX;
+  geophones[1].pin = GEODATA_PINY;
+  geophones[2].pin = GEODATA_PINZ;
+
   /* Prepare the buffer for sampling. */
-  isr_current_geodata_index = 0;
-  geodata_buffer_full       = false;
+  geophones[0].isr_current_geodata_index = 0;
+  geophones[0].geodata_buffer_full       = false;
+  geophones[1].isr_current_geodata_index = 0;
+  geophones[1].geodata_buffer_full       = false;
+  geophones[2].isr_current_geodata_index = 0;
+  geophones[2].geodata_buffer_full       = false;
 
   /* Setup interrupts for the Arduino Mega. */
 #if defined( ARDUINO_AVR_MEGA2560 ) || defined( ARDUINO_AVR_UNO ) || defined( ARDUINO_AVR_DUEMILANOVE )
@@ -92,6 +112,8 @@ void start_sampling( )
 
 
 #if defined( ARDUINO_AVR_MEGA2560 ) || defined( ARDUINO_AVR_UNO ) || defined( ARDUINO_AVR_DUEMILANOVE )
+void sampling_interrupt();
+
 /**
  * Interrupt service routine for Arduino Mega devices which invokes the
  * generic interrupt service routine.
@@ -119,6 +141,7 @@ void TC3_Handler( )
 #endif
 
 
+void report_blink( bool enabled );
 
 /*
  * Interrupt service routine for sampling the geodata.  The geodata analog
@@ -138,24 +161,28 @@ void sampling_interrupt( )
 #elif defined( ARDUINO_SAM_DUE )
   const int adc_resolution = 4096;
 #endif
-  short geodata_sample = analogRead( GEODATA_PIN ) - ( adc_resolution >> 1 );
-  /* Scale the sample. */
-  const int scale = 8192 / adc_resolution;
-  geodata_sample = (short)( (double)geodata_sample * scale );
-  geodata_samples[ isr_current_geodata_index++ ] = geodata_sample;
+  for (uint8_t i = 0; i < 3; ++i) {
+      geodata_t *gd = &geophones[i];
 
-  /* Raise a semaphor if the buffer is full and tell which buffer
-     is active. */
-  if( isr_current_geodata_index == NUMBER_OF_GEODATA_SAMPLES )
-  {
-    geodata_samples_real     = &geodata_samples[ 0 ];
-    geodata_buffer_full      = true;
-  }
-  else if( isr_current_geodata_index == NUMBER_OF_GEODATA_SAMPLES * 2 )
-  {
-    geodata_samples_real      = &geodata_samples[ NUMBER_OF_GEODATA_SAMPLES ];
-    isr_current_geodata_index = 0;
-    geodata_buffer_full       = true;
+      short geodata_sample = analogRead( gd->pin >> 1 );
+      /* Scale the sample. */
+      const int scale = 8192 / adc_resolution;
+      geodata_sample = (short)( (double)geodata_sample * scale );
+      gd->geodata_samples[ gd->isr_current_geodata_index++ ] = geodata_sample;
+
+      /* Raise a semaphor if the buffer is full and tell which buffer
+         is active. */
+      if( gd->isr_current_geodata_index == NUMBER_OF_GEODATA_SAMPLES )
+      {
+          gd->geodata_samples_real     = &gd->geodata_samples[ 0 ];
+          gd->geodata_buffer_full      = true;
+      }
+      else if( gd->isr_current_geodata_index == NUMBER_OF_GEODATA_SAMPLES * 2 )
+      {
+          gd->geodata_samples_real      = &gd->geodata_samples[ NUMBER_OF_GEODATA_SAMPLES ];
+          gd->isr_current_geodata_index = 0;
+          gd->geodata_buffer_full       = true;
+      }
   }
 
   /* In the same interrupt routine, handle report LED blinking. */
@@ -253,12 +280,15 @@ void setup()
 void loop()
 {
   /* Analyze the geophone data once it's available. */
-  if( geodata_buffer_full == true )
-  {
-    geodata_buffer_full = false;
+  for (uint8_t i = 0; i < 3; ++i) {
+    geodata_t *gd = &geophones[i];
 
-    /* Transmit the samples over the serial port. */
-    report( geodata_samples, NUMBER_OF_GEODATA_SAMPLES );
+    if( gd->geodata_buffer_full == true )
+    {
+      gd->geodata_buffer_full = false;
+
+      /* Transmit the samples over the serial port. */
+      report( gd->geodata_samples, NUMBER_OF_GEODATA_SAMPLES );
+    }
   }
 }
-
