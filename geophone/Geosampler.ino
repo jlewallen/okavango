@@ -354,6 +354,7 @@ void loop()
    if (allFull) {
      now = RTC.now();
 
+     Serial.println("Writing File...")
      for (uint32_t i = 0; i < NUMBER_OF_GEODATA_SAMPLES; ++i) {
        for (uint8_t j = 0; j < 3; ++j) {
          geodata_t *gd = &geophones[j];
@@ -368,12 +369,17 @@ void loop()
      }
 
      flushLog();
+     Serial.println("Done.")
 
      uint16_t minute = now.minute();
      if (minute % 3 == 0 && lastMinute != minute) {
+         Serial.println("New File...")
          flushLog();
          makeNewFile();
          lastMinute = minute;
+         Serial.println("Done.")
      }
    }
+
+   // delay(10);
 }
