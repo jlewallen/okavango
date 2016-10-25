@@ -334,47 +334,46 @@ void setup()
   makeNewFile();
 }
 
+uint16_t lastMinute = 0;
+
 /**
  * Main program loop which reports the samples every time the sample buffer
  * has been filled.
  */
 void loop()
 {
-  uint16_t lastMinute = 0;
-  while (true) {
-    /* Analyze the geophone data once it's available. */
-    bool allFull = true;
-    for (uint8_t i = 0; i < 3; ++i) {
-      geodata_t *gd = &geophones[i];
-      if( !gd->geodata_buffer_full )
-      {
-        allFull = false;
-      }
-    }
-    if (allFull) {
-      now = RTC.now();
+  /* Analyze the geophone data once it's available. */
+   bool allFull = true;
+   for (uint8_t i = 0; i < 3; ++i) {
+     geodata_t *gd = &geophones[i];
+     if( !gd->geodata_buffer_full )
+     {
+       allFull = false;
+     }
+   }
+   if (allFull) {
+     now = RTC.now();
 
-      for (uint32_t i = 0; i < NUMBER_OF_GEODATA_SAMPLES; ++i) {
-        for (uint8_t i = 0; i < 3; ++i) {
-          geodata_t *gd = &geophones[i];
-          logfile.print(gd->geodata_samples[i]);
-          logfile.print(",");
-          logfile.print(gd->geodata_samples[i]);
-          logfile.print(",");
-          logfile.println(gd->geodata_samples[i]);
+     for (uint32_t i = 0; i < NUMBER_OF_GEODATA_SAMPLES; ++i) {
+       for (uint8_t j = 0; j < 3; ++j) {
+         geodata_t *gd = &geophones[j];
+         logfile.print(gd->geodata_samples[i]);
+         logfile.print(",");
+         logfile.print(gd->geodata_samples[i]);
+         logfile.print(",");
+         logfile.println(gd->geodata_samples[i]);
 
-          gd->geodata_buffer_full = false;
-        }
-      }
+         gd->geodata_buffer_full = false;
+       }
+     }
 
-      flushLog();
+     flushLog();
 
-      int16_t minute = now.minute();
-      if (minute % 3 == 0 && lastMinute != minute) {
-          flushLog();
-          makeNewFile();
-          lastMinute = minute;
-      }
-    }
-  }
+     uint16_t minute = now.minute();
+     if (minute % 3 == 0 && lastMinute != minute) {
+         flushLog();
+         makeNewFile();
+         lastMinute = minute;
+     }
+   }
 }
