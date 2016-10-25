@@ -237,9 +237,10 @@ uint8_t fileNameLength = 10;
 void makeNewFileName() {
   now = RTC.now();
   fileName = String(now.unixtime() - 1467360476, DEC) + ".csv";
-  fileNameLength = fileName.length() + 1;
   Serial.println(now.unixtime());
   Serial.println(fileName);
+  fileName = "DATA.CSV";
+  fileNameLength = fileName.length() + 1;
 }
 
 uint32_t numberOfFlushes = 0;
@@ -248,6 +249,9 @@ void makeNewFile() {
   makeNewFileName();
   char a[fileNameLength];
   fileName.toCharArray(a, fileNameLength);
+  if (logfile) {
+      logfile.close();
+  }
   logfile = SD.open(a, FILE_WRITE);
   if (!logfile) {
     error("couldnt create file");
