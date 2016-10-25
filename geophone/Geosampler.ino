@@ -238,6 +238,8 @@ void makeNewFileName() {
   now = RTC.now();
   fileName = String(now.unixtime() - 1467360476, DEC) + ".csv";
   fileNameLength = fileName.length() + 1;
+  Serial.println(now.unixtime());
+  Serial.println(fileName);
 }
 
 uint32_t numberOfFlushes = 0;
@@ -246,7 +248,6 @@ void makeNewFile() {
   makeNewFileName();
   char a[fileNameLength];
   fileName.toCharArray(a, fileNameLength);
-  Serial.println(a);
   logfile = SD.open(a, FILE_WRITE);
   if (!logfile) {
     error("couldnt create file");
@@ -306,7 +307,6 @@ void setup()
       Serial.println("For now, I'll set the RTC to the date and time the program was compiled.");
       Serial.println("For better initialization, run Dave's DS1307SetTime sketch.");
       Serial.println();
-      // following line sets the RTC to the date & time this sketch was compiled
       RTC.adjust(DateTime(__DATE__, __TIME__));
   }
 
