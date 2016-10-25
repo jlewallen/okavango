@@ -7,8 +7,6 @@
 #include "AtlasSensorBoard.h"
 #include "DataBoat.h"
 
-#define UPLOAD_ONLY
-
 class WifiAtlasSensorBoard : public AtlasSensorBoard {
 public:
     WifiAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard);
