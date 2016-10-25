@@ -246,6 +246,7 @@ void makeNewFile() {
   makeNewFileName();
   char a[fileNameLength];
   fileName.toCharArray(a, fileNameLength);
+  Serial.println(a);
   logfile = SD.open(a, FILE_WRITE);
   if (!logfile) {
     error("couldnt create file");
@@ -292,7 +293,7 @@ void setup()
   Serial.begin( SERIAL_SPEED );
 
   pinMode(10, OUTPUT);
-  if (!SD.begin(10)) {
+  if (!SD.begin(10, 11, 12, 13)) {
       error("Card failed, or not present");
   }
 
