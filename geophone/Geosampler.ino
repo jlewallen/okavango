@@ -301,6 +301,16 @@ void setup()
   if (!RTC.begin()) {
       error("RTC failed");
   }
+  if (!RTC.isrunning()) {
+      Serial.println("RTC was not running, you will have to run DS1307SetTime.");
+      Serial.println("For now, I'll set the RTC to the date and time the program was compiled.");
+      Serial.println("For better initialization, run Dave's DS1307SetTime sketch.");
+      Serial.println();
+      // following line sets the RTC to the date & time this sketch was compiled
+      RTC.adjust(DateTime(__DATE__, __TIME__));
+  }
+
+  uint8_t isrunning(void);
 
   /* Setup the geophone data sampling buffers and sampling interrupt. */
   start_sampling( );
