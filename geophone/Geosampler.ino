@@ -343,7 +343,7 @@ void setup()
 
 uint16_t lastMinute = 0;
 
-// #define DISABLE_SD
+#define DISABLE_SD
 
 /**
  * Main program loop which reports the samples every time the sample buffer
@@ -373,6 +373,12 @@ void loop()
          logfile.print(gd->geodata_samples_real[i]);
          logfile.print(",");
          logfile.println(gd->geodata_samples_real[i]);
+         #else
+         Serial.print(gd->geodata_samples_real[i]);
+         Serial.print(",");
+         Serial.print(gd->geodata_samples_real[i]);
+         Serial.print(",");
+         Serial.println(gd->geodata_samples_real[i]);
          #endif
 
          gd->geodata_buffer_full = false;
