@@ -259,7 +259,7 @@ void openLogFile() {
     }
 
     if (!logfile) {
-        error("couldnt create file");
+        error("Unable to create file");
     }
 }
 
@@ -341,33 +341,35 @@ void loop()
      noInterrupts();
 
      for (uint32_t i = 0; i < NUMBER_OF_GEODATA_SAMPLES; ++i) {
-       for (uint8_t j = 0; j < 3; ++j) {
-         geodata_t *gd = &geophones[j];
-         #ifndef DISABLE_SD
-         logfile.print(gd->geodata_samples_real[i]);
-         logfile.print(",");
-         logfile.print(gd->geodata_samples_real[i]);
-         logfile.print(",");
-         logfile.println(gd->geodata_samples_real[i]);
-         #else
-         Serial.print(gd->geodata_samples_real[i]);
-         Serial.print(",");
-         Serial.print(gd->geodata_samples_real[i]);
-         Serial.print(",");
-         Serial.println(gd->geodata_samples_real[i]);
-         #endif
+         geodata_t *gd0 = &geophones[0];
+         geodata_t *gd1 = &geophones[1];
+         geodata_t *gd2 = &geophones[2];
 
-         gd->geodata_buffer_full = false;
-       }
+         #ifndef DISABLE_SD
+         logfile.print(gd0->geodata_samples_real[i]);
+         logfile.print(",");
+         logfile.print(gd1->geodata_samples_real[i]);
+         logfile.print(",");
+         logfile.print(gd2->geodata_samples_real[i]);
+         logfile.println();
+         #else
+         Serial.print(gd0->geodata_samples_real[i]);
+         Serial.print(",");
+         Serial.print(gd1->geodata_samples_real[i]);
+         Serial.print(",");
+         Serial.print(gd2->geodata_samples_real[i]);
+         Serial.println();
+         #endif
+     }
+
+     for (uint8_t j = 0; j < 3; ++j) {
+         geophones[j].geodata_buffer_full = false;
      }
 
      interrupts();
 
      report_was_created = true;
 
-     #ifndef DISABLE_SD
-     // flushLog();
-     #endif
      Serial.println("Done.");
 
      #ifndef DISABLE_SD
