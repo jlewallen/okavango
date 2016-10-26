@@ -314,8 +314,6 @@ void setup()
       RTC.adjust(DateTime(__DATE__, __TIME__));
   }
 
-  uint8_t isrunning(void);
-
   /* Setup the geophone data sampling buffers and sampling interrupt. */
   start_sampling( );
 
@@ -336,6 +334,8 @@ void setup()
 
 uint16_t lastMinute = 0;
 
+#define DISABLE_SD
+
 /**
  * Main program loop which reports the samples every time the sample buffer
  * has been filled.
@@ -354,23 +354,30 @@ void loop()
    if (allFull) {
      now = RTC.now();
 
-     Serial.println("Writing File...");
+     Serial.println("Writing Report...");
      for (uint32_t i = 0; i < NUMBER_OF_GEODATA_SAMPLES; ++i) {
        for (uint8_t j = 0; j < 3; ++j) {
          geodata_t *gd = &geophones[j];
+         #ifndef DISABLE_SD
          logfile.print(gd->geodata_samples_real[i]);
          logfile.print(",");
          logfile.print(gd->geodata_samples_real[i]);
          logfile.print(",");
          logfile.println(gd->geodata_samples_real[i]);
+         #endif
 
          gd->geodata_buffer_full = false;
        }
      }
 
+     report_was_created = true;
+
+     #ifndef DISABLE_SD
      flushLog();
+     #endif
      Serial.println("Done.");
 
+     #ifndef DISABLE_SD
      uint16_t minute = now.minute();
      if (minute % 3 == 0 && lastMinute != minute) {
          Serial.println("New File...");
@@ -379,6 +386,7 @@ void loop()
          lastMinute = minute;
          Serial.println("Done.");
      }
+     #endif
    }
 
    // delay(10);
