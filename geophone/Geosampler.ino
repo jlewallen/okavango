@@ -238,35 +238,29 @@ void report_blink( bool enabled )
 }
 
 RTC_DS1307 RTC;
-DateTime now;
 File logfile;
-String fileName = "";
-uint8_t fileNameLength = 10;
 
-void makeNewFileName() {
-  now = RTC.now();
-  fileName = String(now.unixtime() - 1467360476, DEC) + ".csv";
-  Serial.println(now.unixtime());
-  Serial.println(fileName);
-  fileName = "DATA.CSV";
-  fileNameLength = fileName.length() + 1;
-}
+void openLogFile() {
+    for (long i = 0; i <= 99999999; i++) {
+        char filename[13];
+        String fn(i);
+        while (fn.length() < 8) {
+            fn = '0' + fn;
+        }
+        fn = fn + ".CSV";
+        fn.toCharArray(filename, sizeof(filename));
+        if (!SD.exists(filename)) {
+            // only open a new file if it doesn't exist
+            Serial.print("Logging to: ");
+            Serial.println(filename);
+            logfile = SD.open(filename, FILE_WRITE);
+            break;
+        }
+    }
 
-void makeNewFile() {
-  makeNewFileName();
-  char a[fileNameLength];
-  fileName.toCharArray(a, fileNameLength);
-  if (logfile) {
-      logfile.close();
-  }
-  logfile = SD.open(a, FILE_WRITE);
-  if (!logfile) {
-    error("couldnt create file");
-  }
-}
-
-void flushLog() {
-  logfile.flush();
+    if (!logfile) {
+        error("couldnt create file");
+    }
 }
 
 void error(char *str) {
@@ -316,7 +310,7 @@ void setup()
     digitalWrite( REPORT_BLINK_LED_PIN, LOW );
   }
 
-  makeNewFile();
+  openLogFile();
 }
 
 uint16_t lastMinute = 0;
@@ -340,7 +334,7 @@ void loop()
      }
    }
    if (allFull) {
-     now = RTC.now();
+     DateTime now = RTC.now();
 
      Serial.println("Writing Report...");
 
@@ -372,7 +366,7 @@ void loop()
      report_was_created = true;
 
      #ifndef DISABLE_SD
-     flushLog();
+     // flushLog();
      #endif
      Serial.println("Done.");
 
@@ -380,8 +374,9 @@ void loop()
      uint16_t minute = now.minute();
      if (minute % 3 == 0 && lastMinute != minute) {
          Serial.println("New File...");
-         flushLog();
-         makeNewFile();
+         logfile.flush();
+         logfile.close();
+         openLogFile();
          lastMinute = minute;
          Serial.println("Done.");
      }

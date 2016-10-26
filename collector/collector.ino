@@ -503,7 +503,7 @@ void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather, 
     }
 
     if (triggered) {
-        if (noAtlas || noWeather || noSonar) {
+        if ((noAtlas && noSonar) || noWeather) {
             uint32_t uptime = millis() / (1000 * 60);
             String message(SystemClock.now());
             message += ",";
