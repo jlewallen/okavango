@@ -203,28 +203,37 @@ void sampling_interrupt( )
  */
 void report_blink( bool enabled )
 {
-  static unsigned long timestamp;
+  static unsigned long timestamp = 0;
   static bool          led_on = false;
 
   if( enabled == true )
   {
-    /* Turn on the LED and start a timer if a report was created. */
-    if( report_was_created == true )
-    {
-      report_was_created = false;
-      timestamp = millis( ) + 50;
-      digitalWrite( REPORT_BLINK_LED_PIN, HIGH );
-      led_on = true;
-    }
-    /* Turn off the LED once the timer expires. */
-    if( led_on == true )
-    {
+    #ifdef FLASH_ON_REPORT
+      /* Turn on the LED and start a timer if a report was created. */
+      if( report_was_created == true )
+      {
+          report_was_created = false;
+          timestamp = millis( ) + 50;
+          digitalWrite( REPORT_BLINK_LED_PIN, HIGH );
+          led_on = true;
+      }
+      /* Turn off the LED once the timer expires. */
+      if( led_on == true )
+      {
+          if( millis( ) > timestamp )
+          {
+              digitalWrite( REPORT_BLINK_LED_PIN, LOW );
+              led_on = false;
+          }
+      }
+    #else
       if( millis( ) > timestamp )
       {
-        digitalWrite( REPORT_BLINK_LED_PIN, LOW );
-        led_on = false;
+          digitalWrite( REPORT_BLINK_LED_PIN, led_on );
+          led_on = !led_on;
+          timestamp = millis( ) + 50;
       }
-    }
+    #endif
   }
 }
 
@@ -334,7 +343,7 @@ void setup()
 
 uint16_t lastMinute = 0;
 
-#define DISABLE_SD
+// #define DISABLE_SD
 
 /**
  * Main program loop which reports the samples every time the sample buffer
