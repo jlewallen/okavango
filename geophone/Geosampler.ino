@@ -322,7 +322,7 @@ void setup()
 uint16_t lastMinute = 0;
 uint32_t lastTickAt = 0;
 
-#define DISABLE_SD
+// #define DISABLE_SD
 
 /**
  * Main program loop which reports the samples every time the sample buffer
@@ -343,6 +343,9 @@ void loop()
      now = RTC.now();
 
      Serial.println("Writing Report...");
+
+     noInterrupts();
+
      for (uint32_t i = 0; i < NUMBER_OF_GEODATA_SAMPLES; ++i) {
        for (uint8_t j = 0; j < 3; ++j) {
          geodata_t *gd = &geophones[j];
@@ -363,6 +366,8 @@ void loop()
          gd->geodata_buffer_full = false;
        }
      }
+
+     interrupts();
 
      report_was_created = true;
 
