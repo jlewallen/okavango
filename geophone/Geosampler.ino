@@ -169,7 +169,7 @@ void sampling_interrupt( )
   for (uint8_t i = 0; i < 3; ++i) {
       geodata_t *gd = &geophones[i];
 
-      short geodata_sample = analogRead( gd->pin >> 1 );
+      short geodata_sample = analogRead( gd->pin ) - ( adc_resolution >> 1 );
       /* Scale the sample. */
       const int scale = 8192 / adc_resolution;
       geodata_sample = (short)( (double)geodata_sample * scale );
