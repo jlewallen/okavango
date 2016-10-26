@@ -358,11 +358,11 @@ void loop()
      for (uint32_t i = 0; i < NUMBER_OF_GEODATA_SAMPLES; ++i) {
        for (uint8_t j = 0; j < 3; ++j) {
          geodata_t *gd = &geophones[j];
-         logfile.print(gd->geodata_samples[i]);
+         logfile.print(gd->geodata_samples_real[i]);
          logfile.print(",");
-         logfile.print(gd->geodata_samples[i]);
+         logfile.print(gd->geodata_samples_real[i]);
          logfile.print(",");
-         logfile.println(gd->geodata_samples[i]);
+         logfile.println(gd->geodata_samples_real[i]);
 
          gd->geodata_buffer_full = false;
        }
