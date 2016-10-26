@@ -252,8 +252,6 @@ void makeNewFileName() {
   fileNameLength = fileName.length() + 1;
 }
 
-uint32_t numberOfFlushes = 0;
-
 void makeNewFile() {
   makeNewFileName();
   char a[fileNameLength];
@@ -265,30 +263,10 @@ void makeNewFile() {
   if (!logfile) {
     error("couldnt create file");
   }
-  numberOfFlushes = 0;
 }
 
 void flushLog() {
   logfile.flush();
-}
-
-/**
- * Send the samples in the most recent buffer over the serial port.
- *
- * @param [in] freq_real Array of samples.
- * @param [in] length Number of samples.
- */
-void report( const short *samples, int length )
-{
-  /* Send all the samples in the buffer to the serial port. */
-  for( int index = 0; index < length; index++ )
-  {
-    Serial.print( " " );
-	Serial.print( samples[ index ] );
-  }
-
-  /* Indicate to the report LED blinking that the report was submitted. */
-  report_was_created = true;
 }
 
 void error(char *str) {
@@ -342,6 +320,7 @@ void setup()
 }
 
 uint16_t lastMinute = 0;
+uint32_t lastTickAt = 0;
 
 #define DISABLE_SD
 
@@ -402,6 +381,11 @@ void loop()
          Serial.println("Done.");
      }
      #endif
+   }
+
+   if (millis() - lastTickAt > 1000) {
+       Serial.print(".");
+       lastTickAt = millis();
    }
 
    // delay(10);
