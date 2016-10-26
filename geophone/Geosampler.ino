@@ -35,7 +35,7 @@
 /* Define the on-board LED so we can turn it off. */
 #define LED_PIN             13
 
-#define NUMBER_OF_GEODATA_SAMPLES 256
+#define NUMBER_OF_GEODATA_SAMPLES 512
 
 void error(char *str);
 
@@ -338,8 +338,6 @@ void loop()
 
      Serial.println("Writing Report...");
 
-     noInterrupts();
-
      for (uint32_t i = 0; i < NUMBER_OF_GEODATA_SAMPLES; ++i) {
          geodata_t *gd0 = &geophones[0];
          geodata_t *gd1 = &geophones[1];
@@ -365,8 +363,6 @@ void loop()
      for (uint8_t j = 0; j < 3; ++j) {
          geophones[j].geodata_buffer_full = false;
      }
-
-     interrupts();
 
      report_was_created = true;
 
