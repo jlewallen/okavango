@@ -35,7 +35,7 @@
 /* Define the on-board LED so we can turn it off. */
 #define LED_PIN             13
 
-#define NUMBER_OF_GEODATA_SAMPLES 512
+#define NUMBER_OF_GEODATA_SAMPLES 256
 
 void error(char *str);
 
@@ -241,25 +241,30 @@ RTC_DS1307 RTC;
 File logfile;
 
 void openLogFile() {
-    for (long i = 0; i <= 99999999; i++) {
-        char filename[13];
-        String fn(i);
-        while (fn.length() < 8) {
-            fn = '0' + fn;
+    while (true) {
+        for (long i = 0; i <= 99999999; i++) {
+            char filename[13];
+            String fn(i);
+            while (fn.length() < 8) {
+                fn = '0' + fn;
+            }
+            fn = fn + ".CSV";
+            fn.toCharArray(filename, sizeof(filename));
+            if (!SD.exists(filename)) {
+                // only open a new file if it doesn't exist
+                Serial.print("Logging to: ");
+                Serial.println(filename);
+                logfile = SD.open(filename, FILE_WRITE);
+                break;
+            }
         }
-        fn = fn + ".CSV";
-        fn.toCharArray(filename, sizeof(filename));
-        if (!SD.exists(filename)) {
-            // only open a new file if it doesn't exist
-            Serial.print("Logging to: ");
-            Serial.println(filename);
-            logfile = SD.open(filename, FILE_WRITE);
+
+        if (logfile) {
             break;
         }
-    }
 
-    if (!logfile) {
-        error("Unable to create file");
+        Serial.println("Unable to create file, retrying...");
+        delay(1000);
     }
 }
 
