@@ -365,6 +365,10 @@ void loop()
          #endif
      }
 
+     #ifndef DISABLE_SD
+     logfile.flush();
+     #endif
+
      for (uint8_t j = 0; j < 3; ++j) {
          geophones[j].geodata_buffer_full = false;
      }
