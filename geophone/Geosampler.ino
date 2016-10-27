@@ -14,6 +14,8 @@
 #include <SD.h>
 #include <Wire.h>
 
+// #define DISABLE_SD
+
 /* Serial speed for the report generation.  It should be fast enough to
    allow several values to be passed per second.  A speed of 38,400 baud
    should suffice for worst case reports of about 2,600 bytes per second. */
@@ -149,6 +151,10 @@ void TC3_Handler( )
 
 void report_blink( bool enabled );
 
+uint32_t last_tick_at = 0;
+uint32_t batches_written = 0;
+uint32_t pause_until = 0;
+
 /*
  * Interrupt service routine for sampling the geodata.  The geodata analog
  * pin is sampled at each invokation of the ISR.  If the buffer is full, a
@@ -161,6 +167,9 @@ void report_blink( bool enabled );
  */
 void sampling_interrupt( )
 {
+  if (pause_until > 0) {
+    return;
+  }
   /* Read a sample and store it in the geodata buffer. */
 #if defined( ARDUINO_AVR_MEGA2560 ) || defined( ARDUINO_AVR_UNO ) || defined( ARDUINO_AVR_DUEMILANOVE )
   const int adc_resolution = 1024;
@@ -311,11 +320,6 @@ void setup()
   openLogFile();
 }
 
-uint32_t last_tick_at = 0;
-uint32_t batches_written = 0;
-
-// #define DISABLE_SD
-
 /**
  * Main program loop which reports the samples every time the sample buffer
  * has been filled.
@@ -332,6 +336,7 @@ void loop()
      }
    }
    if (all_full) {
+     pause_until = millis() + 2000;
      Serial.println("Writing Report...");
 
      short *gd0 = geophones[0].geodata_samples_real;
@@ -381,9 +386,8 @@ void loop()
      #endif
    }
 
-   if (millis() - last_tick_at > 1000) {
-       Serial.print(".");
-       last_tick_at = millis();
+   if (pause_until > 0 && millis() >= pause_until) {
+       pause_until = 0;
    }
 
    // delay(10);
