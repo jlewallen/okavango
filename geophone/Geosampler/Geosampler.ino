@@ -50,7 +50,7 @@ typedef struct geodata_t {
     bool geodata_buffer_full;
 } geodata_t;
 
-volatile geodata_t geophones[3];
+geodata_t geophones[3];
 
 /* Flag that indicates that a report with amplitude information was
    created.  It is used by the report LED blinking. */
@@ -167,7 +167,7 @@ void sampling_interrupt( )
   const int adc_resolution = 4096;
 #endif
   for (uint8_t i = 0; i < 3; ++i) {
-      volatile geodata_t *gd = &geophones[i];
+      geodata_t *gd = &geophones[i];
 
       short geodata_sample = analogRead( gd->pin ) - ( adc_resolution >> 1 );
       /* Scale the sample. */
@@ -327,7 +327,7 @@ void loop()
   /* Analyze the geophone data once it's available. */
    bool allFull = true;
    for (uint8_t i = 0; i < 3; ++i) {
-     volatile geodata_t *gd = &geophones[i];
+     geodata_t *gd = &geophones[i];
      if( !gd->geodata_buffer_full )
      {
        allFull = false;
@@ -338,24 +338,24 @@ void loop()
 
      Serial.println("Writing Report...");
 
-     for (uint32_t i = 0; i < NUMBER_OF_GEODATA_SAMPLES; ++i) {
-         volatile geodata_t *gd0 = &geophones[0];
-         volatile geodata_t *gd1 = &geophones[1];
-         volatile geodata_t *gd2 = &geophones[2];
+     short *gd0 = geophones[0].geodata_samples_real;
+     short *gd1 = geophones[1].geodata_samples_real;
+     short *gd2 = geophones[2].geodata_samples_real;
 
+     for (uint32_t i = 0; i < NUMBER_OF_GEODATA_SAMPLES; ++i) {
          #ifndef DISABLE_SD
-         logfile.print(gd0->geodata_samples_real[i]);
+         logfile.print(gd0[i]);
          logfile.print(",");
-         logfile.print(gd1->geodata_samples_real[i]);
+         logfile.print(gd1[i]);
          logfile.print(",");
-         logfile.print(gd2->geodata_samples_real[i]);
+         logfile.print(gd2[i]);
          logfile.println();
          #else
-         Serial.print(gd0->geodata_samples_real[i]);
+         Serial.print(gd0[i]);
          Serial.print(",");
-         Serial.print(gd1->geodata_samples_real[i]);
+         Serial.print(gd1[i]);
          Serial.print(",");
-         Serial.print(gd2->geodata_samples_real[i]);
+         Serial.print(gd2[i]);
          Serial.println();
          #endif
      }
