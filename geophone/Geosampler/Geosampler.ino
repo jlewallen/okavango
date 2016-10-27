@@ -336,7 +336,7 @@ void loop()
      }
    }
    if (all_full) {
-     pause_until = millis() + 1000;
+     pause_until = millis() + 500;
      Serial.println("Writing Report...");
 
      short *gd0 = geophones[0].geodata_samples_real;
