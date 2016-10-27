@@ -34,6 +34,7 @@
 /* Define the on-board LED so we can turn it off. */
 #define LED_PIN             13
 
+#define NUMBER_OF_BATCHES_PER_FILE 256
 #define NUMBER_OF_GEODATA_SAMPLES 256
 
 void error(char *str);
@@ -359,7 +360,7 @@ void loop()
      Serial.println("Done.");
 
      #ifndef DISABLE_SD
-     if (batches_written == (2^16) / NUMBER_OF_GEODATA_SAMPLES) {
+     if (batches_written == NUMBER_OF_BATCHES_PER_FILE) {
          Serial.println("New File...");
          logfile.flush();
          logfile.close();
