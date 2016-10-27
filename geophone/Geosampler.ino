@@ -338,24 +338,24 @@ void loop()
 
      Serial.println("Writing Report...");
 
-     for (uint32_t i = 0; i < NUMBER_OF_GEODATA_SAMPLES; ++i) {
-         geodata_t *gd0 = &geophones[0];
-         geodata_t *gd1 = &geophones[1];
-         geodata_t *gd2 = &geophones[2];
+     short *gd0 = geophones[0].geodata_samples_real;
+     short *gd1 = geophones[1].geodata_samples_real;
+     short *gd2 = geophones[2].geodata_samples_real;
 
+     for (uint32_t i = 0; i < NUMBER_OF_GEODATA_SAMPLES; ++i) {
          #ifndef DISABLE_SD
-         logfile.print(gd0->geodata_samples_real[i]);
+         logfile.print(gd0[i]);
          logfile.print(",");
-         logfile.print(gd1->geodata_samples_real[i]);
+         logfile.print(gd1[i]);
          logfile.print(",");
-         logfile.print(gd2->geodata_samples_real[i]);
+         logfile.print(gd2[i]);
          logfile.println();
          #else
-         Serial.print(gd0->geodata_samples_real[i]);
+         Serial.print(gd0[i]);
          Serial.print(",");
-         Serial.print(gd1->geodata_samples_real[i]);
+         Serial.print(gd1[i]);
          Serial.print(",");
-         Serial.print(gd2->geodata_samples_real[i]);
+         Serial.print(gd2[i]);
          Serial.println();
          #endif
      }
