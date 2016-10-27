@@ -124,7 +124,7 @@ int8_t TransmissionStatus::shouldWe() {
     // Assign a proper now to those that are uninitialized.
     for (int8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
         if (status.kinds[i].time == 0 || status.kinds[i].time > rtcNow) {
-            DEBUG_PRINT("TS #");
+            DEBUG_PRINT("TS: #");
             DEBUG_PRINT(i);
             DEBUG_PRINTLN(" fixing 0 value uninitialized time.");
             status.kinds[i].time = rtcNow;
@@ -165,8 +165,22 @@ int8_t TransmissionStatus::shouldWe() {
         if (status.kinds[i].elapsed > intervalMs || rtcElapsed > (intervalMs / 1000)) {
             // If we don't 0 we'll get done next time.
             if (which < 0) {
-                DEBUG_PRINT("Trigger #");
+                uint32_t easternTime = 4 * 60 * 60;
+                DateTime dt(SystemClock.now() - easternTime);
+                DEBUG_PRINT("TS: Trigger #");
                 DEBUG_PRINT(i);
+                DEBUG_PRINT(' ');
+                DEBUG_PRINT(dt.year());
+                DEBUG_PRINT('/');
+                DEBUG_PRINT(dt.month());
+                DEBUG_PRINT('/');
+                DEBUG_PRINT(dt.day());
+                DEBUG_PRINT(' ');
+                DEBUG_PRINT(dt.hour());
+                DEBUG_PRINT(':');
+                DEBUG_PRINT(dt.minute());
+                DEBUG_PRINT(':');
+                DEBUG_PRINT(dt.second());
                 DEBUG_PRINT(": ");
                 DEBUG_PRINT(rtcNow - status.kinds[i].time);
                 DEBUG_PRINT(" ");
