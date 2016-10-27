@@ -595,7 +595,8 @@ enum class CollectorState {
 };
 
 void logTransition(const char *name) {
-    DateTime dt(SystemClock.now());
+    uint32_t easternTime = 4 * 60 * 60;
+    DateTime dt(SystemClock.now() - easternTime);
 
     DEBUG_PRINT("## ");
 
