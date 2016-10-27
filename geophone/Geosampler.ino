@@ -30,7 +30,7 @@
 #define REPORT_BLINK_LED_PIN  13
 
 /* Define the geophone data sampling rate. */
-#define SAMPLE_RATE   512
+#define SAMPLE_RATE   256
 
 /* Define the on-board LED so we can turn it off. */
 #define LED_PIN             13
