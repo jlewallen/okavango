@@ -50,6 +50,7 @@ typedef struct geodata_t {
     bool geodata_buffer_full;
 } geodata_t;
 
+uint32_t timestamps[ NUMBER_OF_GEODATA_SAMPLES * 2 ];
 geodata_t geophones[3];
 
 /* Flag that indicates that a report with amplitude information was
@@ -173,6 +174,11 @@ void sampling_interrupt( )
       /* Scale the sample. */
       const int scale = 8192 / adc_resolution;
       geodata_sample = (short)( (double)geodata_sample * scale );
+
+      if (i == 0) {
+          timestamps[gd->isr_current_geodata_index ] = millis();
+      }
+
       gd->geodata_samples[ gd->isr_current_geodata_index++ ] = geodata_sample;
 
       /* Raise a semaphor if the buffer is full and tell which buffer
@@ -334,6 +340,8 @@ void loop()
 
      for (uint32_t i = 0; i < NUMBER_OF_GEODATA_SAMPLES; ++i) {
          #ifndef DISABLE_SD
+         logfile.print(timestamps[i]);
+         logfile.print(",");
          logfile.print(gd0[i]);
          logfile.print(",");
          logfile.print(gd1[i]);
@@ -341,6 +349,8 @@ void loop()
          logfile.print(gd2[i]);
          logfile.println();
          #else
+         Serial.print(timestamps[i]);
+         Serial.print(",");
          Serial.print(gd0[i]);
          Serial.print(",");
          Serial.print(gd1[i]);
