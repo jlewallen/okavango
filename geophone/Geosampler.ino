@@ -13,7 +13,6 @@
 #include <Arduino.h>
 #include <SD.h>
 #include <Wire.h>
-#include "RTClib.h"
 
 /* Serial speed for the report generation.  It should be fast enough to
    allow several values to be passed per second.  A speed of 38,400 baud
@@ -237,7 +236,6 @@ void report_blink( bool enabled )
   }
 }
 
-RTC_DS1307 RTC;
 File logfile;
 
 void openLogFile() {
@@ -288,18 +286,6 @@ void setup()
       error("Card failed, or not present");
   }
 
-  Wire.begin();
-  if (!RTC.begin()) {
-      error("RTC failed");
-  }
-  if (!RTC.isrunning()) {
-      Serial.println("RTC was not running, you will have to run DS1307SetTime.");
-      Serial.println("For now, I'll set the RTC to the date and time the program was compiled.");
-      Serial.println("For better initialization, run Dave's DS1307SetTime sketch.");
-      Serial.println();
-      RTC.adjust(DateTime(__DATE__, __TIME__));
-  }
-
   /* Setup the geophone data sampling buffers and sampling interrupt. */
   start_sampling( );
 
@@ -318,8 +304,8 @@ void setup()
   openLogFile();
 }
 
-uint16_t lastMinute = 0;
-uint32_t lastTickAt = 0;
+uint32_t last_tick_at = 0;
+uint32_t batches_written = 0;
 
 // #define DISABLE_SD
 
@@ -330,17 +316,15 @@ uint32_t lastTickAt = 0;
 void loop()
 {
   /* Analyze the geophone data once it's available. */
-   bool allFull = true;
+   bool all_full = true;
    for (uint8_t i = 0; i < 3; ++i) {
      geodata_t *gd = &geophones[i];
      if( !gd->geodata_buffer_full )
      {
-       allFull = false;
+       all_full = false;
      }
    }
-   if (allFull) {
-     DateTime now = RTC.now();
-
+   if (all_full) {
      Serial.println("Writing Report...");
 
      short *gd0 = geophones[0].geodata_samples_real;
@@ -369,26 +353,26 @@ void loop()
          geophones[j].geodata_buffer_full = false;
      }
 
+     batches_written += 1;
      report_was_created = true;
 
      Serial.println("Done.");
 
      #ifndef DISABLE_SD
-     uint16_t minute = now.minute();
-     if (minute % 3 == 0 && lastMinute != minute) {
+     if (batches_written == (2^16) / NUMBER_OF_GEODATA_SAMPLES) {
          Serial.println("New File...");
          logfile.flush();
          logfile.close();
          openLogFile();
-         lastMinute = minute;
+         batches_written = 0;
          Serial.println("Done.");
      }
      #endif
    }
 
-   if (millis() - lastTickAt > 1000) {
+   if (millis() - last_tick_at > 1000) {
        Serial.print(".");
-       lastTickAt = millis();
+       last_tick_at = millis();
    }
 
    // delay(10);
