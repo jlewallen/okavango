@@ -54,6 +54,18 @@ static const unsigned char PROGMEM logo16_glcd_bmp[] =
 #error("Height incorrect, please fix Adafruit_SSD1306.h!");
 #endif
 
+void testdrawline();
+void testdrawrect();
+void testfillrect();
+void testdrawcircle();
+void testdrawchar();
+void testscrolltext();
+void testfilltriangle();
+void testfillroundrect();
+void testdrawroundrect();
+void testdrawtriangle();
+void testdrawbitmap(const uint8_t *bitmap, uint8_t w, uint8_t h);
+
 void setup()   {
   Serial.begin(115200);
 
