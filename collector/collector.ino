@@ -145,8 +145,9 @@ void setup() {
 
     if (disableInitialTransmissions) {
         initialWeatherTransmissionSent = !InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_WEATHER);
-        initialAtlasTransmissionSent = !InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_ATLAS);
-        initialSonarTransmissionSent = !InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_SONAR);
+        // We'll never have both.
+        initialAtlasTransmissionSent = !InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_ATLAS) || !InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_SONAR);
+        initialSonarTransmissionSent = !InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_ATLAS) || !InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_SONAR);
         initialLocationTransmissionSent = !InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_LOCATION);
         DEBUG_PRINTLN("Initial transmission disabled.");
     }
@@ -429,6 +430,18 @@ void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather, 
 
     uint32_t queueSize = queue.size();
 
+    DEBUG_PRINT("TS: handleSensor: ");
+    DEBUG_PRINT(queueSize);
+    DEBUG_PRINT(" triggered=");
+    DEBUG_PRINT(triggered);
+    DEBUG_PRINT(" sendAtlas=");
+    DEBUG_PRINT(sendAtlas);
+    DEBUG_PRINT(" sendWeather=");
+    DEBUG_PRINT(sendWeather);
+    DEBUG_PRINT(" sendSonar=");
+    DEBUG_PRINT(sendSonar);
+    DEBUG_PRINTLN();
+
     atlas_sensors_packet_t atlas_station_sensors;
     memzero((uint8_t *)&atlas_station_sensors, sizeof(atlas_sensors_packet_t));
 
@@ -469,7 +482,8 @@ void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather, 
     if (sendAtlas) {
         if (atlas_station_sensors.fk.kind == FK_PACKET_KIND_ATLAS_SENSORS) {
             if (singleTransmission(atlasPacketToMessage(&atlas_station_sensors))) {
-                initialAtlasTransmissionSent = true;
+                initialAtlasTransmissionSent = true; // We'll never have both.
+                initialSonarTransmissionSent = true;
                 InitialTransmissions::markCompleted(TRANSMISSION_TYPE_ATLAS);
             }
         }
@@ -481,7 +495,8 @@ void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather, 
     if (sendSonar) {
         if (sonar_station_sensors.fk.kind == FK_PACKET_KIND_SONAR_STATION) {
             if (singleTransmission(sonarPacketToMessage(&sonar_station_sensors))) {
-                initialSonarTransmissionSent = true;
+                initialSonarTransmissionSent = true; // We'll never have both.
+                initialAtlasTransmissionSent = true;
                 InitialTransmissions::markCompleted(TRANSMISSION_TYPE_SONAR);
             }
             else {
