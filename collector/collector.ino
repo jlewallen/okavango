@@ -140,15 +140,22 @@ void setup() {
 
     // Permanantly disabling these, they frighten me in the field.
     bool disableInitialTransmissions = SelfRestart::didWeJustRestart() || !configuration.sendInitialTransmissions();
-
-
-
-    if (disableInitialTransmissions) {
-        initialWeatherTransmissionSent = !InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_WEATHER);
-        // We'll never have both.
-        initialAtlasTransmissionSent = !InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_ATLAS) || !InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_SONAR);
-        initialSonarTransmissionSent = !InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_ATLAS) || !InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_SONAR);
-        initialLocationTransmissionSent = !InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_LOCATION);
+    if (!disableInitialTransmissions) {
+        initialWeatherTransmissionSent = InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_WEATHER);
+        initialAtlasTransmissionSent = InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_ATLAS) || InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_SONAR);
+        initialSonarTransmissionSent = InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_ATLAS) || InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_SONAR);
+        initialLocationTransmissionSent = InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_LOCATION);
+        DEBUG_PRINT("Initial transmission: weather=");
+        DEBUG_PRINT(initialWeatherTransmissionSent);
+        DEBUG_PRINT(" atlas=");
+        DEBUG_PRINT(initialAtlasTransmissionSent);
+        DEBUG_PRINT(" sonar=");
+        DEBUG_PRINT(initialSonarTransmissionSent);
+        DEBUG_PRINT(" location=");
+        DEBUG_PRINT(initialLocationTransmissionSent);
+        DEBUG_PRINTLN();
+    }
+    else {
         DEBUG_PRINTLN("Initial transmission disabled.");
     }
 
@@ -557,7 +564,7 @@ void handleLocationTransmission() {
     if (location.time > 0) {
         if (singleTransmission(locationToMessage(&location))) {
             initialLocationTransmissionSent = true;
-            InitialTransmissions::markCompleted(TRANSMISSION_TYPE_WEATHER);
+            InitialTransmissions::markCompleted(TRANSMISSION_TYPE_LOCATION);
         }
     }
 }
