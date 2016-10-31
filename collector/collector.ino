@@ -156,6 +156,10 @@ void setup() {
         DEBUG_PRINTLN();
     }
     else {
+        initialWeatherTransmissionSent = true;
+        initialAtlasTransmissionSent = true;
+        initialSonarTransmissionSent = true;
+        initialLocationTransmissionSent = true;
         DEBUG_PRINTLN("Initial transmission disabled.");
     }
 
