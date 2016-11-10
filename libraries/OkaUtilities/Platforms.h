@@ -75,6 +75,11 @@ extern SerialType conductivitySerial;
 
 #define OPEN_CONDUCTIVITY_SERIAL_ON_START                    false
 
+#define PIN_FEATHER_M0_ADALOGGER_LORA_WING_RFM95_CS          19
+#define PIN_FEATHER_M0_ADALOGGER_LORA_WING_RFM95_RST         17
+#define PIN_FEATHER_M0_ADALOGGER_LORA_WING_RFM95_INT         18
+#define PIN_FEATHER_M0_ADALOGGER_LORA_WING_SD_CS             4
+
 #define PIN_FEATHER_M0_LORA_ADALOGGER_WING_RFM95_CS          8
 #define PIN_FEATHER_M0_LORA_ADALOGGER_WING_RFM95_RST         4
 #define PIN_FEATHER_M0_LORA_ADALOGGER_WING_RFM95_INT         3
@@ -85,6 +90,12 @@ extern SerialType conductivitySerial;
 #define PIN_FEATHER_M0_ADALOGGER_EXTERNAL_LORA_RFM95_INT     18
 #define PIN_FEATHER_M0_ADALOGGER_EXTERNAL_LORA_SD_CS         4
 
+#ifdef FEATHER_WING_LORA
+#define PIN_RFM95_CS                                         PIN_FEATHER_M0_ADALOGGER_LORA_WING_RFM95_CS
+#define PIN_RFM95_RST                                        PIN_FEATHER_M0_ADALOGGER_LORA_WING_RFM95_RST
+#define PIN_RFM95_INT                                        PIN_FEATHER_M0_ADALOGGER_LORA_WING_RFM95_INT
+#define PIN_SD_CS                                            PIN_FEATHER_M0_ADALOGGER_LORA_WING_SD_CS
+#else
 #ifdef FEATHER_WING_ADALOGGER
 #define PIN_RFM95_CS                                         PIN_FEATHER_M0_LORA_ADALOGGER_WING_RFM95_CS
 #define PIN_RFM95_RST                                        PIN_FEATHER_M0_LORA_ADALOGGER_WING_RFM95_RST
@@ -95,6 +106,7 @@ extern SerialType conductivitySerial;
 #define PIN_RFM95_RST                                        PIN_FEATHER_M0_ADALOGGER_EXTERNAL_LORA_RFM95_RST
 #define PIN_RFM95_INT                                        PIN_FEATHER_M0_ADALOGGER_EXTERNAL_LORA_RFM95_INT
 #define PIN_SD_CS                                            PIN_FEATHER_M0_ADALOGGER_EXTERNAL_LORA_SD_CS
+#endif
 #endif
 
 #define PIN_RED_LED                                          13
