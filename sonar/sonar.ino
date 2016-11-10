@@ -120,7 +120,7 @@ void loop() {
     DEBUG_PRINTLN(packet.time);
 
     for (int8_t i = 0; i < FK_SONAR_STATION_PACKET_NUMBER_VALUES; ++i) {
-        float value = analogRead(A0);
+        float value = analogRead(PIN_ULTRASONIC_SENSOR);
         float voltage = value * (3.3f / 1024.0f);
         float distance = voltage * (1000.0f / 3.2f);
 

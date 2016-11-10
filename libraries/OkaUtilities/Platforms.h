@@ -90,6 +90,8 @@ extern SerialType conductivitySerial;
 #define PIN_FEATHER_M0_ADALOGGER_EXTERNAL_LORA_RFM95_INT     18
 #define PIN_FEATHER_M0_ADALOGGER_EXTERNAL_LORA_SD_CS         4
 
+#define PIN_ULTRASONIC_SENSOR                                A0
+
 #ifdef FEATHER_WING_LORA
 #define PIN_RFM95_CS                                         PIN_FEATHER_M0_ADALOGGER_LORA_WING_RFM95_CS
 #define PIN_RFM95_RST                                        PIN_FEATHER_M0_ADALOGGER_LORA_WING_RFM95_RST
