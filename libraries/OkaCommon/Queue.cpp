@@ -55,7 +55,7 @@ void Queue::enqueue(uint8_t *entry, size_t size) {
 }
 
 void Queue::removeAll() {
-    SD.remove(filename);
+    SD.remove((char *)filename);
 }
 
 uint8_t *Queue::dequeue() {
