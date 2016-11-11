@@ -10,6 +10,8 @@
 #include "network.h"
 #include "Logger.h"
 
+#define FK_SONAR_DISTANCE_FROM_GROUND_IN_METERS               (4)
+
 sonar_station_packet_t packet;
 CorePlatform corePlatform;
 
@@ -129,14 +131,17 @@ void loop() {
         float value = analogRead(PIN_ULTRASONIC_SENSOR);
         float voltage = value * (3.3f / 1024.0f);
         float distance = voltage * (1000.0f / 3.2f);
+        float waterLevel = FK_SONAR_DISTANCE_FROM_GROUND_IN_METERS - (distance / 100.0);
 
         Serial.print(voltage);
+        Serial.print(" ");
+        Serial.print(waterLevel);
         Serial.print(" ");
         Serial.print(distance);
         Serial.print(" ");
         Serial.println(value);
 
-        packet.values[i] = distance;
+        packet.values[i] = waterLevel;
 
         delay(1000);
 
