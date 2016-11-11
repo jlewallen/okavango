@@ -13,6 +13,8 @@
 #define FK_SONAR_DISTANCE_FROM_GROUND_IN_METERS               (4)
 
 sonar_station_packet_t packet;
+Ds1307SystemClock Clock;
+// Pcf8523SystemClock Clock;
 CorePlatform corePlatform;
 
 void setup() {
@@ -33,7 +35,8 @@ void setup() {
 
     Serial.println("Core...");
 
-    corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST, false);
+    corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST);
+    SystemClock->setup();
 
     Serial.println("Log...");
 
@@ -121,7 +124,7 @@ void loop() {
 
     memzero((void *)&packet, sizeof(sonar_station_packet_t));
 
-    packet.time = SystemClock.now();
+    packet.time = SystemClock->now();
     packet.battery = platformBatteryVoltage();
     packet.fk.kind = FK_PACKET_KIND_SONAR_STATION;
 

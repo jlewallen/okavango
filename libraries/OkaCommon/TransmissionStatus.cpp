@@ -107,7 +107,7 @@ int8_t TransmissionStatus::shouldWe() {
     // We use 0 here until we're initialized so that we can be sure to assign
     // a propert time. Then we set 0's to a good time. This will cause problems
     // if we go long periods of time w/o getting a GPS fix at startup.
-    uint32_t rtcNow = SystemClock.initialized() ? SystemClock.now() : 0;
+    uint32_t rtcNow = SystemClock->initialized() ? SystemClock->now() : 0;
     uint32_t millisNow = millis();
 
     if (!read(&status)) {
@@ -166,7 +166,7 @@ int8_t TransmissionStatus::shouldWe() {
             // If we don't 0 we'll get done next time.
             if (which < 0) {
                 uint32_t easternTime = 4 * 60 * 60;
-                DateTime dt(SystemClock.now() - easternTime);
+                DateTime dt(SystemClock->now() - easternTime);
                 DEBUG_PRINT("TS: Trigger #");
                 DEBUG_PRINT(i);
                 DEBUG_PRINT(' ');

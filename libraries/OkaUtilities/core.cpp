@@ -2,9 +2,9 @@
 #include "core.h"
 #include "protocol.h"
 
-RtcSystemClock SystemClock;
+RtcAbstractSystemClock *SystemClock;
 
-void CorePlatform::setup(uint8_t pinSdCs, uint8_t pinRfm95Cs, uint8_t pinRfm95Rst, bool haveClock) {
+void CorePlatform::setup(uint8_t pinSdCs, uint8_t pinRfm95Cs, uint8_t pinRfm95Rst) {
     pinMode(PIN_RED_LED, OUTPUT);
     digitalWrite(PIN_RED_LED, LOW);
 
@@ -29,13 +29,13 @@ void CorePlatform::setup(uint8_t pinSdCs, uint8_t pinRfm95Cs, uint8_t pinRfm95Rs
 
     pinMode(pinRfm95Rst, OUTPUT);
     digitalWrite(pinRfm95Rst, HIGH);
-
-    if (haveClock) {
-        SystemClock.setup();
-    }
 }
 
-bool RtcSystemClock::setup() {
+Pcf8523SystemClock::Pcf8523SystemClock() {
+    SystemClock = this;
+}
+
+bool Pcf8523SystemClock::setup() {
     #ifdef FEATHER_WING_ADALOGGER
     #ifndef FEATHER_DISABLE_RTC
     if (!rtc.begin()) {
@@ -56,26 +56,69 @@ bool RtcSystemClock::setup() {
     return true;
 }
 
-bool RtcSystemClock::initialized() {
+bool Pcf8523SystemClock::initialized() {
     return available && rtc.initialized();
 }
 
-uint32_t RtcSystemClock::now() {
+uint32_t Pcf8523SystemClock::now() {
     if (available) {
         return rtc.now().unixtime();
     }
     return 0;
 }
 
-bool RtcSystemClock::set(uint32_t newTime) {
+bool Pcf8523SystemClock::set(uint32_t newTime) {
     if (!available) {
         return false;
     }
-    uint32_t before = RtcSystemClock::now();
+    uint32_t before = now();
     bool uninitialized = !rtc.initialized();
     DEBUG_PRINT("Clock Adjusted before=");
     DEBUG_PRINTLN(before);
     rtc.adjust(newTime);
     adjusted = newTime;
     return uninitialized;
+}
+
+
+Ds1307SystemClock::Ds1307SystemClock() {
+    SystemClock = this;
+}
+
+bool Ds1307SystemClock::setup() {
+    #ifdef FEATHER_WING_ADALOGGER
+    #ifndef FEATHER_DISABLE_RTC
+    if (!rtc.begin()) {
+        DEBUG_PRINTLN(F("RTC Missing"));
+        return false;
+    }
+
+    available = true;
+    #endif
+    #endif
+
+    return true;
+}
+
+bool Ds1307SystemClock::initialized() {
+    return now() > 0;
+}
+
+uint32_t Ds1307SystemClock::now() {
+    if (available) {
+        return rtc.now().unixtime();
+    }
+    return 0;
+}
+
+bool Ds1307SystemClock::set(uint32_t newTime) {
+    if (!available) {
+        return false;
+    }
+    uint32_t before = now();
+    DEBUG_PRINT("Clock Adjusted before=");
+    DEBUG_PRINTLN(before);
+    rtc.adjust(newTime);
+    adjusted = newTime;
+    return true;
 }

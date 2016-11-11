@@ -113,7 +113,7 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize
         fk_network_pong_t pong;
         memzero((uint8_t *)&pong, sizeof(fk_network_pong_t));
         pong.fk.kind = FK_PACKET_KIND_PONG;
-        pong.time = SystemClock.now();
+        pong.time = SystemClock->now();
         radio->reply((uint8_t *)&pong, sizeof(fk_network_pong_t));
         radio->waitPacketSent();
         checkForPacket();
@@ -152,7 +152,7 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize
             DEBUG_PRINTLN("Ponged");
 
             if (pong.time > 0) {
-                SystemClock.set(pong.time);
+                SystemClock->set(pong.time);
             }
 
             queue->startAtBeginning();
