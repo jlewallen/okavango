@@ -96,6 +96,10 @@ bool Ds1307SystemClock::setup() {
         return false;
     }
     else {
+        if (!rtc.isrunning()) {
+            DEBUG_PRINTLN("RTC is NOT running!");
+            rtc.adjust(DateTime(__DATE__, __TIME__));
+        }
         DEBUG_PRINTLN(F("RTC Ready"));
     }
     available = true;
