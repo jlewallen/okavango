@@ -1,4 +1,4 @@
-#ifdef FEATHER_WING_LORA
+#define FEATHER_WING_LORA
 
 #include <Arduino.h>
 #include <Adafruit_SleepyDog.h>
