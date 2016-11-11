@@ -47,6 +47,9 @@ bool Pcf8523SystemClock::setup() {
             DEBUG_PRINTLN(F("RTC uninitialized"));
             rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
         }
+        else {
+            DEBUG_PRINTLN(F("RTC Ready"));
+        }
     }
 
     available = true;
@@ -92,7 +95,9 @@ bool Ds1307SystemClock::setup() {
         DEBUG_PRINTLN(F("RTC Missing"));
         return false;
     }
-
+    else {
+        DEBUG_PRINTLN(F("RTC Ready"));
+    }
     available = true;
     #endif
     #endif

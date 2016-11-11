@@ -77,6 +77,9 @@ public:
     }
 };
 
+CorePlatform corePlatform;
+Ds1307SystemClock Clock;
+
 void setup() {
     Watchdog.enable();
 
@@ -95,8 +98,8 @@ void setup() {
 
     Watchdog.reset();
 
-    CorePlatform corePlatform;
     corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST);
+    SystemClock->setup();
 
     UptimeTracker::started();
 
@@ -252,7 +255,7 @@ void checkWeatherStation() {
 
             float *values = weatherStation.getValues();
             DEBUG_PRINT("%");
-            if (SystemClock.set((uint32_t)values[FK_WEATHER_STATION_FIELD_UNIXTIME])) {
+            if (SystemClock->set((uint32_t)values[FK_WEATHER_STATION_FIELD_UNIXTIME])) {
                 // DEBUG_PRINTLN("Removing TransmissionStatus due to clock change.")
                 // TransmissionStatus status;
                 // status.remove();
@@ -271,7 +274,7 @@ void checkWeatherStation() {
             weather_station_packet_t packet;
             memzero((uint8_t *)&packet, sizeof(weather_station_packet_t));
             packet.fk.kind = FK_PACKET_KIND_WEATHER_STATION;
-            packet.time = SystemClock.now();
+            packet.time = SystemClock->now();
             packet.battery = platformBatteryVoltage();
             for (uint8_t i = 0; i < FK_WEATHER_STATION_PACKET_NUMBER_VALUES; ++i) {
                 packet.values[i] = values[i];
@@ -552,7 +555,7 @@ void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather, 
     if (triggered) {
         if ((noAtlas && noSonar) || noWeather) {
             uint32_t uptime = millis() / (1000 * 60);
-            String message(SystemClock.now());
+            String message(SystemClock->now());
             message += ",";
             message += configuration.getName();
             message += ",";
@@ -643,7 +646,7 @@ enum class CollectorState {
 
 void logTransition(const char *name) {
     uint32_t easternTime = 4 * 60 * 60;
-    DateTime dt(SystemClock.now() - easternTime);
+    DateTime dt(SystemClock->now() - easternTime);
 
     DEBUG_PRINT("## ");
 

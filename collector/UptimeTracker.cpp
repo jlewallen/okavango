@@ -118,7 +118,7 @@ void UptimeTracker::started() {
 
     status.startups[0].valid = true;
     status.startups[0].uptime = 0;
-    status.startups[0].time = SystemClock.now();
+    status.startups[0].time = SystemClock->now();
 
     write(&status);
 }
@@ -128,7 +128,7 @@ void UptimeTracker::remember() {
 
     if (read(&status)) {
         status.startups[0].uptime = millis();
-        status.startups[0].time = SystemClock.now();
+        status.startups[0].time = SystemClock->now();
         status.startups[0].valid = true; // Just in case.
 
         DEBUG_PRINT("UT: ");
