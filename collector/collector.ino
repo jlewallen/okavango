@@ -1,4 +1,4 @@
-#define TESTING_MODE
+// #define TESTING_MODE
 
 #include <Adafruit_SleepyDog.h>
 #include "Platforms.h"
