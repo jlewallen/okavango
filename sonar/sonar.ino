@@ -42,6 +42,9 @@ void setup() {
 
     logPrinter.open();
 
+    Serial.print("Now: ");
+    Serial.println(SystemClock->now());
+
     Serial.println("Ready!");
 }
 
