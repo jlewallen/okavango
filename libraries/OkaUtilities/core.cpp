@@ -4,7 +4,7 @@
 
 RtcSystemClock SystemClock;
 
-void CorePlatform::setup(uint8_t pinSdCs, uint8_t pinRfm95Cs, uint8_t pinRfm95Rst) {
+void CorePlatform::setup(uint8_t pinSdCs, uint8_t pinRfm95Cs, uint8_t pinRfm95Rst, bool haveClock) {
     pinMode(PIN_RED_LED, OUTPUT);
     digitalWrite(PIN_RED_LED, LOW);
 
@@ -30,7 +30,9 @@ void CorePlatform::setup(uint8_t pinSdCs, uint8_t pinRfm95Cs, uint8_t pinRfm95Rs
     pinMode(pinRfm95Rst, OUTPUT);
     digitalWrite(pinRfm95Rst, HIGH);
 
-    SystemClock.setup();
+    if (haveClock) {
+        SystemClock.setup();
+    }
 }
 
 bool RtcSystemClock::setup() {
@@ -46,6 +48,8 @@ bool RtcSystemClock::setup() {
             rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
         }
     }
+
+    available = true;
     #endif
     #endif
 
@@ -53,14 +57,20 @@ bool RtcSystemClock::setup() {
 }
 
 bool RtcSystemClock::initialized() {
-    return rtc.initialized();
+    return available && rtc.initialized();
 }
 
 uint32_t RtcSystemClock::now() {
-    return rtc.now().unixtime();
+    if (available) {
+        return rtc.now().unixtime();
+    }
+    return 0;
 }
 
 bool RtcSystemClock::set(uint32_t newTime) {
+    if (!available) {
+        return false;
+    }
     uint32_t before = RtcSystemClock::now();
     bool uninitialized = !rtc.initialized();
     DEBUG_PRINT("Clock Adjusted before=");

@@ -31,7 +31,7 @@ void setup() {
 
     Serial.println("Core...");
 
-    corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST);
+    corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST, false);
 
     Serial.println("Log...");
 
