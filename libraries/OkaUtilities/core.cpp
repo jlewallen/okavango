@@ -23,6 +23,9 @@ void CorePlatform::setup(uint8_t pinSdCs, uint8_t pinRfm95Cs, uint8_t pinRfm95Rs
         DEBUG_PRINTLN(F("SD Missing"));
         platformCatastrophe(PIN_RED_LED, PLATFORM_CATASTROPHE_FAST_BLINK);
     }
+    else {
+        Serial.println("SD okay.");
+    }
 
     pinMode(pinRfm95Rst, OUTPUT);
     digitalWrite(pinRfm95Rst, HIGH);
