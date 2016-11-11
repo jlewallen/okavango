@@ -26,15 +26,15 @@ void WeatherStation::clear() {
 }
 
 void WeatherStation::ignore() {
-    while (Serial2.available()) {
-        Serial2.read();
+    while (WeatherSerial.available()) {
+        WeatherSerial.read();
     }
 }
 
 void WeatherStation::off() {
     DEBUG_PRINTLN("WS: off");
 
-    Serial2.end();
+    WeatherSerial.end();
 
     pinMode(PIN_WEATHER_STATION_RESET, OUTPUT);
     digitalWrite(PIN_WEATHER_STATION_RESET, LOW);
@@ -44,7 +44,7 @@ void WeatherStation::off() {
 void WeatherStation::hup() {
     DEBUG_PRINTLN("WS: hup");
 
-    platformSerial2Begin(9600);
+    weatherSerialBegin();
 
     pinMode(PIN_WEATHER_STATION_RESET, OUTPUT);
     digitalWrite(PIN_WEATHER_STATION_RESET, LOW);
@@ -87,11 +87,11 @@ bool WeatherStation::tick() {
             transition(WeatherStationState::Ignoring);
             break;
         }
-        if (Serial2.available()) {
+        if (WeatherSerial.available()) {
             delay(50);
 
-            while (Serial2.available()) {
-                int16_t c = Serial2.read();
+            while (WeatherSerial.available()) {
+                int16_t c = WeatherSerial.read();
                 if (c >= 0) {
                     if (c == ',' || c == '\r' || c == '\n') {
                         if (length > 0) {

@@ -188,8 +188,8 @@ void setup() {
                 }
                 case 's': {
                     RockBlock rockBlock("TEST");
-                    Serial1.begin(19200);
-                    SerialType &rockBlockSerial = Serial1;
+                    rockBlockSerialBegin(19200);
+                    SerialType &rockBlockSerial = RockBlockSerial;
                     rockBlock.setSerial(&rockBlockSerial);
                     while (!rockBlock.isDone() && !rockBlock.isFailed()) {
                         rockBlock.tick();
