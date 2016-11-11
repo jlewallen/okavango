@@ -409,8 +409,8 @@ bool singleTransmission(String message) {
         }
         if (configuration.hasRockBlockAttached()) {
             RockBlock rockBlock(message);
-            Serial1.begin(19200);
-            SerialType &rockBlockSerial = Serial1;
+            rockBlockSerialBegin();
+            SerialType &rockBlockSerial = RockBlockSerial;
             rockBlock.setSerial(&rockBlockSerial);
             while (!rockBlock.isDone() && !rockBlock.isFailed()) {
                 if (millis() - started < THIRTY_MINUTES) {
