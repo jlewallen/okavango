@@ -204,9 +204,10 @@ typedef enum ConductivityConfig {
 #define THIRTY_MINUTES                                       (60 * 1000 * 30)
 #define ONE_MINUTE                                           (60 * 1000)
 
-#define WeatherSerial          Serial
-#define RockBlockSerial        Serial2
-#define weatherSerialBegin()   Serial.begin(9600)
+#define weatherSerialBegin()   Serial1.begin(9600)
+#define WeatherSerial          Serial1
+
 #define rockBlockSerialBegin() platformSerial2Begin(19200)
+#define RockBlockSerial        Serial2
 
 #endif

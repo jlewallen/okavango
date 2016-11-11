@@ -1,3 +1,5 @@
+#define TESTING_MODE
+
 #include <Adafruit_SleepyDog.h>
 #include "Platforms.h"
 #include "core.h"
@@ -14,6 +16,7 @@
 #include "system.h"
 
 void logTransition(const char *name);
+void checkWeatherStation();
 
 typedef struct gps_location_t {
     float latitude;
@@ -172,18 +175,19 @@ void setup() {
     logPrinter.flush();
 
     #ifdef TESTING_MODE
-    bool enabled = false;
+    bool rockBlock = false;
+    bool weather = false;
     while (1) {
         if (Serial.available()) {
             while (Serial.available()) {
                 char c = Serial.read();
                 switch (c) {
                 case 't': {
-                    enabled = !enabled;
-                    Serial.print("Toggled ");
-                    Serial.println(enabled);
+                    rockBlock = !rockBlock;
+                    Serial.print("RB ");
+                    Serial.println(rockBlock);
 
-                    digitalWrite(PIN_ROCK_BLOCK, enabled);
+                    digitalWrite(PIN_ROCK_BLOCK, rockBlock);
                     break;
                 }
                 case 's': {
@@ -195,6 +199,23 @@ void setup() {
                         rockBlock.tick();
                         delay(10);
                     }
+                    break;
+                }
+                case 'y': {
+                    weather = !weather;
+                    Serial.print("WS ");
+                    Serial.println(weather);
+                    if (weather) {
+                        weatherStation.hup();
+                    }
+                    else {
+                        weatherStation.off();
+                    }
+                    break;
+                }
+                case 'w': {
+                    weatherStation.transition(WeatherStationState::Reading);
+                    checkWeatherStation();
                     break;
                 }
                 }

@@ -66,14 +66,13 @@ public:
         return state == WeatherStationState::HaveReading;
     }
     void ignore();
-
-private:
     void hup();
     void off();
     void transition(WeatherStationState newState) {
         state = newState;
         lastTransitionAt = millis();
     }
+
 };
 
 #endif
