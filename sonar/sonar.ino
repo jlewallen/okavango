@@ -16,6 +16,8 @@ CorePlatform corePlatform;
 void setup() {
     Serial.begin(115200);
 
+    Serial.println("Starting...");
+
     #ifdef WAIT_FOR_SERIAL
     while (!Serial) {
         delay(100);
@@ -27,11 +29,15 @@ void setup() {
 
     Watchdog.enable();
 
+    Serial.println("Core...");
+
     corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST);
+
+    Serial.println("Log...");
 
     logPrinter.open();
 
-    Serial1.begin(9600);
+    Serial.println("Ready!");
 }
 
 void tryAndSendLocalQueue(Queue *queue) {

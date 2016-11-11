@@ -90,8 +90,6 @@ bool WeatherStation::tick() {
         if (WeatherSerial.available()) {
             delay(50);
 
-            Serial.println("D");
-
             while (WeatherSerial.available()) {
                 int16_t c = WeatherSerial.read();
                 if (c >= 0) {
