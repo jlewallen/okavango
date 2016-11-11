@@ -4,7 +4,7 @@
 
 RtcSystemClock SystemClock;
 
-void CorePlatform::setup() {
+void CorePlatform::setup(uint8_t pinSdCs, uint8_t pinRfm95Cs, uint8_t pinRfm95Rst) {
     pinMode(PIN_RED_LED, OUTPUT);
     digitalWrite(PIN_RED_LED, LOW);
 
@@ -13,19 +13,19 @@ void CorePlatform::setup() {
 
     // Important, the SDI CS' should be ready to go before we start using any
     // of them.
-    pinMode(PIN_SD_CS, OUTPUT);
-    digitalWrite(PIN_SD_CS, HIGH);
+    pinMode(pinSdCs, OUTPUT);
+    digitalWrite(pinSdCs, HIGH);
 
-    pinMode(PIN_RFM95_CS, OUTPUT);
-    digitalWrite(PIN_RFM95_CS, HIGH);
+    pinMode(pinRfm95Cs, OUTPUT);
+    digitalWrite(pinRfm95Cs, HIGH);
 
-    if (!SD.begin(PIN_SD_CS)) {
+    if (!SD.begin(pinSdCs)) {
         DEBUG_PRINTLN(F("SD Missing"));
         platformCatastrophe(PIN_RED_LED, PLATFORM_CATASTROPHE_FAST_BLINK);
     }
 
-    pinMode(PIN_RFM95_RST, OUTPUT);
-    digitalWrite(PIN_RFM95_RST, HIGH);
+    pinMode(pinRfm95Rst, OUTPUT);
+    digitalWrite(pinRfm95Rst, HIGH);
 
     SystemClock.setup();
 }

@@ -96,7 +96,7 @@ void setup() {
     Watchdog.reset();
 
     CorePlatform corePlatform;
-    corePlatform.setup();
+    corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST);
 
     UptimeTracker::started();
 
@@ -296,7 +296,7 @@ void checkWeatherStation() {
 
 void checkAirwaves() {
     Queue queue;
-    LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST);
+    LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST, PIN_RFM95_RST);
     NetworkProtocolState networkProtocol(NetworkState::EnqueueFromNetwork, &radio, &queue, new CollectorNetworkCallbacks());
 
     DEBUG_PRINTLN("AW: Check");

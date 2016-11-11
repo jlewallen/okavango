@@ -7,6 +7,8 @@
 
 class LoraRadio {
 private:
+    uint8_t pinCs;
+    uint8_t pinRst;
     RH_RF95 rf95;
     bool available;
     const uint8_t pinEnable;
@@ -17,7 +19,7 @@ private:
     uint8_t tries;
 
 public:
-    LoraRadio(uint8_t pinCs, uint8_t pinG0, uint8_t pinEnable);
+    LoraRadio(uint8_t pinCs, uint8_t pinG0, uint8_t pinEnable, uint8_t pinRst);
     bool setup();
     void tick();
     bool send(uint8_t *packet, uint8_t size);

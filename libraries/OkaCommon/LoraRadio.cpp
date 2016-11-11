@@ -3,16 +3,16 @@
 
 #define MAX_RETRIES 3
 
-LoraRadio::LoraRadio(uint8_t pinCs, uint8_t pinG0, uint8_t pinEnable)
-    : rf95(pinCs, pinG0), pinEnable(pinEnable), available(false) {
+LoraRadio::LoraRadio(uint8_t pinCs, uint8_t pinG0, uint8_t pinEnable, uint8_t pinRst)
+    : pinCs(pinCs), pinRst(pinRst), rf95(pinCs, pinG0), pinEnable(pinEnable), available(false) {
 }
 
 bool LoraRadio::setup() {
-    pinMode(PIN_RFM95_CS, OUTPUT);
-    digitalWrite(PIN_RFM95_CS, HIGH);
+    pinMode(pinCs, OUTPUT);
+    digitalWrite(pinCs, HIGH);
 
-    pinMode(PIN_RFM95_RST, OUTPUT);
-    digitalWrite(PIN_RFM95_RST, HIGH);
+    pinMode(pinRst, OUTPUT);
+    digitalWrite(pinRst, HIGH);
 
     pinMode(pinEnable, OUTPUT);
     digitalWrite(pinEnable, HIGH);
@@ -69,4 +69,3 @@ void LoraRadio::tick() {
         recvLength = 0;
     }
 }
-

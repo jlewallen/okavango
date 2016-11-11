@@ -6,7 +6,7 @@
 
 class CorePlatform {
 public:
-    void setup();
+    void setup(uint8_t pinSdCs, uint8_t pinRfm95Cs, uint8_t pinRfm95Rst);
 
 };
 
