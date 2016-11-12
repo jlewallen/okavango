@@ -10,7 +10,7 @@
 #include "network.h"
 #include "Logger.h"
 
-#define FK_SONAR_DISTANCE_FROM_GROUND_IN_METERS               (4)
+#define FK_SONAR_DISTANCE_FROM_GROUND_IN_METERS               (1.25f)
 
 sonar_station_packet_t packet;
 Ds1307SystemClock Clock;
