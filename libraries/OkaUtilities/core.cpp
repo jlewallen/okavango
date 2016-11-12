@@ -89,8 +89,6 @@ Ds1307SystemClock::Ds1307SystemClock() {
 }
 
 bool Ds1307SystemClock::setup() {
-    #ifdef FEATHER_WING_ADALOGGER
-    #ifndef FEATHER_DISABLE_RTC
     if (!rtc.begin()) {
         DEBUG_PRINTLN(F("RTC Missing"));
         return false;
@@ -103,8 +101,6 @@ bool Ds1307SystemClock::setup() {
         DEBUG_PRINTLN(F("RTC Ready"));
     }
     available = true;
-    #endif
-    #endif
 
     return true;
 }
