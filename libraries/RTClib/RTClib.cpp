@@ -278,20 +278,6 @@ DateTime RTC_DS1307::now() {
   uint8_t m = bcd2bin(Wire._I2C_READ());
   uint16_t y = bcd2bin(Wire._I2C_READ()) + 2000;
 
-  Serial.print("RTC: ");
-  Serial.print(y);
-  Serial.print(" ");
-  Serial.print(m);
-  Serial.print(" ");
-  Serial.print(d);
-  Serial.print(" ");
-  Serial.print(hh);
-  Serial.print(" ");
-  Serial.print(mm);
-  Serial.print(" ");
-  Serial.print(ss);
-  Serial.println();
-
   return DateTime (y, m, d, hh, mm, ss);
 }
 
