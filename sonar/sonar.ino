@@ -34,12 +34,12 @@ void setup() {
     Watchdog.enable();
 
     Serial.println("Core...");
-
     corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST);
+
+    Serial.println("Clock...");
     SystemClock->setup();
 
     Serial.println("Log...");
-
     logPrinter.open();
 
     Serial.print("Now: ");

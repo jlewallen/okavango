@@ -36,6 +36,8 @@ Pcf8523SystemClock::Pcf8523SystemClock() {
 }
 
 bool Pcf8523SystemClock::setup() {
+    available = false;
+
     #ifdef FEATHER_WING_ADALOGGER
     #ifndef FEATHER_DISABLE_RTC
     if (!rtc.begin()) {
@@ -89,6 +91,8 @@ Ds1307SystemClock::Ds1307SystemClock() {
 }
 
 bool Ds1307SystemClock::setup() {
+    available = false;
+
     if (!rtc.begin()) {
         DEBUG_PRINTLN(F("RTC Missing"));
         return false;
