@@ -1,19 +1,19 @@
 #include <Wire.h>
 #include "RTClib.h"
-RTC_DS1307 RTC;
+RTC_DS1307 Clock;
 
 void setup () {
     Serial.begin(9600);
     Wire.begin();
-    RTC.begin();
-    if (! RTC.isrunning()) {
+    Clock.begin();
+    if (! Clock.isrunning()) {
         Serial.println("RTC is NOT running!");
         // following line sets the RTC to the date & time this sketch was compiled
-        RTC.adjust(DateTime(__DATE__, __TIME__));
+        Clock.adjust(DateTime(__DATE__, __TIME__));
     }
 }
 void loop () {
-    DateTime now = RTC.now();
+    DateTime now = Clock.now();
     Serial.print(now.year(), DEC);
     Serial.print('/');
     Serial.print(now.month(), DEC);
