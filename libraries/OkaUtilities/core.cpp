@@ -135,3 +135,24 @@ bool Ds1307SystemClock::set(uint32_t newTime) {
     adjusted = newTime;
     return true;
 }
+
+
+MillisSystemClock::MillisSystemClock() {
+    SystemClock = this;
+}
+
+bool MillisSystemClock::setup() {
+    return true;
+}
+
+bool MillisSystemClock::initialized() {
+    return true;
+}
+
+uint32_t MillisSystemClock::now() {
+    return millis();
+}
+
+bool MillisSystemClock::set(uint32_t newTime) {
+    return true;
+}

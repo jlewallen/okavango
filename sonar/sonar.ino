@@ -13,7 +13,8 @@
 #define FK_SONAR_DISTANCE_FROM_GROUND_IN_METERS               (1.25f)
 
 sonar_station_packet_t packet;
-Ds1307SystemClock Clock;
+MillisSystemClock Clock;
+// Ds1307SystemClock Clock;
 // Pcf8523SystemClock Clock;
 CorePlatform corePlatform;
 

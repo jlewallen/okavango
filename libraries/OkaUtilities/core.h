@@ -45,6 +45,15 @@ public:
     virtual bool set(uint32_t now) override;
 };
 
+class MillisSystemClock : RtcAbstractSystemClock {
+public:
+    MillisSystemClock();
+    virtual bool setup() override;
+    virtual bool initialized() override;
+    virtual uint32_t now() override;
+    virtual bool set(uint32_t now) override;
+};
+
 extern RtcAbstractSystemClock *SystemClock;
 
 #endif
