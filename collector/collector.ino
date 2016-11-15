@@ -78,7 +78,7 @@ public:
 };
 
 CorePlatform corePlatform;
-Ds1307SystemClock Clock;
+Pcf8523SystemClock Clock;
 
 void setup() {
     Watchdog.enable();
