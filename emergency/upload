@@ -1,0 +1,3 @@
+#!/bin/bash
+
+./bossac_osx  -i -d --port=$1 -U true -i -e -w -v blink.bin -R 
