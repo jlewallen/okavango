@@ -1,5 +1,0 @@
-#!/bin/bash
-
-pushd /dev >  /dev/null
-ls -1 cu.*
-popd >  /dev/null
