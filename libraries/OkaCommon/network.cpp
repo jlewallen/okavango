@@ -125,7 +125,12 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize
 
             DEBUG_PRINTLN("Queuing");
 
-            queue->enqueue((uint8_t *)packet);
+            {
+                sonar_station_packet_t sonar_station_packet;
+                memcpy((void *)&sonar_station_packet, packet, sizeof(sonar_station_packet_t));
+                sonar_station_packet.time = SystemClock->now();
+                queue->enqueue((uint8_t *)&sonar_station_packet, sizeof(sonar_station_packet_t));
+            }
 
             sendAck();
         }
@@ -137,12 +142,7 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize
 
             DEBUG_PRINTLN("Queuing");
 
-            {
-                sonar_station_packet_t sonar_station_packet;
-                memcpy((void *)&sonar_station_packet, packet, sizeof(sonar_station_packet_t));
-                sonar_station_packet.time = SystemClock->now();
-                queue->enqueue((uint8_t *)&sonar_station_packet, sizeof(sonar_station_packet_t));
-            }
+            queue->enqueue((uint8_t *)packet);
 
             sendAck();
         }
