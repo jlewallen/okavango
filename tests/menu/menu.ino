@@ -237,8 +237,8 @@ private:
         uint8_t row = i / numberOfColumns;
         uint8_t column = i % numberOfColumns;
         // Note: These are flipped due to the rotation of the TFT.
-        uint16_t w = 320 / numberOfColumns;
-        uint16_t h = 240 / numberOfRows;
+        uint16_t w = SCREEN_WIDTH / numberOfColumns;
+        uint16_t h = SCREEN_HEIGHT / numberOfRows;
         uint16_t x = w * column;
         uint16_t y = h * row;
         return Rect(x, y, w, h);
@@ -260,7 +260,11 @@ void setup() {
         while(1);
     }
 
-    tft.begin(/*HX8357D*/);
+    #ifdef HX8357
+    tft.begin(HX8357D);
+    #else
+    tft.begin();
+    #endif
     tft.setRotation(1);
 
     MenuOption options[] = {
