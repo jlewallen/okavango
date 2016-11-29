@@ -1,14 +1,51 @@
 #include <SPI.h>
-#include "Adafruit_GFX.h"
-#include "Adafruit_HX8357.h"
+#include <Adafruit_GFX.h>
 #include "Adafruit_STMPE610.h"
+
+#ifdef HX8357
+
+#include <Adafruit_HX8357.h>
 
 #define TFT_CS               10
 #define TFT_DC               9
 #define TFT_RST              6
 
+#define COLOR_BLACK          HX8357_BLACK
+#define COLOR_WHITE          HX8357_WHITE
+#define SCREEN_WIDTH         320
+#define SCREEN_HEIGHT        480
+
+#define TS_MINX              318
+#define TS_MINY              235
+#define TS_MAXX              3815
+#define TS_MAXY              3859
+
 Adafruit_HX8357 tft(TFT_CS, TFT_DC, TFT_RST);
-Adafruit_STMPE610 touch;
+
+#else
+
+#include <Adafruit_ILI9341.h>
+
+#define TFT_CS               9
+#define TFT_DC               10
+#define STMPE_CS             6
+#define SD_CS                5
+
+#define COLOR_BLACK          ILI9341_BLACK
+#define COLOR_WHITE          ILI9341_WHITE
+#define SCREEN_WIDTH         320
+#define SCREEN_HEIGHT        240
+
+#define TS_MINX              150
+#define TS_MINY              130
+#define TS_MAXX              3800
+#define TS_MAXY              4000
+
+Adafruit_ILI9341 tft(TFT_CS, TFT_DC);
+
+#endif
+
+Adafruit_STMPE610 touch(STMPE_CS);
 
 class Vector2 {
 public:
@@ -45,9 +82,9 @@ public:
 
 public:
     Vector2 toPixelCoordinates(uint8_t rotation = 1) {
-        Vector2 minimum(318, 235);
-        Vector2 maximum(3815, 3859);
-        Vector2 screen(480, 320);
+        Vector2 minimum(TS_MINX, TS_MINY);
+        Vector2 maximum(TS_MAXX, TS_MAXY);
+        Vector2 screen(SCREEN_WIDTH, SCREEN_HEIGHT);
         Vector2 size = maximum - minimum;
         Vector2 zeroed = *this - minimum;
         float scaledX = (zeroed.x / (float)size.x);
@@ -56,7 +93,11 @@ public:
         // Only using rotation 1 now.
         switch (rotation) {
         case 1:
+            #ifdef HX8357
             return Vector2((1.0 - scaledY) * screen.x, scaledX * screen.y);
+            #else
+            return Vector2(scaledY * screen.x, scaledX * screen.y);
+            #endif
         default:
             return Vector2(scaledX * screen.x, scaledY * screen.y);
         }
@@ -137,6 +178,8 @@ public:
                     Rect rect = getButtonRect(i);
                     drawButton(rect, option.getLabel());
 
+                    Serial.print(option.getLabel());
+                    Serial.print(": ");
                     Serial.print(rect.position.x);
                     Serial.print(", ");
                     Serial.print(rect.position.y);
@@ -180,10 +223,10 @@ private:
     void drawButton(Rect &rect, const char *label) {
         uint8_t textSize = 4;
 
-        gfx->fillRect(rect.position.x, rect.position.y, rect.size.x, rect.size.y, HX8357_BLACK);
-        gfx->drawRect(rect.position.x, rect.position.y, rect.size.x, rect.size.y, HX8357_WHITE);
+        gfx->fillRect(rect.position.x, rect.position.y, rect.size.x, rect.size.y, COLOR_BLACK);
+        gfx->drawRect(rect.position.x, rect.position.y, rect.size.x, rect.size.y, COLOR_WHITE);
         gfx->setCursor(rect.position.x + (rect.size.x / 2) - strlen(label) * 3 * textSize, rect.position.y + (rect.size.y / 2) - 4 * textSize);
-        gfx->setTextColor(HX8357_WHITE);
+        gfx->setTextColor(COLOR_WHITE);
         gfx->setTextSize(textSize);
         gfx->print(label);
     }
@@ -194,8 +237,8 @@ private:
         uint8_t row = i / numberOfColumns;
         uint8_t column = i % numberOfColumns;
         // Note: These are flipped due to the rotation of the TFT.
-        uint16_t w = 480 / numberOfColumns;
-        uint16_t h = 320 / numberOfRows;
+        uint16_t w = 320 / numberOfColumns;
+        uint16_t h = 240 / numberOfRows;
         uint16_t x = w * column;
         uint16_t y = h * row;
         return Rect(x, y, w, h);
@@ -217,7 +260,7 @@ void setup() {
         while(1);
     }
 
-    tft.begin(HX8357D);
+    tft.begin(/*HX8357D*/);
     tft.setRotation(1);
 
     MenuOption options[] = {

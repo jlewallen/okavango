@@ -13,14 +13,16 @@ import com.github.jlewallen.arduino.*
 
 model {
     components {
-        menu(ArduinoComponentSpec) {
+        tftwing(ArduinoComponentSpec) {
             boards = [ "adafruit:samd:adafruit_feather_m0" ]
             libraries = [
                 "SPI",
+                "SD",
                 "Wire",
-                "Adafruit-GFX-Library",
-                // "Adafruit_HX8357_Library",
+                // "PDQ_ILI9341",
+                // "PDQ_GFX",
                 "Adafruit_ILI9341",
+                "Adafruit-GFX-Library",
                 "Adafruit_STMPE610"
             ]
         }
