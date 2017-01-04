@@ -32,11 +32,11 @@ bool RockBlock::tick() {
     bool success = false;
 
     rockBlock.setPowerProfile(1);
-    if (rockBlock.begin()) {
+    if (rockBlock.begin() == ISBD_SUCCESS) {
         for (uint8_t i = 0; i < 2; ++i) {
             int signalQuality = 0;
             int32_t error = rockBlock.getSignalQuality(signalQuality);
-            if (error != 0) {
+            if (error != ISBD_SUCCESS) {
                 DEBUG_PRINT("RB: getSignalQuality failed ");
                 DEBUG_PRINTLN(error);
             }
@@ -49,7 +49,7 @@ bool RockBlock::tick() {
                 uint8_t *data = (uint8_t *)message.c_str();
                 size_t size = message.length();
                 error = rockBlock.sendSBDBinary(data, size);
-                if (error == 0) {
+                if (error == ISBD_SUCCESS) {
                     success = true;
                     break;
                 }
