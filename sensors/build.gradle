@@ -13,7 +13,7 @@ import com.github.jlewallen.arduino.*
 
 model {
     components {
-        collector(ArduinoComponentSpec) {
+        sensors(ArduinoComponentSpec) {
             boards = [ "adafruit:samd:adafruit_feather_m0" ]
             libraries = [
                 "SPI",
