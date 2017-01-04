@@ -1,4 +1,4 @@
-#include <String.h>
+#include <string.h>
 #include "NonBlockingSerial.h"
 
 NonBlockingSerialProtocol::NonBlockingSerialProtocol(uint16_t replyWait, bool emptyBufferAfterEveryLine, bool addNewLine) :

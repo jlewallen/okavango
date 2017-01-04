@@ -1,4 +1,4 @@
-#include "Wdt.h"
+#include "wdt.h"
 
 #include <sam.h>
 
