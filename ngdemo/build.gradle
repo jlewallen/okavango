@@ -28,6 +28,7 @@ model {
                 "SD",
                 "OkaCommon",
                 "Adafruit_SleepyDog",
+                "Adafruit_WINC1500",
                 "OneWire",
                 "Arduino-Temperature-Control-Library",
                 "IridiumSBD",
