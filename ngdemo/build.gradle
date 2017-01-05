@@ -1,0 +1,40 @@
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+    dependencies {
+        classpath group: 'com.github.jlewallen.arduino', name: 'arduino-gradle', version: '1.0'
+    }
+}
+
+apply plugin: 'com.github.jlewallen.arduino'
+
+import com.github.jlewallen.arduino.*
+
+model {
+    components {
+        collector(ArduinoComponentSpec) {
+            boards = [ "adafruit:samd:adafruit_feather_m0" ]
+            libraries = [
+                "SPI",
+                "RadioHead",
+                "Adafruit_GPS-master",
+                "RTClib",
+                "OkaUtilities",
+                "Okavango",
+                "SimpleBuffer",
+                "Wire",
+                "DHT-sensor-library",
+                "SD",
+                "OkaCommon",
+                "Adafruit_SleepyDog",
+                "OneWire",
+                "Arduino-Temperature-Control-Library",
+                "IridiumSBD",
+                "AtSamd"
+            ]
+        }
+    }
+}
+
+// vim: set ft=groovy:
