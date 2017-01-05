@@ -2,6 +2,8 @@
 #include <Adafruit_GFX.h>
 #include "Adafruit_STMPE610.h"
 
+#define TOUCH_HYSTERESIS     100
+
 #ifdef HX8357
 
 #include <Adafruit_HX8357.h>
@@ -128,6 +130,9 @@ class MenuOption {
 private:
     const char *label;
     const uint8_t value;
+    bool redraw = false;
+    bool pressing = false;
+    uint32_t pressedAt = 0;
 
 public:
     MenuOption(const char *label, uint8_t value) :
@@ -142,26 +147,78 @@ public:
     const uint8_t getValue() const {
         return value;
     }
+
+    bool redrawNecessary() {
+        return redraw;
+    }
+
+    void redrawNecessary(bool necessary) {
+        redraw = necessary;
+    }
+
+    void draw(Adafruit_GFX *gfx, const Rect &rect) {
+        uint8_t textSize = 4;
+
+        uint16_t fore = pressing ? COLOR_BLACK : COLOR_WHITE;
+        uint16_t back = pressing ? COLOR_WHITE : COLOR_BLACK;
+
+        gfx->fillRect(rect.position.x, rect.position.y, rect.size.x, rect.size.y, back);
+        gfx->drawRect(rect.position.x, rect.position.y, rect.size.x, rect.size.y, fore);
+        gfx->setCursor(rect.position.x + (rect.size.x / 2) - strlen(label) * 3 * textSize, rect.position.y + (rect.size.y / 2) - 4 * textSize);
+        gfx->setTextColor(fore);
+        gfx->setTextSize(textSize);
+        gfx->print(label);
+
+        redraw = false;
+    }
+
+    bool touched() {
+        if (pressedAt > 0 && millis() - pressedAt > TOUCH_HYSTERESIS) {
+            if (!pressing) {
+                Serial.print(label);
+                Serial.println(": touched, redrawing");
+                redraw = true;
+                pressedAt = 0;
+            }
+            pressing = true;
+        }
+        else if (pressedAt == 0) {
+            pressedAt = millis();
+        }
+        return redraw;
+    }
+
+    bool untouch() {
+        if (pressing) {
+            Serial.print(label);
+            Serial.println(": untouched, redrawing");
+            redraw = true;
+        }
+        pressing = false;
+        return redraw;
+    }
+
 };
 
 class Menu {
 private:
     Adafruit_GFX *gfx;
     Adafruit_STMPE610 *touch;
-    const MenuOption *options;
+    MenuOption *options;
     const size_t numberOfOptions;
     bool visible = false;
-    bool redraw = true;
 
 public:
     template<size_t N>
-    Menu(Adafruit_GFX *gfx, Adafruit_STMPE610 *touch, const MenuOption (&array)[N]) :
+    Menu(Adafruit_GFX *gfx, Adafruit_STMPE610 *touch, MenuOption (&array)[N]) :
         gfx(gfx), touch(touch), options(array), numberOfOptions(N) {
     }
 
     void show() {
         if (!visible) {
-            redraw = true;
+            for (size_t i = 0; i < numberOfOptions; ++i) {
+                options[i].redrawNecessary(true);
+            }
         }
         visible = true;
     }
@@ -172,13 +229,12 @@ public:
 
     void tick() {
         if (visible) {
-            if (redraw) {
-                for (size_t i = 0; i < numberOfOptions; ++i) {
-                    const MenuOption option = options[i];
+            for (size_t i = 0; i < numberOfOptions; ++i) {
+                if (options[i].redrawNecessary()) {
                     Rect rect = getButtonRect(i);
-                    drawButton(rect, option.getLabel());
+                    options[i].draw(gfx, rect);
 
-                    Serial.print(option.getLabel());
+                    Serial.print(options[i].getLabel());
                     Serial.print(": ");
                     Serial.print(rect.position.x);
                     Serial.print(", ");
@@ -189,29 +245,43 @@ public:
                     Serial.print(rect.position.y + rect.size.y);
                     Serial.println("");
                 }
-                redraw = false;
             }
             if (touch->touched()) {
                 while (!touch->bufferEmpty()) {
                     Touch position;
                     touch->readData(&position.x, &position.y, &position.z);
                     Vector2 pixel = position.toPixelCoordinates();
-                    const MenuOption *option = getOptionAtPixel(pixel);
+                    MenuOption *option = getOptionAtPixel(pixel);
                     if (option != nullptr) {
-                        Serial.println(option->getLabel());
+                        option->touched();
+                        /*
+                        Serial.print(option->getLabel());
+                        Serial.print(": ");
+                        Serial.print(pixel.x);
+                        Serial.print(", ");
+                        Serial.print(pixel.y);
+                        Serial.println("");
+                        */
                     }
-                    Serial.print(pixel.x);
-                    Serial.print(", ");
-                    Serial.print(pixel.y);
-                    Serial.println("");
                 }
                 touch->writeRegister8(STMPE_INT_STA, 0xFF);
+            }
+            else {
+                if (touch->bufferSize() > 0) {
+                    Serial.println("Clearing STMPE610...");
+                    while (!touch->bufferEmpty()) {
+                        Touch position;
+                        touch->readData(&position.x, &position.y, &position.z);
+                    }
+                    touch->writeRegister8(STMPE_INT_STA, 0xFF);
+                }
+                untouch();
             }
         }
     }
 
 private:
-    const MenuOption *getOptionAtPixel(Vector2& position) {
+    MenuOption *getOptionAtPixel(Vector2& position) {
         for (size_t i = 0; i < numberOfOptions; ++i) {
             Rect rect = getButtonRect(i);
             if (rect.contains(position)) {
@@ -220,15 +290,11 @@ private:
         }
         return nullptr;
     }
-    void drawButton(Rect &rect, const char *label) {
-        uint8_t textSize = 4;
 
-        gfx->fillRect(rect.position.x, rect.position.y, rect.size.x, rect.size.y, COLOR_BLACK);
-        gfx->drawRect(rect.position.x, rect.position.y, rect.size.x, rect.size.y, COLOR_WHITE);
-        gfx->setCursor(rect.position.x + (rect.size.x / 2) - strlen(label) * 3 * textSize, rect.position.y + (rect.size.y / 2) - 4 * textSize);
-        gfx->setTextColor(COLOR_WHITE);
-        gfx->setTextSize(textSize);
-        gfx->print(label);
+    void untouch() {
+        for (size_t i = 0; i < numberOfOptions; ++i) {
+            options[i].untouch();
+        }
     }
 
     Rect getButtonRect(size_t i) {
@@ -236,7 +302,6 @@ private:
         const uint8_t numberOfColumns = 2;
         uint8_t row = i / numberOfColumns;
         uint8_t column = i % numberOfColumns;
-        // Note: These are flipped due to the rotation of the TFT.
         uint16_t w = SCREEN_WIDTH / numberOfColumns;
         uint16_t h = SCREEN_HEIGHT / numberOfRows;
         uint16_t x = w * column;
@@ -278,9 +343,17 @@ void setup() {
 
     Serial.println("Showing");
 
+    uint32_t tickAt = millis();
+
     while (true) {
         menu.tick();
         delay(10);
+
+        if (millis() - tickAt > 2000) {
+            tickAt = millis();
+            Serial.println();
+            Serial.println();
+        }
     }
 }
 
