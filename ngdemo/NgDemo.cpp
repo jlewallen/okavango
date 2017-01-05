@@ -1,11 +1,12 @@
 #include "NgDemo.h"
 
 NgDemo::NgDemo()
-    : gps(&Serial2) {
+    : gps(&Serial1) {
 }
 
 bool NgDemo::setup() {
     platformSerial2Begin(9600);
+    Serial1.begin(9600);
 
     gps.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
     gps.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);
@@ -127,12 +128,11 @@ bool NgDemo::transmission(String message) {
 bool NgDemo::checkGps() {
     Watchdog.reset();
 
-    if (Serial2.available()) {
-        while (Serial2.available()) {
-            char c = gps.read();
-            Serial.print(c);
-        }
+    while (Serial1.available()) {
+        char c = gps.read();
+        Serial.print(c);
     }
+
     if (gps.newNMEAreceived()) {
         if (gps.parse(gps.lastNMEA())) {
             if (gps.fix) {
