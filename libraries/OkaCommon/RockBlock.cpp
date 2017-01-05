@@ -23,43 +23,48 @@ IridiumSBD rockBlock(Serial2, PIN_ROCK_BLOCK, new WatchdogCallbacks());
 bool RockBlock::tick() {
     if (Serial) {
         rockBlock.attachConsole(Serial);
+        rockBlock.attachDiags(Serial);
     }
     else {
         rockBlock.attachConsole(logPrinter);
+        rockBlock.attachDiags(logPrinter);
     }
-    rockBlock.setPowerProfile(1);
-    rockBlock.begin();
-
     bool success = false;
 
-    for (uint8_t i = 0; i < 2; ++i) {
-        int signalQuality = 0;
-        int32_t error = rockBlock.getSignalQuality(signalQuality);
-        if (error != 0) {
-            DEBUG_PRINT("RB: getSignalQuality failed ");
-            DEBUG_PRINTLN(error);
-        }
-        else {
-            Watchdog.reset();
-
-            DEBUG_PRINT("Signal quality: ");
-            DEBUG_PRINTLN((int32_t)signalQuality);
-
-            uint8_t *data = (uint8_t *)message.c_str();
-            size_t size = message.length();
-            error = rockBlock.sendSBDBinary(data, size);
-            if (error == 0) {
-                success = true;
-                break;
+    rockBlock.setPowerProfile(1);
+    if (rockBlock.begin() == ISBD_SUCCESS) {
+        for (uint8_t i = 0; i < 2; ++i) {
+            int signalQuality = 0;
+            int32_t error = rockBlock.getSignalQuality(signalQuality);
+            if (error != ISBD_SUCCESS) {
+                DEBUG_PRINT("RB: getSignalQuality failed ");
+                DEBUG_PRINTLN(error);
             }
+            else {
+                Watchdog.reset();
 
-            DEBUG_PRINT("SB: send failed: ");
-            DEBUG_PRINTLN(error);
+                DEBUG_PRINT("Signal quality: ");
+                DEBUG_PRINTLN((int32_t)signalQuality);
+
+                uint8_t *data = (uint8_t *)message.c_str();
+                size_t size = message.length();
+                error = rockBlock.sendSBDBinary(data, size);
+                if (error == ISBD_SUCCESS) {
+                    success = true;
+                    break;
+                }
+
+                DEBUG_PRINT("SB: send failed: ");
+                DEBUG_PRINTLN(error);
+            }
         }
-    }
 
-    rockBlock.sleep();
-    DEBUG_PRINTLN("Done");
+        rockBlock.sleep();
+        DEBUG_PRINTLN("Done");
+    }
+    else {
+        DEBUG_PRINTLN("No RockBlock");
+    }
 
     if (!success) {
         transition(RockBlockFailed);

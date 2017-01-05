@@ -2,9 +2,14 @@
 
 #include "Platforms.h"
 
+#define BATTERY_VOLTAGE_DIVIDER_RATIO                         2.0f
+#define BATTERY_VOLTAGE_REFERENCE                             3.3f
+#define BATTERY_VOLTAGE_OPTIMAL                               4.2f
+#define BATTERY_VOLTAGE_LOW                                   3.0f
+
 uint32_t TransmissionIntervals[] = {
     1000 * 60 * 60 * 24, // * 24 * 7,
-    1000 * 60 * 60 * 6
+    1000 * 60 * 60 * 1
 };
 
 #ifdef ARDUINO_AVR_FEATHER32U4
@@ -14,6 +19,10 @@ void platformRestart() {
 }
 
 float platformBatteryVoltage() {
+    return 0.0f;
+}
+
+float platformBatteryLevel() {
     return 0.0f;
 }
 
@@ -29,6 +38,10 @@ void platformRestart() {
 }
 
 float platformBatteryVoltage() {
+    return 0.0f;
+}
+
+float platformBatteryLevel() {
     return 0.0f;
 }
 
@@ -71,7 +84,15 @@ void platformRestart() {
 float platformBatteryVoltage() {
     analogRead(A1);
     delay(2);
-    return analogRead(A1);
+    analogRead(A1);
+    delay(2);
+    float value = analogRead(A1);
+    return value * BATTERY_VOLTAGE_DIVIDER_RATIO * BATTERY_VOLTAGE_REFERENCE / 1024.0f;
+}
+
+float platformBatteryLevel() {
+    float constrained = max(min(platformBatteryVoltage(), BATTERY_VOLTAGE_OPTIMAL), BATTERY_VOLTAGE_LOW);
+    return (constrained - BATTERY_VOLTAGE_LOW) / (BATTERY_VOLTAGE_OPTIMAL - BATTERY_VOLTAGE_LOW);
 }
 
 #endif

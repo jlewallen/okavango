@@ -667,6 +667,8 @@ void logTransition(const char *name) {
 
     DEBUG_PRINT(" ");
     DEBUG_PRINT(platformBatteryVoltage());
+    DEBUG_PRINT(" ");
+    DEBUG_PRINT(platformBatteryLevel());
 
     DEBUG_PRINT(" >");
     DEBUG_PRINTLN(name);

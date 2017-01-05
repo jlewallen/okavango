@@ -111,7 +111,7 @@ bool AtlasSensorBoard::tick() {
 
             Watchdog.reset();
 
-            packet.time = SystemClock.now();
+            packet.time = SystemClock->now();
             packet.battery = platformBatteryVoltage();
             packet.fk.kind = FK_PACKET_KIND_ATLAS_SENSORS;
 
