@@ -35,9 +35,10 @@ void setup() {
     if (!ngd.setup()) {
     }
 
-    Serial.println("Preflight...");
+    if (!ngd.preflight()) {
+    }
 
-    if (ngd.preflight()) {
+    if (!ngd.configure()) {
     }
 
     Serial.println("Ready");

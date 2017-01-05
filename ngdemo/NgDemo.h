@@ -16,6 +16,7 @@ enum NgDemoState {
 };
 
 const uint32_t STATE_MAX_GPS_FIX_TIME = 3 * 60 * 1000;
+const uint32_t STATE_MAX_PREFLIGHT_GPS_FIX_TIME = 60 * 1000;
 const uint32_t STATE_MAX_SLEEP_TIME = 20 * 60 * 1000;
 
 class NgDemo {
@@ -33,7 +34,9 @@ private:
 public:
     NgDemo();
     bool setup();
+    bool configure();
     bool preflight();
+    void failPreflight(uint8_t kind);
     void tick();
 
 private:

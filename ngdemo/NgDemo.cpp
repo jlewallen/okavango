@@ -1,4 +1,5 @@
 #include "NgDemo.h"
+#include <IridiumSBD.h>
 
 NgDemo::NgDemo()
     : gps(&Serial1) {
@@ -8,22 +9,109 @@ bool NgDemo::setup() {
     platformSerial2Begin(9600);
     Serial1.begin(9600);
 
-    gps.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
-    gps.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);
-    gps.sendCommand(PGCMD_ANTENNA);
-
     state = NgDemoState::WaitingGpsFix;
     stateChangedAt = millis();
 
     return true;
 }
 
+class WatchdogCallbacks : public IridiumCallbacks  {
+public:
+    virtual void tick() override {
+        Watchdog.reset();
+    }
+};
+
+void NgDemo::failPreflight(uint8_t kind) {
+    Watchdog.reset();
+
+    digitalWrite(PIN_RED_LED, LOW);
+
+    while (true) {
+        for (uint8_t i = 0; i < kind; ++i) {
+            digitalWrite(PIN_RED_LED, HIGH);
+            delay(250);
+            digitalWrite(PIN_RED_LED, LOW);
+            delay(250);
+        }
+        delay(1000);
+    }
+}
+
+bool NgDemo::configure() {
+    gps.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
+    gps.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);
+    gps.sendCommand(PGCMD_ANTENNA);
+
+    return true;
+}
+
 bool NgDemo::preflight() {
+    Serial.println("preflight: Start");
+
     digitalWrite(PIN_RED_LED, HIGH);
 
-    // Check GPS
     // Check RockBlock
+    rockBlockSerialBegin();
+    IridiumSBD rockBlock(Serial2, PIN_ROCK_BLOCK, new WatchdogCallbacks());
+    if (Serial) {
+        rockBlock.attachConsole(Serial);
+        rockBlock.attachDiags(Serial);
+    }
+    else {
+        rockBlock.attachConsole(logPrinter);
+        rockBlock.attachDiags(logPrinter);
+    }
+    rockBlock.setPowerProfile(1);
+    if (rockBlock.begin(10) != ISBD_SUCCESS) {
+        Serial.println("preflight: RockBlock failed");
+        failPreflight(1);
+    }
+
+    Serial.println("preflight: RockBlock good");
+
     // Check Sensor
+    DHT dht(PIN_DHT, DHT22);
+    dht.begin();
+    if (dht.readHumidity() == NAN || dht.readTemperature() == NAN) {
+        Serial.println("preflight: Sensors failed");
+        failPreflight(2);
+    }
+
+    Serial.println("preflight: DHT22 good");
+
+    // Check GPS
+    uint32_t startTime = millis();
+    uint32_t queryTime = millis();
+
+    while (true) {
+        delay(10);
+
+        while (Serial1.available()) {
+            gps.read();
+        }
+
+        if (millis() - startTime > STATE_MAX_PREFLIGHT_GPS_FIX_TIME) {
+            Serial.println("preflight: GPS failed");
+            failPreflight(3);
+        }
+        else if (millis() - queryTime > 2000) {
+            gps.sendCommand(PMTK_Q_RELEASE);
+        }
+
+        if (gps.newNMEAreceived()) {
+            const char *nmea = gps.lastNMEA();
+            if (strstr(nmea, "$PMTK705") >= 0) {
+                break;
+            }
+        }
+
+        Watchdog.reset();
+    }
+
+    Serial.println("preflight: GPS good");
+
+    Serial.println("preflight: Passed");
 
     digitalWrite(PIN_RED_LED, LOW);
 
