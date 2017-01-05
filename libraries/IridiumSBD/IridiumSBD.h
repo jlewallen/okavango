@@ -65,7 +65,7 @@ public:
 class IridiumSBD
 {
 public:
-   int begin();
+   int begin(long maximumTime = ISBD_STARTUP_MAX_TIME);
    int sendSBDText(const char *message);
    int sendSBDBinary(const uint8_t *txData, size_t txDataSize);
    int sendReceiveSBDText(const char *message, uint8_t *rxBuffer, size_t &rxBufferSize);
@@ -111,6 +111,10 @@ public:
       if (sleepPin != -1)
          pinMode(sleepPin, OUTPUT);
    }
+
+    void setAtTimeout(int value) {
+        atTimeout = value;
+    }
 
 private:
    IridiumCallbacks *callbacks;
@@ -168,7 +172,7 @@ private:
    bool smartWait(int seconds);
    bool waitForATResponse(char *response=NULL, int responseSize=0, const char *prompt=NULL, const char *terminator="OK\r\n");
 
-   int  internalBegin();
+   int  internalBegin(long maximumTime);
    int  internalSendReceiveSBD(const char *txTxtMessage, const uint8_t *txData, size_t txDataSize, uint8_t *rxBuffer, size_t *prxBufferSize);
    int  internalGetSignalQuality(int &quality);
    int  internalMSSTMWorkaround(bool &okToProceed);

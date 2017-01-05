@@ -25,13 +25,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "IridiumSBD.h"
 
 // Power on the RockBLOCK or return from sleep
-int IridiumSBD::begin()
+int IridiumSBD::begin(long maximumTime)
 {
    if (this->reentrant)
       return ISBD_REENTRANT;
 
    this->reentrant = true;
-   int ret = internalBegin();
+   int ret = internalBegin(maximumTime);
    this->reentrant = false;
 
    // Absent a successful startup, keep the device turned off
@@ -185,7 +185,7 @@ void IridiumSBD::useMSSTMWorkaround(bool useWorkAround) // true to use workaroun
 Private interface
 */
 
-int IridiumSBD::internalBegin()
+int IridiumSBD::internalBegin(long maximumTime)
 {
    diag.print(F("Calling internalBegin\r\n"));
 
@@ -202,7 +202,7 @@ int IridiumSBD::internalBegin()
          return ISBD_CANCELLED;
 
    // Turn on modem and wait for a response from "AT" command to begin
-   for (unsigned long start = millis(); !modemAlive && millis() - start < 1000UL * ISBD_STARTUP_MAX_TIME;)
+   for (unsigned long start = millis(); !modemAlive && millis() - start < 1000UL * maximumTime;)
    {
       send(F("AT\r"));
       modemAlive = waitForATResponse();
