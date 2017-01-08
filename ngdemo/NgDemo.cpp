@@ -25,6 +25,8 @@ public:
 void NgDemo::failPreflight(uint8_t kind) {
     Watchdog.reset();
 
+    logPrinter.flush();
+
     digitalWrite(PIN_RED_LED, LOW);
 
     while (true) {
@@ -47,7 +49,7 @@ bool NgDemo::configure() {
 }
 
 bool NgDemo::preflight() {
-    Serial.println("preflight: Start");
+    DEBUG_PRINTLN("preflight: Start");
 
     digitalWrite(PIN_RED_LED, HIGH);
 
@@ -64,21 +66,21 @@ bool NgDemo::preflight() {
     }
     rockBlock.setPowerProfile(1);
     if (rockBlock.begin(10) != ISBD_SUCCESS) {
-        Serial.println("preflight: RockBlock failed");
+        DEBUG_PRINTLN("preflight: RockBlock failed");
         failPreflight(1);
     }
 
-    Serial.println("preflight: RockBlock good");
+    DEBUG_PRINTLN("preflight: RockBlock good");
 
     // Check Sensor
     DHT dht(PIN_DHT, DHT22);
     dht.begin();
     if (dht.readHumidity() == NAN || dht.readTemperature() == NAN) {
-        Serial.println("preflight: Sensors failed");
+        DEBUG_PRINTLN("preflight: Sensors failed");
         failPreflight(2);
     }
 
-    Serial.println("preflight: DHT22 good");
+    DEBUG_PRINTLN("preflight: DHT22 good");
 
     // Check GPS
     uint32_t startTime = millis();
@@ -92,7 +94,7 @@ bool NgDemo::preflight() {
         }
 
         if (millis() - startTime > STATE_MAX_PREFLIGHT_GPS_FIX_TIME) {
-            Serial.println("preflight: GPS failed");
+            DEBUG_PRINTLN("preflight: GPS failed");
             failPreflight(3);
         }
         else if (millis() - queryTime > 2000) {
@@ -109,9 +111,9 @@ bool NgDemo::preflight() {
         Watchdog.reset();
     }
 
-    Serial.println("preflight: GPS good");
+    DEBUG_PRINTLN("preflight: GPS good");
 
-    Serial.println("preflight: Passed");
+    DEBUG_PRINTLN("preflight: Passed");
 
     digitalWrite(PIN_RED_LED, LOW);
 
@@ -123,15 +125,19 @@ void NgDemo::tick() {
     case NgDemoState::WaitingGpsFix: {
         Watchdog.reset();
         if (checkGps()) {
+            DEBUG_PRINTLN("GPS: Fix");
             state = NgDemoState::ReadingSensors;
+            logPrinter.flush();
         }
         else if (millis() - stateChangedAt > STATE_MAX_GPS_FIX_TIME) {
+            DEBUG_PRINTLN("GPS: No Fix");
             state = NgDemoState::ReadingSensors;
+            logPrinter.flush();
         }
         break;
     }
     case NgDemoState::ReadingSensors: {
-        Serial.println();
+        DEBUG_PRINTLN("ReadingSensors:");
 
         DHT dht(PIN_DHT, DHT22);
         dht.begin();
@@ -139,12 +145,13 @@ void NgDemo::tick() {
         temperature = dht.readTemperature();
         batteryLevel = platformBatteryLevel();
 
-        Serial.println(humidity);
-        Serial.println(temperature);
-        Serial.println(batteryLevel);
+        DEBUG_PRINTLN(humidity);
+        DEBUG_PRINTLN(temperature);
+        DEBUG_PRINTLN(batteryLevel);
 
         state = NgDemoState::Transmitting;
         stateChangedAt = millis();
+        logPrinter.flush();
         break;
     }
     case NgDemoState::Transmitting: {
@@ -170,13 +177,16 @@ void NgDemo::tick() {
 
         state = NgDemoState::Sleep;
         stateChangedAt = millis();
+        logPrinter.flush();
         break;
     }
     case NgDemoState::Sleep: {
         Watchdog.reset();
         if (millis() - stateChangedAt > STATE_MAX_SLEEP_TIME) {
+            DEBUG_PRINTLN("Waking up...");
             state = NgDemoState::WaitingGpsFix;
             stateChangedAt = millis();
+            logPrinter.flush();
         }
         break;
     }
@@ -184,8 +194,8 @@ void NgDemo::tick() {
 }
 
 bool NgDemo::transmission(String message) {
-    Serial.print("Message: ");
-    Serial.println(message.c_str());
+    DEBUG_PRINT("Message: ");
+    DEBUG_PRINTLN(message.c_str());
 
     digitalWrite(PIN_RED_LED, HIGH);
 
@@ -204,11 +214,12 @@ bool NgDemo::transmission(String message) {
             delay(10);
         }
         success = rockBlock.isDone();
-        Serial.print("RockBlock: ");
-        Serial.println(success);
+        DEBUG_PRINT("RockBlock: ");
+        DEBUG_PRINTLN(success);
     }
 
     digitalWrite(PIN_RED_LED, LOW);
+    logPrinter.flush();
 
     return success;
 }
@@ -224,7 +235,7 @@ bool NgDemo::checkGps() {
     if (gps.newNMEAreceived()) {
         if (gps.parse(gps.lastNMEA())) {
             if (gps.fix) {
-                Serial.println("GOT NMEA");
+                DEBUG_PRINTLN("GOT NMEA");
                 DateTime dateTime = DateTime(gps.year, gps.month, gps.year, gps.hour, gps.minute, gps.seconds);
                 uint32_t time = dateTime.unixtime();
                 SystemClock->set(time);

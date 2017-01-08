@@ -25,12 +25,15 @@ void setup() {
     Serial.println("Begin");
 
     corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST);
+    SystemClock->setup();
 
-    Serial.println("Setting up...");
+    logPrinter.open();
+
+    DEBUG_PRINTLN("Setting up...");
 
     SystemClock->setup();
 
-    Serial.println("Clock ready...");
+    DEBUG_PRINTLN("Clock ready...");
 
     if (!ngd.setup()) {
     }
@@ -41,7 +44,9 @@ void setup() {
     if (!ngd.configure()) {
     }
 
-    Serial.println("Ready");
+    DEBUG_PRINTLN("Ready");
+
+    logPrinter.flush();
 }
 
 void loop() {
