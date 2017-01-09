@@ -176,9 +176,21 @@ bool protocol_encode_fields(pb_ostream_t *stream, const pb_field_t *field, void 
     return demo->encodeFieldsCallback(stream, field);
 }
 
-bool NgDemo::encodeFieldsCallback(pb_ostream_t *stream, const pb_field_t *field) {
-    uint32_t uptime = millis() / (1000 * 60);
-    float values[] = {
+template<typename int_t = uint64_t>
+size_t encode_varint(int_t value, uint8_t *buffer) {
+    size_t written = 0;
+    while (value > 127) {
+        buffer[written] = ((uint8_t)(value & 127)) | 128;
+        value >>= 7;
+        written++;
+    }
+    buffer[written++] = ((uint8_t)value) & 127;
+    return written;
+}
+
+size_t NgDemo::encodeMessage(uint8_t *buffer, size_t bufferSize) {
+    float uptime = millis() / (1000 * 60);
+    float values[7] = {
         latitude,
         longitude,
         altitude,
@@ -188,45 +200,19 @@ bool NgDemo::encodeFieldsCallback(pb_ostream_t *stream, const pb_field_t *field)
         uptime
     };
 
-    for (uint8_t i = 0; i < 7; ++i) {
-        fkcomms_Field messageField = {};
+    uint8_t *ptr = buffer;
+    ptr += encode_varint(1, ptr);
+    ptr += encode_varint(SystemClock->now(), ptr);
+    memcpy(ptr, values, sizeof(values));
+    ptr += sizeof(values);
 
-        messageField.type = fkcomms_Field_Type_FLOAT;
-        messageField.f32 = values[i];
-
-        if (!pb_encode_tag_for_field(stream, field))
-            return false;
-
-        if (!pb_encode_submessage(stream, fkcomms_Field_fields, &messageField))
-            return false;
-    }
-
-    return true;
-}
-
-size_t NgDemo::encodeMessage(uint8_t *buffer, size_t bufferSize) {
-    fkcomms_Message message = {};
-    pb_ostream_t stream = pb_ostream_from_buffer(buffer, bufferSize);
-
-    message.id = 1;
-    message.time = SystemClock->now();
-    message.fields.arg = buffer;
-    message.fields.funcs.encode = protocol_encode_fields;
-
-    bool status = pb_encode(&stream, fkcomms_Message_fields, &message);
-
-    if (!status)
-    {
-        Serial.print("Encoding failed: ");
-        Serial.println(PB_GET_ERROR(&stream));
-        return 0;
-    }
-
-    return stream.bytes_written;
+    return ptr - buffer;
 }
 
 bool NgDemo::transmission() {
     uint8_t buffer[128];
+
+    Serial.println("Encoding message...");
 
     size_t size = encodeMessage(buffer, sizeof(buffer));
     if (size == 0) {
@@ -234,7 +220,7 @@ bool NgDemo::transmission() {
     }
     else {
         DEBUG_PRINT("Message: ");
-        DEBUG_PRINTLN(0);
+        DEBUG_PRINTLN(size);
     }
 
     bool success = false;
