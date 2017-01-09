@@ -53,12 +53,12 @@ bool RockBlock::tick() {
                 DEBUG_PRINTLN((int32_t)signalQuality);
 
                 uint8_t *data = buffer;
-                size_t size = size;
+                size_t dataSize = size;
                 if (data == nullptr) {
                     data = (uint8_t *)message.c_str();
-                    size = message.length();
+                    dataSize = message.length();
                 }
-                error = rockBlock.sendSBDBinary(data, size);
+                error = rockBlock.sendSBDBinary(data, dataSize);
                 if (error == ISBD_SUCCESS) {
                     success = true;
                     break;
