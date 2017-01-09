@@ -7,6 +7,9 @@
 #include <DHT.h>
 #include <RockBlock.h>
 #include "core.h"
+#include <pb_encode.h>
+#include <pb_decode.h>
+#include "fkcomms.pb.h"
 
 enum NgDemoState {
     WaitingGpsFix,
@@ -40,8 +43,13 @@ public:
     void tick();
 
 private:
-    bool transmission(String message);
+    size_t encodeMessage(uint8_t *buffer, size_t bufferSize);
+    bool transmission();
     bool checkGps();
+
+public:
+    bool encodeFieldsCallback(pb_ostream_t *stream, const pb_field_t *field);
+
 };
 
 #endif

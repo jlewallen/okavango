@@ -155,25 +155,7 @@ void NgDemo::tick() {
         break;
     }
     case NgDemoState::Transmitting: {
-        uint32_t uptime = millis() / (1000 * 60);
-        String message(SystemClock->now());
-        message += ",";
-        message += "NGD";
-        message += ",";
-        message += latitude;
-        message += ",";
-        message += longitude;
-        message += ",";
-        message += altitude;
-        message += ",";
-        message += temperature;
-        message += ",";
-        message += humidity;
-        message += ",";
-        message += batteryLevel;
-        message += ",";
-        message += uptime;
-        transmission(message);
+        transmission();
 
         state = NgDemoState::Sleep;
         stateChangedAt = millis();
@@ -193,16 +175,78 @@ void NgDemo::tick() {
     }
 }
 
-bool NgDemo::transmission(String message) {
-    DEBUG_PRINT("Message: ");
-    DEBUG_PRINTLN(message.c_str());
+bool protocol_encode_fields(pb_ostream_t *stream, const pb_field_t *field, void * const *arg) {
+    NgDemo *demo = (NgDemo *)arg;
+    return demo->encodeFieldsCallback(stream, field);
+}
+
+bool NgDemo::encodeFieldsCallback(pb_ostream_t *stream, const pb_field_t *field) {
+    uint32_t uptime = millis() / (1000 * 60);
+    float values[] = {
+        latitude,
+        longitude,
+        altitude,
+        temperature,
+        humidity,
+        batteryLevel,
+        uptime
+    };
+
+    for (uint8_t i = 0; i < 7; ++i) {
+        fkcomms_Field messageField = {};
+
+        messageField.type = fkcomms_Field_Type_FLOAT;
+        messageField.f32 = values[i];
+
+        if (!pb_encode_tag_for_field(stream, field))
+            return false;
+
+        if (!pb_encode_submessage(stream, fkcomms_Field_fields, &messageField))
+            return false;
+    }
+
+    return true;
+}
+
+size_t NgDemo::encodeMessage(uint8_t *buffer, size_t bufferSize) {
+    fkcomms_Message message = {};
+    pb_ostream_t stream = pb_ostream_from_buffer(buffer, bufferSize);
+
+    message.id = 1;
+    message.time = SystemClock->now();
+    message.fields.arg = buffer;
+    message.fields.funcs.encode = protocol_encode_fields;
+
+    bool status = pb_encode(&stream, fkcomms_Message_fields, &message);
+
+    if (!status)
+    {
+        Serial.print("Encoding failed: ");
+        Serial.println(PB_GET_ERROR(&stream));
+        return 0;
+    }
+
+    return stream.bytes_written;
+}
+
+bool NgDemo::transmission() {
+    uint8_t buffer[128];
+
+    size_t size = encodeMessage(buffer, sizeof(buffer));
+    if (size == 0) {
+        return false;
+    }
+    else {
+        DEBUG_PRINT("Message: ");
+        DEBUG_PRINTLN(0);
+    }
 
     digitalWrite(PIN_RED_LED, HIGH);
 
     bool success = false;
     uint32_t started = millis();
-    if (message.length() > 0) {
-        RockBlock rockBlock(message);
+    if (size > 0) {
+        RockBlock rockBlock(buffer, size);
         rockBlockSerialBegin();
         SerialType &rockBlockSerial = RockBlockSerial;
         rockBlock.setSerial(&rockBlockSerial);
