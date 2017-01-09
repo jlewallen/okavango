@@ -1,5 +1,3 @@
-// #define TESTING_MODE
-
 #include <Adafruit_SleepyDog.h>
 #include "Platforms.h"
 #include "core.h"
@@ -157,60 +155,6 @@ void setup() {
     DEBUG_PRINTLN("Loop");
 
     logPrinter.flush();
-
-    #ifdef TESTING_MODE
-    bool rockBlock = false;
-    bool weather = false;
-    while (1) {
-        if (Serial.available()) {
-            while (Serial.available()) {
-                char c = Serial.read();
-                switch (c) {
-                case 't': {
-                    rockBlock = !rockBlock;
-                    Serial.print("RB ");
-                    Serial.println(rockBlock);
-
-                    digitalWrite(PIN_ROCK_BLOCK, rockBlock);
-                    break;
-                }
-                case 's': {
-                    RockBlock rockBlock("TEST");
-                    rockBlockSerialBegin();
-                    SerialType &rockBlockSerial = RockBlockSerial;
-                    rockBlock.setSerial(&rockBlockSerial);
-                    while (!rockBlock.isDone() && !rockBlock.isFailed()) {
-                        rockBlock.tick();
-                        delay(10);
-                    }
-                    break;
-                }
-                case 'y': {
-                    weather = !weather;
-                    Serial.print("WS ");
-                    Serial.println(weather);
-                    if (weather) {
-                        weatherStation.hup();
-                    }
-                    else {
-                        weatherStation.off();
-                    }
-                    break;
-                }
-                case 'w': {
-                    weatherStation.transition(WeatherStationState::Reading);
-                    checkWeatherStation();
-                    break;
-                }
-                }
-            }
-        }
-
-        delay(100);
-
-        Watchdog.reset();
-    }
-    #endif
 }
 
 void checkWeatherStation() {
