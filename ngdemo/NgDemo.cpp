@@ -51,8 +51,6 @@ bool NgDemo::configure() {
 bool NgDemo::preflight() {
     DEBUG_PRINTLN("preflight: Start");
 
-    digitalWrite(PIN_RED_LED, HIGH);
-
     // Check RockBlock
     rockBlockSerialBegin();
     IridiumSBD rockBlock(Serial2, PIN_ROCK_BLOCK, new WatchdogCallbacks());
@@ -114,8 +112,6 @@ bool NgDemo::preflight() {
     DEBUG_PRINTLN("preflight: GPS good");
 
     DEBUG_PRINTLN("preflight: Passed");
-
-    digitalWrite(PIN_RED_LED, LOW);
 
     return true;
 }
@@ -241,8 +237,6 @@ bool NgDemo::transmission() {
         DEBUG_PRINTLN(0);
     }
 
-    digitalWrite(PIN_RED_LED, HIGH);
-
     bool success = false;
     uint32_t started = millis();
     if (size > 0) {
@@ -262,7 +256,6 @@ bool NgDemo::transmission() {
         DEBUG_PRINTLN(success);
     }
 
-    digitalWrite(PIN_RED_LED, LOW);
     logPrinter.flush();
 
     return success;

@@ -9,8 +9,6 @@ Pcf8523SystemClock Clock;
 NgDemo ngd;
 
 void setup() {
-    Watchdog.enable();
-
     Serial.begin(115200);
 
     #ifdef WAIT_FOR_SERIAL
@@ -22,10 +20,11 @@ void setup() {
     }
     #endif
 
+    Watchdog.enable();
+
     Serial.println("Begin");
 
     corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST);
-    SystemClock->setup();
 
     logPrinter.open();
 
