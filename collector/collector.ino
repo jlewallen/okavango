@@ -11,7 +11,6 @@
 #include "TransmissionStatus.h"
 #include "WeatherStation.h"
 #include "Configuration.h"
-#include "UptimeTracker.h"
 #include "InitialTransmissions.h"
 #include "system.h"
 
@@ -101,8 +100,6 @@ void setup() {
     corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST);
     SystemClock->setup();
 
-    UptimeTracker::started();
-
     logPrinter.open();
 
     switch (system_get_reset_cause()) {
@@ -113,22 +110,6 @@ void setup() {
     case SYSTEM_RESET_CAUSE_BOD12: logPrinter.println("ResetCause: BOD12"); break;
     case SYSTEM_RESET_CAUSE_POR: logPrinter.println("ResetCause: PoR"); break;
     }
-
-    #ifndef TESTING_MODE
-    if (UptimeTracker::shouldWeRelax()) {
-        DEBUG_PRINTLN("Relaxing");
-        logPrinter.flush();
-
-        // I would love to be able to reliably tell if we're charging now, but
-        // that may be too much of a hardware change.
-        uint32_t relaxingAt = millis();
-        while (millis() - relaxingAt < FIVE_MINUTES) {
-            Watchdog.reset();
-            delay(1000);
-        }
-        platformRestart();
-    }
-    #endif
 
     logTransition("Begin");
     logPrinter.flush();
@@ -704,7 +685,6 @@ void loop() {
             break;
         }
         }
-        UptimeTracker::remember();
     }
 }
 
