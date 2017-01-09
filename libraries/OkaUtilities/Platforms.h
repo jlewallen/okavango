@@ -101,21 +101,6 @@ extern void platformSerial2Begin(int32_t baud);
 
 extern uint32_t TransmissionIntervals[];
 
-class LogPrinter : public Stream {
-public:
-    bool open();
-
-public:
-    virtual int available() override;
-    virtual int read() override;
-    virtual int peek() override;
-    virtual void flush() override;
-    virtual size_t write(uint8_t) override;
-    virtual size_t write(const uint8_t *buffer, size_t size) override;
-};
-
-extern LogPrinter logPrinter;
-
 #define DEBUG_PRINTLN(value)                                 logPrinter.println(value)
 #define DEBUG_PRINT(value)                                   logPrinter.print(value)
 
@@ -149,5 +134,7 @@ typedef enum ConductivityConfig {
 
 #define rockBlockSerialBegin() platformSerial2Begin(19200)
 #define RockBlockSerial        Serial2
+
+#include "LogPrinter.h"
 
 #endif
