@@ -5,67 +5,6 @@
 
 #define FEATHER_WING_ADALOGGER
 
-// Primarily for Feather FONA with the Adalogger wing, though we
-// could use the Lora version too.
-#ifdef ARDUINO_AVR_FEATHER32U4
-
-#include <SoftwareSerial.h>
-
-#define FEATHER_DISABLE_RTC
-
-#define PIN_FEATHER_32U4_EXTERNAL_LORA_RFM95_CS              23
-#define PIN_FEATHER_32U4_EXTERNAL_LORA_RFM95_RST             21
-#define PIN_FEATHER_32U4_EXTERNAL_LORA_RFM95_INT             2
-#define PIN_FEATHER_32U4_ADALOGGER_WING_SD_CS                20
-
-#define PIN_RFM95_CS                                         PIN_FEATHER_32U4_EXTERNAL_LORA_RFM95_CS
-#define PIN_RFM95_RST                                        PIN_FEATHER_32U4_EXTERNAL_LORA_RFM95_RST
-#define PIN_RFM95_INT                                        PIN_FEATHER_32U4_EXTERNAL_LORA_RFM95_INT
-#define PIN_SD_CS                                            PIN_FEATHER_32U4_ADALOGGER_WING_SD_CS
-
-#define PIN_RED_LED                                          13
-#define PIN_GREEN_LED                                        13
-#define PIN_SLEEP_LED                                        13
-
-#define PIN_ROCK_BLOCK                                       -1
-
-typedef SoftwareSerial SerialType;
-
-#endif
-
-// Simple/basic testing on an Ardunio. Many things won't work.
-#ifdef ARDUINO_AVR_UNO
-
-#include <SoftwareSerial.h>
-
-#define PORT_EXPANDER_SELECT_PIN_0                           6
-#define PORT_EXPANDER_SELECT_PIN_1                           7
-
-#define PORT_EXPANDER_RX_PIN                                 2
-#define PORT_EXPANDER_TX_PIN                                 3
-
-#define CONDUCTIVITY_RX_PIN                                  4
-#define CONDUCTIVITY_TX_PIN                                  5
-
-#define OPEN_CONDUCTIVITY_SERIAL_ON_START                    true
-
-#define PIN_ARDUINO_UNO_EXTERNAL_LORA_RFM95_CS               10
-#define PIN_ARDUINO_UNO_EXTERNAL_LORA_RFM95_RST              9
-#define PIN_ARDUINO_UNO_EXTERNAL_LORA_RFM95_INT              2
-
-#define PIN_RED_LED                                          13
-#define PIN_GREEN_LED                                        13
-#define PIN_SLEEP_LED                                        13
-
-typedef SoftwareSerial SerialType;
-
-extern SerialType portExpanderSerial;
-extern SerialType conductivitySerial;
-
-#endif /* ARDUINO_AVR_UNO */
-
-
-// Our core platform, at least hopefully eventually.
 #ifdef ARDUINO_SAMD_FEATHER_M0
 
 #include "wiring_private.h" // pinPeripheral() function
