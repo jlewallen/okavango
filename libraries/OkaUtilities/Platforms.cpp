@@ -170,6 +170,17 @@ void platformCatastrophe(uint8_t pin, uint8_t mode) {
     }
 }
 
+uint32_t platformWaitForBattery() {
+    if (platformBatteryLevel() > 0.1) {
+        return 0;
+    }
+
+    uint32_t started = millis();
+    while (platformBatteryLevel() > 0.1) {
+        delay(5000);
+    }
+    return millis() - started;
+}
 
 void platformLowPowerSleep(uint32_t numberOfMs) {
     if (numberOfMs > 0) {
@@ -182,7 +193,3 @@ void platformLowPowerSleep(uint32_t numberOfMs) {
         }
     }
 }
-
-    }
-}
-

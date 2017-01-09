@@ -11,6 +11,7 @@
 #include "Configuration.h"
 #include "InitialTransmissions.h"
 #include "system.h"
+#include "Diagnostics.h"
 
 void logTransition(const char *name);
 void checkWeatherStation();
@@ -47,6 +48,11 @@ class CollectorNetworkCallbacks : public NetworkCallbacks {
     }
 };
 
+class Collector {
+public:
+    void waitForBattery();
+};
+
 class SelfRestart {
 public:
     static void restartIfNecessary() {
@@ -76,11 +82,16 @@ public:
 
 CorePlatform corePlatform;
 Pcf8523SystemClock Clock;
+Collector collector;
+
+void Collector::waitForBattery() {
+    diagnostics.recordBatterySleep(platformWaitForBattery());
+}
 
 void setup() {
-    Watchdog.enable();
+    collector.waitForBattery();
 
-    platformLowPowerSleep(LOW_POWER_SLEEP_BEGIN);
+    Watchdog.enable();
 
     Serial.begin(115200);
 
@@ -250,6 +261,8 @@ void checkAirwaves() {
     uint32_t last = millis();
     while (millis() - started < AIRWAVES_CHECK_TIME || !networkProtocol.isQuiet()) {
         networkProtocol.tick();
+
+        collector.waitForBattery();
 
         weatherStation.ignore();
 
@@ -601,6 +614,8 @@ void logTransition(const char *name) {
 
 void loop() {
     CollectorState state = CollectorState::Airwaves;
+
+    collector.waitForBattery();
 
     while (true) {
         switch (state) {

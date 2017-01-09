@@ -80,7 +80,6 @@ extern void platformSerial2Begin(int32_t baud);
 
 #define LOW_POWER_SLEEP_DATA_BOAT_END                        (1000 * 30 * 5)
 #define LOW_POWER_SLEEP_SENSORS_END                          (1000 * 60 * 5 * 4)
-#define LOW_POWER_SLEEP_BEGIN                                0
 #define WAIT_FOR_SERIAL                                      1000 * 10
 
 #define RF95_FREQ                                            915.0
@@ -113,6 +112,7 @@ void platformPostSetup();
 void platformRestart();
 float platformBatteryVoltage();
 float platformBatteryLevel();
+uint32_t platformWaitForBattery();
 void platformCatastrophe(uint8_t pin, uint8_t mode = PLATFORM_CATASTROPHE_PULSE);
 void platformLowPowerSleep(uint32_t numberOfMs);
 void platformBlink(uint8_t pin);
