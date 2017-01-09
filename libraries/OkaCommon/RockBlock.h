@@ -30,8 +30,11 @@ private:
     uint8_t signalStrength;
     bool success;
     String message;
+    uint8_t *buffer;
+    size_t size;
 
 public:
+    RockBlock(uint8_t *buffer, size_t size);
     RockBlock(String message);
 
     virtual bool tick();
