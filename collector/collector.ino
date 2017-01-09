@@ -27,7 +27,6 @@ typedef struct gps_location_t {
 Configuration configuration(FK_SETTINGS_CONFIGURATION_FILENAME);
 WeatherStation weatherStation;
 gps_location_t location;
-uint32_t numberOfFailures = 0;
 bool transmissionForced = false;
 bool initialWeatherTransmissionSent = false;
 bool initialAtlasTransmissionSent = false;
@@ -390,7 +389,7 @@ bool singleTransmission(String message) {
     }
 
     if (!success) {
-        numberOfFailures++;
+        diagnostics.recordTransmissionFailure();
     }
 
     digitalWrite(PIN_RED_LED, LOW);
@@ -505,7 +504,7 @@ void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather, 
             message += ",";
             message += queueSize;
             message += ",";
-            message += numberOfFailures;
+            message += diagnostics.numberOfTransmissionFailures;
             message += ",";
             message += uptime;
             singleTransmission(message);
