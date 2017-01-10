@@ -94,12 +94,6 @@ extern void platformSerial2Begin(int32_t baud);
 #define FK_SETTINGS_BACKUP_DATA_FILENAME                     "backup.bin"
 #define FK_SETTINGS_TRANSMISSION_INTERVAL                    1 * 60 * 1000
 
-#define TRANSMISSION_KIND_LOCATION  0
-#define TRANSMISSION_KIND_SENSORS   1
-#define TRANSMISSION_KIND_KINDS     2
-
-extern uint32_t TransmissionIntervals[];
-
 #define DEBUG_PRINTLN(value)                                 logPrinter.println(value)
 #define DEBUG_PRINT(value)                                   logPrinter.print(value)
 

@@ -6,15 +6,17 @@
 #include "Core.h"
 #include "Configuration.h"
 #include "WeatherStation.h"
+#include "TransmissionStatus.h"
 
 class Transmissions {
 private:
     WeatherStation *weatherStation;
     RtcAbstractSystemClock *systemClock;
     Configuration *configuration;
+    TransmissionStatus *status;
 
 public:
-    Transmissions(WeatherStation *weatherStation, RtcAbstractSystemClock *systemClock, Configuration *configuration);
+    Transmissions(WeatherStation *weatherStation, RtcAbstractSystemClock *systemClock, Configuration *configuration, TransmissionStatus *status);
 
 private:
     String atlasPacketToMessage(atlas_sensors_packet_t *packet);

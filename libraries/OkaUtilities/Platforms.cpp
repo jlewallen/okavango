@@ -7,11 +7,6 @@
 #define BATTERY_VOLTAGE_OPTIMAL                               4.2f
 #define BATTERY_VOLTAGE_LOW                                   3.0f
 
-uint32_t TransmissionIntervals[] = {
-    1000 * 60 * 60 * 24, // * 24 * 7,
-    1000 * 60 * 60 * 1
-};
-
 #ifdef ARDUINO_AVR_FEATHER32U4
 
 void platformRestart() {

@@ -33,6 +33,7 @@ void setup() {
     Watchdog.reset();
 
     corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST);
+
     SystemClock->setup();
 
     logPrinter.open();
@@ -46,7 +47,10 @@ void setup() {
     case SYSTEM_RESET_CAUSE_POR: logPrinter.println("ResetCause: PoR"); break;
     }
 
+    collector.setup();
+
     collector.logTransition("Begin");
+
     logPrinter.flush();
 
     if (!configuration.read()) {

@@ -3,6 +3,7 @@
 
 #include "WeatherStation.h"
 #include "Configuration.h"
+#include "TransmissionStatus.h"
 
 enum class CollectorState {
     Airwaves,
@@ -17,6 +18,7 @@ private:
     Configuration *configuration;
     bool radioSetup = false;
     CollectorState state = CollectorState::Airwaves;
+    TransmissionStatus status;
 
 public:
     Collector(WeatherStation *weatherStation, Configuration *configuration) :
@@ -24,6 +26,7 @@ public:
     }
 
 public:
+    void setup();
     void waitForBattery();
     void tick();
     void loop();

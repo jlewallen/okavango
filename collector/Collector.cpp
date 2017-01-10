@@ -12,6 +12,10 @@
 #define AIRWAVES_CHECK_TIME          (1000 * 60 * 2)
 #define WEATHER_STATION_CHECK_TIME   (1000 * 10)
 
+void Collector::setup() {
+    status.startup();
+}
+
 void Collector::waitForBattery() {
     diagnostics.recordBatterySleep(platformWaitForBattery());
 }
@@ -203,7 +207,7 @@ void Collector::tick() {
         break;
     }
     case CollectorState::Transmission: {
-        Transmissions transmissions(weatherStation, SystemClock, configuration);
+        Transmissions transmissions(weatherStation, SystemClock, configuration, &status);
         transmissions.handleTransmissionIfNecessary();
         logTransition("AW");
         state = CollectorState::Airwaves;

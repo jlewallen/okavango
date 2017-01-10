@@ -8,8 +8,8 @@
 #include "Diagnostics.h"
 #include "config.h"
 
-Transmissions::Transmissions(WeatherStation *weatherStation, RtcAbstractSystemClock *systemClock, Configuration *configuration) :
-    weatherStation(weatherStation), systemClock(systemClock), configuration(configuration) {
+Transmissions::Transmissions(WeatherStation *weatherStation, RtcAbstractSystemClock *systemClock, Configuration *configuration, TransmissionStatus *status) :
+    weatherStation(weatherStation), systemClock(systemClock), configuration(configuration), status(status) {
 }
 
 String Transmissions::atlasPacketToMessage(atlas_sensors_packet_t *packet) {
@@ -190,9 +190,9 @@ void Transmissions::handleSensorTransmission(bool triggered, bool sendAtlas, boo
                 initialAtlasTransmissionSent = true;
                 InitialTransmissions::markCompleted(TRANSMISSION_TYPE_SONAR);
             }
-            else {
-                noSonar = true;
-            }
+        }
+        else {
+            noSonar = true;
         }
     }
 
@@ -258,7 +258,10 @@ void Transmissions::handleTransmissionIfNecessary() {
 
     int8_t kind = status.shouldWe();
     if (kind == TRANSMISSION_KIND_SENSORS) {
-        handleSensorTransmission(true, true, true, true);
+        handleSensorTransmission(true, true, false, true);
+    }
+    else if (kind == TRANSMISSION_KIND_WEATHER) {
+        handleSensorTransmission(true, false, true, false);
     }
     else if (kind == TRANSMISSION_KIND_LOCATION) {
         handleLocationTransmission();
