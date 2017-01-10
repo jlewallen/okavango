@@ -20,6 +20,7 @@ screenlog.*
 pi/lora-receiver/lora-receiver
 
 libraries/OkaCommon/config.h
+libraries/OkaUtilities/config.h
 
 .gradle
 data
