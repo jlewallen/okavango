@@ -47,9 +47,6 @@ private:
     bool transmission();
     bool checkGps();
 
-public:
-    bool encodeFieldsCallback(pb_ostream_t *stream, const pb_field_t *field);
-
 };
 
 #endif

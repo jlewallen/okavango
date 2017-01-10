@@ -171,11 +171,6 @@ void NgDemo::tick() {
     }
 }
 
-bool protocol_encode_fields(pb_ostream_t *stream, const pb_field_t *field, void * const *arg) {
-    NgDemo *demo = (NgDemo *)arg;
-    return demo->encodeFieldsCallback(stream, field);
-}
-
 template<typename int_t = uint64_t>
 size_t encode_varint(int_t value, uint8_t *buffer) {
     size_t written = 0;
