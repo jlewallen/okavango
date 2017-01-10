@@ -150,13 +150,6 @@ void Collector::idlePeriod() {
     logPrinter.flush();
 }
 
-enum class CollectorState {
-    Airwaves,
-    WeatherStation,
-    Idle,
-    Transmission
-};
-
 void Collector::logTransition(const char *name) {
     uint32_t easternTime = 4 * 60 * 60;
     DateTime dt(SystemClock->now() - easternTime);
@@ -189,40 +182,38 @@ void Collector::logTransition(const char *name) {
 
 void Collector::tick() {
     waitForBattery();
+
+    switch (state) {
+    case CollectorState::Airwaves: {
+        checkAirwaves();
+        logTransition("WS");
+        state = CollectorState::WeatherStation;
+        break;
+    }
+    case CollectorState::WeatherStation: {
+        checkWeatherStation();
+        logTransition("ID");
+        state = CollectorState::Idle;
+        break;
+    }
+    case CollectorState::Idle: {
+        idlePeriod();
+        logTransition("TX");
+        state = CollectorState::Transmission;
+        break;
+    }
+    case CollectorState::Transmission: {
+        Transmissions transmissions(weatherStation, SystemClock, configuration);
+        transmissions.handleTransmissionIfNecessary();
+        logTransition("AW");
+        state = CollectorState::Airwaves;
+        break;
+    }
+    }
 }
 
 void Collector::loop() {
-    CollectorState state = CollectorState::Airwaves;
-
     while (true) {
         tick();
-
-        switch (state) {
-        case CollectorState::Airwaves: {
-            checkAirwaves();
-            logTransition("WS");
-            state = CollectorState::WeatherStation;
-            break;
-        }
-        case CollectorState::WeatherStation: {
-            checkWeatherStation();
-            logTransition("ID");
-            state = CollectorState::Idle;
-            break;
-        }
-        case CollectorState::Idle: {
-            idlePeriod();
-            logTransition("TX");
-            state = CollectorState::Transmission;
-            break;
-        }
-        case CollectorState::Transmission: {
-            Transmissions transmissions(weatherStation, SystemClock, configuration);
-            transmissions.handleTransmissionIfNecessary();
-            logTransition("AW");
-            state = CollectorState::Airwaves;
-            break;
-        }
-        }
     }
 }

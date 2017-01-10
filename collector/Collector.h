@@ -4,11 +4,19 @@
 #include "WeatherStation.h"
 #include "Configuration.h"
 
+enum class CollectorState {
+    Airwaves,
+    WeatherStation,
+    Idle,
+    Transmission
+};
+
 class Collector {
 private:
     WeatherStation *weatherStation;
     Configuration *configuration;
     bool radioSetup = false;
+    CollectorState state = CollectorState::Airwaves;
 
 public:
     Collector(WeatherStation *weatherStation, Configuration *configuration) :
