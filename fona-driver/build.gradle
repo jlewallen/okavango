@@ -1,16 +1,27 @@
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+    dependencies {
+        classpath group: 'com.github.jlewallen.arduino', name: 'arduino-gradle', version: '1.0'
+    }
+}
+
 apply plugin: 'com.github.jlewallen.arduino'
 
-arduino {
-    libraries = [
-        "SoftwareSerial",
-        "Adafruit_FONA-master",
-        "SimpleBuffer"
-        ]
+import com.github.jlewallen.arduino.*
 
-    defaultBoard = "adafruit:avr:feather32u4"
-    boards = [
-        "adafruit:avr:feather32u4"
-        ]
-    projectName = "fona-driver.ino"
-    projectLibrariesDir = "$projectDir/../libraries"
+model {
+    components {
+        collector(ArduinoComponentSpec) {
+            boards = [ "adafruit:avr:feather32u4" ]
+            libraries = [
+                "SoftwareSerial",
+                "Adafruit_FONA-master",
+                "SimpleBuffer"
+            ]
+        }
+    }
 }
+
+// vim: set ft=groovy:
