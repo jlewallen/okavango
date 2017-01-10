@@ -1,5 +1,6 @@
 #include "NgDemo.h"
 #include <IridiumSBD.h>
+#include "Diagnostics.h"
 
 NgDemo::NgDemo()
     : gps(&Serial1) {
@@ -221,20 +222,25 @@ bool NgDemo::transmission() {
     bool success = false;
     uint32_t started = millis();
     if (size > 0) {
-        RockBlock rockBlock(buffer, size);
-        rockBlockSerialBegin();
-        SerialType &rockBlockSerial = RockBlockSerial;
-        rockBlock.setSerial(&rockBlockSerial);
-        while (!rockBlock.isDone() && !rockBlock.isFailed()) {
-            if (millis() - started < THIRTY_MINUTES) {
-                Watchdog.reset();
+        for (uint8_t i = 0; i < 2; ++i) {
+            RockBlock rockBlock(buffer, size);
+            rockBlockSerialBegin();
+            SerialType &rockBlockSerial = RockBlockSerial;
+            rockBlock.setSerial(&rockBlockSerial);
+            while (!rockBlock.isDone() && !rockBlock.isFailed()) {
+                if (millis() - started < THIRTY_MINUTES) {
+                    Watchdog.reset();
+                }
+                rockBlock.tick();
+                delay(10);
             }
-            rockBlock.tick();
-            delay(10);
+            success = rockBlock.isDone();
+            DEBUG_PRINT("RockBlock: ");
+            DEBUG_PRINTLN(success);
+            if (success) {
+                break;
+            }
         }
-        success = rockBlock.isDone();
-        DEBUG_PRINT("RockBlock: ");
-        DEBUG_PRINTLN(success);
     }
 
     logPrinter.flush();
