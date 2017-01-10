@@ -1,7 +1,9 @@
-#include "NgDemo.h"
 #include <IridiumSBD.h>
+#include <SD.h>
+#include "NgDemo.h"
 #include "Diagnostics.h"
 #include "WatchdogCallbacks.h"
+#include "Logger.h"
 
 NgDemo::NgDemo()
     : gps(&Serial1) {
@@ -139,6 +141,30 @@ void NgDemo::tick() {
         DEBUG_PRINTLN(humidity);
         DEBUG_PRINTLN(temperature);
         DEBUG_PRINTLN(batteryLevel);
+
+        File file = Logger::open("DATA.CSV");
+        if (file) {
+            float uptime = millis() / (1000 * 60);
+            float values[7] = {
+                latitude,
+                longitude,
+                altitude,
+                temperature,
+                humidity,
+                batteryLevel,
+                uptime
+            };
+            file.print(SystemClock->now());
+            for (uint8_t i = 0; i < 7; ++i) {
+                file.print(",");
+                file.print(values[i]);
+            }
+            file.println();
+            file.close();
+        }
+        else {
+            Serial.println("Unable to open log");
+        }
 
         state = NgDemoState::Transmitting;
         stateChangedAt = millis();
