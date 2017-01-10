@@ -12,9 +12,10 @@
 #include "InitialTransmissions.h"
 #include "system.h"
 #include "Diagnostics.h"
+#include "Preflight.h"
 
 void logTransition(const char *name);
-void checkWeatherStation();
+bool checkWeatherStation();
 
 typedef struct gps_location_t {
     float latitude;
@@ -48,6 +49,14 @@ class CollectorNetworkCallbacks : public NetworkCallbacks {
 };
 
 class Collector {
+private:
+    WeatherStation *weatherStation;
+
+public:
+    Collector(WeatherStation *weatherStation) :
+        weatherStation(weatherStation) {
+    }
+
 public:
     void waitForBattery();
 };
@@ -81,7 +90,7 @@ public:
 
 CorePlatform corePlatform;
 Pcf8523SystemClock Clock;
-Collector collector;
+Collector collector(&weatherStation);
 
 void Collector::waitForBattery() {
     diagnostics.recordBatterySleep(platformWaitForBattery());
@@ -133,6 +142,13 @@ void setup() {
         digitalWrite(PIN_ROCK_BLOCK, LOW);
     }
 
+    memzero((uint8_t *)&location, sizeof(gps_location_t));
+
+    weatherStation.setup();
+
+    Preflight preflight(&configuration, &weatherStation);
+    preflight.check();
+
     // Permanantly disabling these, they frighten me in the field.
     bool disableInitialTransmissions = SelfRestart::didWeJustRestart() || !configuration.sendInitialTransmissions();
     if (!disableInitialTransmissions) {
@@ -158,16 +174,12 @@ void setup() {
         DEBUG_PRINTLN("Initial transmission disabled.");
     }
 
-    weatherStation.setup();
-
-    memzero((uint8_t *)&location, sizeof(gps_location_t));
-
     DEBUG_PRINTLN("Loop");
 
     logPrinter.flush();
 }
 
-void checkWeatherStation() {
+bool checkWeatherStation() {
     Queue queue;
 
     Watchdog.reset();
@@ -175,6 +187,7 @@ void checkWeatherStation() {
     DEBUG_PRINTLN("WS: Check");
     logPrinter.flush();
 
+    bool success = false;
     uint32_t started = millis();
     while (millis() - started < WEATHER_STATION_CHECK_TIME) {
         weatherStation.tick();
@@ -222,6 +235,8 @@ void checkWeatherStation() {
             weatherStation.clear();
             DEBUG_PRINTLN("^");
             logPrinter.flush();
+
+            success = true;
         }
 
         delay(10);
@@ -230,6 +245,8 @@ void checkWeatherStation() {
     DEBUG_PRINTLN("");
     DEBUG_PRINTLN("WS: Done");
     logPrinter.flush();
+
+    return success;
 }
 
 void checkAirwaves() {

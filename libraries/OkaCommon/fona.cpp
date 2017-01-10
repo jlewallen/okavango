@@ -1,5 +1,10 @@
 #include "fona.h"
 
+FonaChild::FonaChild() :
+    phoneNumber(""), message(""),
+    NonBlockingSerialProtocol(60 * 1000, true, false), tries(0), smsTries(0) {
+}
+
 FonaChild::FonaChild(String phoneNumber, String message) :
     phoneNumber(phoneNumber), message(message),
     NonBlockingSerialProtocol(60 * 1000, true, false), tries(0), smsTries(0) {
@@ -96,7 +101,12 @@ bool FonaChild::handle(String reply) {
                 break;
             }
             case FonaPower: {
-                transition(FonaNetworkStatus);
+                if (phoneNumber.length() == 0) {
+                    transition(FonaPowerOffBeforeDone);
+                }
+                else {
+                    transition(FonaNetworkStatus);
+                }
                 tries = 0;
                 break;
             }

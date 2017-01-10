@@ -35,6 +35,7 @@ enum class WeatherStationState {
     Reading,
     Ignoring,
     HaveReading,
+    CommunicationsOk,
     Off
 };
 
@@ -46,6 +47,7 @@ private:
     float values[FK_WEATHER_STATION_MAX_VALUES];
     char buffer[FK_WEATHER_STATION_MAX_BUFFER];
     uint8_t length;
+    bool checkingCommunications;
     bool on;
 
 public:
@@ -53,6 +55,10 @@ public:
 
 public:
     void setup();
+    void checkCommunications() {
+        hup();
+        checkingCommunications = true;
+    }
     void clear();
     bool tick();
     void logReadingLocally();
@@ -64,6 +70,9 @@ public:
     }
     bool hasReading() {
         return state == WeatherStationState::HaveReading;
+    }
+    bool areCommunicationsOk() {
+        return state == WeatherStationState::CommunicationsOk;
     }
     void ignore();
     void hup();

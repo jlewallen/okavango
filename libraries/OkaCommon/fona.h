@@ -29,6 +29,7 @@ private:
     String message;
 
 public:
+    FonaChild();
     FonaChild(String phoneNumber, String message);
 
     virtual bool tick();

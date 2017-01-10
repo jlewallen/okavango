@@ -1,6 +1,7 @@
 #include "NgDemo.h"
 #include <IridiumSBD.h>
 #include "Diagnostics.h"
+#include "WatchdogCallbacks.h"
 
 NgDemo::NgDemo()
     : gps(&Serial1) {
@@ -15,13 +16,6 @@ bool NgDemo::setup() {
 
     return true;
 }
-
-class WatchdogCallbacks : public IridiumCallbacks  {
-public:
-    virtual void tick() override {
-        Watchdog.reset();
-    }
-};
 
 void NgDemo::failPreflight(uint8_t kind) {
     Watchdog.reset();

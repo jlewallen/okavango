@@ -52,6 +52,7 @@ void WeatherStation::hup() {
     digitalWrite(PIN_WEATHER_STATION_RESET, HIGH);
     delay(500);
     on = true;
+    checkingCommunications = false;
 }
 
 bool WeatherStation::tick() {
@@ -116,12 +117,17 @@ bool WeatherStation::tick() {
                                 // Sanity check the reading.
                                 #define JANUARY_1ST_2020   (1577836800)
                                 #define AUGUST_29TH_2016   (1472428800)
+
                                 if (values[FK_WEATHER_STATION_FIELD_UNIXTIME] > JANUARY_1ST_2020 ||
                                     values[FK_WEATHER_STATION_FIELD_UNIXTIME] < AUGUST_29TH_2016) {
-                                    // DEBUG_PRINTLN("Reject: Time");
+                                    if (checkingCommunications) {
+                                        transition(WeatherStationState::CommunicationsOk);
+                                    }
                                 }
                                 else if (values[FK_WEATHER_STATION_FIELD_SATELLITES] <= 0) {
-                                    // DEBUG_PRINTLN("Reject: Satellites");
+                                    if (checkingCommunications) {
+                                        transition(WeatherStationState::CommunicationsOk);
+                                    }
                                 }
                                 else {
                                     transition(WeatherStationState::HaveReading);
