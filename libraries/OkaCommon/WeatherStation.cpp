@@ -11,6 +11,7 @@
 
 WeatherStation::WeatherStation() {
     clear();
+    memzero((uint8_t *)&fix, sizeof(gps_fix_t));
 }
 
 void WeatherStation::setup() {
@@ -130,6 +131,11 @@ bool WeatherStation::tick() {
                                     }
                                 }
                                 else {
+                                    fix.time = values[FK_WEATHER_STATION_FIELD_UNIXTIME];
+                                    fix.latitude = values[FK_WEATHER_STATION_FIELD_LATITUDE];
+                                    fix.longitude = values[FK_WEATHER_STATION_FIELD_LONGITUDE];
+                                    fix.altitude = values[FK_WEATHER_STATION_FIELD_ALTITUDE];
+                                    fix.satellites = values[FK_WEATHER_STATION_FIELD_SATELLITES];
                                     transition(WeatherStationState::HaveReading);
                                 }
                             }

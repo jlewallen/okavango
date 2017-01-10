@@ -14,4 +14,9 @@ public:
     static bool alreadyDone(uint8_t which);
 };
 
+extern bool initialWeatherTransmissionSent;
+extern bool initialAtlasTransmissionSent;
+extern bool initialSonarTransmissionSent;
+extern bool initialLocationTransmissionSent;
+
 #endif

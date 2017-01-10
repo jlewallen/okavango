@@ -39,6 +39,14 @@ enum class WeatherStationState {
     Off
 };
 
+typedef struct gps_fix_t {
+    float latitude;
+    float longitude;
+    float altitude;
+    uint8_t satellites;
+    uint32_t time;
+} gps_fix_t;
+
 class WeatherStation {
 private:
     WeatherStationState state;
@@ -49,11 +57,16 @@ private:
     uint8_t length;
     bool checkingCommunications;
     bool on;
+    gps_fix_t fix;
 
 public:
     WeatherStation();
 
 public:
+    gps_fix_t *getFix() {
+        return &fix;
+    }
+
     void setup();
     void checkCommunications() {
         hup();

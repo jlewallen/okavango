@@ -76,3 +76,8 @@ bool InitialTransmissions::alreadyDone(uint8_t which) {
     }
     return false;
 }
+
+bool initialWeatherTransmissionSent = false;
+bool initialAtlasTransmissionSent = false;
+bool initialSonarTransmissionSent = false;
+bool initialLocationTransmissionSent = false;

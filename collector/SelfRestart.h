@@ -4,6 +4,8 @@
 #define MANDATORY_RESTART_INTERVAL   (1000 * 60 * 60 * 3)
 #define MANDATORY_RESTART_FILE       "RESUME.INF"
 
+#include <SD.h>
+
 class SelfRestart {
 public:
     static void restartIfNecessary() {
