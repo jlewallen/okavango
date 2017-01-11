@@ -130,12 +130,12 @@ void platformCatastrophe(uint8_t pin, uint8_t mode) {
 }
 
 uint32_t platformWaitForBattery() {
-    if (platformBatteryLevel() > 0.1) {
+    if (platformBatteryLevel() > 0.15) {
         return 0;
     }
 
     uint32_t started = millis();
-    while (platformBatteryLevel() > 0.1) {
+    while (platformBatteryLevel() < 0.3) {
         delay(5000);
     }
     return millis() - started;
