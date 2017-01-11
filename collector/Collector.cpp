@@ -133,8 +133,6 @@ void Collector::checkAirwaves() {
     DEBUG_PRINTLN("AW: Done");
     logPrinter.flush();
 
-    SelfRestart::restartIfNecessary();
-
     DEBUG_PRINTLN("AW: Exit");
     logPrinter.flush();
 }
@@ -202,6 +200,12 @@ void Collector::tick() {
     }
     case CollectorState::Idle: {
         idlePeriod();
+
+        TransmissionStatus status;
+        if (!status.anyTransmissionsThisHour()) {
+            SelfRestart::restartIfNecessary();
+        }
+
         logTransition("TX");
         state = CollectorState::Transmission;
         break;
