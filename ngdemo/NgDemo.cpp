@@ -137,25 +137,23 @@ void NgDemo::tick() {
         humidity = dht.readHumidity();
         temperature = dht.readTemperature();
         batteryLevel = platformBatteryLevel();
-
-        DEBUG_PRINTLN(humidity);
-        DEBUG_PRINTLN(temperature);
-        DEBUG_PRINTLN(batteryLevel);
+        batteryVoltage = platformBatteryVoltage();
 
         File file = Logger::open("DATA.CSV");
         if (file) {
             float uptime = millis() / (1000 * 60);
-            float values[7] = {
+            float values[8] = {
                 latitude,
                 longitude,
                 altitude,
                 temperature,
                 humidity,
                 batteryLevel,
-                uptime
+                batteryVoltage,
+                uptime,
             };
             file.print(SystemClock->now());
-            for (uint8_t i = 0; i < 7; ++i) {
+            for (uint8_t i = 0; i < 8; ++i) {
                 file.print(",");
                 file.print(values[i]);
             }
@@ -206,13 +204,14 @@ size_t encode_varint(int_t value, uint8_t *buffer) {
 
 size_t NgDemo::encodeMessage(uint8_t *buffer, size_t bufferSize) {
     float uptime = millis() / (1000 * 60);
-    float values[7] = {
+    float values[8] = {
         latitude,
         longitude,
         altitude,
         temperature,
         humidity,
         batteryLevel,
+        batteryVoltage,
         uptime
     };
 
@@ -228,7 +227,7 @@ size_t NgDemo::encodeMessage(uint8_t *buffer, size_t bufferSize) {
 bool NgDemo::transmission() {
     uint8_t buffer[128];
 
-    Serial.println("Encoding message...");
+    DEBUG_PRINTLN("Encoding message...");
 
     size_t size = encodeMessage(buffer, sizeof(buffer));
     if (size == 0) {
@@ -238,6 +237,8 @@ bool NgDemo::transmission() {
         DEBUG_PRINT("Message: ");
         DEBUG_PRINTLN(size);
     }
+
+    logPrinter.flush();
 
     bool success = false;
     uint32_t started = millis();

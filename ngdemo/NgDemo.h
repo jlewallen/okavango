@@ -33,6 +33,7 @@ private:
     float humidity;
     float temperature;
     float batteryLevel;
+    float batteryVoltage;
 
 public:
     NgDemo();
