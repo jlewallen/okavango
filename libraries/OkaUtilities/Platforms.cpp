@@ -5,8 +5,10 @@
 #define BATTERY_VOLTAGE_DIVIDER_RATIO                         2.0f
 #define BATTERY_VOLTAGE_REFERENCE                             3.3f
 #define BATTERY_VOLTAGE_OPTIMAL                               4.2f
-#define BATTERY_VOLTAGE_LOW                                   3.0f
-
+#define BATTERY_VOLTAGE_LOW                                   3.4f
+// I've adjusted these based on this. 3.4V is effectively "dead" and that's what
+// I've seen in practice, but sometimes things "work" around the 3.5v range.
+// https://learn.adafruit.com/li-ion-and-lipoly-batteries/voltages
 
 #ifdef ARDUINO_SAMD_FEATHER_M0
 
