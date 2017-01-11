@@ -6,13 +6,11 @@
 
 volatile bool wdt_early_warning_triggered = false;
 
-void wdt_clear_early_warning(void)
-{
+void wdt_clear_early_warning(void) {
 	WDT->INTFLAG.reg = WDT_INTFLAG_EW;
 }
 
-bool wdt_is_early_warning(void)
-{
+bool wdt_is_early_warning(void) {
 	return WDT->INTFLAG.reg & WDT_INTFLAG_EW;
 }
 
@@ -111,7 +109,7 @@ void wdt_disable() {
     PM->APBAMASK.reg &= ~PM_APBAMASK_WDT;
 }
 
-void wdt_reset() {
+void wdt_checkin() {
     // Reset counter and wait for synchronisation
     WDT->CLEAR.reg = WDT_CLEAR_CLEAR_KEY;
     while (WDT->STATUS.reg & WDT_STATUS_SYNCBUSY);
@@ -123,8 +121,7 @@ bool wdt_read_early_warning() {
     return triggered;
 }
 
-void WDT_Handler(void)
-{
+void WDT_Handler(void) {
     wdt_early_warning_triggered = true;
     WDT->INTFLAG.reg = WDT_INTFLAG_EW;
 }

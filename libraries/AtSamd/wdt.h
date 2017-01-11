@@ -26,7 +26,7 @@ uint8_t wdt_enable(uint8_t period);
 
 void wdt_disable();
 
-void wdt_reset();
+void wdt_checkin();
 
 bool wdt_read_early_warning();
 
