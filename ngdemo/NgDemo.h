@@ -10,6 +10,7 @@
 #include <pb_encode.h>
 #include <pb_decode.h>
 #include "fkcomms.pb.h"
+#include "AuthToken.h"
 
 enum NgDemoState {
     WaitingGpsFix,
@@ -25,6 +26,7 @@ const uint32_t STATE_MAX_SLEEP_TIME = 5 * 60 * 1000;
 class NgDemo {
 private:
     Adafruit_GPS gps;
+    AuthToken token;
     NgDemoState state;
     uint32_t stateChangedAt;
     uint32_t batteryLoggedAt;

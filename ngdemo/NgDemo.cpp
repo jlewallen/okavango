@@ -13,6 +13,8 @@ bool NgDemo::setup() {
     platformSerial2Begin(9600);
     Serial1.begin(9600);
 
+    token.read("AUTH.BIN");
+
     state = NgDemoState::WaitingGpsFix;
     stateChangedAt = millis();
 
@@ -228,6 +230,7 @@ size_t NgDemo::encodeMessage(uint8_t *buffer, size_t bufferSize) {
     };
 
     uint8_t *ptr = buffer;
+    ptr += token.include(ptr, bufferSize - 1 - 4 - sizeof(values));
     ptr += encode_varint(1, ptr);
     ptr += encode_varint(SystemClock->now(), ptr);
     memcpy(ptr, values, sizeof(values));
