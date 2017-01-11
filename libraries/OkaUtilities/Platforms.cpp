@@ -7,44 +7,6 @@
 #define BATTERY_VOLTAGE_OPTIMAL                               4.2f
 #define BATTERY_VOLTAGE_LOW                                   3.0f
 
-#ifdef ARDUINO_AVR_FEATHER32U4
-
-void platformRestart() {
-    (*(void(*)())0)();
-}
-
-float platformBatteryVoltage() {
-    return 0.0f;
-}
-
-float platformBatteryLevel() {
-    return 0.0f;
-}
-
-#endif
-
-#ifdef ARDUINO_AVR_UNO
-
-SerialType portExpanderSerial(PORT_EXPANDER_RX_PIN, PORT_EXPANDER_TX_PIN);
-SerialType conductivitySerial(CONDUCTIVITY_RX_PIN, CONDUCTIVITY_TX_PIN);
-
-void platformRestart() {
-    (*(void(*)())0)();
-}
-
-float platformBatteryVoltage() {
-    return 0.0f;
-}
-
-float platformBatteryLevel() {
-    return 0.0f;
-}
-
-uint32_t platformFreeMemory() {
-    return 0;
-}
-
-#endif
 
 #ifdef ARDUINO_SAMD_FEATHER_M0
 
