@@ -174,6 +174,7 @@ void NgDemo::tick() {
 
         state = NgDemoState::Sleep;
         stateChangedAt = millis();
+        batteryLoggedAt = millis();
         logPrinter.flush();
         break;
     }
@@ -184,6 +185,17 @@ void NgDemo::tick() {
             state = NgDemoState::WaitingGpsFix;
             stateChangedAt = millis();
             logPrinter.flush();
+        }
+
+        if (millis() - batteryLoggedAt > 10000) {
+            batteryLevel = platformBatteryLevel();
+            batteryVoltage = platformBatteryVoltage();
+            DEBUG_PRINT(batteryVoltage);
+            DEBUG_PRINT(" ");
+            DEBUG_PRINT(batteryLevel);
+            DEBUG_PRINTLN();
+            logPrinter.flush();
+            batteryLoggedAt = millis();
         }
         break;
     }

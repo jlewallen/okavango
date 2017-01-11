@@ -27,6 +27,7 @@ private:
     Adafruit_GPS gps;
     NgDemoState state;
     uint32_t stateChangedAt;
+    uint32_t batteryLoggedAt;
     float latitude;
     float longitude;
     float altitude;
