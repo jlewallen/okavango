@@ -3,7 +3,6 @@
 #include "core.h"
 #include "system.h"
 #include "WeatherStation.h"
-#include "InitialTransmissions.h"
 #include "Preflight.h"
 #include "SelfRestart.h"
 #include "Collector.h"
@@ -68,31 +67,6 @@ void setup() {
 
     Preflight preflight(&configuration, &weatherStation);
     preflight.check();
-
-    // Permanantly disabling these, they frighten me in the field.
-    bool disableInitialTransmissions = SelfRestart::didWeJustRestart() || !configuration.sendInitialTransmissions();
-    if (!disableInitialTransmissions) {
-        initialWeatherTransmissionSent = InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_WEATHER);
-        initialAtlasTransmissionSent = InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_ATLAS) || InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_SONAR);
-        initialSonarTransmissionSent = InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_ATLAS) || InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_SONAR);
-        initialLocationTransmissionSent = InitialTransmissions::alreadyDone(TRANSMISSION_TYPE_LOCATION);
-        DEBUG_PRINT("Initial transmission: weather=");
-        DEBUG_PRINT(initialWeatherTransmissionSent);
-        DEBUG_PRINT(" atlas=");
-        DEBUG_PRINT(initialAtlasTransmissionSent);
-        DEBUG_PRINT(" sonar=");
-        DEBUG_PRINT(initialSonarTransmissionSent);
-        DEBUG_PRINT(" location=");
-        DEBUG_PRINT(initialLocationTransmissionSent);
-        DEBUG_PRINTLN();
-    }
-    else {
-        initialWeatherTransmissionSent = true;
-        initialAtlasTransmissionSent = true;
-        initialSonarTransmissionSent = true;
-        initialLocationTransmissionSent = true;
-        DEBUG_PRINTLN("Initial transmission disabled.");
-    }
 
     DEBUG_PRINTLN("Loop");
 

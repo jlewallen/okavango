@@ -1,7 +1,6 @@
 #include <Adafruit_SleepyDog.h>
 #include "Transmissions.h"
 #include "TransmissionStatus.h"
-#include "InitialTransmissions.h"
 #include "fona.h"
 #include "RockBlock.h"
 #include "Queue.h"
@@ -183,9 +182,6 @@ void Transmissions::handleSensorTransmission(bool triggered, bool sendAtlas, boo
     if (sendAtlas) {
         if (atlas_station_sensors.fk.kind == FK_PACKET_KIND_ATLAS_SENSORS) {
             if (singleTransmission(atlasPacketToMessage(&atlas_station_sensors))) {
-                initialAtlasTransmissionSent = true; // We'll never have both.
-                initialSonarTransmissionSent = true;
-                InitialTransmissions::markCompleted(TRANSMISSION_TYPE_ATLAS);
             }
         }
         else {
@@ -196,9 +192,6 @@ void Transmissions::handleSensorTransmission(bool triggered, bool sendAtlas, boo
     if (sendSonar) {
         if (sonar_station_sensors.fk.kind == FK_PACKET_KIND_SONAR_STATION) {
             if (singleTransmission(sonarPacketToMessage(&sonar_station_sensors))) {
-                initialSonarTransmissionSent = true; // We'll never have both.
-                initialAtlasTransmissionSent = true;
-                InitialTransmissions::markCompleted(TRANSMISSION_TYPE_SONAR);
             }
         }
         else {
@@ -209,8 +202,6 @@ void Transmissions::handleSensorTransmission(bool triggered, bool sendAtlas, boo
     if (sendWeather) {
         if (weather_station_sensors.fk.kind == FK_PACKET_KIND_WEATHER_STATION) {
             if (singleTransmission(weatherStationPacketToMessage(&weather_station_sensors))) {
-                initialWeatherTransmissionSent = true;
-                InitialTransmissions::markCompleted(TRANSMISSION_TYPE_WEATHER);
             }
         }
         else {
@@ -261,8 +252,6 @@ String Transmissions::locationToMessage(gps_fix_t *location) {
 void Transmissions::handleLocationTransmission() {
     if (weatherStation->getFix()->time > 0) {
         if (singleTransmission(locationToMessage(weatherStation->getFix()))) {
-            initialLocationTransmissionSent = true;
-            InitialTransmissions::markCompleted(TRANSMISSION_TYPE_LOCATION);
         }
     }
 }
@@ -278,13 +267,6 @@ void Transmissions::handleTransmissionIfNecessary() {
         handleSensorTransmission(true, false, true, false);
     }
     else if (kind == TRANSMISSION_KIND_LOCATION) {
-        handleLocationTransmission();
-    }
-
-    if (!initialAtlasTransmissionSent || !initialWeatherTransmissionSent || !initialSonarTransmissionSent) {
-        handleSensorTransmission(false, !initialAtlasTransmissionSent, !initialWeatherTransmissionSent, !initialSonarTransmissionSent);
-    }
-    if (!initialLocationTransmissionSent) {
         handleLocationTransmission();
     }
 }
