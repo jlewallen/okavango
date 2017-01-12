@@ -3,9 +3,7 @@
 
 class WatchdogSAMD {
 public:
-    WatchdogSAMD():
-      _initialized(false)
-    {}
+    WatchdogSAMD() {}
 
     // Enable the watchdog timer to reset the machine after a period of time
     // without any calls to reset().  The passed in period (in milliseconds) is
@@ -14,7 +12,7 @@ public:
     //
     // The actual period (in milliseconds) before a watchdog timer reset is
     // returned.
-    int enable(int maxPeriodMS = 0);
+    int enable(int maxPeriodMs = 8192);
 
     // Reset or 'kick' the watchdog timer to prevent a reset of the device.
     void reset();
@@ -33,10 +31,6 @@ public:
     // NOTE: This is currently not implemented on the SAMD21!
     int sleep(int maxPeriodMS = 0);
 
-private:
-    void _initialize_wdt();
-
-    bool _initialized;
 };
 
 #endif
