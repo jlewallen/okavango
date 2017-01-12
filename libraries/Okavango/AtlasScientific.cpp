@@ -2,6 +2,7 @@
 #include "Platforms.h"
 #include "AtlasScientific.h"
 
+const char *CMD_RESPONSE1 = "RESPONSE,1";
 const char *CMD_STATUS = "STATUS";
 const char *CMD_LED_ON = "L,1";
 const char *CMD_LED_OFF = "L,0";
@@ -29,7 +30,15 @@ bool AtlasScientificBoard::tick() {
     switch (state) {
         case AtlasScientificBoardState::Start: {
             setSerial(serialPortExpander->getSerial());
-            transition(AtlasScientificBoardState::Status0);
+            transition(AtlasScientificBoardState::DisableContinuousReading);
+            break;
+        }
+        case AtlasScientificBoardState::DisableContinuousReading: {
+            sendCommand(CMD_CONTINUOUS_OFF);
+            break;
+        }
+        case AtlasScientificBoardState::ConfigureResponse: {
+            sendCommand(CMD_RESPONSE1);
             break;
         }
         case AtlasScientificBoardState::Status0: {

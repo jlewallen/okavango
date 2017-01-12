@@ -1,6 +1,7 @@
 #include "Platforms.h"
 #include "ParallelizedAtlasScientificSensors.h"
 
+extern const char *CMD_RESPONSE1;
 extern const char *CMD_STATUS;
 extern const char *CMD_LED_ON;
 extern const char *CMD_LED_OFF;
@@ -51,12 +52,20 @@ bool ParallelizedAtlasScientificSensors::tick() {
             portNumber = 0;
             serialPortExpander->select(portNumber);
             setSerial(serialPortExpander->getSerial());
-            transition(ParallelizedAtlasScientificSensorsState::Status0);
+            transition(ParallelizedAtlasScientificSensorsState::DisableContinuousReading);
+            break;
+        }
+        case ParallelizedAtlasScientificSensorsState::DisableContinuousReading: {
+            DEBUG_PRINT("PORT: ");
+            DEBUG_PRINTLN(portNumber);
+            sendCommand(CMD_CONTINUOUS_OFF);
+            break;
+        }
+        case ParallelizedAtlasScientificSensorsState::ConfigureResponse: {
+            sendCommand(CMD_RESPONSE1);
             break;
         }
         case ParallelizedAtlasScientificSensorsState::Status0: {
-            DEBUG_PRINT("PORT: ");
-            DEBUG_PRINTLN(portNumber);
             sendCommand(CMD_STATUS);
             break;
         }
