@@ -18,7 +18,20 @@ void Collector::setup() {
 
 void Collector::waitForBattery() {
     // TODO: Should we have a way to turn off the weather station if it's on?
-    diagnostics.recordBatterySleep(platformWaitForBattery());
+    float level = platformBatteryLevel();
+    if (level > 0.15) {
+        return;
+    }
+    DEBUG_PRINT("Waiting for more battery: ");
+    DEBUG_PRINTLN(level);
+    uint32_t started = millis();
+    while (platformBatteryLevel() < 0.3) {
+        Watchdog.reset();
+        delay(5000);
+    }
+    DEBUG_PRINT("Done, took ");
+    DEBUG_PRINTLN(millis() - started);
+    diagnostics.recordBatterySleep(millis() - started);
 }
 
 bool Collector::checkWeatherStation() {
@@ -107,8 +120,6 @@ void Collector::checkAirwaves() {
     uint32_t last = millis();
     while (millis() - started < AIRWAVES_CHECK_TIME || !networkProtocol.isQuiet()) {
         networkProtocol.tick();
-
-        waitForBattery();
 
         weatherStation->ignore();
 

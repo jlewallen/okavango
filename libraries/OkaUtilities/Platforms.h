@@ -106,7 +106,6 @@ void platformPostSetup();
 void platformRestart();
 float platformBatteryVoltage();
 float platformBatteryLevel();
-uint32_t platformWaitForBattery();
 void platformCatastrophe(uint8_t pin, uint8_t mode = PLATFORM_CATASTROPHE_PULSE);
 void platformLowPowerSleep(uint32_t numberOfMs);
 void platformBlink(uint8_t pin);
