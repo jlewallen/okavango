@@ -81,6 +81,8 @@ void setup() {
 
     Serial.println("Begin");
 
+    platformWaitForBattery();
+
     corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST);
     SystemClock->setup();
 
