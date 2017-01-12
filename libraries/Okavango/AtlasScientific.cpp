@@ -116,6 +116,14 @@ bool AtlasScientificBoard::handle(String reply) {
         }
 
         switch (state) {
+            case AtlasScientificBoardState::DisableContinuousReading: {
+                transition(AtlasScientificBoardState::ConfigureResponse);
+                break;
+            }
+            case AtlasScientificBoardState::ConfigureResponse: {
+                transition(AtlasScientificBoardState::Status0);
+                break;
+            }
             case AtlasScientificBoardState::Status0: {
                 transition(AtlasScientificBoardState::Status1);
                 break;

@@ -123,6 +123,14 @@ bool ParallelizedAtlasScientificSensors::handle(String reply) {
         }
 
         switch (state) {
+            case ParallelizedAtlasScientificSensorsState::DisableContinuousReading: {
+                transition(ParallelizedAtlasScientificSensorsState::ConfigureResponse);
+                break;
+            }
+            case ParallelizedAtlasScientificSensorsState::ConfigureResponse: {
+                transition(ParallelizedAtlasScientificSensorsState::Status0);
+                break;
+            }
             case ParallelizedAtlasScientificSensorsState::Status0: {
                 transition(ParallelizedAtlasScientificSensorsState::Status1);
                 break;
