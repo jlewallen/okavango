@@ -100,7 +100,12 @@ bool WeatherStation::tick() {
                         if (length > 0) {
                             buffer[length] = 0;
                             if (numberOfValues < FK_WEATHER_STATION_MAX_VALUES) {
-                                values[numberOfValues++] = atof(buffer);
+                                values[numberOfValues] = atof(buffer);
+                                DEBUG_PRINT("Parsed ");
+                                DEBUG_PRINT(buffer);
+                                DEBUG_PRINT(" = ");
+                                DEBUG_PRINTLN(values[numberOfValues]);
+                                numberOfValues++;
                             }
                             length = 0;;
                         }
