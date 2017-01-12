@@ -90,9 +90,9 @@ bool FonaChild::tick() {
 
 bool FonaChild::handle(String reply) {
     if (reply.length() > 0) {
-        Serial.print(state);
-        Serial.print(">");
-        Serial.println(reply);
+        DEBUG_PRINT(state);
+        DEBUG_PRINT(">");
+        DEBUG_PRINTLN(reply);
     }
     if (reply.startsWith("OK")) {
         switch (state) {
