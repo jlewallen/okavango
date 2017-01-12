@@ -1,11 +1,12 @@
 #include "WeatherStation.h"
 #include "protocol.h"
 #include "Logger.h"
+#include "Diagnostics.h"
 
 #ifdef ARDUINO_SAMD_FEATHER_M0
 
 #define WEATHER_STATION_INTERVAL_START                        (1000 * 60)
-#define WEATHER_STATION_INTERVAL_IGNORE                       (1000 * 60 * 12)
+#define WEATHER_STATION_INTERVAL_IGNORE                       (1000 * 60 * 20)
 #define WEATHER_STATION_INTERVAL_OFF                          (1000 * 60 * 18)
 #define WEATHER_STATION_INTERVAL_READING                      (1000 * 60 * 2)
 
@@ -124,11 +125,13 @@ bool WeatherStation::tick() {
                                     if (checkingCommunications) {
                                         transition(WeatherStationState::CommunicationsOk);
                                     }
+                                    diagnostics.updateGpsStatus(false);
                                 }
                                 else if (values[FK_WEATHER_STATION_FIELD_SATELLITES] <= 0) {
                                     if (checkingCommunications) {
                                         transition(WeatherStationState::CommunicationsOk);
                                     }
+                                    diagnostics.updateGpsStatus(false);
                                 }
                                 else {
                                     fix.time = values[FK_WEATHER_STATION_FIELD_UNIXTIME];
@@ -137,6 +140,8 @@ bool WeatherStation::tick() {
                                     fix.altitude = values[FK_WEATHER_STATION_FIELD_ALTITUDE];
                                     fix.satellites = values[FK_WEATHER_STATION_FIELD_SATELLITES];
                                     transition(WeatherStationState::HaveReading);
+                                    diagnostics.recordWeatherReading();
+                                    diagnostics.updateGpsStatus(true);
                                 }
                             }
                             break;

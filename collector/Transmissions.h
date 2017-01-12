@@ -20,7 +20,7 @@ public:
 
 public:
     void handleTransmissionIfNecessary();
-    void sendStatusTransmission();
+    bool sendStatusTransmission();
 
 private:
     String atlasPacketToMessage(atlas_sensors_packet_t *packet);

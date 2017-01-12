@@ -2,11 +2,18 @@
 #define DIAGNOSTICS_H_INCLUDED
 
 #include <Arduino.h>
+#include "Configuration.h"
+#include "Platforms.h"
+#include "core.h"
 
 class Diagnostics {
 public:
     uint32_t batterySleepTime = 0;
-    uint32_t numberOfTransmissionFailures = 0;
+    uint16_t numberOfTransmissionFailures = 0;
+    uint16_t weatherReadingsReceived = 0;
+    uint16_t atlasPacketsReceived = 0;
+    uint16_t sonarPacketsReceived = 0;
+    bool hasGpsFix = false;
 
 public:
     void recordBatterySleep(uint32_t ms) {
@@ -14,6 +21,32 @@ public:
     }
     void recordTransmissionFailure() {
         numberOfTransmissionFailures++;
+    }
+    void recordSonarPacket() {
+        atlasPacketsReceived++;
+    }
+    void recordAtlasPacket() {
+        sonarPacketsReceived++;
+    }
+    void recordWeatherReading() {
+        weatherReadingsReceived++;
+    }
+    void updateGpsStatus(bool has) {
+        hasGpsFix = has;
+    }
+    String message(Configuration *configuration) {
+        String message(SystemClock->now());
+        message += ",";
+        message += configuration->getName();
+        message += "," + String(platformBatteryVoltage(), 2);
+        message += "," + String(platformBatteryLevel(), 2);
+        message += "," + hasGpsFix;
+        message += "," + batterySleepTime;
+        message += "," + numberOfTransmissionFailures;
+        message += "," + weatherReadingsReceived;
+        message += "," + atlasPacketsReceived;
+        message += "," + sonarPacketsReceived;
+        return message;
     }
 };
 

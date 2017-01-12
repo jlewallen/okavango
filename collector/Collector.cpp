@@ -17,6 +17,7 @@ void Collector::setup() {
 }
 
 void Collector::waitForBattery() {
+    // TODO: Should we have a way to turn off the weather station if it's on?
     diagnostics.recordBatterySleep(platformWaitForBattery());
 }
 
@@ -44,11 +45,7 @@ bool Collector::checkWeatherStation() {
 
             float *values = weatherStation->getValues();
             DEBUG_PRINT("%");
-            if (SystemClock->set((uint32_t)values[FK_WEATHER_STATION_FIELD_UNIXTIME])) {
-                // DEBUG_PRINTLN("Removing TransmissionStatus due to clock change.")
-                // TransmissionStatus status;
-                // status.remove();
-            }
+            SystemClock->set((uint32_t)values[FK_WEATHER_STATION_FIELD_UNIXTIME]);
 
             DEBUG_PRINT("%");
 
@@ -207,7 +204,15 @@ void Collector::tick() {
 
         TransmissionStatus status;
         if (!status.anyTransmissionsThisHour()) {
-            SelfRestart::restartIfNecessary();
+            if (SelfRestart::isRestartNecessary()) {
+                Transmissions transmissions(weatherStation, SystemClock, configuration, &status);
+                for (uint8_t i = 0; i < 3; ++i) {
+                    if (transmissions.sendStatusTransmission()) {
+                        break;
+                    }
+                }
+                platformRestart();
+            }
         }
 
         logTransition("TX");

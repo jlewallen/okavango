@@ -1,5 +1,6 @@
 #include "network.h"
 #include "core.h"
+#include "Diagnostics.h"
 
 #define RETRY_DELAY         2500
 
@@ -123,6 +124,8 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize
         if (state == NetworkState::EnqueueFromNetwork) {
             delay(50);
 
+            diagnostics.recordSonarPacket();
+
             DEBUG_PRINTLN("Queuing");
 
             {
@@ -139,6 +142,8 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize
     case FK_PACKET_KIND_ATLAS_SENSORS: {
         if (state == NetworkState::EnqueueFromNetwork) {
             delay(50);
+
+            diagnostics.recordAtlasPacket();
 
             DEBUG_PRINTLN("Queuing");
 

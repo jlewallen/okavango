@@ -1,14 +1,14 @@
 #ifndef SELF_RESTART_H_INCLUDED
 #define SELF_RESTART_H_INCLUDED
 
-#define MANDATORY_RESTART_INTERVAL   (1000 * 60 * 60 * 3)
+#define MANDATORY_RESTART_INTERVAL   (1000 * 60 * 60 * 6)
 #define MANDATORY_RESTART_FILE       "RESUME.INF"
 
 #include <SD.h>
 
 class SelfRestart {
 public:
-    static void restartIfNecessary() {
+    static bool isRestartNecessary() {
         if (millis() > MANDATORY_RESTART_INTERVAL) {
             File file = SD.open(MANDATORY_RESTART_FILE, FILE_WRITE);
             if (!file) {
@@ -20,8 +20,10 @@ public:
             }
             DEBUG_PRINTLN("Mandatory restart triggered.");
             logPrinter.flush();
-            platformRestart();
+            delay(1000);
+            return true;
         }
+        return false;
     }
 
     static bool didWeJustRestart() {

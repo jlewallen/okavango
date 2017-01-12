@@ -141,50 +141,21 @@ void Transmissions::sendSensorTransmission(bool sendAtlas, bool sendWeather, boo
 
     if (sendAtlas) {
         if (atlas_station_sensors.fk.kind == FK_PACKET_KIND_ATLAS_SENSORS) {
-            if (transmission(atlasPacketToMessage(&atlas_station_sensors))) {
-            }
+            transmission(atlasPacketToMessage(&atlas_station_sensors));
         }
     }
 
     if (sendSonar) {
         if (sonar_station_sensors.fk.kind == FK_PACKET_KIND_SONAR_STATION) {
-            if (transmission(sonarPacketToMessage(&sonar_station_sensors))) {
-            }
+            transmission(sonarPacketToMessage(&sonar_station_sensors));
         }
     }
 
     if (sendWeather) {
         if (weather_station_sensors.fk.kind == FK_PACKET_KIND_WEATHER_STATION) {
-            if (transmission(weatherStationPacketToMessage(&weather_station_sensors))) {
-            }
+            transmission(weatherStationPacketToMessage(&weather_station_sensors));
         }
     }
-
-    /*
-    if (triggered) {
-        if ((noAtlas && noSonar) || noWeather) {
-            uint32_t uptime = millis() / (1000 * 60);
-            String message(systemClock->now());
-            message += ",";
-            message += configuration->getName();
-            message += "," + String(platformBatteryVoltage(), 2);
-            message += "," + String(platformBatteryLevel(), 2);
-            message += ",";
-            message += noAtlas;
-            message += ",";
-            message += noSonar;
-            message += ",";
-            message += noWeather;
-            message += ",";
-            message += queueSize;
-            message += ",";
-            message += diagnostics.numberOfTransmissionFailures;
-            message += ",";
-            message += uptime;
-            transmission(message);
-        }
-    }
-    */
 }
 
 String Transmissions::locationToMessage(gps_fix_t *location) {
@@ -204,12 +175,12 @@ String Transmissions::locationToMessage(gps_fix_t *location) {
 
 void Transmissions::sendLocationTransmission() {
     if (weatherStation->getFix()->time > 0) {
-        if (transmission(locationToMessage(weatherStation->getFix()))) {
-        }
+        transmission(locationToMessage(weatherStation->getFix()));
     }
 }
 
-void Transmissions::sendStatusTransmission() {
+bool Transmissions::sendStatusTransmission() {
+    return transmission(diagnostics.message(configuration));
 }
 
 void Transmissions::handleTransmissionIfNecessary() {
