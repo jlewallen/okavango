@@ -165,8 +165,7 @@ void Collector::idlePeriod() {
 }
 
 void Collector::logTransition(const char *name) {
-    uint32_t easternTime = 4 * 60 * 60;
-    DateTime dt(SystemClock->now() - easternTime);
+    DateTime dt(SystemClock->now());
 
     DEBUG_PRINT("## ");
 

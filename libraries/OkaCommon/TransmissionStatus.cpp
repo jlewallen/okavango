@@ -59,6 +59,8 @@ int8_t TransmissionStatus::shouldWe() {
         DEBUG_PRINT(hour);
         DEBUG_PRINT(" previousHour=");
         DEBUG_PRINT(status.kinds[i].previousHour);
+        DEBUG_PRINT(" hour=");
+        DEBUG_PRINT(dt.hour());
         DEBUG_PRINT(" ");
         DEBUG_PRINT(triggered);
         DEBUG_PRINTLN();
