@@ -70,7 +70,153 @@ String Transmissions::weatherStationPacketToMessage(weather_station_packet_t *pa
     return message;
 }
 
-bool Transmissions::singleTransmission(String message) {
+void Transmissions::sendSensorTransmission(bool sendAtlas, bool sendWeather, bool sendSonar) {
+    Queue queue;
+
+    uint32_t queueSize = queue.size();
+
+    DEBUG_PRINT("TS: sendSensorTransmission: ");
+    DEBUG_PRINT(queueSize);
+    if (sendAtlas) DEBUG_PRINT(" atlas");
+    if (sendSonar) DEBUG_PRINT(" sonar");
+    if (sendWeather) DEBUG_PRINT(" weather");
+    DEBUG_PRINTLN();
+
+    atlas_sensors_packet_t atlas_station_sensors;
+    memzero((uint8_t *)&atlas_station_sensors, sizeof(atlas_sensors_packet_t));
+
+    weather_station_packet_t weather_station_sensors;
+    memzero((uint8_t *)&weather_station_sensors, sizeof(weather_station_packet_t));
+
+    sonar_station_packet_t sonar_station_sensors;
+    memzero((uint8_t *)&sonar_station_sensors, sizeof(sonar_station_packet_t));
+
+    if (queueSize > 0) {
+        while (true) {
+            fk_network_packet_t *packet = (fk_network_packet_t *)queue.dequeue();
+            if (packet == NULL) {
+                break;
+            }
+
+            switch (packet->kind) {
+            case FK_PACKET_KIND_WEATHER_STATION: {
+                memcpy((uint8_t *)&weather_station_sensors, (uint8_t *)packet, sizeof(weather_station_packet_t));
+                break;
+            }
+            case FK_PACKET_KIND_ATLAS_SENSORS: {
+                memcpy((uint8_t *)&atlas_station_sensors, (uint8_t *)packet, sizeof(atlas_sensors_packet_t));
+                break;
+            }
+            case FK_PACKET_KIND_SONAR_STATION: {
+                memcpy((uint8_t *)&sonar_station_sensors, (uint8_t *)packet, sizeof(sonar_station_packet_t));
+                break;
+            }
+            }
+        }
+    }
+
+    bool noAtlas = false;
+    bool noWeather = false;
+    bool noSonar = false;
+
+    if (sendAtlas) {
+        if (atlas_station_sensors.fk.kind == FK_PACKET_KIND_ATLAS_SENSORS) {
+            if (transmission(atlasPacketToMessage(&atlas_station_sensors))) {
+            }
+        }
+        else {
+            noAtlas = true;
+        }
+    }
+
+    if (sendSonar) {
+        if (sonar_station_sensors.fk.kind == FK_PACKET_KIND_SONAR_STATION) {
+            if (transmission(sonarPacketToMessage(&sonar_station_sensors))) {
+            }
+        }
+        else {
+            noSonar = true;
+        }
+    }
+
+    if (sendWeather) {
+        if (weather_station_sensors.fk.kind == FK_PACKET_KIND_WEATHER_STATION) {
+            if (transmission(weatherStationPacketToMessage(&weather_station_sensors))) {
+            }
+        }
+        else {
+            noWeather = true;
+        }
+    }
+
+    /*
+    if (triggered) {
+        if ((noAtlas && noSonar) || noWeather) {
+            uint32_t uptime = millis() / (1000 * 60);
+            String message(systemClock->now());
+            message += ",";
+            message += configuration->getName();
+            message += "," + String(platformBatteryVoltage(), 2);
+            message += "," + String(platformBatteryLevel(), 2);
+            message += ",";
+            message += noAtlas;
+            message += ",";
+            message += noSonar;
+            message += ",";
+            message += noWeather;
+            message += ",";
+            message += queueSize;
+            message += ",";
+            message += diagnostics.numberOfTransmissionFailures;
+            message += ",";
+            message += uptime;
+            transmission(message);
+        }
+    }
+    */
+}
+
+String Transmissions::locationToMessage(gps_fix_t *location) {
+    uint32_t uptime = millis() / (1000 * 60);
+    String message(location->time);
+    message += ",";
+    message += configuration->getName();
+    message += "," + String(platformBatteryVoltage(), 2);
+    message += "," + String(platformBatteryLevel(), 2);
+    message += "," + String(location->latitude, 6);
+    message += "," + String(location->longitude, 6);
+    message += "," + String(location->altitude, 2);
+    message += ",";
+    message += uptime;
+    return message;
+}
+
+void Transmissions::sendLocationTransmission() {
+    if (weatherStation->getFix()->time > 0) {
+        if (transmission(locationToMessage(weatherStation->getFix()))) {
+        }
+    }
+}
+
+void Transmissions::sendStatusTransmission() {
+}
+
+void Transmissions::handleTransmissionIfNecessary() {
+    TransmissionStatus status;
+
+    int8_t kind = status.shouldWe();
+    if (kind == TRANSMISSION_KIND_SENSORS) {
+        sendSensorTransmission(true, false, true);
+    }
+    else if (kind == TRANSMISSION_KIND_WEATHER) {
+        sendSensorTransmission(false, true, false);
+    }
+    else if (kind == TRANSMISSION_KIND_LOCATION) {
+        sendLocationTransmission();
+    }
+}
+
+bool Transmissions::transmission(String message) {
     DEBUG_PRINT("Message: ");
     DEBUG_PRINTLN(message.c_str());
 
@@ -123,150 +269,4 @@ bool Transmissions::singleTransmission(String message) {
     digitalWrite(PIN_RED_LED, LOW);
 
     return success;
-}
-
-void Transmissions::handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather, bool sendSonar) {
-    Queue queue;
-
-    uint32_t queueSize = queue.size();
-
-    DEBUG_PRINT("TS: handleSensor: ");
-    DEBUG_PRINT(queueSize);
-    DEBUG_PRINT(" triggered=");
-    DEBUG_PRINT(triggered);
-    DEBUG_PRINT(" sendAtlas=");
-    DEBUG_PRINT(sendAtlas);
-    DEBUG_PRINT(" sendWeather=");
-    DEBUG_PRINT(sendWeather);
-    DEBUG_PRINT(" sendSonar=");
-    DEBUG_PRINT(sendSonar);
-    DEBUG_PRINTLN();
-
-    atlas_sensors_packet_t atlas_station_sensors;
-    memzero((uint8_t *)&atlas_station_sensors, sizeof(atlas_sensors_packet_t));
-
-    weather_station_packet_t weather_station_sensors;
-    memzero((uint8_t *)&weather_station_sensors, sizeof(weather_station_packet_t));
-
-    sonar_station_packet_t sonar_station_sensors;
-    memzero((uint8_t *)&sonar_station_sensors, sizeof(sonar_station_packet_t));
-
-    if (queueSize > 0) {
-        while (true) {
-            fk_network_packet_t *packet = (fk_network_packet_t *)queue.dequeue();
-            if (packet == NULL) {
-                break;
-            }
-
-            switch (packet->kind) {
-            case FK_PACKET_KIND_WEATHER_STATION: {
-                memcpy((uint8_t *)&weather_station_sensors, (uint8_t *)packet, sizeof(weather_station_packet_t));
-                break;
-            }
-            case FK_PACKET_KIND_ATLAS_SENSORS: {
-                memcpy((uint8_t *)&atlas_station_sensors, (uint8_t *)packet, sizeof(atlas_sensors_packet_t));
-                break;
-            }
-            case FK_PACKET_KIND_SONAR_STATION: {
-                memcpy((uint8_t *)&sonar_station_sensors, (uint8_t *)packet, sizeof(sonar_station_packet_t));
-                break;
-            }
-            }
-        }
-    }
-
-    bool noAtlas = false;
-    bool noWeather = false;
-    bool noSonar = false;
-
-    if (sendAtlas) {
-        if (atlas_station_sensors.fk.kind == FK_PACKET_KIND_ATLAS_SENSORS) {
-            if (singleTransmission(atlasPacketToMessage(&atlas_station_sensors))) {
-            }
-        }
-        else {
-            noAtlas = true;
-        }
-    }
-
-    if (sendSonar) {
-        if (sonar_station_sensors.fk.kind == FK_PACKET_KIND_SONAR_STATION) {
-            if (singleTransmission(sonarPacketToMessage(&sonar_station_sensors))) {
-            }
-        }
-        else {
-            noSonar = true;
-        }
-    }
-
-    if (sendWeather) {
-        if (weather_station_sensors.fk.kind == FK_PACKET_KIND_WEATHER_STATION) {
-            if (singleTransmission(weatherStationPacketToMessage(&weather_station_sensors))) {
-            }
-        }
-        else {
-            noWeather = true;
-        }
-    }
-
-    if (triggered) {
-        if ((noAtlas && noSonar) || noWeather) {
-            uint32_t uptime = millis() / (1000 * 60);
-            String message(systemClock->now());
-            message += ",";
-            message += configuration->getName();
-            message += "," + String(platformBatteryVoltage(), 2);
-            message += "," + String(platformBatteryLevel(), 2);
-            message += ",";
-            message += noAtlas;
-            message += ",";
-            message += noSonar;
-            message += ",";
-            message += noWeather;
-            message += ",";
-            message += queueSize;
-            message += ",";
-            message += diagnostics.numberOfTransmissionFailures;
-            message += ",";
-            message += uptime;
-            singleTransmission(message);
-        }
-    }
-}
-
-String Transmissions::locationToMessage(gps_fix_t *location) {
-    uint32_t uptime = millis() / (1000 * 60);
-    String message(location->time);
-    message += ",";
-    message += configuration->getName();
-    message += "," + String(platformBatteryVoltage(), 2);
-    message += "," + String(platformBatteryLevel(), 2);
-    message += "," + String(location->latitude, 6);
-    message += "," + String(location->longitude, 6);
-    message += "," + String(location->altitude, 2);
-    message += ",";
-    message += uptime;
-    return message;
-}
-
-void Transmissions::handleLocationTransmission() {
-    if (weatherStation->getFix()->time > 0) {
-        if (singleTransmission(locationToMessage(weatherStation->getFix()))) {
-        }
-    }
-}
-
-void Transmissions::handleTransmissionIfNecessary() {
-    TransmissionStatus status;
-
-    int8_t kind = status.shouldWe();
-    if (kind == TRANSMISSION_KIND_SENSORS) {
-        handleSensorTransmission(true, true, false, true);
-    }
-    else if (kind == TRANSMISSION_KIND_WEATHER) {
-        handleSensorTransmission(true, false, true, false);
-    }
-    else if (kind == TRANSMISSION_KIND_LOCATION) {
-        handleLocationTransmission();
-    }
 }

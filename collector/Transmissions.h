@@ -18,18 +18,19 @@ private:
 public:
     Transmissions(WeatherStation *weatherStation, RtcAbstractSystemClock *systemClock, Configuration *configuration, TransmissionStatus *status);
 
+public:
+    void handleTransmissionIfNecessary();
+    void sendStatusTransmission();
+
 private:
     String atlasPacketToMessage(atlas_sensors_packet_t *packet);
     String sonarPacketToMessage(sonar_station_packet_t *packet);
     String weatherStationPacketToMessage(weather_station_packet_t *packet);
-    bool singleTransmission(String message);
-    void handleSensorTransmission(bool triggered, bool sendAtlas, bool sendWeather, bool sendSonar);
     String locationToMessage(gps_fix_t *location);
-    void handleLocationTransmission();
 
-public:
-    void handleTransmissionIfNecessary();
+    void sendSensorTransmission(bool sendAtlas, bool sendWeather, bool sendSonar);
+    void sendLocationTransmission();
+    bool transmission(String message);
 };
-
 
 #endif
