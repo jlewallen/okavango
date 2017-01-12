@@ -129,7 +129,8 @@ void setup() {
 
 void loop() {
     if (millis() - lastSecond >= 1000) {
-        digitalWrite(PIN_LED_BLUE, HIGH);
+        int led = gps.satellites.value() > 0 ? PIN_LED_BLUE : PIN_LED_RED;
+        digitalWrite(led, HIGH);
 
         lastSecond += 1000;
 
@@ -167,7 +168,7 @@ void loop() {
 
         print_weather();
 
-        digitalWrite(PIN_LED_BLUE, LOW);
+        digitalWrite(led, LOW);
     }
 
     delay_and_check_gps(800);
