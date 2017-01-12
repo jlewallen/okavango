@@ -4,6 +4,8 @@
 
 #include "AtlasSensorBoard.h"
 
+#define SEND_FAKE_SONAR_PACKET_FOR_TESTING
+
 class LoraAtlasSensorBoard : public AtlasSensorBoard {
 public:
     LoraAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard);
@@ -74,6 +76,23 @@ void LoraAtlasSensorBoard::tryAndSendLocalQueue(Queue *queue) {
     Watchdog.disable();
 }
 
+void waitForBattery() {
+    // TODO: Should we have a way to turn off the weather station if it's on?
+    float level = platformBatteryLevel();
+    if (level > 0.15) {
+        return;
+    }
+    DEBUG_PRINT("Waiting for more battery: ");
+    DEBUG_PRINTLN(level);
+    uint32_t started = millis();
+    while (platformBatteryLevel() < 0.3) {
+        Watchdog.reset();
+        delay(5000);
+    }
+    DEBUG_PRINT("Done, took ");
+    DEBUG_PRINTLN(millis() - started);
+}
+
 CorePlatform corePlatform;
 SerialPortExpander serialPortExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1, ConductivityConfig::OnSerial2);
 ParallelizedAtlasScientificSensors sensorBoard(&serialPortExpander, false);
@@ -95,7 +114,7 @@ void setup() {
 
     Serial.println("Begin");
 
-    platformWaitForBattery();
+    waitForBattery();
 
     corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST);
     SystemClock->setup();
