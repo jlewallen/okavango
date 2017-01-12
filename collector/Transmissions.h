@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 #include "protocol.h"
-#include "Core.h"
+#include "core.h"
 #include "Configuration.h"
 #include "WeatherStation.h"
 #include "TransmissionStatus.h"
