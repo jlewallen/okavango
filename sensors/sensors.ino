@@ -64,6 +64,7 @@ CorePlatform corePlatform;
 SerialPortExpander serialPortExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1, ConductivityConfig::OnSerial2);
 ParallelizedAtlasScientificSensors sensorBoard(&serialPortExpander, false);
 LoraAtlasSensorBoard loraAtlasSensorBoard(&corePlatform, &serialPortExpander, &sensorBoard);
+Pcf8523SystemClock Clock;
 
 void setup() {
     Serial.begin(115200);
@@ -80,6 +81,7 @@ void setup() {
     Serial.println("Begin");
 
     corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST);
+    SystemClock->setup();
 
     logPrinter.open();
 

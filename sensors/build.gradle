@@ -33,7 +33,8 @@ model {
                 "OkaSensors",,
                 "Adafruit_Sensor",
                 "Adafruit_BME280_Library",
-                "DHT-sensor-library"
+                "DHT-sensor-library",
+                "AtSamd"
             ]
         }
     }

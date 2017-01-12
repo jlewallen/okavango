@@ -55,8 +55,6 @@ int WatchdogSAMD::enable(int maxPeriodMs) {
       return 0;
     }
 
-    Serial.println(period);
-
     if (wdt_enable(period)) {
     }
 
