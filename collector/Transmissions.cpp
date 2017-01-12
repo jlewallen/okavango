@@ -71,6 +71,7 @@ String Transmissions::weatherStationPacketToMessage(weather_station_packet_t *pa
 }
 
 void Transmissions::sendSensorTransmission(bool sendAtlas, bool sendWeather, bool sendSonar) {
+    Queue keeping("KEEPING.BIN");
     Queue queue;
 
     uint32_t queueSize = queue.size();
@@ -82,6 +83,10 @@ void Transmissions::sendSensorTransmission(bool sendAtlas, bool sendWeather, boo
     if (sendWeather) DEBUG_PRINT(" weather");
     DEBUG_PRINTLN();
 
+    if (queueSize == 0) {
+        return;
+    }
+
     atlas_sensors_packet_t atlas_station_sensors;
     memzero((uint8_t *)&atlas_station_sensors, sizeof(atlas_sensors_packet_t));
 
@@ -91,41 +96,53 @@ void Transmissions::sendSensorTransmission(bool sendAtlas, bool sendWeather, boo
     sonar_station_packet_t sonar_station_sensors;
     memzero((uint8_t *)&sonar_station_sensors, sizeof(sonar_station_packet_t));
 
-    if (queueSize > 0) {
-        while (true) {
-            fk_network_packet_t *packet = (fk_network_packet_t *)queue.dequeue();
-            if (packet == NULL) {
-                break;
-            }
+    while (true) {
+        fk_network_packet_t *packet = (fk_network_packet_t *)queue.dequeue();
+        if (packet == NULL) {
+            break;
+        }
 
-            switch (packet->kind) {
-            case FK_PACKET_KIND_WEATHER_STATION: {
+        switch (packet->kind) {
+        case FK_PACKET_KIND_WEATHER_STATION: {
+            if (sendWeather) {
                 memcpy((uint8_t *)&weather_station_sensors, (uint8_t *)packet, sizeof(weather_station_packet_t));
-                break;
             }
-            case FK_PACKET_KIND_ATLAS_SENSORS: {
+            else {
+                keeping.enqueue((uint8_t *)packet);
+            }
+            break;
+        }
+        case FK_PACKET_KIND_ATLAS_SENSORS: {
+            if (sendAtlas) {
                 memcpy((uint8_t *)&atlas_station_sensors, (uint8_t *)packet, sizeof(atlas_sensors_packet_t));
-                break;
             }
-            case FK_PACKET_KIND_SONAR_STATION: {
+            else {
+                keeping.enqueue((uint8_t *)packet);
+            }
+            break;
+        }
+        case FK_PACKET_KIND_SONAR_STATION: {
+            if (sendSonar){
                 memcpy((uint8_t *)&sonar_station_sensors, (uint8_t *)packet, sizeof(sonar_station_packet_t));
-                break;
             }
+            else {
+                keeping.enqueue((uint8_t *)packet);
             }
+            break;
+        }
         }
     }
 
-    bool noAtlas = false;
-    bool noWeather = false;
-    bool noSonar = false;
+    keeping.startAtBeginning();
+    queue.startAtBeginning();
+
+    keeping.copyInto(&queue);
+    keeping.removeAll();
 
     if (sendAtlas) {
         if (atlas_station_sensors.fk.kind == FK_PACKET_KIND_ATLAS_SENSORS) {
             if (transmission(atlasPacketToMessage(&atlas_station_sensors))) {
             }
-        }
-        else {
-            noAtlas = true;
         }
     }
 
@@ -134,18 +151,12 @@ void Transmissions::sendSensorTransmission(bool sendAtlas, bool sendWeather, boo
             if (transmission(sonarPacketToMessage(&sonar_station_sensors))) {
             }
         }
-        else {
-            noSonar = true;
-        }
     }
 
     if (sendWeather) {
         if (weather_station_sensors.fk.kind == FK_PACKET_KIND_WEATHER_STATION) {
             if (transmission(weatherStationPacketToMessage(&weather_station_sensors))) {
             }
-        }
-        else {
-            noWeather = true;
         }
     }
 
