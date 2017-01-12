@@ -141,15 +141,19 @@ void Collector::idlePeriod() {
     DEBUG_PRINTLN("Idle: Begin");
     logPrinter.flush();
 
+    Watchdog.disable();
+
     uint32_t started = millis();
     while (millis() - started < IDLE_PERIOD) {
+        Watchdog.sleep(8192);
         Watchdog.reset();
-        delay(2000);
         platformBlinks(PIN_RED_LED, 2);
     }
 
     DEBUG_PRINTLN("Idle: Done");
     logPrinter.flush();
+
+    Watchdog.enable();
 }
 
 void Collector::logTransition(const char *name) {
