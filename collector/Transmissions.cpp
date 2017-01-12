@@ -6,7 +6,11 @@
 #include "RockBlock.h"
 #include "Queue.h"
 #include "Diagnostics.h"
+#ifdef BUILD_JOB
+#define NUMBER_TO_SMS ""
+#else
 #include "config.h"
+#endif
 
 Transmissions::Transmissions(WeatherStation *weatherStation, RtcAbstractSystemClock *systemClock, Configuration *configuration, TransmissionStatus *status) :
     weatherStation(weatherStation), systemClock(systemClock), configuration(configuration), status(status) {
