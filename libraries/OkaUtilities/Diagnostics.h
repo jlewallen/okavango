@@ -39,6 +39,7 @@ public:
         hasGpsFix = has;
     }
     String message(Configuration *configuration) {
+        uint32_t uptime = millis() / (1000 * 60);
         String message(SystemClock->now());
         message += ",";
         message += configuration->getName();
@@ -51,6 +52,8 @@ public:
         message += "," + weatherReadingsReceived;
         message += "," + atlasPacketsReceived;
         message += "," + sonarPacketsReceived;
+        message += ",";
+        message += uptime;
         return message;
     }
 };
