@@ -64,6 +64,7 @@ bool WeatherStation::tick() {
             off();
         }
         if (millis() - lastTransitionAt > WEATHER_STATION_INTERVAL_START) {
+            DEBUG_PRINTLN("WS: >Ignoring");
             transition(WeatherStationState::Ignoring);
         }
         break;
@@ -74,6 +75,7 @@ bool WeatherStation::tick() {
         }
         ignore();
         if (millis() - lastTransitionAt > WEATHER_STATION_INTERVAL_IGNORE) {
+            DEBUG_PRINTLN("WS: >Reading");
             transition(WeatherStationState::Reading);
         }
         break;
@@ -87,6 +89,7 @@ bool WeatherStation::tick() {
     }
     case WeatherStationState::Reading: {
         if (millis() - lastTransitionAt > WEATHER_STATION_INTERVAL_READING) {
+            DEBUG_PRINTLN("WS: >Ignoring");
             transition(WeatherStationState::Ignoring);
             break;
         }
@@ -128,12 +131,14 @@ bool WeatherStation::tick() {
                                 if (values[FK_WEATHER_STATION_FIELD_UNIXTIME] > JANUARY_1ST_2020 ||
                                     values[FK_WEATHER_STATION_FIELD_UNIXTIME] < AUGUST_29TH_2016) {
                                     if (checkingCommunications) {
+                                        DEBUG_PRINTLN("WS: >CommunicationsOk");
                                         transition(WeatherStationState::CommunicationsOk);
                                     }
                                     diagnostics.updateGpsStatus(false);
                                 }
                                 else if (values[FK_WEATHER_STATION_FIELD_SATELLITES] <= 0) {
                                     if (checkingCommunications) {
+                                        DEBUG_PRINTLN("WS: >CommunicationsOk");
                                         transition(WeatherStationState::CommunicationsOk);
                                     }
                                     diagnostics.updateGpsStatus(false);
@@ -144,9 +149,10 @@ bool WeatherStation::tick() {
                                     fix.longitude = values[FK_WEATHER_STATION_FIELD_LONGITUDE];
                                     fix.altitude = values[FK_WEATHER_STATION_FIELD_ALTITUDE];
                                     fix.satellites = values[FK_WEATHER_STATION_FIELD_SATELLITES];
-                                    transition(WeatherStationState::HaveReading);
                                     diagnostics.recordWeatherReading();
                                     diagnostics.updateGpsStatus(true);
+                                    DEBUG_PRINTLN("WS: >HaveReading");
+                                    transition(WeatherStationState::HaveReading);
                                 }
                             }
                             break;
@@ -166,6 +172,7 @@ bool WeatherStation::tick() {
             off();
         }
         if (millis() - lastTransitionAt > WEATHER_STATION_INTERVAL_OFF) {
+            DEBUG_PRINTLN("WS: >Ignoring");
             transition(WeatherStationState::Ignoring);
         }
         break;

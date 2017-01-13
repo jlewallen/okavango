@@ -73,10 +73,12 @@ bool Preflight::checkWeatherStation() {
         Watchdog.reset();
 
         if (weatherStation->areCommunicationsOk()) {
+            weatherStation->setup();
             DEBUG_PRINTLN("preflight: Weather station good");
             return true;
         }
     }
+    weatherStation->setup();
 
     DEBUG_PRINTLN("preflight: Weather station failed");
 
