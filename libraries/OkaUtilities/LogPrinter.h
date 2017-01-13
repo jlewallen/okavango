@@ -2,8 +2,12 @@
 #define LOG_PRINTER_H_INCLUDED
 
 class LogPrinter : public Stream {
+private:
+    bool serial1Relay = false;
+    bool serial2Relay = false;
+
 public:
-    bool open();
+    bool open(bool serial1Relay = false, bool serial2Relay = false);
 
 public:
     virtual int available() override;

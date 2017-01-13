@@ -21,7 +21,7 @@ bool Preflight::checkCommunications() {
         platformSerial2Begin(9600);
         SerialType &fonaSerial = Serial2;
         fona.setSerial(&fonaSerial);
-        Serial.println("Checking Fona...");
+        DEBUG_PRINTLN("Checking Fona...");
         while (!fona.isDone() && !fona.isFailed()) {
             if (millis() - started < THIRTY_MINUTES) {
                 Watchdog.reset();

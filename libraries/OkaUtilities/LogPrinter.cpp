@@ -1,11 +1,21 @@
 #include <SD.h>
 #include "LogPrinter.h"
+#include "Platforms.h"
 
 bool fileAvailable = false;
 File fileLog;
 LogPrinter logPrinter;
 
-bool LogPrinter::open() {
+bool LogPrinter::open(bool serial1Relay, bool serial2Relay) {
+    this->serial1Relay = serial1Relay;
+    this->serial2Relay = serial2Relay;
+
+    Serial.print("Serial1Relay: ");
+    Serial.println(this->serial1Relay);
+
+    Serial.print("Serial2Relay: ");
+    Serial.println(this->serial2Relay);
+
     fileLog = SD.open("DEBUG.LOG", FILE_WRITE);
     if (fileLog) {
         fileAvailable = true;
@@ -13,11 +23,13 @@ bool LogPrinter::open() {
     else {
         fileAvailable = false;
     }
-    // platformSerial3Begin(115200);
     return fileAvailable;
 }
 
 void LogPrinter::flush() {
+    if (serial1Relay) {
+        Serial1.flush();
+    }
     if (fileAvailable) {
         fileLog.flush();
     }
@@ -37,21 +49,21 @@ int LogPrinter::peek() {
 }
 
 size_t LogPrinter::write(uint8_t c) {
-    if (fileAvailable) {
-        size_t w = fileLog.write(c);
-        Serial.write(c);
-        return w;
+    if (serial1Relay) {
+        Serial1.write(c);
     }
-    // Serial3.write(c);
+    if (fileAvailable) {
+        fileLog.write(c);
+    }
     return Serial.write(c);
 }
 
 size_t LogPrinter::write(const uint8_t *buffer, size_t size) {
-    if (fileAvailable) {
-        size_t w = fileLog.write(buffer, size);
-        Serial.write(buffer, size);
-        return w;
+    if (serial1Relay) {
+        Serial1.write(buffer, size);
     }
-    // Serial3.write(buffer, size);
+    if (fileAvailable) {
+        fileLog.write(buffer, size);
+    }
     return Serial.write(buffer, size);
 }
