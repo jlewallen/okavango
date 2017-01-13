@@ -143,17 +143,26 @@ void Transmissions::sendSensorTransmission(bool sendAtlas, bool sendWeather, boo
         if (atlas_station_sensors.fk.kind == FK_PACKET_KIND_ATLAS_SENSORS) {
             transmission(atlasPacketToMessage(&atlas_station_sensors));
         }
+        else {
+            diagnostics.recordTransmissionSkipped();
+        }
     }
 
     if (sendSonar) {
         if (sonar_station_sensors.fk.kind == FK_PACKET_KIND_SONAR_STATION) {
             transmission(sonarPacketToMessage(&sonar_station_sensors));
         }
+        else {
+            diagnostics.recordTransmissionSkipped();
+        }
     }
 
     if (sendWeather) {
         if (weather_station_sensors.fk.kind == FK_PACKET_KIND_WEATHER_STATION) {
             transmission(weatherStationPacketToMessage(&weather_station_sensors));
+        }
+        else {
+            diagnostics.recordTransmissionSkipped();
         }
     }
 }

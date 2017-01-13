@@ -10,6 +10,7 @@ class Diagnostics {
 public:
     uint32_t batterySleepTime = 0;
     uint16_t numberOfTransmissionFailures = 0;
+    uint16_t numberOfTransmissionSkipped = 0;
     uint16_t weatherReadingsReceived = 0;
     uint16_t atlasPacketsReceived = 0;
     uint16_t sonarPacketsReceived = 0;
@@ -18,6 +19,9 @@ public:
 public:
     void recordBatterySleep(uint32_t ms) {
         batterySleepTime += ms;
+    }
+    void recordTransmissionSkipped() {
+        numberOfTransmissionSkipped++;
     }
     void recordTransmissionFailure() {
         numberOfTransmissionFailures++;
@@ -43,6 +47,7 @@ public:
         message += "," + hasGpsFix;
         message += "," + batterySleepTime;
         message += "," + numberOfTransmissionFailures;
+        message += "," + numberOfTransmissionSkipped;
         message += "," + weatherReadingsReceived;
         message += "," + atlasPacketsReceived;
         message += "," + sonarPacketsReceived;
