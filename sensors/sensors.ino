@@ -28,7 +28,7 @@ void LoraAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet
     sonar_packet.battery = platformBatteryVoltage();
     sonar_packet.fk.kind = FK_PACKET_KIND_SONAR_STATION;
     for (int8_t i = 0; i < FK_SONAR_STATION_PACKET_NUMBER_VALUES; ++i) {
-        sonar_packet.values[i] = 0.0f;
+        sonar_packet.values[i] = (float)i;
     }
     queue->enqueue((uint8_t *)&sonar_packet, sizeof(sonar_station_packet_t));
     queue->startAtBeginning();
