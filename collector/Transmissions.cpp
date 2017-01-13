@@ -21,8 +21,7 @@ String Transmissions::atlasPacketToMessage(atlas_sensors_packet_t *packet) {
     message += configuration->getName();
     message += "," + String(platformBatteryVoltage(), 2);
     message += "," + String(platformBatteryLevel(), 2);
-    message += ",";
-    message += String(packet->battery, 2);
+    message += "," + String(packet->battery, 2);
     for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
         String field = "," + String(packet->values[i], 2);
         message += field;
@@ -36,8 +35,7 @@ String Transmissions::sonarPacketToMessage(sonar_station_packet_t *packet) {
     message += configuration->getName();
     message += "," + String(platformBatteryVoltage(), 2);
     message += "," + String(platformBatteryLevel(), 2);
-    message += ",";
-    message += String(packet->battery, 2);
+    message += "," + String(packet->battery, 2);
     for (uint8_t i = 0; i < FK_SONAR_STATION_PACKET_NUMBER_VALUES; ++i) {
         String field = "," + String(packet->values[i], 2);
         message += field;
@@ -51,6 +49,7 @@ String Transmissions::weatherStationPacketToMessage(weather_station_packet_t *pa
     message += configuration->getName();
     message += "," + String(platformBatteryVoltage(), 2);
     message += "," + String(platformBatteryLevel(), 2);
+    message += "," + String(packet->battery, 2);
     uint8_t fields[] = {
         FK_WEATHER_STATION_FIELD_TEMPERATURE,
         FK_WEATHER_STATION_FIELD_HUMIDITY,
@@ -65,8 +64,6 @@ String Transmissions::weatherStationPacketToMessage(weather_station_packet_t *pa
         String field = "," + String(packet->values[fields[i]], 2);
         message += field;
     }
-    message += ",";
-    message += String(packet->battery, 2);
     return message;
 }
 
