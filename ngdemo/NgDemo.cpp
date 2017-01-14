@@ -172,7 +172,9 @@ void NgDemo::tick() {
         break;
     }
     case NgDemoState::Transmitting: {
+        digitalWrite(PIN_RED_LED, HIGH);
         transmission();
+        digitalWrite(PIN_RED_LED, LOW);
 
         state = NgDemoState::Sleep;
         stateChangedAt = millis();
