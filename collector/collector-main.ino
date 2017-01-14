@@ -6,6 +6,7 @@
 #include "Preflight.h"
 #include "SelfRestart.h"
 #include "Collector.h"
+#include "protocol.h"
 
 Configuration configuration(FK_SETTINGS_CONFIGURATION_FILENAME);
 WeatherStation weatherStation;
@@ -14,8 +15,6 @@ Pcf8523SystemClock Clock;
 Collector collector(&weatherStation, &configuration);
 
 void setup() {
-    collector.waitForBattery();
-
     Watchdog.enable();
 
     Serial.begin(115200);
@@ -28,6 +27,8 @@ void setup() {
         }
     }
     #endif
+
+    collector.waitForBattery();
 
     Watchdog.reset();
 

@@ -187,13 +187,14 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize
         break;
     }
     default: {
-        DEBUG_PRINTLN(F("Unknown"));
+        DEBUG_PRINT(F("Unknown: "));
+        DEBUG_PRINTLN(packetSize);
 
         // So this is actually weird. I'm thinking that sometimes things get corrupted and we
         // should avoid that rather than causing the remote end to retry all over again. I saw
         // this happen during testing (ie restarting during writes, etc..) and I'm just worried
         // we'll see this in production.
-        sendAck();
+        sendNack(FK_PACKET_NACK_KIND);
         break;
     }
     }
@@ -221,6 +222,19 @@ void NetworkProtocolState::sendAck() {
     checkForPacket();
 }
 
+void NetworkProtocolState::sendNack(uint8_t status) {
+    DEBUG_PRINTLN(F("Acking"));
+
+    fk_network_ack_t ack;
+    memzero((uint8_t *)&ack, sizeof(fk_network_ack_t));
+    ack.fk.kind = FK_PACKET_KIND_NACK;
+    ack.status = status;
+    radio->reply((uint8_t *)&ack, sizeof(fk_network_ack_t));
+    radio->waitPacketSent();
+    checkForPacket();
+}
+
+void sendNack(uint8_t status);
 void NetworkProtocolState::checkForPacket() {
     radio->tick();
 

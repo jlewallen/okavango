@@ -6,15 +6,15 @@
 #define FK_PACKET_KIND_PING                                 0x0
 #define FK_PACKET_KIND_PONG                                 0x1
 #define FK_PACKET_KIND_ACK                                  0x2
-#define FK_PACKET_KIND_ATLAS_SENSORS                        0x3
-#define FK_PACKET_KIND_WEATHER_STATION                      0x4
-#define FK_PACKET_KIND_DATA_BOAT_SENSORS                    0x5
+#define FK_PACKET_KIND_NACK                                 0x3
+#define FK_PACKET_KIND_ATLAS_SENSORS                        0x4
+#define FK_PACKET_KIND_WEATHER_STATION                      0x5
+#define FK_PACKET_KIND_DATA_BOAT_SENSORS                    0x6
+#define FK_PACKET_KIND_SONAR_STATION                        0x7
 
-#define FK_PACKET_KIND_FORCE_TRANSMISSION                   0x6
-#define FK_PACKET_KIND_RUN_DIAGNOSTICS                      0x7
-#define FK_PACKET_KIND_DIAGNOSTICS_COLLECTOR                0x8
-
-#define FK_PACKET_KIND_SONAR_STATION                        0x9
+#define FK_PACKET_KIND_FORCE_TRANSMISSION                   0x8
+#define FK_PACKET_KIND_RUN_DIAGNOSTICS                      0x9
+#define FK_PACKET_KIND_DIAGNOSTICS_COLLECTOR                0x10
 
 /**
  * Ideas:
@@ -25,6 +25,9 @@
 #define FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES               11
 #define FK_WEATHER_STATION_PACKET_NUMBER_VALUES             21
 #define FK_SONAR_STATION_PACKET_NUMBER_VALUES               5
+
+#define FK_PACKET_ACK                                       0
+#define FK_PACKET_NACK_KIND                                 1
 
 // Alignment issues? -jlewallen
 typedef struct fk_network_packet_t {
@@ -87,6 +90,7 @@ typedef struct sonar_station_packet_t {
 
 typedef struct fk_network_ack_t {
     fk_network_packet_t fk;
+    uint8_t status;
 } fk_network_ack_t;
 
 typedef struct fk_network_force_transmission_t {

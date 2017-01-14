@@ -60,6 +60,7 @@ public:
 private:
     void sendPing();
     void sendAck();
+    void sendNack(uint8_t status);
     void dequeueAndSend();
     void checkForPacket();
     void handle(fk_network_packet_t *packet, size_t packetSize);
