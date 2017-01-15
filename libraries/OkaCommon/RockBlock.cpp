@@ -37,7 +37,7 @@ bool RockBlock::tick() {
     }
     bool success = false;
 
-    rockBlock.setPowerProfile(1);
+    rockBlock.setPowerProfile(0);
     if (rockBlock.begin() == ISBD_SUCCESS) {
         for (uint8_t i = 0; i < 2; ++i) {
             int signalQuality = 0;
