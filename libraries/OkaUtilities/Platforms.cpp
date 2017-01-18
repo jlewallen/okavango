@@ -103,10 +103,11 @@ void platformPulse(uint8_t pin) {
 }
 
 void platformCatastrophe(uint8_t pin, uint8_t mode) {
-    uint32_t watchdogMs = Watchdog.enable();
-    uint32_t restartAfter = (30 * 1000) - watchdogMs;
-    DEBUG_PRINTLN("Catastrophe!");
+    uint32_t restartAfter = 30 * 1000;
     uint32_t started = millis();
+
+    DEBUG_PRINTLN("Catastrophe!");
+
     while (true) {
         if (millis() - started < restartAfter) {
             Watchdog.reset();
@@ -114,6 +115,8 @@ void platformCatastrophe(uint8_t pin, uint8_t mode) {
         else {
             pinMode(PIN_POWER_HARD_RESET, OUTPUT);
             digitalWrite(PIN_POWER_HARD_RESET, HIGH);
+            delay(1000);
+            platformRestart();
         }
         switch (mode) {
         case PLATFORM_CATASTROPHE_FAST_BLINK:
