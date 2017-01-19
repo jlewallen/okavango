@@ -24,4 +24,4 @@ libraries/OkaUtilities/config.h
 
 .gradle
 data
-project.properties
+firmwaretool.properties
