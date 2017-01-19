@@ -5,8 +5,16 @@
 #include "Platforms.h"
 
 class CorePlatform {
+private:
+    bool sdAvailable;
+
 public:
-    void setup(uint8_t pinSdCs, uint8_t pinRfm95Cs, uint8_t pinRfm95Rst);
+    void setup(uint8_t pinSdCs, uint8_t pinRfm95Cs, uint8_t pinRfm95Rst, bool requireSd = true);
+
+    bool isSdAvailable() {
+        return sdAvailable;
+    }
+
 };
 
 class RtcAbstractSystemClock {

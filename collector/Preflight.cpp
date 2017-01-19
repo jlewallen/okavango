@@ -10,7 +10,7 @@ Preflight::Preflight(Configuration *configuration, WeatherStation *weatherStatio
 }
 
 bool Preflight::check() {
-    Serial.println("Preflight");
+    DEBUG_PRINTLN("Preflight");
     return checkCommunications() && checkWeatherStation();
 }
 

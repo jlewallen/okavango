@@ -1,13 +1,16 @@
 #ifndef LOG_PRINTER_H_INCLUDED
 #define LOG_PRINTER_H_INCLUDED
 
+#include <SD.h>
+
 class LogPrinter : public Stream {
 private:
     bool serial1Relay = false;
-    bool serial2Relay = false;
+    bool fileAvailable = false;
+    File fileLog;
 
 public:
-    bool open(bool serial1Relay = false, bool serial2Relay = false);
+    bool open(bool serial1Relay = false);
 
 public:
     virtual int available() override;

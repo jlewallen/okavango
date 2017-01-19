@@ -2,19 +2,13 @@
 #include "LogPrinter.h"
 #include "Platforms.h"
 
-bool fileAvailable = false;
-File fileLog;
 LogPrinter logPrinter;
 
-bool LogPrinter::open(bool serial1Relay, bool serial2Relay) {
+bool LogPrinter::open(bool serial1Relay) {
     this->serial1Relay = serial1Relay;
-    this->serial2Relay = serial2Relay;
 
     Serial.print("Serial1Relay: ");
     Serial.println(this->serial1Relay);
-
-    Serial.print("Serial2Relay: ");
-    Serial.println(this->serial2Relay);
 
     fileLog = SD.open("DEBUG.LOG", FILE_WRITE);
     if (fileLog) {

@@ -32,11 +32,13 @@ void setup() {
 
     Watchdog.reset();
 
-    corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST);
+    corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST, false);
 
     SystemClock->setup();
 
-    logPrinter.open();
+    if (corePlatform.isSdAvailable()) {
+        logPrinter.open();
+    }
 
     switch (system_get_reset_cause()) {
     case SYSTEM_RESET_CAUSE_SOFTWARE: logPrinter.println("ResetCause: Software"); break;
@@ -53,10 +55,12 @@ void setup() {
 
     logPrinter.flush();
 
-    if (!configuration.read()) {
-        DEBUG_PRINTLN("Error reading configuration");
-        logPrinter.flush();
-        platformCatastrophe(PIN_RED_LED);
+    if (corePlatform.isSdAvailable()) {
+        if (!configuration.read()) {
+            DEBUG_PRINTLN("Error reading configuration");
+            logPrinter.flush();
+            platformCatastrophe(PIN_RED_LED);
+        }
     }
 
     if (configuration.hasRockBlockAttached()) {
