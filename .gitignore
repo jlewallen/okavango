@@ -25,3 +25,5 @@ libraries/OkaUtilities/config.h
 .gradle
 data
 firmwaretool.properties
+gradle.properties
+config.h
