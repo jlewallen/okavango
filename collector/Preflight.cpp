@@ -38,6 +38,7 @@ bool Preflight::checkCommunications() {
         }
         return fona.isDone();
     }
+
     if (configuration->hasRockBlockAttached()) {
         rockBlockSerialBegin();
         IridiumSBD rockBlock(Serial2, PIN_ROCK_BLOCK, new WatchdogCallbacks());
@@ -49,7 +50,7 @@ bool Preflight::checkCommunications() {
             rockBlock.attachConsole(logPrinter);
             rockBlock.attachDiags(logPrinter);
         }
-        rockBlock.setPowerProfile(1);
+        rockBlock.setPowerProfile(0);
         if (rockBlock.begin(10) != ISBD_SUCCESS) {
             DEBUG_PRINTLN("preflight: RockBlock failed");
             return false;
