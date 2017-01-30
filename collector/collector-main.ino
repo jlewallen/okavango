@@ -7,7 +7,6 @@
 #include "SelfRestart.h"
 #include "Collector.h"
 #include "protocol.h"
-#include "FuelGauge.h"
 
 Configuration configuration(FK_SETTINGS_CONFIGURATION_FILENAME);
 WeatherStation weatherStation;
@@ -30,9 +29,6 @@ void setup() {
     #endif
 
     Wire.begin();
-
-    FuelGauge gauge;
-    gauge.powerOn();
 
     collector.waitForBattery();
 
@@ -74,6 +70,9 @@ void setup() {
     }
 
     weatherStation.setup();
+
+    pinMode(PIN_ROCK_BLOCK, OUTPUT);
+    digitalWrite(PIN_ROCK_BLOCK, HIGH);
 
     Preflight preflight(&configuration, &weatherStation);
     preflight.check();

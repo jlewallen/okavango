@@ -13,6 +13,7 @@
 #define WEATHER_STATION_CHECK_TIME   (1000 * 10)
 
 void Collector::setup() {
+    gauge.powerOn();
     status.startup();
 }
 
