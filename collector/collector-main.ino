@@ -7,6 +7,7 @@
 #include "SelfRestart.h"
 #include "Collector.h"
 #include "protocol.h"
+#include "FuelGauge.h"
 
 Configuration configuration(FK_SETTINGS_CONFIGURATION_FILENAME);
 WeatherStation weatherStation;
@@ -28,6 +29,11 @@ void setup() {
     }
     #endif
 
+    Wire.begin();
+
+    FuelGauge gauge;
+    gauge.powerOn();
+
     collector.waitForBattery();
 
     Watchdog.reset();
@@ -39,7 +45,6 @@ void setup() {
     if (corePlatform.isSdAvailable()) {
         logPrinter.open();
     }
-
     switch (system_get_reset_cause()) {
     case SYSTEM_RESET_CAUSE_SOFTWARE: logPrinter.println("ResetCause: Software"); break;
     case SYSTEM_RESET_CAUSE_WDT: logPrinter.println("ResetCause: WDT"); break;

@@ -31,7 +31,8 @@ model {
                 "Arduino-Temperature-Control-Library",
                 "IridiumSBD",
                 "Adafruit_WINC1500",
-                "AtSamd"
+                "AtSamd",
+                "max1704x"
             ]
         }
     }
