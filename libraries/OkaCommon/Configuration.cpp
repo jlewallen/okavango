@@ -3,7 +3,7 @@
 #include "Configuration.h"
 #include "Platforms.h"
 
-Configuration::Configuration(const char *filename) : filename(filename) {
+Configuration::Configuration(const char *filename) : filename(filename), hasRockBlock(true), hasFona(false) {
 }
 
 bool Configuration::read() {
