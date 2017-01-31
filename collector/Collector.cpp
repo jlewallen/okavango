@@ -222,6 +222,16 @@ void Collector::tick() {
                         break;
                     }
                 }
+
+                // So we can see the RB logs. Saw a cutoff RB transmission, which is kind of strange.
+                logPrinter.flush();
+
+                uint32_t start = millis();
+                while (millis() - start < 10 * 1000) {
+                    delay(100);
+                    Watchdog.reset();
+                }
+
                 platformRestart();
             }
         }
