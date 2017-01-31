@@ -11,16 +11,16 @@
 #include "config.h"
 #endif
 
-Transmissions::Transmissions(WeatherStation *weatherStation, RtcAbstractSystemClock *systemClock, Configuration *configuration, TransmissionStatus *status) :
-    weatherStation(weatherStation), systemClock(systemClock), configuration(configuration), status(status) {
+Transmissions::Transmissions(WeatherStation *weatherStation, RtcAbstractSystemClock *systemClock, Configuration *configuration, TransmissionStatus *status, FuelGauge *fuel) :
+    weatherStation(weatherStation), systemClock(systemClock), configuration(configuration), status(status), fuel(fuel) {
 }
 
 String Transmissions::atlasPacketToMessage(atlas_sensors_packet_t *packet) {
     String message(packet->time);
     message += ",";
     message += configuration->getName();
-    message += "," + String(platformBatteryVoltage(), 2);
-    message += "," + String(platformBatteryLevel(), 2);
+    message += "," + String(fuel->cellVoltage(), 2);
+    message += "," + String(fuel->stateOfCharge(), 2);
     message += "," + String(packet->battery, 2);
     for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
         String field = "," + String(packet->values[i], 2);
@@ -33,8 +33,8 @@ String Transmissions::sonarPacketToMessage(sonar_station_packet_t *packet) {
     String message(packet->time);
     message += ",";
     message += configuration->getName();
-    message += "," + String(platformBatteryVoltage(), 2);
-    message += "," + String(platformBatteryLevel(), 2);
+    message += "," + String(fuel->cellVoltage(), 2);
+    message += "," + String(fuel->stateOfCharge(), 2);
     message += "," + String(packet->battery, 2);
     for (uint8_t i = 0; i < FK_SONAR_STATION_PACKET_NUMBER_VALUES; ++i) {
         String field = "," + String(packet->values[i], 2);
@@ -47,8 +47,8 @@ String Transmissions::weatherStationPacketToMessage(weather_station_packet_t *pa
     String message(packet->time);
     message += ",";
     message += configuration->getName();
-    message += "," + String(platformBatteryVoltage(), 2);
-    message += "," + String(platformBatteryLevel(), 2);
+    message += "," + String(fuel->cellVoltage(), 2);
+    message += "," + String(fuel->stateOfCharge(), 2);
     message += "," + String(packet->battery, 2);
     uint8_t fields[] = {
         FK_WEATHER_STATION_FIELD_TEMPERATURE,
@@ -169,8 +169,8 @@ String Transmissions::locationToMessage(gps_fix_t *location) {
     String message(location->time);
     message += ",";
     message += configuration->getName();
-    message += "," + String(platformBatteryVoltage(), 2);
-    message += "," + String(platformBatteryLevel(), 2);
+    message += "," + String(fuel->cellVoltage(), 2);
+    message += "," + String(fuel->stateOfCharge(), 2);
     message += "," + String(location->latitude, 6);
     message += "," + String(location->longitude, 6);
     message += "," + String(location->altitude, 2);

@@ -30,6 +30,8 @@ void setup() {
 
     Wire.begin();
 
+    collector.setup();
+
     collector.waitForBattery();
 
     Watchdog.reset();
@@ -49,8 +51,6 @@ void setup() {
     case SYSTEM_RESET_CAUSE_BOD12: logPrinter.println("ResetCause: BOD12"); break;
     case SYSTEM_RESET_CAUSE_POR: logPrinter.println("ResetCause: PoR"); break;
     }
-
-    collector.setup();
 
     collector.logTransition("Begin");
 

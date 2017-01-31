@@ -7,6 +7,7 @@
 #include "Configuration.h"
 #include "WeatherStation.h"
 #include "TransmissionStatus.h"
+#include "FuelGauge.h"
 
 class Transmissions {
 private:
@@ -14,9 +15,10 @@ private:
     RtcAbstractSystemClock *systemClock;
     Configuration *configuration;
     TransmissionStatus *status;
+    FuelGauge *fuel;
 
 public:
-    Transmissions(WeatherStation *weatherStation, RtcAbstractSystemClock *systemClock, Configuration *configuration, TransmissionStatus *status);
+    Transmissions(WeatherStation *weatherStation, RtcAbstractSystemClock *systemClock, Configuration *configuration, TransmissionStatus *status, FuelGauge *fuel);
 
 public:
     void handleTransmissionIfNecessary();

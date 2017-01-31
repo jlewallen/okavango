@@ -59,6 +59,7 @@ uint32_t platformFreeMemory() {
     char stack_dummy = 0;
     return &stack_dummy - sbrk(0);
 }
+
 void platformRestart() {
     NVIC_SystemReset();
 }

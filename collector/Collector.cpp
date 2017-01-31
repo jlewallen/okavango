@@ -18,14 +18,17 @@ void Collector::setup() {
 
 void Collector::waitForBattery() {
     // TODO: Should we have a way to turn off the weather station if it's on?
-    float level = platformBatteryLevel();
-    if (level > 0.15) {
+    float level = gauge.stateOfCharge();
+    float voltage = gauge.cellVoltage();
+    if (level > 15.0f) {
         return;
     }
     DEBUG_PRINT("Waiting for more battery: ");
-    DEBUG_PRINTLN(level);
+    DEBUG_PRINT(level);
+    DEBUG_PRINT(" ");
+    DEBUG_PRINTLN(voltage);
     uint32_t started = millis();
-    while (platformBatteryLevel() < 0.3) {
+    while (gauge.stateOfCharge() < 30.0f) {
         Watchdog.reset();
         delay(5000);
     }
@@ -66,7 +69,7 @@ bool Collector::checkWeatherStation() {
             memzero((uint8_t *)&packet, sizeof(weather_station_packet_t));
             packet.fk.kind = FK_PACKET_KIND_WEATHER_STATION;
             packet.time = SystemClock->now();
-            packet.battery = platformBatteryVoltage();
+            packet.battery = gauge.stateOfCharge();
             for (uint8_t i = 0; i < FK_WEATHER_STATION_PACKET_NUMBER_VALUES; ++i) {
                 packet.values[i] = values[i];
             }
@@ -185,9 +188,9 @@ void Collector::logTransition(const char *name) {
     DEBUG_PRINT(dt.second());
 
     DEBUG_PRINT(" ");
-    DEBUG_PRINT(platformBatteryVoltage());
+    DEBUG_PRINT(gauge.cellVoltage());
     DEBUG_PRINT(" ");
-    DEBUG_PRINT(platformBatteryLevel());
+    DEBUG_PRINT(gauge.stateOfCharge());
 
     DEBUG_PRINT(" >");
     DEBUG_PRINTLN(name);
@@ -215,7 +218,7 @@ void Collector::tick() {
         TransmissionStatus status;
         if (!status.anyTransmissionsThisHour()) {
             if (SelfRestart::isRestartNecessary()) {
-                Transmissions transmissions(weatherStation, SystemClock, configuration, &status);
+                Transmissions transmissions(weatherStation, SystemClock, configuration, &status, &gauge);
                 for (uint8_t i = 0; i < 3; ++i) {
                     if (transmissions.sendStatusTransmission()) {
                         break;
@@ -240,7 +243,7 @@ void Collector::tick() {
         break;
     }
     case CollectorState::Transmission: {
-        Transmissions transmissions(weatherStation, SystemClock, configuration, &status);
+        Transmissions transmissions(weatherStation, SystemClock, configuration, &status, &gauge);
         transmissions.handleTransmissionIfNecessary();
         logTransition("AW");
         state = CollectorState::Airwaves;
