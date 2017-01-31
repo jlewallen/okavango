@@ -8,7 +8,6 @@
 
 class TransmissionStatus {
 public:
-    void startup();
     bool anyTransmissionsThisHour();
     int8_t shouldWe();
 };

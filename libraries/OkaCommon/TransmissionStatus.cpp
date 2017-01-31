@@ -26,10 +26,6 @@ fk_transmission_schedule_t schedules[TRANSMISSION_KIND_KINDS] = {
     { 3,   6 }  // Weather
 };
 
-void TransmissionStatus::startup() {
-
-}
-
 bool TransmissionStatus::anyTransmissionsThisHour() {
     DateTime dt(SystemClock->now());
     for (int8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
