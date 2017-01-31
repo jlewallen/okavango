@@ -11,7 +11,9 @@ Preflight::Preflight(Configuration *configuration, WeatherStation *weatherStatio
 
 bool Preflight::check() {
     DEBUG_PRINTLN("Preflight");
-    return checkCommunications() && checkWeatherStation();
+    bool communications = checkCommunications();
+    bool weatherStation = checkWeatherStation();
+    return communications && weatherStation;
 }
 
 bool Preflight::checkCommunications() {
