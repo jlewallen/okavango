@@ -23,12 +23,14 @@ void Collector::waitForBattery() {
     if (level > 15.0f) {
         return;
     }
-    DEBUG_PRINT("Waiting for more battery: ");
+    DEBUG_PRINT("Waiting for charge: ");
     DEBUG_PRINT(level);
     DEBUG_PRINT(" ");
     DEBUG_PRINTLN(voltage);
     uint32_t started = millis();
     while (gauge.stateOfCharge() < 30.0f) {
+        Serial.print("Battery: ");
+        Serial.println(gauge.stateOfCharge());
         Watchdog.reset();
         delay(5000);
     }
