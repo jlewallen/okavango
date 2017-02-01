@@ -179,7 +179,9 @@ void delay_and_check_gps(uint32_t ms) {
     uint32_t start = millis();
     do {
         while (gpsSerial.available()) {
-            gps.encode(gpsSerial.read());
+            char c = gpsSerial.read();
+            Serial.print(c);
+            gps.encode(c);
         }
     }
     while (millis() - start < ms);
@@ -346,14 +348,15 @@ void print_weather() {
     PRINT_LABEL(",lat=");
     PRINT_VALUE_FLT(gps.location.lng(), 6);
     PRINT_LABEL(",altitude=");
-    PRINT_VALUE_INT(gps.altitude.meters());
+    PRINT_VALUE_FLT(gps.altitude.meters(), 4);
     PRINT_LABEL(",sats=");
     PRINT_VALUE_INT(gps.satellites.value());
-
     PRINT_LABEL(",date=");
     PRINT_VALUE_INT(gps.date.value());
     PRINT_LABEL(",time=");
     PRINT_VALUE_INT(gps.time.value());
+    PRINT_LABEL(",gpsCharsProcessed=");
+    PRINT_VALUE_INT(gps.charsProcessed());
 
     Serial.println();
 }

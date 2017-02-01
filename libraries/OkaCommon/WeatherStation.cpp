@@ -114,7 +114,6 @@ bool WeatherStation::tick() {
                         }
                         if (c == '\r' || c == '\n') {
                             bool success = numberOfValues == FK_WEATHER_STATION_PACKET_NUMBER_VALUES;
-                            numberOfValues = 0;
                             if (success) {
                                 DEBUG_PRINTLN("WS: have reading");
                                 for (uint8_t i = 0; i < FK_WEATHER_STATION_PACKET_NUMBER_VALUES; ++i) {
@@ -155,6 +154,16 @@ bool WeatherStation::tick() {
                                     transition(WeatherStationState::HaveReading);
                                 }
                             }
+                            else {
+                                DEBUG_PRINT("WS: no reading: ");
+                                DEBUG_PRINT(numberOfValues);
+                                DEBUG_PRINT(" ");
+                                DEBUG_PRINT(FK_WEATHER_STATION_PACKET_NUMBER_VALUES);
+                                DEBUG_PRINTLN("");
+                            }
+
+                            numberOfValues = 0;
+
                             break;
                         }
                     }

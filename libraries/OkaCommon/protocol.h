@@ -23,7 +23,7 @@
  */
 
 #define FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES               11
-#define FK_WEATHER_STATION_PACKET_NUMBER_VALUES             21
+#define FK_WEATHER_STATION_PACKET_NUMBER_VALUES             22
 #define FK_SONAR_STATION_PACKET_NUMBER_VALUES               5
 
 #define FK_PACKET_ACK                                       0
