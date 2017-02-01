@@ -39,6 +39,11 @@ void Collector::waitForBattery() {
     diagnostics.recordBatterySleep(millis() - started);
 }
 
+void Collector::start() {
+    Transmissions transmissions(weatherStation, SystemClock, configuration, &status, &gauge);
+    transmissions.sendStatusTransmission();
+}
+
 bool Collector::checkWeatherStation() {
     Queue queue;
 

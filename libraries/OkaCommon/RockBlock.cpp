@@ -12,7 +12,8 @@ RockBlock::RockBlock(uint8_t *buffer, size_t size) :
 }
 
 RockBlock::RockBlock(String message) :
-    message(message), NonBlockingSerialProtocol(10 * 1000, true, false),
+    buffer(nullptr), size(0), message(message),
+    NonBlockingSerialProtocol(10 * 1000, true, false),
     sendTries(0), signalTries(0) {
 }
 

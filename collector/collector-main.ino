@@ -80,6 +80,8 @@ void setup() {
     DEBUG_PRINTLN("Loop");
 
     logPrinter.flush();
+
+    collector.start();
 }
 
 void loop() {
