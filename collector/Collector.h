@@ -37,7 +37,6 @@ public:
     void logTransition(const char *name);
     void idlePeriod();
     void checkAirwaves();
-    void start();
 
 };
 

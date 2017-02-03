@@ -19,8 +19,6 @@ void setup() {
     #endif
 
     collector.setup();
-
-    collector.start();
 }
 
 void loop() {

@@ -68,6 +68,9 @@ void Collector::setup() {
     DEBUG_PRINTLN("Loop");
 
     logPrinter.flush();
+
+    Transmissions transmissions(&corePlatform, &weatherStation, SystemClock, &configuration, &status, &gauge);
+    transmissions.sendStatusTransmission();
 }
 
 void Collector::waitForBattery() {
@@ -91,11 +94,6 @@ void Collector::waitForBattery() {
     DEBUG_PRINT("Done, took ");
     DEBUG_PRINTLN(millis() - started);
     diagnostics.recordBatterySleep(millis() - started);
-}
-
-void Collector::start() {
-    Transmissions transmissions(&corePlatform, &weatherStation, SystemClock, &configuration, &status, &gauge);
-    transmissions.sendStatusTransmission();
 }
 
 bool Collector::checkWeatherStation() {
