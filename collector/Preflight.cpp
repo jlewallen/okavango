@@ -5,15 +5,26 @@
 #include <IridiumSBD.h>
 #include "WatchdogCallbacks.h"
 
-Preflight::Preflight(Configuration *configuration, WeatherStation *weatherStation) :
-    configuration(configuration), weatherStation(weatherStation) {
+Preflight::Preflight(Configuration *configuration, WeatherStation *weatherStation, LoraRadio *radio) :
+    configuration(configuration), weatherStation(weatherStation), radio(radio) {
 }
 
 bool Preflight::check() {
     DEBUG_PRINTLN("Preflight");
     bool communications = checkCommunications();
     bool weatherStation = checkWeatherStation();
-    return communications && weatherStation;
+
+    bool radioAvailable = false;
+    if (radio->setup()) {
+        radio->sleep();
+        radioAvailable = true;
+        Serial.println("preflight: LoRa good");
+    }
+    else {
+        Serial.println("preflight: LoRa failed");
+    }
+
+    return communications && weatherStation && radioAvailable;
 }
 
 bool Preflight::checkCommunications() {

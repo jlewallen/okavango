@@ -5,6 +5,7 @@
 #include "Configuration.h"
 #include "TransmissionStatus.h"
 #include "FuelGauge.h"
+#include "LoraRadio.h"
 #include "core.h"
 
 enum class CollectorState {
@@ -23,9 +24,12 @@ private:
     CorePlatform corePlatform;
     Configuration configuration;
     WeatherStation weatherStation;
+    LoraRadio radio;
 
 public:
-    Collector() : configuration(FK_SETTINGS_CONFIGURATION_FILENAME) {
+    Collector() :
+        configuration(FK_SETTINGS_CONFIGURATION_FILENAME),
+        radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST, PIN_RFM95_RST) {
     }
 
 public:

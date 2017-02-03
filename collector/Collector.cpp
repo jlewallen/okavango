@@ -62,7 +62,7 @@ void Collector::setup() {
     pinMode(PIN_ROCK_BLOCK, OUTPUT);
     digitalWrite(PIN_ROCK_BLOCK, HIGH);
 
-    Preflight preflight(&configuration, &weatherStation);
+    Preflight preflight(&configuration, &weatherStation, &radio);
     preflight.check();
 
     DEBUG_PRINTLN("Loop");
@@ -156,24 +156,7 @@ bool Collector::checkWeatherStation() {
 
 void Collector::checkAirwaves() {
     Queue queue;
-    LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST, PIN_RFM95_RST);
     NetworkProtocolState networkProtocol(NetworkState::EnqueueFromNetwork, &radio, &queue, new CollectorNetworkCallbacks());
-
-    DEBUG_PRINTLN("AW: Check");
-    logPrinter.flush();
-
-    // Can't call this more than 3 times or so because we use up all the IRQs and
-    // so this would be nice to have a kind of memory?
-    if (!radioSetup) {
-        if (radio.setup()) {
-            radio.sleep();
-        }
-        else {
-            logPrinter.flush();
-            platformCatastrophe(PIN_RED_LED);
-        }
-        radioSetup = true;
-    }
 
     DEBUG_PRINTLN("AW: RR");
     logPrinter.flush();

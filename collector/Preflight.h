@@ -3,14 +3,16 @@
 
 #include "Configuration.h"
 #include "WeatherStation.h"
+#include "LoraRadio.h"
 
 class Preflight {
 private:
     Configuration *configuration;
     WeatherStation *weatherStation;
+    LoraRadio *radio;
 
 public:
-    Preflight(Configuration *configuration, WeatherStation *weatherStation);
+    Preflight(Configuration *configuration, WeatherStation *weatherStation, LoraRadio *radio);
     bool check();
 
 private:
