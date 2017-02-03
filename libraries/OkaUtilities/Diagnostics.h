@@ -21,31 +21,39 @@ public:
     void recordBatterySleep(uint32_t ms) {
         batterySleepTime += ms;
     }
+
     void recordTransmissionSkipped() {
         numberOfTransmissionSkipped++;
     }
+
     void recordTransmissionFailure() {
         numberOfTransmissionFailures++;
     }
+
     void recordSonarPacket() {
         atlasPacketsReceived++;
     }
+
     void recordAtlasPacket() {
         sonarPacketsReceived++;
     }
+
     void recordWeatherReading() {
         weatherReadingsReceived++;
     }
+
     void updateGpsStatus(bool has) {
         hasGpsFix = has;
     }
-    String message(FuelGauge *fuelGauge, Configuration *configuration) {
+
+    String message(FuelGauge *fuelGauge, Configuration *configuration, CorePlatform *core) {
         uint32_t uptime = millis() / (1000 * 60);
         String message(SystemClock->now());
         message += ",";
         message += configuration->getName();
         message += "," + String(fuelGauge->cellVoltage(), 2);
         message += "," + String(fuelGauge->stateOfCharge(), 2);
+        message += "," + String(core->isSdAvailable());
         message += "," + String(hasGpsFix);
         message += "," + String(batterySleepTime);
         message += "," + String(numberOfTransmissionFailures);

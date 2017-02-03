@@ -11,8 +11,8 @@
 #include "config.h"
 #endif
 
-Transmissions::Transmissions(WeatherStation *weatherStation, RtcAbstractSystemClock *systemClock, Configuration *configuration, TransmissionStatus *status, FuelGauge *fuel) :
-    weatherStation(weatherStation), systemClock(systemClock), configuration(configuration), status(status), fuel(fuel) {
+Transmissions::Transmissions(CorePlatform *core, WeatherStation *weatherStation, RtcAbstractSystemClock *systemClock, Configuration *configuration, TransmissionStatus *status, FuelGauge *fuel) :
+    core(core), weatherStation(weatherStation), systemClock(systemClock), configuration(configuration), status(status), fuel(fuel) {
 }
 
 String Transmissions::atlasPacketToMessage(atlas_sensors_packet_t *packet) {
@@ -186,7 +186,7 @@ void Transmissions::sendLocationTransmission() {
 }
 
 bool Transmissions::sendStatusTransmission() {
-    return transmission(diagnostics.message(fuel, configuration));
+    return transmission(diagnostics.message(fuel, configuration, core));
 }
 
 void Transmissions::handleTransmissionIfNecessary() {

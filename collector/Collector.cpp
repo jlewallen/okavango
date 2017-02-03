@@ -94,7 +94,7 @@ void Collector::waitForBattery() {
 }
 
 void Collector::start() {
-    Transmissions transmissions(&weatherStation, SystemClock, &configuration, &status, &gauge);
+    Transmissions transmissions(&corePlatform, &weatherStation, SystemClock, &configuration, &status, &gauge);
     transmissions.sendStatusTransmission();
 }
 
@@ -279,7 +279,7 @@ void Collector::tick() {
         TransmissionStatus status;
         if (!status.anyTransmissionsThisHour()) {
             if (SelfRestart::isRestartNecessary()) {
-                Transmissions transmissions(&weatherStation, SystemClock, &configuration, &status, &gauge);
+                Transmissions transmissions(&corePlatform, &weatherStation, SystemClock, &configuration, &status, &gauge);
                 for (uint8_t i = 0; i < 3; ++i) {
                     if (transmissions.sendStatusTransmission()) {
                         break;
@@ -304,7 +304,7 @@ void Collector::tick() {
         break;
     }
     case CollectorState::Transmission: {
-        Transmissions transmissions(&weatherStation, SystemClock, &configuration, &status, &gauge);
+        Transmissions transmissions(&corePlatform, &weatherStation, SystemClock, &configuration, &status, &gauge);
         transmissions.handleTransmissionIfNecessary();
         logTransition("AW");
         state = CollectorState::Airwaves;
