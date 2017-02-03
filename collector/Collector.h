@@ -5,6 +5,7 @@
 #include "Configuration.h"
 #include "TransmissionStatus.h"
 #include "FuelGauge.h"
+#include "core.h"
 
 enum class CollectorState {
     Airwaves,
@@ -15,16 +16,16 @@ enum class CollectorState {
 
 class Collector {
 private:
-    WeatherStation *weatherStation;
-    Configuration *configuration;
     bool radioSetup = false;
     CollectorState state = CollectorState::Airwaves;
     TransmissionStatus status;
     FuelGauge gauge;
+    CorePlatform corePlatform;
+    Configuration configuration;
+    WeatherStation weatherStation;
 
 public:
-    Collector(WeatherStation *weatherStation, Configuration *configuration) :
-        weatherStation(weatherStation), configuration(configuration) {
+    Collector() : configuration(FK_SETTINGS_CONFIGURATION_FILENAME) {
     }
 
 public:

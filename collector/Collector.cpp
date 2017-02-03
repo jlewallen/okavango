@@ -7,15 +7,67 @@
 #include "network.h"
 #include "CollectorNetworkCallbacks.h"
 #include "Queue.h"
+#include "Preflight.h"
+#include "system.h"
 
 #define IDLE_PERIOD                  (1000 * 60 * 2)
 #define AIRWAVES_CHECK_TIME          (1000 * 60 * 2)
 #define WEATHER_STATION_CHECK_TIME   (1000 * 10)
 
 void Collector::setup() {
+    Wire.begin();
+
     gauge.powerOn();
 
     delay(500);
+
+    waitForBattery();
+
+    corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST, false);
+
+    SystemClock->setup();
+
+    if (corePlatform.isSdAvailable()) {
+        logPrinter.open();
+    }
+
+    switch (system_get_reset_cause()) {
+    case SYSTEM_RESET_CAUSE_SOFTWARE: logPrinter.println("ResetCause: Software"); break;
+    case SYSTEM_RESET_CAUSE_WDT: logPrinter.println("ResetCause: WDT"); break;
+    case SYSTEM_RESET_CAUSE_EXTERNAL_RESET: logPrinter.println("ResetCause: External Reset"); break;
+    case SYSTEM_RESET_CAUSE_BOD33: logPrinter.println("ResetCause: BOD33"); break;
+    case SYSTEM_RESET_CAUSE_BOD12: logPrinter.println("ResetCause: BOD12"); break;
+    case SYSTEM_RESET_CAUSE_POR: logPrinter.println("ResetCause: PoR"); break;
+    }
+
+    logTransition("Begin");
+
+    logPrinter.flush();
+
+    if (corePlatform.isSdAvailable()) {
+        if (!configuration.read()) {
+            DEBUG_PRINTLN("Error reading configuration");
+            logPrinter.flush();
+            platformCatastrophe(PIN_RED_LED);
+        }
+    }
+
+    if (configuration.hasRockBlockAttached()) {
+        pinMode(PIN_ROCK_BLOCK, OUTPUT);
+        digitalWrite(PIN_ROCK_BLOCK, LOW);
+    }
+
+    weatherStation.setup();
+
+    pinMode(PIN_ROCK_BLOCK, OUTPUT);
+    digitalWrite(PIN_ROCK_BLOCK, HIGH);
+
+    Preflight preflight(&configuration, &weatherStation);
+    preflight.check();
+
+    DEBUG_PRINTLN("Loop");
+
+    logPrinter.flush();
 }
 
 void Collector::waitForBattery() {
@@ -42,7 +94,7 @@ void Collector::waitForBattery() {
 }
 
 void Collector::start() {
-    Transmissions transmissions(weatherStation, SystemClock, configuration, &status, &gauge);
+    Transmissions transmissions(&weatherStation, SystemClock, &configuration, &status, &gauge);
     transmissions.sendStatusTransmission();
 }
 
@@ -57,18 +109,18 @@ bool Collector::checkWeatherStation() {
     bool success = false;
     uint32_t started = millis();
     while (millis() - started < WEATHER_STATION_CHECK_TIME) {
-        weatherStation->tick();
+        weatherStation.tick();
 
         Watchdog.reset();
 
-        if (weatherStation->hasReading()) {
+        if (weatherStation.hasReading()) {
             DEBUG_PRINTLN("");
 
             DEBUG_PRINT("&");
 
-            weatherStation->logReadingLocally();
+            weatherStation.logReadingLocally();
 
-            float *values = weatherStation->getValues();
+            float *values = weatherStation.getValues();
             DEBUG_PRINT("%");
             SystemClock->set((uint32_t)values[FK_WEATHER_STATION_FIELD_UNIXTIME]);
 
@@ -87,7 +139,7 @@ bool Collector::checkWeatherStation() {
 
             queue.enqueue((uint8_t *)&packet, sizeof(weather_station_packet_t));
 
-            weatherStation->clear();
+            weatherStation.clear();
             DEBUG_PRINTLN("^");
             logPrinter.flush();
 
@@ -133,7 +185,7 @@ void Collector::checkAirwaves() {
     while (millis() - started < AIRWAVES_CHECK_TIME || !networkProtocol.isQuiet()) {
         networkProtocol.tick();
 
-        weatherStation->ignore();
+        weatherStation.ignore();
 
         if (millis() - last > 5000) {
             platformBlink(PIN_RED_LED);
@@ -227,7 +279,7 @@ void Collector::tick() {
         TransmissionStatus status;
         if (!status.anyTransmissionsThisHour()) {
             if (SelfRestart::isRestartNecessary()) {
-                Transmissions transmissions(weatherStation, SystemClock, configuration, &status, &gauge);
+                Transmissions transmissions(&weatherStation, SystemClock, &configuration, &status, &gauge);
                 for (uint8_t i = 0; i < 3; ++i) {
                     if (transmissions.sendStatusTransmission()) {
                         break;
@@ -252,7 +304,7 @@ void Collector::tick() {
         break;
     }
     case CollectorState::Transmission: {
-        Transmissions transmissions(weatherStation, SystemClock, configuration, &status, &gauge);
+        Transmissions transmissions(&weatherStation, SystemClock, &configuration, &status, &gauge);
         transmissions.handleTransmissionIfNecessary();
         logTransition("AW");
         state = CollectorState::Airwaves;
