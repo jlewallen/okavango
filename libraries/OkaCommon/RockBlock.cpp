@@ -6,14 +6,8 @@
 #include <IridiumSBD.h>
 
 RockBlock::RockBlock(uint8_t *buffer, size_t size) :
-    buffer(buffer), size(size),
     NonBlockingSerialProtocol(10 * 1000, true, false),
-    sendTries(0), signalTries(0) {
-}
-
-RockBlock::RockBlock(String message) :
-    buffer(nullptr), size(0), message(message),
-    NonBlockingSerialProtocol(10 * 1000, true, false),
+    txBuffer(buffer), txSize(size), rxSize(0),
     sendTries(0), signalTries(0) {
 }
 
@@ -53,13 +47,7 @@ bool RockBlock::tick() {
                 DEBUG_PRINT("Signal quality: ");
                 DEBUG_PRINTLN((int32_t)signalQuality);
 
-                uint8_t *data = buffer;
-                size_t dataSize = size;
-                if (data == nullptr) {
-                    data = (uint8_t *)message.c_str();
-                    dataSize = message.length();
-                }
-                error = rockBlock.sendSBDBinary(data, dataSize);
+                error = rockBlock.sendReceiveSBDBinary(txBuffer, txSize, rxBuffer, rxSize);
                 if (error == ISBD_SUCCESS) {
                     success = true;
                     break;

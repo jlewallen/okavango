@@ -231,7 +231,7 @@ bool Transmissions::transmission(String message) {
             DEBUG_PRINTLN(success);
         }
         if (configuration->hasRockBlockAttached()) {
-            RockBlock rockBlock(message);
+            RockBlock rockBlock((uint8_t *)message.c_str(), message.length());
             rockBlockSerialBegin();
             SerialType &rockBlockSerial = RockBlockSerial;
             rockBlock.setSerial(&rockBlockSerial);

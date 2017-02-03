@@ -123,6 +123,7 @@ bool WeatherStation::tick() {
                                     DEBUG_PRINT(values[i]);
                                 }
                                 DEBUG_PRINTLN("");
+
                                 // Sanity check the reading.
                                 #define JANUARY_1ST_2020   (1577836800)
                                 #define AUGUST_29TH_2016   (1472428800)
@@ -148,6 +149,7 @@ bool WeatherStation::tick() {
                                     fix.longitude = values[FK_WEATHER_STATION_FIELD_LONGITUDE];
                                     fix.altitude = values[FK_WEATHER_STATION_FIELD_ALTITUDE];
                                     fix.satellites = values[FK_WEATHER_STATION_FIELD_SATELLITES];
+
                                     diagnostics.recordWeatherReading();
                                     diagnostics.updateGpsStatus(true);
                                     DEBUG_PRINTLN("WS: >HaveReading");

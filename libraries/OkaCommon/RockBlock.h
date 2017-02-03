@@ -4,6 +4,8 @@
 
 #include "NonBlockingSerial.h"
 
+#define RB_RECEIVE_BUFFER_LENGTH 256
+
 enum RockBlockState {
     RockBlockStart = 0,
     RockBlockPowerOn,
@@ -29,13 +31,13 @@ private:
     uint8_t sendTries;
     uint8_t signalStrength;
     bool success;
-    String message;
-    uint8_t *buffer;
-    size_t size;
+    uint8_t *txBuffer;
+    size_t txSize;
+    uint8_t rxBuffer[RB_RECEIVE_BUFFER_LENGTH];
+    size_t rxSize;
 
 public:
     RockBlock(uint8_t *buffer, size_t size);
-    RockBlock(String message);
 
     virtual bool tick();
     virtual bool handle(String reply);
