@@ -186,7 +186,7 @@ void Transmissions::sendLocationTransmission() {
 }
 
 bool Transmissions::sendStatusTransmission() {
-    return transmission(diagnostics.message(configuration));
+    return transmission(diagnostics.message(fuel, configuration));
 }
 
 void Transmissions::handleTransmissionIfNecessary() {

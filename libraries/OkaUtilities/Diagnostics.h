@@ -2,6 +2,7 @@
 #define DIAGNOSTICS_H_INCLUDED
 
 #include <Arduino.h>
+#include "FuelGauge.h"
 #include "Configuration.h"
 #include "Platforms.h"
 #include "core.h"
@@ -38,20 +39,20 @@ public:
     void updateGpsStatus(bool has) {
         hasGpsFix = has;
     }
-    String message(Configuration *configuration) {
+    String message(FuelGauge *fuelGauge, Configuration *configuration) {
         uint32_t uptime = millis() / (1000 * 60);
         String message(SystemClock->now());
         message += ",";
         message += configuration->getName();
-        message += "," + String(platformBatteryVoltage(), 2);
-        message += "," + String(platformBatteryLevel(), 2);
-        message += "," + hasGpsFix;
-        message += "," + batterySleepTime;
-        message += "," + numberOfTransmissionFailures;
-        message += "," + numberOfTransmissionSkipped;
-        message += "," + weatherReadingsReceived;
-        message += "," + atlasPacketsReceived;
-        message += "," + sonarPacketsReceived;
+        message += "," + String(fuelGauge->cellVoltage(), 2);
+        message += "," + String(fuelGauge->stateOfCharge(), 2);
+        message += "," + String(hasGpsFix);
+        message += "," + String(batterySleepTime);
+        message += "," + String(numberOfTransmissionFailures);
+        message += "," + String(numberOfTransmissionSkipped);
+        message += "," + String(weatherReadingsReceived);
+        message += "," + String(atlasPacketsReceived);
+        message += "," + String(sonarPacketsReceived);
         message += ",";
         message += uptime;
         return message;
