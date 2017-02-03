@@ -53,7 +53,16 @@ bool Preflight::checkCommunications() {
             rockBlock.attachDiags(logPrinter);
         }
         rockBlock.setPowerProfile(0);
-        if (rockBlock.begin(10) != ISBD_SUCCESS) {
+
+        bool success = false;
+        for (uint8_t i = 0; i < 3; ++i) {
+            if (rockBlock.begin(3) == ISBD_SUCCESS) {
+                success = true;
+                break;
+            }
+        }
+
+        if (!success) {
             DEBUG_PRINTLN("preflight: RockBlock failed");
             return false;
         }
