@@ -41,6 +41,7 @@ public:
 
     virtual bool tick();
     virtual bool handle(String reply);
+    virtual void handleReceivedMessage();
 
     void transition(RockBlockState newState) {
         state = newState;

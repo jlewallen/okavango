@@ -49,6 +49,17 @@ bool RockBlock::tick() {
 
                 error = rockBlock.sendReceiveSBDBinary(txBuffer, txSize, rxBuffer, rxSize);
                 if (error == ISBD_SUCCESS) {
+                    handleReceivedMessage();
+
+                    while (rockBlock.getWaitingMessageCount() > 0) {
+                        error = rockBlock.sendReceiveSBDBinary(nullptr, 0, rxBuffer, rxSize);
+                        if (error != ISBD_SUCCESS) {
+                            break;
+                        }
+
+                        handleReceivedMessage();
+                    }
+
                     success = true;
                     break;
                 }
@@ -72,6 +83,14 @@ bool RockBlock::tick() {
         transition(RockBlockDone);
     }
     return success;
+}
+
+void RockBlock::handleReceivedMessage() {
+    if (rxSize == 0) {
+        return;
+    }
+
+    // TODO: What do we wanna tell them?
 }
 
 bool RockBlock::handle(String reply) {
