@@ -14,6 +14,8 @@
 
 void Collector::setup() {
     gauge.powerOn();
+
+    delay(500);
 }
 
 void Collector::waitForBattery() {
