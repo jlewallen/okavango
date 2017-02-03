@@ -180,7 +180,7 @@ void delay_and_check_gps(uint32_t ms) {
     do {
         while (gpsSerial.available()) {
             char c = gpsSerial.read();
-            Serial.print(c);
+            // Serial.print(c);
             gps.encode(c);
         }
     }
