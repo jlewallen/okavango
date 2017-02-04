@@ -45,6 +45,7 @@ typedef struct gps_fix_t {
     float altitude;
     uint8_t satellites;
     uint32_t time;
+    bool valid;
 } gps_fix_t;
 
 class WeatherStation {

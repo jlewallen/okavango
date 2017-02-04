@@ -128,30 +128,35 @@ bool WeatherStation::tick() {
                                 #define JANUARY_1ST_2020   (1577836800)
                                 #define AUGUST_29TH_2016   (1472428800)
 
-                                if (values[FK_WEATHER_STATION_FIELD_UNIXTIME] > JANUARY_1ST_2020 ||
-                                    values[FK_WEATHER_STATION_FIELD_UNIXTIME] < AUGUST_29TH_2016) {
-                                    if (checkingCommunications) {
-                                        DEBUG_PRINTLN("WS: >CommunicationsOk");
-                                        transition(WeatherStationState::CommunicationsOk);
-                                    }
-                                    diagnostics.updateGpsStatus(false);
-                                }
-                                else if (values[FK_WEATHER_STATION_FIELD_SATELLITES] <= 0) {
-                                    if (checkingCommunications) {
-                                        DEBUG_PRINTLN("WS: >CommunicationsOk");
-                                        transition(WeatherStationState::CommunicationsOk);
-                                    }
-                                    diagnostics.updateGpsStatus(false);
-                                }
-                                else {
+                                bool hasGoodFix =
+                                    (values[FK_WEATHER_STATION_FIELD_UNIXTIME] < JANUARY_1ST_2020 && values[FK_WEATHER_STATION_FIELD_UNIXTIME] > AUGUST_29TH_2016) &&
+                                    (values[FK_WEATHER_STATION_FIELD_SATELLITES] > 0);
+
+                                if (hasGoodFix) {
                                     fix.time = values[FK_WEATHER_STATION_FIELD_UNIXTIME];
                                     fix.latitude = values[FK_WEATHER_STATION_FIELD_LATITUDE];
                                     fix.longitude = values[FK_WEATHER_STATION_FIELD_LONGITUDE];
                                     fix.altitude = values[FK_WEATHER_STATION_FIELD_ALTITUDE];
                                     fix.satellites = values[FK_WEATHER_STATION_FIELD_SATELLITES];
+                                    fix.valid = true;
+                                }
+                                else {
+                                    fix.time = 0;
+                                    fix.latitude = 0;
+                                    fix.longitude = 0;
+                                    fix.altitude = 0;
+                                    fix.satellites = 0;
+                                    fix.valid = false;
+                                }
 
-                                    diagnostics.recordWeatherReading();
-                                    diagnostics.updateGpsStatus(true);
+                                diagnostics.updateGpsStatus(hasGoodFix);
+                                diagnostics.recordWeatherReading();
+
+                                if (checkingCommunications) {
+                                    DEBUG_PRINTLN("WS: >CommunicationsOk");
+                                    transition(WeatherStationState::CommunicationsOk);
+                                }
+                                else {
                                     DEBUG_PRINTLN("WS: >HaveReading");
                                     transition(WeatherStationState::HaveReading);
                                 }

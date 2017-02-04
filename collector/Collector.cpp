@@ -118,12 +118,15 @@ bool Collector::checkWeatherStation() {
 
             weatherStation.logReadingLocally();
 
+            gps_fix_t *fix = weatherStation.getFix();
+            if (fix->valid) {
+                DEBUG_PRINT("%");
+                SystemClock->set(fix->time);
+            }
+
+            DEBUG_PRINT("%");
+
             float *values = weatherStation.getValues();
-            DEBUG_PRINT("%");
-            SystemClock->set((uint32_t)values[FK_WEATHER_STATION_FIELD_UNIXTIME]);
-
-            DEBUG_PRINT("%");
-
             weather_station_packet_t packet;
             memzero((uint8_t *)&packet, sizeof(weather_station_packet_t));
             packet.fk.kind = FK_PACKET_KIND_WEATHER_STATION;
