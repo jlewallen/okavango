@@ -10,8 +10,8 @@
 #include "Preflight.h"
 #include "system.h"
 
-#define IDLE_PERIOD                  (1000 * 60 * 2)
-#define AIRWAVES_CHECK_TIME          (1000 * 60 * 2)
+#define IDLE_PERIOD                  (1000 * 60 * 5)
+#define AIRWAVES_CHECK_TIME          (1000 * 60 * 10)
 #define WEATHER_STATION_CHECK_TIME   (1000 * 10)
 
 void Collector::setup() {
@@ -59,9 +59,6 @@ void Collector::setup() {
 
     weatherStation.setup();
 
-    pinMode(PIN_ROCK_BLOCK, OUTPUT);
-    digitalWrite(PIN_ROCK_BLOCK, HIGH);
-
     Preflight preflight(&configuration, &weatherStation, &radio);
     preflight.check();
 
@@ -80,6 +77,9 @@ void Collector::waitForBattery() {
     if (level > 15.0f) {
         return;
     }
+
+    weatherStation.off();
+
     DEBUG_PRINT("Waiting for charge: ");
     DEBUG_PRINT(level);
     DEBUG_PRINT(" ");
@@ -94,6 +94,8 @@ void Collector::waitForBattery() {
     DEBUG_PRINT("Done, took ");
     DEBUG_PRINTLN(millis() - started);
     diagnostics.recordBatterySleep(millis() - started);
+
+    weatherStation.setup();
 }
 
 bool Collector::checkWeatherStation() {

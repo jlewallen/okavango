@@ -26,6 +26,7 @@
 #define FK_WEATHER_STATION_FIELD_SATELLITES                  18
 #define FK_WEATHER_STATION_FIELD_DATE                        19
 #define FK_WEATHER_STATION_FIELD_TIME                        20
+#define FK_WEATHER_STATION_FIELD_GPS_CHARS_PROCESSED         21
 
 #define FK_WEATHER_STATION_MAX_VALUES                        32
 #define FK_WEATHER_STATION_MAX_BUFFER                        20
@@ -34,7 +35,6 @@ enum class WeatherStationState {
     Start,
     Reading,
     Ignoring,
-    HaveReading,
     CommunicationsOk,
     Off
 };
@@ -56,6 +56,7 @@ private:
     float values[FK_WEATHER_STATION_MAX_VALUES];
     char buffer[FK_WEATHER_STATION_MAX_BUFFER];
     uint8_t length;
+    bool hasUnreadReading;
     bool checkingCommunications;
     bool on;
     gps_fix_t fix;
@@ -83,7 +84,7 @@ public:
         return numberOfValues;
     }
     bool hasReading() {
-        return state == WeatherStationState::HaveReading;
+        return hasUnreadReading;
     }
     bool areCommunicationsOk() {
         return state == WeatherStationState::CommunicationsOk;

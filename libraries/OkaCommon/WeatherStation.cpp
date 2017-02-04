@@ -7,7 +7,7 @@
 
 #define WEATHER_STATION_INTERVAL_START                        (1000 * 60)
 #define WEATHER_STATION_INTERVAL_IGNORE                       (1000 * 60 * 20)
-#define WEATHER_STATION_INTERVAL_OFF                          (1000 * 60 * 18)
+#define WEATHER_STATION_INTERVAL_OFF                          0
 #define WEATHER_STATION_INTERVAL_READING                      (1000 * 60 * 2)
 
 WeatherStation::WeatherStation() {
@@ -21,10 +21,10 @@ void WeatherStation::setup() {
 }
 
 void WeatherStation::clear() {
-    transition(WeatherStationState::Off);
     numberOfValues = 0;
     buffer[0] = 0;
     length = 0;
+    hasUnreadReading = false;
 }
 
 void WeatherStation::ignore() {
@@ -77,13 +77,6 @@ bool WeatherStation::tick() {
         if (millis() - lastTransitionAt > WEATHER_STATION_INTERVAL_IGNORE) {
             DEBUG_PRINTLN("WS: >Reading");
             transition(WeatherStationState::Reading);
-        }
-        break;
-    }
-    case WeatherStationState::HaveReading: {
-        if (on) {
-            ignore();
-            off();
         }
         break;
     }
@@ -149,6 +142,8 @@ bool WeatherStation::tick() {
                                     fix.valid = false;
                                 }
 
+                                hasUnreadReading = true;
+
                                 diagnostics.updateGpsStatus(hasGoodFix);
                                 diagnostics.recordWeatherReading();
 
@@ -157,8 +152,8 @@ bool WeatherStation::tick() {
                                     transition(WeatherStationState::CommunicationsOk);
                                 }
                                 else {
-                                    DEBUG_PRINTLN("WS: >HaveReading");
-                                    transition(WeatherStationState::HaveReading);
+                                    DEBUG_PRINTLN("WS: >Off");
+                                    transition(WeatherStationState::Off);
                                 }
                             }
                             else {
@@ -184,10 +179,12 @@ bool WeatherStation::tick() {
         break;
     }
     case WeatherStationState::Off: {
-        if (on) {
-            off();
+        if (WEATHER_STATION_INTERVAL_OFF > 0) {
+            if (on) {
+                off();
+            }
         }
-        if (millis() - lastTransitionAt > WEATHER_STATION_INTERVAL_OFF) {
+        if (WEATHER_STATION_INTERVAL_OFF == 0 || millis() - lastTransitionAt > WEATHER_STATION_INTERVAL_OFF) {
             DEBUG_PRINTLN("WS: >Ignoring");
             transition(WeatherStationState::Ignoring);
         }
