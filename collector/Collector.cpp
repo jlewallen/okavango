@@ -66,8 +66,10 @@ void Collector::setup() {
 
     logPrinter.flush();
 
-    Transmissions transmissions(&corePlatform, &weatherStation, SystemClock, &configuration, &status, &gauge);
-    transmissions.sendStatusTransmission();
+    if (false) {
+        Transmissions transmissions(&corePlatform, &weatherStation, SystemClock, &configuration, &status, &gauge);
+        transmissions.sendStatusTransmission();
+    }
 }
 
 void Collector::waitForBattery() {
