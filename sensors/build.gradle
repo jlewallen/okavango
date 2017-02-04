@@ -34,7 +34,8 @@ model {
                 "Adafruit_Sensor",
                 "Adafruit_BME280_Library",
                 "DHT-sensor-library",
-                "AtSamd"
+                "AtSamd",
+                "max1704x"
             ]
         }
     }

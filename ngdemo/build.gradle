@@ -33,7 +33,8 @@ model {
                 "Arduino-Temperature-Control-Library",
                 "IridiumSBD",
                 "AtSamd",
-                "fkcomms"
+                "fkcomms",
+                "max1704x"
             ]
         }
     }
