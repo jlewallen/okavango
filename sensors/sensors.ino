@@ -86,6 +86,10 @@ void waitForBattery() {
     DEBUG_PRINTLN(level);
     uint32_t started = millis();
     while (platformBatteryLevel() < 0.3) {
+        Serial.print(platformBatteryVoltage());
+        Serial.print(" ");
+        Serial.print(platformBatteryLevel());
+        Serial.println();
         Watchdog.reset();
         delay(5000);
     }
