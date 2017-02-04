@@ -51,6 +51,7 @@ public:
         String message(SystemClock->now());
         message += ",";
         message += configuration->getName();
+        message += "ST",
         message += "," + String(fuelGauge->cellVoltage(), 2);
         message += "," + String(fuelGauge->stateOfCharge(), 2);
         message += "," + String(core->isSdAvailable());
