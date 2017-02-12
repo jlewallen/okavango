@@ -18,10 +18,10 @@ bool Preflight::check() {
     if (radio->setup()) {
         radio->sleep();
         radioAvailable = true;
-        Serial.println("preflight: LoRa good");
+        DEBUG_PRINTLN("preflight: LoRa good");
     }
     else {
-        Serial.println("preflight: LoRa failed");
+        DEBUG_PRINTLN("preflight: LoRa failed");
     }
 
     return communications && weatherStation && radioAvailable;

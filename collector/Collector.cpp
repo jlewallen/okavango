@@ -41,7 +41,6 @@ void Collector::setup() {
     }
 
     logTransition("Begin");
-
     logPrinter.flush();
 
     if (corePlatform.isSdAvailable()) {

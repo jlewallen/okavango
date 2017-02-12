@@ -193,6 +193,7 @@ int IridiumSBD::internalBegin(long maximumTime)
       return ISBD_ALREADY_AWAKE;
 
    power(true); // power on
+   callbacks->tick();
 
    bool modemAlive = false;
 
@@ -205,6 +206,7 @@ int IridiumSBD::internalBegin(long maximumTime)
    for (unsigned long start = millis(); !modemAlive && millis() - start < 1000UL * maximumTime;)
    {
       send(F("AT\r"));
+      callbacks->tick();
       modemAlive = waitForATResponse();
       if (cancelled())
          return ISBD_CANCELLED;
@@ -213,6 +215,7 @@ int IridiumSBD::internalBegin(long maximumTime)
    if (!modemAlive)
    {
       diag.print(F("No modem detected.\r\n"));
+      callbacks->tick();
       return ISBD_NO_MODEM_DETECTED;
    }
 
