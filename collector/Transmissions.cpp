@@ -185,8 +185,27 @@ void Transmissions::sendLocationTransmission() {
     }
 }
 
+String Transmissions::diagnosticsToMessage() {
+    uint32_t uptime = millis() / (1000 * 60);
+    String message(SystemClock->now());
+    message += ",";
+    message += configuration->getName();
+    message += "," + String(fuel->cellVoltage(), 2);
+    message += "," + String(fuel->stateOfCharge(), 2);
+    message += "," + diagnostics.hasGpsFix;
+    message += "," + diagnostics.batterySleepTime;
+    message += "," + diagnostics.numberOfTransmissionFailures;
+    message += "," + diagnostics.numberOfTransmissionSkipped;
+    message += "," + diagnostics.weatherReadingsReceived;
+    message += "," + diagnostics.atlasPacketsReceived;
+    message += "," + diagnostics.sonarPacketsReceived;
+    message += ",";
+    message += uptime;
+    return message;
+}
+
 bool Transmissions::sendStatusTransmission() {
-    return transmission(diagnostics.message(configuration));
+    return transmission(diagnosticsToMessage());
 }
 
 void Transmissions::handleTransmissionIfNecessary() {

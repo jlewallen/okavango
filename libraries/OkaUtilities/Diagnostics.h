@@ -38,24 +38,6 @@ public:
     void updateGpsStatus(bool has) {
         hasGpsFix = has;
     }
-    String message(Configuration *configuration) {
-        uint32_t uptime = millis() / (1000 * 60);
-        String message(SystemClock->now());
-        message += ",";
-        message += configuration->getName();
-        message += "," + String(platformBatteryVoltage(), 2);
-        message += "," + String(platformBatteryLevel(), 2);
-        message += "," + hasGpsFix;
-        message += "," + batterySleepTime;
-        message += "," + numberOfTransmissionFailures;
-        message += "," + numberOfTransmissionSkipped;
-        message += "," + weatherReadingsReceived;
-        message += "," + atlasPacketsReceived;
-        message += "," + sonarPacketsReceived;
-        message += ",";
-        message += uptime;
-        return message;
-    }
 };
 
 extern Diagnostics diagnostics;
