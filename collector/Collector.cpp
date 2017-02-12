@@ -45,8 +45,8 @@ void Collector::waitForBattery() {
 }
 
 void Collector::start() {
-    Transmissions transmissions(weatherStation, SystemClock, configuration, &status, &gauge);
-    transmissions.sendStatusTransmission();
+    // Transmissions transmissions(weatherStation, SystemClock, configuration, &status, &gauge);
+    // transmissions.sendStatusTransmission();
 }
 
 bool Collector::checkWeatherStation() {
