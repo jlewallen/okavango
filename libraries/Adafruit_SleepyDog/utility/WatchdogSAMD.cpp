@@ -70,6 +70,8 @@ void WatchdogSAMD::disable() {
 }
 
 int WatchdogSAMD::sleep(int ms) {
+    wdt_disable();
+
     while (ms > 0) {
         int sleepingFor = wdt_enable(ms);
         ms -= sleepingFor;
@@ -83,9 +85,11 @@ int WatchdogSAMD::sleep(int ms) {
         }
         else {
             delay(ms);
-            return 0;
+            break;
         }
     }
+
+    wdt_enable(ms);
     return 0;
 }
 
