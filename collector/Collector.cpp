@@ -27,6 +27,8 @@ void Collector::waitForBattery() {
     DEBUG_PRINT(level);
     DEBUG_PRINT(" ");
     DEBUG_PRINTLN(voltage);
+    logPrinter.flush();
+
     uint32_t started = millis();
     while (gauge.stateOfCharge() < 30.0f) {
         Serial.print("Battery: ");
@@ -34,8 +36,11 @@ void Collector::waitForBattery() {
         Watchdog.reset();
         delay(5000);
     }
+
     DEBUG_PRINT("Done, took ");
     DEBUG_PRINTLN(millis() - started);
+    logPrinter.flush();
+
     diagnostics.recordBatterySleep(millis() - started);
 }
 
