@@ -30,6 +30,7 @@ private:
     String sonarPacketToMessage(sonar_station_packet_t *packet);
     String weatherStationPacketToMessage(weather_station_packet_t *packet);
     String locationToMessage(gps_fix_t *location);
+    String diagnosticsToMessage();
 
     void sendSensorTransmission(bool sendAtlas, bool sendWeather, bool sendSonar);
     void sendLocationTransmission();

@@ -46,26 +46,6 @@ public:
         hasGpsFix = has;
     }
 
-    String message(FuelGauge *fuelGauge, Configuration *configuration, CorePlatform *core) {
-        uint32_t uptime = millis() / (1000 * 60);
-        String message(SystemClock->now());
-        message += ",";
-        message += configuration->getName();
-        message += "ST",
-        message += "," + String(fuelGauge->cellVoltage(), 2);
-        message += "," + String(fuelGauge->stateOfCharge(), 2);
-        message += "," + String(core->isSdAvailable());
-        message += "," + String(hasGpsFix);
-        message += "," + String(batterySleepTime);
-        message += "," + String(numberOfTransmissionFailures);
-        message += "," + String(numberOfTransmissionSkipped);
-        message += "," + String(weatherReadingsReceived);
-        message += "," + String(atlasPacketsReceived);
-        message += "," + String(sonarPacketsReceived);
-        message += ",";
-        message += uptime;
-        return message;
-    }
 };
 
 extern Diagnostics diagnostics;
