@@ -22,8 +22,8 @@ typedef struct fk_transmission_status_t {
 fk_transmission_status_t status = { 0 };
 fk_transmission_schedule_t schedules[TRANSMISSION_KIND_KINDS] = {
     { 24, 24 }, // Location
-    { 0,   1 }, // Sensors
-    { 3,   1 }  // Weather
+    { 0,   3 }, // Sensors
+    { 2,   3 }  // Weather
 };
 
 bool TransmissionStatus::anyTransmissionsThisHour() {
