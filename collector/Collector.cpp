@@ -17,12 +17,16 @@ void Collector::setup() {
 }
 
 void Collector::waitForBattery() {
-    // TODO: Should we have a way to turn off the weather station if it's on?
+    delay(500);
+
     float level = gauge.stateOfCharge();
     float voltage = gauge.cellVoltage();
     if (level > 15.0f) {
         return;
     }
+
+    weatherStation->off();
+
     DEBUG_PRINT("Waiting for charge: ");
     DEBUG_PRINT(level);
     DEBUG_PRINT(" ");
@@ -31,10 +35,16 @@ void Collector::waitForBattery() {
 
     uint32_t started = millis();
     while (gauge.stateOfCharge() < 30.0f) {
-        Serial.print("Battery: ");
-        Serial.println(gauge.stateOfCharge());
-        Watchdog.reset();
-        delay(5000);
+        DEBUG_PRINT("Battery: ");
+        DEBUG_PRINTLN(gauge.stateOfCharge());
+        logPrinter.flush();
+
+        uint32_t times = 60 * 1000 / 8192;
+        for (uint32_t i = 0; i <= times; ++i) {
+            Watchdog.sleep(8192);
+            Watchdog.reset();
+            platformBlinks(PIN_RED_LED, 2);
+        }
     }
 
     DEBUG_PRINT("Done, took ");
@@ -170,7 +180,7 @@ void Collector::idlePeriod() {
     while (millis() - started < IDLE_PERIOD) {
         Watchdog.sleep(8192);
         Watchdog.reset();
-        platformBlinks(PIN_RED_LED, 2);
+        platformBlinks(PIN_RED_LED, 3);
     }
 
     DEBUG_PRINTLN("Idle: Done");
