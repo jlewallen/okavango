@@ -1,5 +1,6 @@
 #include <Adafruit_SleepyDog.h>
-
+#include <system.h>
+#include <wdt.h>
 #include "Collector.h"
 #include "Transmissions.h"
 #include "Diagnostics.h"
@@ -8,7 +9,7 @@
 #include "CollectorNetworkCallbacks.h"
 #include "Queue.h"
 #include "Preflight.h"
-#include "system.h"
+#include "Memory.h"
 
 #define IDLE_PERIOD                  (1000 * 60 * 5)
 #define AIRWAVES_CHECK_TIME          (1000 * 60 * 10)
@@ -16,6 +17,8 @@
 
 void Collector::setup() {
     Wire.begin();
+
+    memory.setup();
 
     gauge.powerOn();
 

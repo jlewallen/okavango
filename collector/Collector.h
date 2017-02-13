@@ -6,6 +6,7 @@
 #include "TransmissionStatus.h"
 #include "FuelGauge.h"
 #include "LoraRadio.h"
+#include "Memory.h"
 #include "core.h"
 
 enum class CollectorState {
@@ -25,6 +26,7 @@ private:
     Configuration configuration;
     WeatherStation weatherStation;
     LoraRadio radio;
+    Memory memory;
 
 public:
     Collector() :
