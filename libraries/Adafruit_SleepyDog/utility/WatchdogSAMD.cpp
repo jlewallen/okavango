@@ -6,6 +6,7 @@
 #include <sam.h>
 #include <wdt.h>
 #include <system.h>
+#include <power.h>
 #include "WatchdogSAMD.h"
 
 int WatchdogSAMD::enable(int maxPeriodMs) {
@@ -55,8 +56,7 @@ int WatchdogSAMD::enable(int maxPeriodMs) {
       return 0;
     }
 
-    if (wdt_enable(period)) {
-    }
+    wdt_enable(period);
 
     return actualMs;
 }
@@ -70,18 +70,12 @@ void WatchdogSAMD::disable() {
 }
 
 int WatchdogSAMD::sleep(int ms) {
-    wdt_disable();
-
     while (ms > 0) {
-        int sleepingFor = wdt_enable(ms);
+        int sleepingFor = enable(ms);
         ms -= sleepingFor;
         if (sleepingFor > 0) {
-            Serial.println("Sleeping...");
-
-            delay(100);
-            system_deep_sleep();
-
-            Serial.println("Awake...");
+            system_set_sleepmode(SYSTEM_SLEEPMODE_STANDBY);
+            system_sleep();
         }
         else {
             delay(ms);
@@ -89,8 +83,7 @@ int WatchdogSAMD::sleep(int ms) {
         }
     }
 
-    wdt_enable(ms);
-    return 0;
+    return ms;
 }
 
 #endif

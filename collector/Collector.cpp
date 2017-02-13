@@ -95,7 +95,7 @@ void Collector::waitForBattery() {
     DEBUG_PRINTLN(voltage);
     logPrinter.flush();
 
-    uint32_t started = millis();
+    uint32_t sleepingTime = 0;
     while (gauge.stateOfCharge() < 30.0f) {
         DEBUG_PRINT("Battery: ");
         DEBUG_PRINTLN(gauge.stateOfCharge());
@@ -103,17 +103,17 @@ void Collector::waitForBattery() {
 
         uint32_t times = 60 * 1000 / 8192;
         for (uint32_t i = 0; i <= times; ++i) {
-            Watchdog.sleep(8192);
+            sleepingTime += Watchdog.sleep(8192);
             Watchdog.reset();
             platformBlinks(PIN_RED_LED, 2);
         }
     }
 
     DEBUG_PRINT("Done, took ");
-    DEBUG_PRINTLN(millis() - started);
+    DEBUG_PRINTLN(sleepingTime);
     logPrinter.flush();
 
-    diagnostics.recordBatterySleep(millis() - started);
+    diagnostics.recordBatterySleep(sleepingTime);
 }
 
 bool Collector::checkWeatherStation() {
