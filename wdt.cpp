@@ -83,7 +83,7 @@ uint16_t wdt_get_period_length_in_ms(uint8_t period) {
     }
 }
 
-uint8_t wdt_enable(uint8_t period) {
+uint16_t wdt_enable(uint8_t period) {
     wdt_initialize();
 
     // First disable the watchdog so its registers can be changed.
