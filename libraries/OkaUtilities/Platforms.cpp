@@ -82,9 +82,9 @@ float platformBatteryLevel() {
 
 void platformBlinks(uint8_t pin, uint8_t number) {
     for (uint8_t i = 0; i < number; ++i) {
-        delay(250);
+        delay(100);
         digitalWrite(pin, HIGH);
-        delay(250);
+        delay(100);
         digitalWrite(pin, LOW);
     }
 }

@@ -220,11 +220,9 @@ void Collector::idlePeriod() {
     DEBUG_PRINTLN("Idle: Begin");
     logPrinter.flush();
 
-    Watchdog.disable();
-
-    uint32_t started = millis();
-    while (millis() - started < IDLE_PERIOD) {
-        Watchdog.sleep(8192);
+    int32_t remaining = IDLE_PERIOD;
+    while (remaining >= 0) {
+        remaining -= Watchdog.sleep(8192);
         Watchdog.reset();
         platformBlinks(PIN_RED_LED, 3);
     }
