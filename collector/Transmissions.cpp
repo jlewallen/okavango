@@ -194,15 +194,14 @@ String Transmissions::diagnosticsToMessage() {
     message += "," + String(fuel->cellVoltage(), 2);
     message += "," + String(fuel->stateOfCharge(), 2);
     message += "," + String(core->isSdAvailable());
-    message += "," + diagnostics.hasGpsFix;
-    message += "," + diagnostics.batterySleepTime;
-    message += "," + diagnostics.numberOfTransmissionFailures;
-    message += "," + diagnostics.numberOfTransmissionSkipped;
-    message += "," + diagnostics.weatherReadingsReceived;
-    message += "," + diagnostics.atlasPacketsReceived;
-    message += "," + diagnostics.sonarPacketsReceived;
-    message += ",";
-    message += uptime;
+    message += "," + String(diagnostics.hasGpsFix);
+    message += "," + String(diagnostics.batterySleepTime);
+    message += "," + String(diagnostics.numberOfTransmissionFailures);
+    message += "," + String(diagnostics.numberOfTransmissionSkipped);
+    message += "," + String(diagnostics.weatherReadingsReceived);
+    message += "," + String(diagnostics.atlasPacketsReceived);
+    message += "," + String(diagnostics.sonarPacketsReceived);
+    message += "," + String(uptime);
     return message;
 }
 
