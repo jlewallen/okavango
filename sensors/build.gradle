@@ -17,6 +17,7 @@ model {
             boards = [ "adafruit:samd:adafruit_feather_m0" ]
             libraries = [
                 "SPI",
+                "Adafruit_ASFcore",
                 "RadioHead",
                 "RTClib",
                 "OkaUtilities",

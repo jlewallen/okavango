@@ -15,8 +15,16 @@
 #define AIRWAVES_CHECK_TIME          (1000 * 60 * 10)
 #define WEATHER_STATION_CHECK_TIME   (1000 * 10)
 
+Collector::Collector() :
+    configuration(&memory, FK_SETTINGS_CONFIGURATION_FILENAME),
+    radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST, PIN_RFM95_RST) {
+}
+
 void Collector::setup() {
     Wire.begin();
+
+    pinMode(PIN_ROCK_BLOCK, OUTPUT);
+    digitalWrite(PIN_ROCK_BLOCK, LOW);
 
     memory.setup();
 
@@ -46,17 +54,10 @@ void Collector::setup() {
     logTransition("Begin");
     logPrinter.flush();
 
-    if (corePlatform.isSdAvailable()) {
-        if (!configuration.read()) {
-            DEBUG_PRINTLN("Error reading configuration");
-            logPrinter.flush();
-            platformCatastrophe(PIN_RED_LED);
-        }
-    }
-
-    if (configuration.hasRockBlockAttached()) {
-        pinMode(PIN_ROCK_BLOCK, OUTPUT);
-        digitalWrite(PIN_ROCK_BLOCK, LOW);
+    if (!configuration.read(corePlatform.isSdAvailable())) {
+        DEBUG_PRINTLN("Error reading configuration");
+        logPrinter.flush();
+        platformCatastrophe(PIN_RED_LED);
     }
 
     weatherStation.setup();
@@ -64,21 +65,15 @@ void Collector::setup() {
     Preflight preflight(&configuration, &weatherStation, &radio);
     preflight.check();
 
-    DEBUG_PRINTLN("Loop");
-
-    logPrinter.flush();
-
-    if (false) {
-        Transmissions transmissions(&corePlatform, &weatherStation, SystemClock, &configuration, &status, &gauge);
-        transmissions.sendStatusTransmission();
-    }
-
     for (uint8_t i = 0; i < 3; ++i) {
         digitalWrite(PIN_RED_LED, HIGH);
         delay(50);
         digitalWrite(PIN_RED_LED, LOW);
         delay(100);
     }
+
+    DEBUG_PRINTLN("Loop");
+    logPrinter.flush();
 }
 
 void Collector::waitForBattery() {

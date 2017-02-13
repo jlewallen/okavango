@@ -29,10 +29,7 @@ private:
     Memory memory;
 
 public:
-    Collector() :
-        configuration(FK_SETTINGS_CONFIGURATION_FILENAME),
-        radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST, PIN_RFM95_RST) {
-    }
+    Collector();
 
 public:
     void setup();

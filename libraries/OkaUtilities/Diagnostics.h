@@ -3,7 +3,6 @@
 
 #include <Arduino.h>
 #include "FuelGauge.h"
-#include "Configuration.h"
 #include "Platforms.h"
 #include "core.h"
 

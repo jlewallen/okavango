@@ -91,6 +91,11 @@ void RockBlock::handleReceivedMessage() {
     }
 
     // TODO: What do we wanna tell them?
+    rxBuffer[rxSize] = 0;
+    char *ptr = (char *)rxBuffer;
+
+    DEBUG_PRINT("Received: ");
+    DEBUG_PRINTLN(ptr);
 }
 
 bool RockBlock::handle(String reply) {

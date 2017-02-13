@@ -233,7 +233,7 @@ bool Transmissions::transmission(String message) {
     bool success = false;
     uint32_t started = millis();
     if (message.length() > 0) {
-        if (configuration->hasFonaAttached()) {
+        if (false) {
             FonaChild fona(NUMBER_TO_SMS, message);
             platformSerial2Begin(9600);
             SerialType &fonaSerial = Serial2;
@@ -250,7 +250,7 @@ bool Transmissions::transmission(String message) {
             DEBUG_PRINT("Fona: ");
             DEBUG_PRINTLN(success);
         }
-        if (configuration->hasRockBlockAttached()) {
+        if (true) {
             RockBlock rockBlock((uint8_t *)message.c_str(), message.length());
             rockBlockSerialBegin();
             SerialType &rockBlockSerial = RockBlockSerial;

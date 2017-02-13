@@ -29,7 +29,7 @@ bool Preflight::check() {
 
 bool Preflight::checkCommunications() {
     uint32_t started = millis();
-    if (configuration->hasFonaAttached()) {
+    if (false) {
         FonaChild fona;
         platformSerial2Begin(9600);
         SerialType &fonaSerial = Serial2;
@@ -52,7 +52,7 @@ bool Preflight::checkCommunications() {
         return fona.isDone();
     }
 
-    if (configuration->hasRockBlockAttached()) {
+    if (true) {
         rockBlockSerialBegin();
         IridiumSBD rockBlock(Serial2, PIN_ROCK_BLOCK, new WatchdogCallbacks());
         if (Serial) {
