@@ -67,6 +67,22 @@ void wdt_initialize() {
     while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY);
 }
 
+uint16_t wdt_get_period_length_in_ms(uint8_t period) {
+    switch (period) {
+    case WDT_PERIOD_1DIV64: return 16;
+    case WDT_PERIOD_1DIV32: return 32;
+    case WDT_PERIOD_1DIV16: return 64;
+    case WDT_PERIOD_1DIV8:  return 128;
+    case WDT_PERIOD_1DIV4:  return 256;
+    case WDT_PERIOD_1DIV2:  return 512;
+    case WDT_PERIOD_1X:     return 1024;
+    case WDT_PERIOD_2X:     return 2048;
+    case WDT_PERIOD_4X:     return 4096;
+    case WDT_PERIOD_8X:     return 8192;
+    default: return 0;
+    }
+}
+
 uint8_t wdt_enable(uint8_t period) {
     wdt_initialize();
 
@@ -97,7 +113,7 @@ uint8_t wdt_enable(uint8_t period) {
     NVIC_EnableIRQ(WDT_IRQn);
     NVIC_SetPriority(WDT_IRQn, 0x00);
 
-    return 0;
+    return wdt_get_period_length_in_ms(period);
 }
 
 void wdt_disable() {
