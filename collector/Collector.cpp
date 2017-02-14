@@ -11,9 +11,21 @@
 #include "Preflight.h"
 #include "Memory.h"
 
-#define IDLE_PERIOD                  (1000 * 60 * 5)
-#define AIRWAVES_CHECK_TIME          (1000 * 60 * 10)
-#define WEATHER_STATION_CHECK_TIME   (1000 * 10)
+#define IDLE_PERIOD_SLEEP             (8192)
+#define IDLE_PERIOD                   (1000 * 60 * 10)
+#define AIRWAVES_CHECK_TIME           (1000 * 60 * 10)
+#define WEATHER_STATION_CHECK_TIME    (1000 * 10)
+
+#define BATTERY_WAIT_START_THRESHOLD  15.0f
+#define BATTERY_WAIT_STOP_THRESHOLD   30.0f
+#define BATTERY_WAIT_CHECK_SLEEP      (8192)
+#define BATTERY_WAIT_CHECK_INTERVAL   (8192 * 8)
+
+#define AIRWAVES_BLINK_INTERVAL       10000
+
+#define BLINKS_BATTERY                1
+#define BLINKS_IDLE                   2
+#define BLINKS_AIRWAVES               3
 
 Collector::Collector() :
     configuration(&memory, FK_SETTINGS_CONFIGURATION_FILENAME),
@@ -81,7 +93,7 @@ void Collector::waitForBattery() {
 
     float level = gauge.stateOfCharge();
     float voltage = gauge.cellVoltage();
-    if (level > 15.0f) {
+    if (level > BATTERY_WAIT_START_THRESHOLD) {
         return;
     }
 
@@ -93,25 +105,26 @@ void Collector::waitForBattery() {
     DEBUG_PRINTLN(voltage);
     logPrinter.flush();
 
-    uint32_t sleepingTime = 0;
-    while (gauge.stateOfCharge() < 30.0f) {
-        DEBUG_PRINT("Battery: ");
-        DEBUG_PRINTLN(gauge.stateOfCharge());
+    uint32_t time = 0;
+    while (gauge.stateOfCharge() < BATTERY_WAIT_STOP_THRESHOLD) {
+        Serial.print("Battery: ");
+        Serial.println(gauge.stateOfCharge());
         logPrinter.flush();
 
-        uint32_t times = 60 * 1000 / 8192;
-        for (uint32_t i = 0; i <= times; ++i) {
-            sleepingTime += Watchdog.sleep(8192);
+        uint32_t sinceCheck = 0;
+        while (sinceCheck < BATTERY_WAIT_CHECK_INTERVAL) {
+            sinceCheck += Watchdog.sleep(BATTERY_WAIT_CHECK_SLEEP);
             Watchdog.reset();
-            platformBlinks(PIN_RED_LED, 2);
+            platformBlinks(PIN_RED_LED, BLINKS_BATTERY);
         }
+        time += sinceCheck;
     }
 
     DEBUG_PRINT("Done, took ");
-    DEBUG_PRINTLN(sleepingTime);
+    DEBUG_PRINTLN(time);
     logPrinter.flush();
 
-    diagnostics.recordBatterySleep(sleepingTime);
+    diagnostics.recordBatterySleep(time);
 }
 
 bool Collector::checkWeatherStation() {
@@ -189,8 +202,8 @@ void Collector::checkAirwaves() {
 
         weatherStation.ignore();
 
-        if (millis() - last > 5000) {
-            platformBlink(PIN_RED_LED);
+        if (millis() - last > AIRWAVES_BLINK_INTERVAL) {
+            platformBlinks(PIN_RED_LED, BLINKS_AIRWAVES);
             Serial.print(".");
             last = millis();
 
@@ -217,9 +230,9 @@ void Collector::idlePeriod() {
 
     int32_t remaining = IDLE_PERIOD;
     while (remaining >= 0) {
-        remaining -= Watchdog.sleep(8192);
+        remaining -= Watchdog.sleep(IDLE_PERIOD_SLEEP);
         Watchdog.reset();
-        platformBlinks(PIN_RED_LED, 3);
+        platformBlinks(PIN_RED_LED, BLINKS_IDLE);
     }
 
     DEBUG_PRINTLN("Idle: Done");
