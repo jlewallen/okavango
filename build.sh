@@ -4,13 +4,13 @@ set -e
 set -x
 
 pushd sensors
-gradle clean build
+gradle build
 popd
 
 pushd ngdemo
-gradle clean build
+gradle build
 popd 
 
 pushd collector
-gradle clean build
+gradle build
 popd

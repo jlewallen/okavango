@@ -19,6 +19,7 @@ String Transmissions::atlasPacketToMessage(atlas_sensors_packet_t *packet) {
     String message(packet->time);
     message += ",";
     message += configuration->getName();
+    message += ",AT";
     message += "," + String(fuel->cellVoltage(), 2);
     message += "," + String(fuel->stateOfCharge(), 2);
     message += "," + String(packet->battery, 2);
@@ -33,6 +34,7 @@ String Transmissions::sonarPacketToMessage(sonar_station_packet_t *packet) {
     String message(packet->time);
     message += ",";
     message += configuration->getName();
+    message += ",SO";
     message += "," + String(fuel->cellVoltage(), 2);
     message += "," + String(fuel->stateOfCharge(), 2);
     message += "," + String(packet->battery, 2);
@@ -47,6 +49,7 @@ String Transmissions::weatherStationPacketToMessage(weather_station_packet_t *pa
     String message(packet->time);
     message += ",";
     message += configuration->getName();
+    message += ",WE";
     message += "," + String(fuel->cellVoltage(), 2);
     message += "," + String(fuel->stateOfCharge(), 2);
     message += "," + String(packet->battery, 2);
@@ -169,13 +172,13 @@ String Transmissions::locationToMessage(gps_fix_t *location) {
     String message(location->time);
     message += ",";
     message += configuration->getName();
+    message += ",LO";
     message += "," + String(fuel->cellVoltage(), 2);
     message += "," + String(fuel->stateOfCharge(), 2);
     message += "," + String(location->latitude, 6);
     message += "," + String(location->longitude, 6);
     message += "," + String(location->altitude, 2);
-    message += ",";
-    message += uptime;
+    message += "," + String(uptime);
     return message;
 }
 
