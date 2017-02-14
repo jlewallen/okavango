@@ -18,6 +18,7 @@
 
 #define BATTERY_WAIT_START_THRESHOLD  15.0f
 #define BATTERY_WAIT_STOP_THRESHOLD   30.0f
+#define BATTERY_WAIT_DYING_THRESHOLD   1.0f
 #define BATTERY_WAIT_CHECK_SLEEP      (8192)
 #define BATTERY_WAIT_CHECK_INTERVAL   (8192 * 8)
 
@@ -94,6 +95,7 @@ void Collector::waitForBattery() {
     float level = gauge.stateOfCharge();
     float voltage = gauge.cellVoltage();
     if (level > BATTERY_WAIT_START_THRESHOLD) {
+        memory.markAlive(SystemClock->now());
         return;
     }
 
@@ -105,11 +107,21 @@ void Collector::waitForBattery() {
     DEBUG_PRINTLN(voltage);
     logPrinter.flush();
 
+    bool markedDying = false;
     uint32_t time = 0;
-    while (gauge.stateOfCharge() < BATTERY_WAIT_STOP_THRESHOLD) {
+    while (true) {
+        float level = gauge.stateOfCharge();
+        if (level > BATTERY_WAIT_STOP_THRESHOLD) {
+            break;
+        }
+
+        if (!markedDying && level < BATTERY_WAIT_DYING_THRESHOLD) {
+            memory.markDying(SystemClock->now());
+            markedDying = true;
+        }
+
         Serial.print("Battery: ");
-        Serial.println(gauge.stateOfCharge());
-        logPrinter.flush();
+        Serial.println(level);
 
         uint32_t sinceCheck = 0;
         while (sinceCheck < BATTERY_WAIT_CHECK_INTERVAL) {
@@ -119,6 +131,8 @@ void Collector::waitForBattery() {
         }
         time += sinceCheck;
     }
+
+    memory.markAlive(SystemClock->now());
 
     DEBUG_PRINT("Done, took ");
     DEBUG_PRINTLN(time);

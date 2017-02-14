@@ -74,15 +74,32 @@ void Memory::setup() {
     }
 }
 
+void Memory::save() {
+    uint8_t page[EEPROM_PAGE_SIZE];
+    memcpy((uint8_t *)page, (uint8_t *)&state, sizeof(fk_memory_state_t));
+    eeprom_emulator_write_page(0, page);
+    eeprom_emulator_commit_page_buffer();
+}
+
 void Memory::update(String name) {
     size_t len = min(name.length(), 2);
     if (strncmp(state.name, name.c_str(), len) != 0) {
-        uint8_t page[EEPROM_PAGE_SIZE];
         memcpy(state.name, name.c_str(), len);
         state.name[2] = 0;
-        memcpy((uint8_t *)page, (uint8_t *)&state, sizeof(fk_memory_state_t));
-        eeprom_emulator_write_page(0, page);
-        eeprom_emulator_commit_page_buffer();
+        save();
         Serial.println("memory: Name updated");
     }
+}
+
+void Memory::markAlive(uint32_t time) {
+    if (state.dyingAt > 0) {
+        state.dyingAt = 0;
+        state.aliveAt = time;
+        save();
+    }
+}
+
+void Memory::markDying(uint32_t time) {
+    state.dyingAt = time;
+    save();
 }
