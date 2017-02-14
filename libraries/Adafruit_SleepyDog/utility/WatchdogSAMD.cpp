@@ -70,15 +70,17 @@ void WatchdogSAMD::disable() {
 }
 
 int WatchdogSAMD::sleep(int ms) {
-    while (ms > 0) {
-        int sleepingFor = enable(ms);
-        ms -= sleepingFor;
+    int32_t remaining = ms;
+
+    while (remaining > 0) {
+        int sleepingFor = enable(remaining);
+        remaining -= sleepingFor;
         if (sleepingFor > 0) {
             system_set_sleepmode(SYSTEM_SLEEPMODE_STANDBY);
             system_sleep();
         }
         else {
-            delay(ms);
+            delay(remaining);
             break;
         }
     }
