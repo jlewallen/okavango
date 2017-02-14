@@ -58,6 +58,7 @@ private:
     uint8_t length;
     bool hasUnreadReading;
     bool checkingCommunications;
+    bool startReading;
     bool on;
     gps_fix_t fix;
 

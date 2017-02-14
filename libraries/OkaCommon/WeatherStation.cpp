@@ -77,6 +77,7 @@ bool WeatherStation::tick() {
         if (millis() - lastTransitionAt > WEATHER_STATION_INTERVAL_IGNORE) {
             DEBUG_PRINTLN("WS: >Reading");
             transition(WeatherStationState::Reading);
+            startReading = false;
         }
         break;
     }
@@ -92,15 +93,20 @@ bool WeatherStation::tick() {
             while (WeatherSerial.available()) {
                 int16_t c = WeatherSerial.read();
                 if (c >= 0) {
-                    if (c == ',' || c == '\r' || c == '\n') {
+                    if (!startReading) {
+                        if (c == '\n') {
+                            startReading = true;
+                        }
+                    }
+                    else if (c == ',' || c == '\r' || c == '\n') {
                         if (length > 0) {
                             buffer[length] = 0;
                             if (numberOfValues < FK_WEATHER_STATION_MAX_VALUES) {
                                 values[numberOfValues] = atof(buffer);
-                                DEBUG_PRINT("Parsed ");
-                                DEBUG_PRINT(buffer);
-                                DEBUG_PRINT(" = ");
-                                DEBUG_PRINTLN(values[numberOfValues]);
+                                // DEBUG_PRINT("Parsed ");
+                                // DEBUG_PRINT(buffer);
+                                // DEBUG_PRINT(" = ");
+                                // DEBUG_PRINTLN(values[numberOfValues]);
                                 numberOfValues++;
                             }
                             length = 0;;
