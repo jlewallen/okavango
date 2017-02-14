@@ -6,8 +6,8 @@
 #ifdef ARDUINO_SAMD_FEATHER_M0
 
 #define WEATHER_STATION_INTERVAL_START                        (1000 * 60)
-#define WEATHER_STATION_INTERVAL_IGNORE                       (1000 * 60 * 5)
-#define WEATHER_STATION_INTERVAL_OFF                          (1000 * 60 * 5)
+#define WEATHER_STATION_INTERVAL_IGNORE                       (1000 * 60 * 30)
+#define WEATHER_STATION_INTERVAL_OFF                          (1000 * 60 * 30)
 #define WEATHER_STATION_INTERVAL_READING                      (1000 * 60 * 2)
 
 WeatherStation::WeatherStation() {
