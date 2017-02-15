@@ -19,6 +19,7 @@
 #define BATTERY_WAIT_START_THRESHOLD  15.0f
 #define BATTERY_WAIT_STOP_THRESHOLD   30.0f
 #define BATTERY_WAIT_DYING_THRESHOLD   1.0f
+#define BATTERY_WAIT_WARN_THRESHOLD   10.0f
 #define BATTERY_WAIT_CHECK_SLEEP      (8192)
 #define BATTERY_WAIT_CHECK_INTERVAL   (8192 * 8)
 
@@ -93,52 +94,55 @@ void Collector::waitForBattery() {
     delay(500);
 
     float level = gauge.stateOfCharge();
-    float voltage = gauge.cellVoltage();
-    if (level > BATTERY_WAIT_START_THRESHOLD) {
-        memory.markAlive(SystemClock->now());
-        return;
-    }
+    if (level < BATTERY_WAIT_START_THRESHOLD) {
+        weatherStation.off();
 
-    weatherStation.off();
+        float voltage = gauge.cellVoltage();
+        DEBUG_PRINT("Waiting for charge: ");
+        DEBUG_PRINT(level);
+        DEBUG_PRINT(" ");
+        DEBUG_PRINTLN(voltage);
+        logPrinter.flush();
 
-    DEBUG_PRINT("Waiting for charge: ");
-    DEBUG_PRINT(level);
-    DEBUG_PRINT(" ");
-    DEBUG_PRINTLN(voltage);
-    logPrinter.flush();
+        bool markedDying = false;
+        uint32_t time = 0;
+        while (true) {
+            float level = gauge.stateOfCharge();
+            if (level > BATTERY_WAIT_STOP_THRESHOLD) {
+                break;
+            }
 
-    bool markedDying = false;
-    uint32_t time = 0;
-    while (true) {
-        float level = gauge.stateOfCharge();
-        if (level > BATTERY_WAIT_STOP_THRESHOLD) {
-            break;
+            if (!markedDying && level < BATTERY_WAIT_DYING_THRESHOLD) {
+                memory.markDying(SystemClock->now());
+                markedDying = true;
+            }
+
+            if (level > BATTERY_WAIT_START_THRESHOLD) {
+                DEBUG_PRINT("Battery: ");
+                DEBUG_PRINTLN(level);
+            }
+            else {
+                Serial.print("Battery: ");
+                Serial.println(level);
+            }
+
+            uint32_t sinceCheck = 0;
+            while (sinceCheck < BATTERY_WAIT_CHECK_INTERVAL) {
+                sinceCheck += Watchdog.sleep(BATTERY_WAIT_CHECK_SLEEP);
+                Watchdog.reset();
+                platformBlinks(PIN_RED_LED, BLINKS_BATTERY);
+            }
+            time += sinceCheck;
         }
 
-        if (!markedDying && level < BATTERY_WAIT_DYING_THRESHOLD) {
-            memory.markDying(SystemClock->now());
-            markedDying = true;
-        }
+        DEBUG_PRINT("Done, took ");
+        DEBUG_PRINTLN(time);
+        logPrinter.flush();
 
-        Serial.print("Battery: ");
-        Serial.println(level);
-
-        uint32_t sinceCheck = 0;
-        while (sinceCheck < BATTERY_WAIT_CHECK_INTERVAL) {
-            sinceCheck += Watchdog.sleep(BATTERY_WAIT_CHECK_SLEEP);
-            Watchdog.reset();
-            platformBlinks(PIN_RED_LED, BLINKS_BATTERY);
-        }
-        time += sinceCheck;
+        diagnostics.recordBatterySleep(time);
     }
 
     memory.markAlive(SystemClock->now());
-
-    DEBUG_PRINT("Done, took ");
-    DEBUG_PRINTLN(time);
-    logPrinter.flush();
-
-    diagnostics.recordBatterySleep(time);
 }
 
 bool Collector::checkWeatherStation() {
