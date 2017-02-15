@@ -204,6 +204,7 @@ String Transmissions::diagnosticsToMessage() {
     message += "," + String(diagnostics.weatherReadingsReceived);
     message += "," + String(diagnostics.atlasPacketsReceived);
     message += "," + String(diagnostics.sonarPacketsReceived);
+    message += "," + String(diagnostics.deadFor);
     message += "," + String(uptime);
     return message;
 }

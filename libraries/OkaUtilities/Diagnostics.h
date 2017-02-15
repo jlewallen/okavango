@@ -14,6 +14,7 @@ public:
     uint16_t weatherReadingsReceived = 0;
     uint16_t atlasPacketsReceived = 0;
     uint16_t sonarPacketsReceived = 0;
+    uint32_t deadFor = 0;
     bool hasGpsFix = false;
 
 public:
@@ -43,6 +44,9 @@ public:
 
     void updateGpsStatus(bool has) {
         hasGpsFix = has;
+    }
+    void recordDeadFor(uint32_t time) {
+        deadFor = time;
     }
 
 };

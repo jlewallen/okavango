@@ -1,4 +1,5 @@
 #include "Memory.h"
+#include "Diagnostics.h"
 
 #include <system.h>
 #include <nvm.h>
@@ -93,6 +94,7 @@ void Memory::update(String name) {
 
 void Memory::markAlive(uint32_t time) {
     if (state.dyingAt > 0) {
+        diagnostics.recordDeadFor(time - state.dyingAt);
         state.dyingAt = 0;
         state.aliveAt = time;
         save();
