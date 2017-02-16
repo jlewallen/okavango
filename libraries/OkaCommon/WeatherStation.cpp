@@ -140,6 +140,10 @@ bool WeatherStation::tick() {
                                     fix.valid = true;
                                 }
                                 else {
+                                    // There's a good chance our RTC has a good
+                                    // time, so just insert this so that logged
+                                    // entries don't have 0s.
+                                    values[FK_WEATHER_STATION_FIELD_UNIXTIME] = SystemClock->now();
                                     fix.time = 0;
                                     fix.latitude = 0;
                                     fix.longitude = 0;
