@@ -15,6 +15,8 @@ public:
     uint16_t atlasPacketsReceived = 0;
     uint16_t sonarPacketsReceived = 0;
     uint32_t deadFor = 0;
+    float totalTransmissionTime = 0.0;
+    uint16_t numberOfTransmissions = 0;
     bool hasGpsFix = false;
 
 public:
@@ -45,8 +47,21 @@ public:
     void updateGpsStatus(bool has) {
         hasGpsFix = has;
     }
+
     void recordDeadFor(uint32_t time) {
         deadFor = time;
+    }
+
+    void recordTransmission(uint32_t time) {
+        totalTransmissionTime += ((float)time) / 1000.0f;
+        numberOfTransmissions++;
+    }
+
+    float getAverageTransmissionTime() {
+        if (numberOfTransmissions == 0) {
+            return 0.0f;
+        }
+        return totalTransmissionTime / (float)numberOfTransmissions;
     }
 
 };

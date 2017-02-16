@@ -205,6 +205,7 @@ String Transmissions::diagnosticsToMessage() {
     message += "," + String(diagnostics.atlasPacketsReceived);
     message += "," + String(diagnostics.sonarPacketsReceived);
     message += "," + String(diagnostics.deadFor);
+    message += "," + String(diagnostics.getAverageTransmissionTime(), 2);
     message += "," + String(uptime);
     return message;
 }
@@ -273,6 +274,8 @@ bool Transmissions::transmission(String message) {
             DEBUG_PRINTLN(success);
         }
     }
+
+    diagnostics.recordTransmission(millis() - started);
 
     if (!success) {
         diagnostics.recordTransmissionFailure();
