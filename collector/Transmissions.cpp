@@ -175,8 +175,8 @@ String Transmissions::locationToMessage(gps_fix_t *location) {
     message += ",LO";
     message += "," + String(fuel->cellVoltage(), 2);
     message += "," + String(fuel->stateOfCharge(), 2);
-    message += "," + String(location->latitude, 6);
-    message += "," + String(location->longitude, 6);
+    message += "," + String(location->latitude, 9);
+    message += "," + String(location->longitude, 9);
     message += "," + String(location->altitude, 2);
     message += "," + String(uptime);
     return message;
