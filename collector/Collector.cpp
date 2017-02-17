@@ -277,6 +277,8 @@ void Collector::logTransition(const char *name) {
     DEBUG_PRINT(dt.second());
 
     DEBUG_PRINT(" ");
+    DEBUG_PRINT(weatherStation.isOn());
+    DEBUG_PRINT(" ");
     DEBUG_PRINT(gauge.cellVoltage());
     DEBUG_PRINT(" ");
     DEBUG_PRINT(gauge.stateOfCharge());
@@ -314,7 +316,7 @@ void Collector::tick() {
                     }
                 }
 
-                // So we can see the RB logs. Saw a cutoff RB transmission, which is kind of strange.
+                memory.restarting();
 
                 // So we can see the RB logs.
                 logPrinter.flush();

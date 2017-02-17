@@ -110,6 +110,11 @@ void Memory::update(String name) {
     }
 }
 
+void Memory::restarting() {
+    state.restarts++;
+    save();
+}
+
 void Memory::markAlive(uint32_t time) {
     if (state.dyingAt > 0) {
         diagnostics.recordDeadFor(time - state.dyingAt);

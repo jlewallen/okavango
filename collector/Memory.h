@@ -40,6 +40,7 @@ public:
 
     void setup();
     void update(String name);
+    void restarting();
     void markDying(uint32_t time);
     void markAlive(uint32_t time);
 
