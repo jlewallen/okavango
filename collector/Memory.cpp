@@ -71,6 +71,24 @@ void Memory::setup() {
     case STATUS_ERR_BAD_FORMAT:
     default:
         memset((uint8_t *)&state, 0, sizeof(fk_memory_state_t));
+
+        #define IDLE_PERIOD                            (1000 * 60 * 10)
+        #define AIRWAVES_CHECK_TIME                    (1000 * 60 * 10)
+        #define WEATHER_STATION_CHECK_TIME             (1000 * 10)
+
+        state.intervals.idle = IDLE_PERIOD;
+        state.intervals.airwaves = AIRWAVES_CHECK_TIME;
+        state.intervals.weather = WEATHER_STATION_CHECK_TIME;
+
+        #define WEATHER_STATION_INTERVAL_START         (1000 * 60)
+        #define WEATHER_STATION_INTERVAL_IGNORE        (1000 * 60 * 30)
+        #define WEATHER_STATION_INTERVAL_OFF           (1000 * 60 * 30)
+        #define WEATHER_STATION_INTERVAL_READING       (1000 * 60 * 2)
+
+        state.intervals.weatherStation.start = WEATHER_STATION_INTERVAL_START;
+        state.intervals.weatherStation.ignore = WEATHER_STATION_INTERVAL_IGNORE;
+        state.intervals.weatherStation.off = WEATHER_STATION_INTERVAL_OFF;
+        state.intervals.weatherStation.reading = WEATHER_STATION_INTERVAL_READING;
         break;
     }
 }

@@ -5,12 +5,7 @@
 
 #ifdef ARDUINO_SAMD_FEATHER_M0
 
-#define WEATHER_STATION_INTERVAL_START                        (1000 * 60)
-#define WEATHER_STATION_INTERVAL_IGNORE                       (1000 * 60 * 30)
-#define WEATHER_STATION_INTERVAL_OFF                          (1000 * 60 * 30)
-#define WEATHER_STATION_INTERVAL_READING                      (1000 * 60 * 2)
-
-WeatherStation::WeatherStation() {
+WeatherStation::WeatherStation(Memory *memory) : memory(memory) {
     clear();
     memzero((uint8_t *)&fix, sizeof(gps_fix_t));
 }
@@ -45,6 +40,9 @@ void WeatherStation::off() {
 
 void WeatherStation::hup() {
     DEBUG_PRINTLN("WS: hup");
+    if (!on) {
+        DEBUG_PRINTLN("WS: on");
+    }
 
     weatherSerialBegin();
 
@@ -58,12 +56,14 @@ void WeatherStation::hup() {
 }
 
 bool WeatherStation::tick() {
+    fk_memory_weather_intervals_t *intervals = &memory->intervals()->weatherStation;
+
     switch (state) {
     case WeatherStationState::Start: {
         if (on) {
             off();
         }
-        if (millis() - lastTransitionAt > WEATHER_STATION_INTERVAL_START) {
+        if (millis() - lastTransitionAt > intervals->start) {
             DEBUG_PRINTLN("WS: >Ignoring");
             transition(WeatherStationState::Ignoring);
         }
@@ -74,7 +74,7 @@ bool WeatherStation::tick() {
             hup();
         }
         ignore();
-        if (millis() - lastTransitionAt > WEATHER_STATION_INTERVAL_IGNORE) {
+        if (millis() - lastTransitionAt > intervals->ignore) {
             DEBUG_PRINTLN("WS: >Reading");
             transition(WeatherStationState::Reading);
             startReading = false;
@@ -82,7 +82,7 @@ bool WeatherStation::tick() {
         break;
     }
     case WeatherStationState::Reading: {
-        if (millis() - lastTransitionAt > WEATHER_STATION_INTERVAL_READING) {
+        if (millis() - lastTransitionAt > intervals->reading) {
             DEBUG_PRINTLN("WS: >Ignoring");
             transition(WeatherStationState::Ignoring);
             break;
@@ -189,12 +189,12 @@ bool WeatherStation::tick() {
         break;
     }
     case WeatherStationState::Off: {
-        if (WEATHER_STATION_INTERVAL_OFF > 0) {
+        if (intervals->off > 0) {
             if (on) {
                 off();
             }
         }
-        if (WEATHER_STATION_INTERVAL_OFF == 0 || millis() - lastTransitionAt > WEATHER_STATION_INTERVAL_OFF) {
+        if (intervals->off == 0 || millis() - lastTransitionAt > intervals->off) {
             DEBUG_PRINTLN("WS: >Ignoring");
             transition(WeatherStationState::Ignoring);
         }

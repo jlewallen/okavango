@@ -12,14 +12,10 @@
 #include "Memory.h"
 
 #define IDLE_PERIOD_SLEEP             (8192)
-#define IDLE_PERIOD                   (1000 * 60 * 10)
-#define AIRWAVES_CHECK_TIME           (1000 * 60 * 10)
-#define WEATHER_STATION_CHECK_TIME    (1000 * 10)
 
 #define BATTERY_WAIT_START_THRESHOLD  15.0f
 #define BATTERY_WAIT_STOP_THRESHOLD   30.0f
 #define BATTERY_WAIT_DYING_THRESHOLD   1.0f
-#define BATTERY_WAIT_WARN_THRESHOLD   10.0f
 #define BATTERY_WAIT_CHECK_SLEEP      (8192)
 #define BATTERY_WAIT_CHECK_INTERVAL   (8192 * 8)
 
@@ -31,7 +27,8 @@
 
 Collector::Collector() :
     configuration(&memory, FK_SETTINGS_CONFIGURATION_FILENAME),
-    radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST, PIN_RFM95_RST) {
+    radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST, PIN_RFM95_RST),
+    weatherStation(&memory) {
 }
 
 void Collector::setup() {
@@ -155,7 +152,7 @@ bool Collector::checkWeatherStation() {
 
     bool success = false;
     uint32_t started = millis();
-    while (millis() - started < WEATHER_STATION_CHECK_TIME) {
+    while (millis() - started < memory.intervals()->weather) {
         weatherStation.tick();
 
         Watchdog.reset();
@@ -215,7 +212,7 @@ void Collector::checkAirwaves() {
 
     uint32_t started = millis();
     uint32_t last = millis();
-    while (millis() - started < AIRWAVES_CHECK_TIME || !networkProtocol.isQuiet()) {
+    while (millis() - started < memory.intervals()->airwaves || !networkProtocol.isQuiet()) {
         networkProtocol.tick();
 
         weatherStation.ignore();
@@ -246,7 +243,7 @@ void Collector::idlePeriod() {
     DEBUG_PRINTLN("Idle: Begin");
     logPrinter.flush();
 
-    int32_t remaining = IDLE_PERIOD;
+    int32_t remaining = memory.intervals()->idle;
     while (remaining >= 0) {
         remaining -= Watchdog.sleep(IDLE_PERIOD_SLEEP);
         Watchdog.reset();

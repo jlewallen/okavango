@@ -1,9 +1,8 @@
 #ifndef WEATHER_STATION_H
 #define WEATHER_STATION_H
 
-#ifdef ARDUINO_SAMD_FEATHER_M0
-
 #include "Platforms.h"
+#include "Memory.h"
 
 #define FK_WEATHER_STATION_FIELD_UNIXTIME                    0
 #define FK_WEATHER_STATION_FIELD_WIND_DIR                    1
@@ -51,6 +50,7 @@ typedef struct gps_fix_t {
 class WeatherStation {
 private:
     WeatherStationState state;
+    Memory *memory;
     uint32_t lastTransitionAt;
     uint8_t numberOfValues;
     float values[FK_WEATHER_STATION_MAX_VALUES];
@@ -63,11 +63,15 @@ private:
     gps_fix_t fix;
 
 public:
-    WeatherStation();
+    WeatherStation(Memory *memory);
 
 public:
     gps_fix_t *getFix() {
         return &fix;
+    }
+
+    bool isOn() {
+        return on;
     }
 
     void setup();
@@ -99,7 +103,5 @@ public:
     }
 
 };
-
-#endif
 
 #endif
