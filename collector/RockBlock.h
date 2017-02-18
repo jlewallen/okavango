@@ -23,9 +23,15 @@ enum RockBlockState {
     RockBlockDone
 };
 
+class RockBlockMessages {
+public:
+    virtual void onMessage(String message) = 0;
+};
+
 class RockBlock : public NonBlockingSerialProtocol {
 private:
     RockBlockState state = RockBlockStart;
+    RockBlockMessages *messages;
     uint32_t lastStateChange;
     uint8_t signalTries;
     uint8_t sendTries;
@@ -37,11 +43,9 @@ private:
     size_t rxSize;
 
 public:
-    RockBlock(uint8_t *buffer, size_t size);
+    RockBlock(RockBlockMessages *messages, uint8_t *buffer, size_t size);
 
     virtual bool tick();
-    virtual bool handle(String reply);
-    virtual void handleReceivedMessage();
 
     void transition(RockBlockState newState) {
         state = newState;
@@ -57,6 +61,9 @@ public:
     bool isFailed() {
         return state == RockBlockFailed;
     }
+
+private:
+    virtual void handleReceivedMessage();
 
 };
 

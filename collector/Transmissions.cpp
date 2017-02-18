@@ -269,7 +269,7 @@ bool Transmissions::transmission(String message) {
             DEBUG_PRINTLN(success);
         }
         if (true) {
-            RockBlock rockBlock((uint8_t *)message.c_str(), message.length());
+            RockBlock rockBlock(this, (uint8_t *)message.c_str(), message.length());
             rockBlockSerialBegin();
             SerialType &rockBlockSerial = RockBlockSerial;
             rockBlock.setSerial(&rockBlockSerial);
@@ -297,4 +297,43 @@ bool Transmissions::transmission(String message) {
     digitalWrite(PIN_RED_LED, LOW);
 
     return success;
+}
+
+void Transmissions::onMessage(String message) {
+    const uint8_t numberOfValues = 7;
+
+    if (message.startsWith("IV,")) {
+        uint32_t values[numberOfValues] = { 0 };
+        uint8_t index = 0;
+        bool valid = true;
+
+        for (int8_t start = message.indexOf(",") + 1; start <= message.length() && index < numberOfValues; ) {
+            int8_t nextComma = message.indexOf(",", start);
+            int8_t end = nextComma >= 0 ? nextComma : message.length();
+            int32_t value = atoi(message.substring(start, end).c_str());
+            if (value <= 0) {
+                valid = false;
+                break;
+            }
+            else {
+                values[index++] = value;
+            }
+            start = end + 1;
+        }
+
+        if (valid && index == numberOfValues) {
+            fk_memory_core_intervals_t *intervals = memory->intervals();
+
+            intervals->idle = values[0];
+            intervals->airwaves = values[1];
+            intervals->weather = values[2];
+
+            intervals->weatherStation.start = values[3];
+            intervals->weatherStation.ignore = values[4];
+            intervals->weatherStation.off = values[5];
+            intervals->weatherStation.reading = values[6];
+
+            sendStatusTransmission();
+        }
+    }
 }

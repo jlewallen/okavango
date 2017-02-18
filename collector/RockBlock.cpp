@@ -3,8 +3,9 @@
 
 #include <IridiumSBD.h>
 
-RockBlock::RockBlock(uint8_t *buffer, size_t size) :
+RockBlock::RockBlock(RockBlockMessages *messages, uint8_t *buffer, size_t size) :
     NonBlockingSerialProtocol(10 * 1000, true, false),
+    messages(messages),
     txBuffer(buffer), txSize(size), rxSize(0),
     sendTries(0), signalTries(0) {
 }
@@ -97,8 +98,6 @@ void RockBlock::handleReceivedMessage() {
 
     DEBUG_PRINT("Received: ");
     DEBUG_PRINTLN(message);
-}
 
-bool RockBlock::handle(String reply) {
-    return false;
+    messages->onMessage(message);
 }

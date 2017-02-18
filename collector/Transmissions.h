@@ -8,8 +8,9 @@
 #include "WeatherStation.h"
 #include "TransmissionStatus.h"
 #include "FuelGauge.h"
+#include "RockBlock.h"
 
-class Transmissions {
+class Transmissions : RockBlockMessages {
 private:
     WeatherStation *weatherStation;
     RtcAbstractSystemClock *systemClock;
@@ -25,6 +26,9 @@ public:
 public:
     void handleTransmissionIfNecessary();
     bool sendStatusTransmission();
+
+public:
+    virtual void onMessage(String message) override;
 
 private:
     String atlasPacketToMessage(atlas_sensors_packet_t *packet);
