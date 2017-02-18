@@ -96,8 +96,6 @@ void Collector::setup() {
 }
 
 void Collector::waitForBattery() {
-    delay(500);
-
     float level = gauge.stateOfCharge();
     if (level < BATTERY_WAIT_START_THRESHOLD) {
         weatherStation.off();
