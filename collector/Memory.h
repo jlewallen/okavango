@@ -49,7 +49,7 @@ public:
     }
 
     fk_memory_core_intervals_t *intervals() {
-        return nullptr;
+        return &state.intervals;
     }
 
 };
