@@ -22,6 +22,7 @@ typedef struct fk_memory_state_t {
     uint32_t dyingAt;
     uint32_t aliveAt;
     uint16_t restarts;
+    uint32_t restartAt;
     fk_memory_core_intervals_t intervals;
 } fk_memory_state_t;
 

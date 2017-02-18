@@ -112,6 +112,7 @@ void Memory::update(String name) {
 
 void Memory::restarting() {
     state.restarts++;
+    state.restartAt = SystemClock->now();
     save();
 }
 
