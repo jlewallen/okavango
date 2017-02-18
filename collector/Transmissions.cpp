@@ -352,6 +352,14 @@ void Transmissions::onMessage(String message) {
                 intervals->weatherStation.off = values[5];
                 intervals->weatherStation.reading = values[6];
 
+                DEBUG_PRINT("New Intervals:");
+
+                for (uint8_t i = 0; i < numberOfValues; ++i) {
+                    DEBUG_PRINT(" ");
+                    DEBUG_PRINT(values[i]);
+                }
+                DEBUG_PRINTLN("");
+
                 sendStatusTransmission();
             }
         }
@@ -365,10 +373,17 @@ void Transmissions::onMessage(String message) {
         if (message_parse_csv(message, numberOfValues, values)) {
             fk_transmission_schedule_t *schedules = memory->schedules();
 
+            DEBUG_PRINTLN("New Schedule: ");
+
             uint8_t index = 0;
             for (uint8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
                 schedules[i].offset = values[index++];
                 schedules[i].interval = values[index++];
+
+                DEBUG_PRINT(schedules[i].offset);
+                DEBUG_PRINT(" ");
+                DEBUG_PRINT(schedules[i].interval);
+                DEBUG_PRINTLN("");
             }
 
             sendStatusTransmission();
