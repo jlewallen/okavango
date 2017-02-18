@@ -4,11 +4,6 @@
 #include "TransmissionStatus.h"
 #include "core.h"
 
-typedef struct fk_transmission_schedule_t {
-    uint32_t offset;
-    uint32_t interval;
-} fk_transmission_schedule_t;
-
 typedef struct fk_transmission_kind_status_t {
     uint32_t millis;
     uint32_t time;
@@ -20,11 +15,6 @@ typedef struct fk_transmission_status_t {
 } fk_transmission_status_t;
 
 fk_transmission_status_t status = { 0 };
-fk_transmission_schedule_t schedules[TRANSMISSION_KIND_KINDS] = {
-    { 24, 24 }, // Location
-    { 0,   6 }, // Sensors
-    { 2,   6 }  // Weather
-};
 
 bool TransmissionStatus::anyTransmissionsThisHour() {
     DateTime dt(SystemClock->now());
@@ -36,7 +26,7 @@ bool TransmissionStatus::anyTransmissionsThisHour() {
     return false;
 }
 
-int8_t TransmissionStatus::shouldWe() {
+int8_t TransmissionStatus::shouldWe(fk_transmission_schedule_t *schedules) {
     uint32_t rtcNow = SystemClock->now();
     DateTime dt(rtcNow);
 

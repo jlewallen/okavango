@@ -57,6 +57,11 @@ static status_code eeprom_emulation_configure(void) {
 }
 
 void Memory::setup() {
+    Serial.print("Memory size: ");
+    Serial.print(sizeof(fk_memory_state_t));
+    Serial.print(" / ");
+    Serial.println(EEPROM_PAGE_SIZE);
+
     switch (eeprom_emulation_configure()) {
     case STATUS_ERR_NO_MEMORY:
         // This is very bad.
@@ -89,6 +94,15 @@ void Memory::setup() {
         state.intervals.weatherStation.ignore = WEATHER_STATION_INTERVAL_IGNORE;
         state.intervals.weatherStation.off = WEATHER_STATION_INTERVAL_OFF;
         state.intervals.weatherStation.reading = WEATHER_STATION_INTERVAL_READING;
+
+        fk_transmission_schedule_t default_schedules[TRANSMISSION_KIND_KINDS] = {
+            { 24, 24 }, // Location
+            { 0,   6 }, // Sensors
+            { 2,   6 }  // Weather
+        };
+
+        memcpy(&state.schedules, &default_schedules, sizeof(default_schedules));
+
         break;
     }
 }

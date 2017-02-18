@@ -176,8 +176,8 @@ String Transmissions::locationToMessage(gps_fix_t *location) {
     message += ",LO";
     message += "," + String(fuel->cellVoltage(), 2);
     message += "," + String(fuel->stateOfCharge(), 2);
-    message += "," + String(location->latitude, 9);
-    message += "," + String(location->longitude, 9);
+    message += "," + String(location->latitude, 12);
+    message += "," + String(location->longitude, 12);
     message += "," + String(location->altitude, 2);
     message += "," + String(uptime);
     return message;
@@ -219,6 +219,13 @@ String Transmissions::diagnosticsToMessage() {
     message += "," + String(intervals->weatherStation.off);
     message += "," + String(intervals->weatherStation.reading);
 
+    fk_transmission_schedule_t *schedules = memory->schedules();
+
+    for (uint8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
+        message += "," + String(schedules[i].offset);
+        message += "," + String(schedules[i].interval);
+    }
+
     message += "," + String(uptime);
     return message;
 }
@@ -230,7 +237,7 @@ bool Transmissions::sendStatusTransmission() {
 void Transmissions::handleTransmissionIfNecessary() {
     TransmissionStatus status;
 
-    int8_t kind = status.shouldWe();
+    int8_t kind = status.shouldWe(memory->schedules());
     if (kind == TRANSMISSION_KIND_SENSORS) {
         sendSensorTransmission(true, false, true);
     }
@@ -299,40 +306,70 @@ bool Transmissions::transmission(String message) {
     return success;
 }
 
-void Transmissions::onMessage(String message) {
-    const uint8_t numberOfValues = 7;
+bool message_parse_csv(String message, uint8_t numberExpected, uint32_t *values) {
+    uint8_t index = 0;
+    bool valid = true;
 
-    // Defaults: IV,600000,600000,10000,60000,1800000,1800000,120000,380
-    if (message.startsWith("IV,")) {
-        uint32_t values[numberOfValues] = { 0 };
-        uint8_t index = 0;
-        bool valid = true;
-
-        for (int8_t start = message.indexOf(",") + 1; start <= message.length() && index < numberOfValues; ) {
-            int8_t nextComma = message.indexOf(",", start);
-            int8_t end = nextComma >= 0 ? nextComma : message.length();
-            int32_t value = atoi(message.substring(start, end).c_str());
-            if (value <= 0) {
-                valid = false;
-                break;
-            }
-            else {
-                values[index++] = value;
-            }
-            start = end + 1;
+    for (int8_t start = message.indexOf(",") + 1; start <= message.length() && index < numberExpected; ) {
+        int8_t nextComma = message.indexOf(",", start);
+        int8_t end = nextComma >= 0 ? nextComma : message.length();
+        int32_t value = atoi(message.substring(start, end).c_str());
+        if (value < 0) {
+            valid = false;
+            break;
         }
+        else {
+            values[index++] = value;
+        }
+        start = end + 1;
+    }
 
-        if (valid && index == numberOfValues) {
-            fk_memory_core_intervals_t *intervals = memory->intervals();
+    return valid && index == numberExpected;
+}
 
-            intervals->idle = values[0];
-            intervals->airwaves = values[1];
-            intervals->weather = values[2];
+void Transmissions::onMessage(String message) {
+    // Defaults: IV,600000,600000,10000,60000,1800000,1800000,120000
+    if (message.startsWith("IV,")) {
+        const uint8_t numberOfValues = 7;
+        uint32_t values[numberOfValues] = { 0 };
 
-            intervals->weatherStation.start = values[3];
-            intervals->weatherStation.ignore = values[4];
-            intervals->weatherStation.off = values[5];
-            intervals->weatherStation.reading = values[6];
+        if (message_parse_csv(message, numberOfValues, values)) {
+            bool valid = true;
+
+            for (uint8_t i = 0; i < numberOfValues; ++i) {
+                valid = values[i] > 0 && valid;
+            }
+
+            if (valid) {
+                fk_memory_core_intervals_t *intervals = memory->intervals();
+
+                intervals->idle = values[0];
+                intervals->airwaves = values[1];
+                intervals->weather = values[2];
+
+                intervals->weatherStation.start = values[3];
+                intervals->weatherStation.ignore = values[4];
+                intervals->weatherStation.off = values[5];
+                intervals->weatherStation.reading = values[6];
+
+                sendStatusTransmission();
+            }
+        }
+    }
+
+    // Defaults: SC,24,24,0,6,2,6
+    if (message.startsWith("SC,")) {
+        const uint8_t numberOfValues = TRANSMISSION_KIND_KINDS * 2;
+        uint32_t values[numberOfValues] = { 0 };
+
+        if (message_parse_csv(message, numberOfValues, values)) {
+            fk_transmission_schedule_t *schedules = memory->schedules();
+
+            uint8_t index = 0;
+            for (uint8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
+                schedules[i].offset = values[index++];
+                schedules[i].interval = values[index++];
+            }
 
             sendStatusTransmission();
         }

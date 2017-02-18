@@ -2,6 +2,7 @@
 #define MEMORY_H
 
 #include <Arduino.h>
+#include "TransmissionStatus.h"
 
 typedef struct fk_memory_weather_intervals_t {
     uint32_t start;
@@ -24,6 +25,7 @@ typedef struct fk_memory_state_t {
     uint16_t restarts;
     uint32_t restartAt;
     fk_memory_core_intervals_t intervals;
+    fk_transmission_schedule_t schedules[TRANSMISSION_KIND_KINDS];
 } fk_memory_state_t;
 
 class Memory {
@@ -51,6 +53,10 @@ public:
 
     fk_memory_core_intervals_t *intervals() {
         return &state.intervals;
+    }
+
+    fk_transmission_schedule_t *schedules() {
+        return state.schedules;
     }
 
 };
