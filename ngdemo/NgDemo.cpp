@@ -261,6 +261,7 @@ bool NgDemo::transmission() {
     uint32_t started = millis();
     if (size > 0) {
         for (uint8_t i = 0; i < 2; ++i) {
+            #if 0
             RockBlock rockBlock(buffer, size);
             rockBlockSerialBegin();
             SerialType &rockBlockSerial = RockBlockSerial;
@@ -273,6 +274,7 @@ bool NgDemo::transmission() {
                 delay(10);
             }
             success = rockBlock.isDone();
+            #endif
             DEBUG_PRINT("RockBlock: ");
             DEBUG_PRINTLN(success);
             if (success) {

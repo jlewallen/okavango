@@ -5,7 +5,6 @@
 #include <Adafruit_GPS.h>
 #include <RTClib.h>
 #include <DHT.h>
-#include <RockBlock.h>
 #include "core.h"
 #include <pb_encode.h>
 #include <pb_decode.h>
