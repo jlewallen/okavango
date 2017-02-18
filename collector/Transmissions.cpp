@@ -302,6 +302,7 @@ bool Transmissions::transmission(String message) {
 void Transmissions::onMessage(String message) {
     const uint8_t numberOfValues = 7;
 
+    // Defaults: IV,600000,600000,10000,60000,1800000,1800000,120000,380
     if (message.startsWith("IV,")) {
         uint32_t values[numberOfValues] = { 0 };
         uint8_t index = 0;
