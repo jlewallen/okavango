@@ -47,11 +47,13 @@ bool RockBlock::tick() {
                 DEBUG_PRINT("Signal quality: ");
                 DEBUG_PRINTLN((int32_t)signalQuality);
 
+                rxSize = sizeof(rxBuffer);
                 error = rockBlock.sendReceiveSBDBinary(txBuffer, txSize, rxBuffer, rxSize);
                 if (error == ISBD_SUCCESS) {
                     handleReceivedMessage();
 
                     while (rockBlock.getWaitingMessageCount() > 0) {
+                        rxSize = sizeof(rxBuffer);
                         error = rockBlock.sendReceiveSBDBinary(nullptr, 0, rxBuffer, rxSize);
                         if (error != ISBD_SUCCESS) {
                             break;
