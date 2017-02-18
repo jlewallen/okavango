@@ -19,8 +19,8 @@
 #define FK_WEATHER_STATION_FIELD_DAILY_RAIN                  12
 #define FK_WEATHER_STATION_FIELD_PRESSURE                    13
 #define FK_WEATHER_STATION_FIELD_LIGHT_LEVEL                 14
-#define FK_WEATHER_STATION_FIELD_LONGITUDE                   15
-#define FK_WEATHER_STATION_FIELD_LATITUDE                    16
+#define FK_WEATHER_STATION_FIELD_LATITUDE                    15
+#define FK_WEATHER_STATION_FIELD_LONGITUDE                   16
 #define FK_WEATHER_STATION_FIELD_ALTITUDE                    17
 #define FK_WEATHER_STATION_FIELD_SATELLITES                  18
 #define FK_WEATHER_STATION_FIELD_DATE                        19
