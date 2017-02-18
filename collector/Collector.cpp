@@ -61,16 +61,22 @@ void Collector::setup() {
         logPrinter.open();
     }
 
-    switch (system_get_reset_cause()) {
-    case SYSTEM_RESET_CAUSE_SOFTWARE: logPrinter.println("ResetCause: Software"); break;
-    case SYSTEM_RESET_CAUSE_WDT: logPrinter.println("ResetCause: WDT"); break;
-    case SYSTEM_RESET_CAUSE_EXTERNAL_RESET: logPrinter.println("ResetCause: External Reset"); break;
-    case SYSTEM_RESET_CAUSE_BOD33: logPrinter.println("ResetCause: BOD33"); break;
-    case SYSTEM_RESET_CAUSE_BOD12: logPrinter.println("ResetCause: BOD12"); break;
-    case SYSTEM_RESET_CAUSE_POR: logPrinter.println("ResetCause: PoR"); break;
-    }
+    #ifdef BUILD_COMMIT
+    #define STRINGIFY(X) #X
+    DEBUG_PRINT("SHA1: ");
+    DEBUG_PRINTLN(STRINGIFY(BUILD_COMMIT));
+    #endif
 
     logTransition("Begin");
+
+    switch (system_get_reset_cause()) {
+    case SYSTEM_RESET_CAUSE_SOFTWARE: DEBUG_PRINTLN("ResetCause: Software"); break;
+    case SYSTEM_RESET_CAUSE_WDT: DEBUG_PRINTLN("ResetCause: WDT"); break;
+    case SYSTEM_RESET_CAUSE_EXTERNAL_RESET: DEBUG_PRINTLN("ResetCause: External Reset"); break;
+    case SYSTEM_RESET_CAUSE_BOD33: DEBUG_PRINTLN("ResetCause: BOD33"); break;
+    case SYSTEM_RESET_CAUSE_BOD12: DEBUG_PRINTLN("ResetCause: BOD12"); break;
+    case SYSTEM_RESET_CAUSE_POR: DEBUG_PRINTLN("ResetCause: PoR"); break;
+    }
     logPrinter.flush();
 
     if (!configuration.read(corePlatform.isSdAvailable())) {
