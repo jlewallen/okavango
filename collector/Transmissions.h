@@ -17,9 +17,10 @@ private:
     TransmissionStatus *status;
     FuelGauge *fuel;
     CorePlatform *core;
+    Memory *memory;
 
 public:
-    Transmissions(CorePlatform *core, WeatherStation *weatherStation, RtcAbstractSystemClock *systemClock, Configuration *configuration, TransmissionStatus *status, FuelGauge *fuel);
+    Transmissions(CorePlatform *core, WeatherStation *weatherStation, RtcAbstractSystemClock *systemClock, Configuration *configuration, TransmissionStatus *status, FuelGauge *fuel, Memory *memory);
 
 public:
     void handleTransmissionIfNecessary();

@@ -11,8 +11,9 @@
 #include "config.h"
 #endif
 
-Transmissions::Transmissions(CorePlatform *core, WeatherStation *weatherStation, RtcAbstractSystemClock *systemClock, Configuration *configuration, TransmissionStatus *status, FuelGauge *fuel) :
-    core(core), weatherStation(weatherStation), systemClock(systemClock), configuration(configuration), status(status), fuel(fuel) {
+Transmissions::Transmissions(CorePlatform *core, WeatherStation *weatherStation, RtcAbstractSystemClock *systemClock, Configuration *configuration,
+                             TransmissionStatus *status, FuelGauge *fuel, Memory *memory) :
+    core(core), weatherStation(weatherStation), systemClock(systemClock), configuration(configuration), status(status), fuel(fuel), memory(memory) {
 }
 
 String Transmissions::atlasPacketToMessage(atlas_sensors_packet_t *packet) {
@@ -206,6 +207,18 @@ String Transmissions::diagnosticsToMessage() {
     message += "," + String(diagnostics.sonarPacketsReceived);
     message += "," + String(diagnostics.deadFor);
     message += "," + String(diagnostics.getAverageTransmissionTime(), 2);
+
+    fk_memory_core_intervals_t *intervals = memory->intervals();
+
+    message += "," + String(intervals->idle);
+    message += "," + String(intervals->airwaves);
+    message += "," + String(intervals->weather);
+
+    message += "," + String(intervals->weatherStation.start);
+    message += "," + String(intervals->weatherStation.ignore);
+    message += "," + String(intervals->weatherStation.off);
+    message += "," + String(intervals->weatherStation.reading);
+
     message += "," + String(uptime);
     return message;
 }

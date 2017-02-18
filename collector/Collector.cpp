@@ -317,7 +317,7 @@ void Collector::tick() {
         TransmissionStatus status;
         if (!status.anyTransmissionsThisHour()) {
             if (SelfRestart::isRestartNecessary()) {
-                Transmissions transmissions(&corePlatform, &weatherStation, SystemClock, &configuration, &status, &gauge);
+                Transmissions transmissions(&corePlatform, &weatherStation, SystemClock, &configuration, &status, &gauge, &memory);
                 for (uint8_t i = 0; i < 3; ++i) {
                     if (transmissions.sendStatusTransmission()) {
                         break;
@@ -340,7 +340,7 @@ void Collector::tick() {
         break;
     }
     case CollectorState::Transmission: {
-        Transmissions transmissions(&corePlatform, &weatherStation, SystemClock, &configuration, &status, &gauge);
+        Transmissions transmissions(&corePlatform, &weatherStation, SystemClock, &configuration, &status, &gauge, &memory);
         transmissions.handleTransmissionIfNecessary();
         logTransition("AW");
         state = CollectorState::Airwaves;
