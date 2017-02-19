@@ -43,7 +43,7 @@ bool RockBlock::tick() {
             else {
                 Watchdog.reset();
 
-                DEBUG_PRINT("Signal quality: ");
+                DEBUG_PRINT("RB: Signal quality: ");
                 DEBUG_PRINTLN((int32_t)signalQuality);
 
                 rxSize = sizeof(rxBuffer);
@@ -65,16 +65,16 @@ bool RockBlock::tick() {
                     break;
                 }
 
-                DEBUG_PRINT("SB: send failed: ");
+                DEBUG_PRINT("RB: send failed: ");
                 DEBUG_PRINTLN(error);
             }
         }
 
         rockBlock.sleep();
-        DEBUG_PRINTLN("Done");
+        DEBUG_PRINTLN("RB: Done");
     }
     else {
-        DEBUG_PRINTLN("No RockBlock");
+        DEBUG_PRINTLN("RB: No RockBlock");
     }
 
     if (!success) {
@@ -96,6 +96,7 @@ void RockBlock::handleReceivedMessage() {
     char *ptr = (char *)rxBuffer;
     String message((char *)rxBuffer);
 
+    DEBUG_PRINTLN("");
     DEBUG_PRINT("Received: ");
     DEBUG_PRINTLN(message);
 

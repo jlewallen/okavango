@@ -301,6 +301,11 @@ bool Transmissions::transmission(String message) {
         diagnostics.recordTransmissionFailure();
     }
 
+    if (forceStatus) {
+        forceStatus = false;
+        sendStatusTransmission();
+    }
+
     digitalWrite(PIN_RED_LED, LOW);
 
     return success;
@@ -362,7 +367,7 @@ void Transmissions::onMessage(String message) {
                 }
                 DEBUG_PRINTLN("");
 
-                sendStatusTransmission();
+                forceStatus = true;
             }
         }
         else {
@@ -395,7 +400,7 @@ void Transmissions::onMessage(String message) {
                 DEBUG_PRINTLN("");
             }
 
-            sendStatusTransmission();
+            forceStatus = true;
         }
         else {
             DEBUG_PRINTLN("Ignored invalid schedule.");
