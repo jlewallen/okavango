@@ -332,12 +332,14 @@ void Transmissions::onMessage(String message) {
     if (message.startsWith("IV,")) {
         const uint8_t numberOfValues = 7;
         uint32_t values[numberOfValues] = { 0 };
+        bool valid = true;
 
         if (message_parse_csv(message, numberOfValues, values)) {
-            bool valid = true;
+            const uint32_t minimum = 1000 * 10;          // 10 Seconds
+            const uint32_t maximum = 1000 * 60 * 60 * 2; // 2 Hours
 
             for (uint8_t i = 0; i < numberOfValues; ++i) {
-                valid = values[i] > 0 && valid;
+                valid = valid && values[i] >= minimum && values[i] <= maximum;
             }
 
             if (valid) {
@@ -363,6 +365,13 @@ void Transmissions::onMessage(String message) {
                 sendStatusTransmission();
             }
         }
+        else {
+            valid = false;
+        }
+
+        if (!valid) {
+            DEBUG_PRINTLN("Ignored invalid intervals.");
+        }
     }
 
     // Defaults: SC,24,24,0,6,2,6
@@ -387,6 +396,9 @@ void Transmissions::onMessage(String message) {
             }
 
             sendStatusTransmission();
+        }
+        else {
+            DEBUG_PRINTLN("Ignored invalid schedule.");
         }
     }
 }
