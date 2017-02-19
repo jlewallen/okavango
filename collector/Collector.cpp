@@ -313,6 +313,11 @@ void Collector::tick() {
         TransmissionStatus status;
         if (!status.anyTransmissionsThisHour()) {
             if (SelfRestart::isRestartNecessary(millis() + deepSleepTime)) {
+                DEBUG_PRINT("Restarting: ");
+                DEBUG_PRINT(millis());
+                DEBUG_PRINT(" ");
+                DEBUG_PRINT(deepSleepTime);
+                DEBUG_PRINTLN(" ");
                 Transmissions transmissions(&corePlatform, &weatherStation, SystemClock, &configuration, &status, &gauge, &memory);
                 for (uint8_t i = 0; i < 3; ++i) {
                     if (transmissions.sendStatusTransmission()) {
