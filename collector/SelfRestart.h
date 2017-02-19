@@ -7,11 +7,9 @@
 
 class SelfRestart {
 public:
-    static bool isRestartNecessary() {
-        if (millis() > MANDATORY_RESTART_INTERVAL) {
+    static bool isRestartNecessary(uint32_t uptime) {
+        if (uptime > MANDATORY_RESTART_INTERVAL) {
             DEBUG_PRINTLN("Mandatory restart triggered.");
-            logPrinter.flush();
-            delay(1000);
             return true;
         }
         return false;

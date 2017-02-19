@@ -25,14 +25,6 @@
 #define BLINKS_IDLE                   2
 #define BLINKS_AIRWAVES               3
 
-uint32_t system_deep_sleep(uint32_t ms) {
-    if (Serial) {
-        delay(ms);
-        return ms;
-    }
-    return Watchdog.sleep(ms);
-}
-
 Collector::Collector() :
     configuration(&memory, FK_SETTINGS_CONFIGURATION_FILENAME),
     radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST, PIN_RFM95_RST),
@@ -137,7 +129,7 @@ void Collector::waitForBattery() {
 
             uint32_t sinceCheck = 0;
             while (sinceCheck < BATTERY_WAIT_CHECK_INTERVAL) {
-                sinceCheck += system_deep_sleep(BATTERY_WAIT_CHECK_SLEEP);
+                sinceCheck += deepSleep(BATTERY_WAIT_CHECK_SLEEP);
                 Watchdog.reset();
                 platformBlinks(PIN_RED_LED, BLINKS_BATTERY);
             }
@@ -257,7 +249,7 @@ void Collector::idlePeriod() {
 
     int32_t remaining = memory.intervals()->idle;
     while (remaining >= 0) {
-        remaining -= system_deep_sleep(IDLE_PERIOD_SLEEP);
+        remaining -= deepSleep(IDLE_PERIOD_SLEEP);
         Watchdog.reset();
         platformBlinks(PIN_RED_LED, BLINKS_IDLE);
     }
@@ -320,7 +312,7 @@ void Collector::tick() {
 
         TransmissionStatus status;
         if (!status.anyTransmissionsThisHour()) {
-            if (SelfRestart::isRestartNecessary()) {
+            if (SelfRestart::isRestartNecessary(millis() + deepSleepTime)) {
                 Transmissions transmissions(&corePlatform, &weatherStation, SystemClock, &configuration, &status, &gauge, &memory);
                 for (uint8_t i = 0; i < 3; ++i) {
                     if (transmissions.sendStatusTransmission()) {
@@ -357,4 +349,14 @@ void Collector::loop() {
     while (true) {
         tick();
     }
+}
+
+uint32_t Collector::deepSleep(uint32_t ms) {
+    if (Serial) {
+        delay(ms);
+        return ms;
+    }
+    uint32_t time = Watchdog.sleep(ms);
+    deepSleepTime += time;
+    return time;
 }

@@ -18,7 +18,7 @@ enum class CollectorState {
 
 class Collector {
 private:
-    bool radioSetup = false;
+    uint32_t deepSleepTime = 0;
     CollectorState state = CollectorState::Airwaves;
     TransmissionStatus status;
     FuelGauge gauge;
@@ -33,9 +33,14 @@ public:
 
 public:
     void setup();
+    void loop();
+
+private:
+    uint32_t deepSleep(uint32_t ms);
+
+private:
     void waitForBattery();
     void tick();
-    void loop();
     bool checkWeatherStation();
     void logTransition(const char *name);
     void idlePeriod();
