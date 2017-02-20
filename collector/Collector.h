@@ -18,7 +18,6 @@ enum class CollectorState {
 
 class Collector {
 private:
-    uint32_t deepSleepTime = 0;
     CollectorState state = CollectorState::Airwaves;
     TransmissionStatus status;
     FuelGauge gauge;

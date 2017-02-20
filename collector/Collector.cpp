@@ -312,11 +312,11 @@ void Collector::tick() {
 
         TransmissionStatus status;
         if (!status.anyTransmissionsThisHour()) {
-            if (SelfRestart::isRestartNecessary(millis() + deepSleepTime)) {
+            if (SelfRestart::isRestartNecessary(millis() + diagnostics.deepSleepTime)) {
                 DEBUG_PRINT("Restarting: ");
                 DEBUG_PRINT(millis());
                 DEBUG_PRINT(" ");
-                DEBUG_PRINT(deepSleepTime);
+                DEBUG_PRINT(diagnostics.deepSleepTime);
                 DEBUG_PRINTLN(" ");
                 Transmissions transmissions(&corePlatform, &weatherStation, SystemClock, &configuration, &status, &gauge, &memory);
                 for (uint8_t i = 0; i < 3; ++i) {
@@ -362,6 +362,6 @@ uint32_t Collector::deepSleep(uint32_t ms) {
         return ms;
     }
     uint32_t time = Watchdog.sleep(ms);
-    deepSleepTime += time;
+    diagnostics.recordDeepSleep(time);
     return time;
 }

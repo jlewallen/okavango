@@ -169,7 +169,7 @@ void Transmissions::sendSensorTransmission(bool sendAtlas, bool sendWeather, boo
 }
 
 String Transmissions::locationToMessage(gps_fix_t *location) {
-    uint32_t uptime = millis() / (1000 * 60);
+    uint32_t uptime = diagnostics.getUptime();
     String message(location->time);
     message += ",";
     message += configuration->getName();
@@ -190,7 +190,7 @@ void Transmissions::sendLocationTransmission() {
 }
 
 String Transmissions::diagnosticsToMessage() {
-    uint32_t uptime = millis() / (1000 * 60);
+    uint32_t uptime = diagnostics.getUptime();
     String message(SystemClock->now());
     message += ",";
     message += configuration->getName();
