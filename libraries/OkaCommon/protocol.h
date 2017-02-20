@@ -6,11 +6,11 @@
 #define FK_PACKET_KIND_PING                                 0x0
 #define FK_PACKET_KIND_PONG                                 0x1
 #define FK_PACKET_KIND_ACK                                  0x2
-#define FK_PACKET_KIND_NACK                                 0x3
-#define FK_PACKET_KIND_ATLAS_SENSORS                        0x4
-#define FK_PACKET_KIND_WEATHER_STATION                      0x5
-#define FK_PACKET_KIND_DATA_BOAT_SENSORS                    0x6
-#define FK_PACKET_KIND_SONAR_STATION                        0x7
+#define FK_PACKET_KIND_ATLAS_SENSORS                        0x3
+#define FK_PACKET_KIND_WEATHER_STATION                      0x4
+#define FK_PACKET_KIND_DATA_BOAT_SENSORS                    0x5
+#define FK_PACKET_KIND_SONAR_STATION                        0x6
+#define FK_PACKET_KIND_NACK                                 0x7
 
 #define FK_PACKET_KIND_FORCE_TRANSMISSION                   0x8
 #define FK_PACKET_KIND_RUN_DIAGNOSTICS                      0x9
@@ -90,7 +90,7 @@ typedef struct sonar_station_packet_t {
 
 typedef struct fk_network_ack_t {
     fk_network_packet_t fk;
-    uint8_t status;
+    // uint8_t status;
 } fk_network_ack_t;
 
 typedef struct fk_network_force_transmission_t {

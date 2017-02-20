@@ -228,7 +228,7 @@ void NetworkProtocolState::sendNack(uint8_t status) {
     fk_network_ack_t ack;
     memzero((uint8_t *)&ack, sizeof(fk_network_ack_t));
     ack.fk.kind = FK_PACKET_KIND_NACK;
-    ack.status = status;
+    // ack.status = status;
     radio->reply((uint8_t *)&ack, sizeof(fk_network_ack_t));
     radio->waitPacketSent();
     checkForPacket();
