@@ -25,6 +25,9 @@
 #define BLINKS_IDLE                   2
 #define BLINKS_AIRWAVES               3
 
+#define STRINGIFY(x)                  STRINGIFYX(x)
+#define STRINGIFYX(x)                 #x
+
 Collector::Collector() :
     configuration(&memory, FK_SETTINGS_CONFIGURATION_FILENAME),
     radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST, PIN_RFM95_RST),
@@ -54,7 +57,6 @@ void Collector::setup() {
     }
 
     #ifdef BUILD_COMMIT
-    #define STRINGIFY(X) #X
     DEBUG_PRINT("SHA1: ");
     DEBUG_PRINTLN(STRINGIFY(BUILD_COMMIT));
     #endif
