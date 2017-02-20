@@ -4,8 +4,6 @@
 
 #include "AtlasSensorBoard.h"
 
-#define SEND_FAKE_SONAR_PACKET_FOR_TESTING
-
 class LoraAtlasSensorBoard : public AtlasSensorBoard {
 public:
     LoraAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard);
