@@ -82,16 +82,21 @@ void Collector::setup() {
     weatherStation.setup();
 
     Preflight preflight(&configuration, &weatherStation, &radio);
-    preflight.check();
-
-    DEBUG_PRINTLN("Loop");
-    logPrinter.flush();
-
-    for (uint8_t i = 0; i < 3; ++i) {
-        digitalWrite(PIN_RED_LED, HIGH);
-        delay(50);
-        digitalWrite(PIN_RED_LED, LOW);
-        delay(100);
+    if (!preflight.check()) {
+        for (uint8_t i = 0; i < 5; ++i) {
+            digitalWrite(PIN_RED_LED, HIGH);
+            delay(500);
+            digitalWrite(PIN_RED_LED, LOW);
+            delay(500);
+        }
+    }
+    else {
+        for (uint8_t i = 0; i < 3; ++i) {
+            digitalWrite(PIN_RED_LED, HIGH);
+            delay(50);
+            digitalWrite(PIN_RED_LED, LOW);
+            delay(100);
+        }
     }
 }
 
