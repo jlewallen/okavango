@@ -203,13 +203,21 @@ int IridiumSBD::internalBegin(long maximumTime)
          return ISBD_CANCELLED;
 
    // Turn on modem and wait for a response from "AT" command to begin
-   for (unsigned long start = millis(); !modemAlive && millis() - start < 1000UL * maximumTime;)
+   for (uint8_t i = 0; i < 3; ++i)
    {
-      send(F("AT\r"));
-      callbacks->tick();
-      modemAlive = waitForATResponse();
-      if (cancelled())
-         return ISBD_CANCELLED;
+      for (unsigned long start = millis(); !modemAlive && millis() - start < 1000UL * maximumTime;)
+      {
+         send(F("AT\r"));
+         callbacks->tick();
+         modemAlive = waitForATResponse();
+         if (cancelled())
+            return ISBD_CANCELLED;
+      }
+
+      if (modemAlive)
+      {
+         break;
+      }
    }
 
    if (!modemAlive)
