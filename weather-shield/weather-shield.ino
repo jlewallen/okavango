@@ -344,9 +344,9 @@ void print_weather() {
     PRINT_VALUE_FLT(light_lvl, 2);
 
     PRINT_LABEL(",lat=");
-    PRINT_VALUE_FLT(gps.location.lat(), 12);
+    PRINT_VALUE_FLT(gps.location.lat(), 6);
     PRINT_LABEL(",lat=");
-    PRINT_VALUE_FLT(gps.location.lng(), 12);
+    PRINT_VALUE_FLT(gps.location.lng(), 6);
     PRINT_LABEL(",altitude=");
     PRINT_VALUE_FLT(gps.altitude.meters(), 4);
     PRINT_LABEL(",sats=");
