@@ -54,7 +54,7 @@ bool Preflight::checkCommunications() {
 
     if (true) {
         rockBlockSerialBegin();
-        IridiumSBD rockBlock(Serial2, PIN_ROCK_BLOCK, new WatchdogCallbacks());
+        IridiumSBD rockBlock(Serial2, -1, new WatchdogCallbacks());
         if (Serial) {
             rockBlock.attachConsole(Serial);
             rockBlock.attachDiags(Serial);

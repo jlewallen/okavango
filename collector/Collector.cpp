@@ -35,10 +35,10 @@ Collector::Collector() :
 }
 
 void Collector::setup() {
-    Wire.begin();
-
     pinMode(PIN_ROCK_BLOCK, OUTPUT);
     digitalWrite(PIN_ROCK_BLOCK, LOW);
+
+    Wire.begin();
 
     memory.setup();
 
@@ -47,6 +47,14 @@ void Collector::setup() {
     delay(500);
 
     waitForBattery();
+
+    // We turn on the RockBloc now and leave this on. I think allowing the cap
+    // to discharge, especially after 6 hours of inactivity is causing problems.
+    // We're only really worried about the RB keeping us from powering up which
+    // we've prevented here with the above call to waitForBattery. The cap
+    // should draw little power once it's charged up. This may actually save us
+    // energy in the long run.
+    digitalWrite(PIN_ROCK_BLOCK, HIGH);
 
     corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST, false);
 

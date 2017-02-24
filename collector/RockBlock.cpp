@@ -18,7 +18,7 @@ public:
     }
 };
 
-IridiumSBD rockBlock(Serial2, PIN_ROCK_BLOCK, new WatchdogCallbacks());
+IridiumSBD rockBlock(Serial2, -1, new WatchdogCallbacks());
 
 bool RockBlock::tick() {
     if (Serial) {
