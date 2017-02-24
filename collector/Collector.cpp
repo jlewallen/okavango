@@ -90,11 +90,20 @@ void Collector::setup() {
     switch (system_get_reset_cause()) {
     case SYSTEM_RESET_CAUSE_SOFTWARE: DEBUG_PRINTLN("ResetCause: Software"); break;
     case SYSTEM_RESET_CAUSE_WDT: DEBUG_PRINTLN("ResetCause: WDT"); break;
-    case SYSTEM_RESET_CAUSE_EXTERNAL_RESET: DEBUG_PRINTLN("ResetCause: External Reset"); break;
+    case SYSTEM_RESET_CAUSE_EXTERNAL_RESET: {
+        DEBUG_PRINTLN("ResetCause: External Reset");
+        sendStatus = true;
+        break;
+    }
     case SYSTEM_RESET_CAUSE_BOD33: DEBUG_PRINTLN("ResetCause: BOD33"); break;
     case SYSTEM_RESET_CAUSE_BOD12: DEBUG_PRINTLN("ResetCause: BOD12"); break;
-    case SYSTEM_RESET_CAUSE_POR: DEBUG_PRINTLN("ResetCause: PoR"); break;
+    case SYSTEM_RESET_CAUSE_POR: {
+        DEBUG_PRINTLN("ResetCause: PoR");
+        sendStatus = true;
+        break;
     }
+    }
+
     logPrinter.flush();
 
     if (!configuration.read(corePlatform.isSdAvailable())) {
@@ -349,9 +358,9 @@ void Collector::tick() {
                 DEBUG_PRINT(" ");
                 DEBUG_PRINT(diagnostics.deepSleepTime);
                 DEBUG_PRINTLN(" ");
-                Transmissions transmissions(&corePlatform, &weatherStation, SystemClock, &configuration, &status, &gauge, &memory);
+
                 for (uint8_t i = 0; i < 3; ++i) {
-                    if (transmissions.sendStatusTransmission()) {
+                    if (sendStatusTransmission()) {
                         break;
                     }
                 }
@@ -372,6 +381,14 @@ void Collector::tick() {
         break;
     }
     case CollectorState::Transmission: {
+        if (!Serial && sendStatus) {
+            float level = gauge.stateOfCharge();
+            if (level > 95) {
+                sendStatusTransmission();
+            }
+            sendStatus = false;
+        }
+
         Transmissions transmissions(&corePlatform, &weatherStation, SystemClock, &configuration, &status, &gauge, &memory);
         transmissions.handleTransmissionIfNecessary();
         logTransition("AW");
@@ -395,4 +412,9 @@ uint32_t Collector::deepSleep(uint32_t ms) {
     uint32_t time = Watchdog.sleep(ms);
     diagnostics.recordDeepSleep(time);
     return time;
+}
+
+bool Collector::sendStatusTransmission() {
+    Transmissions transmissions(&corePlatform, &weatherStation, SystemClock, &configuration, &status, &gauge, &memory);
+    return transmissions.sendStatusTransmission();
 }

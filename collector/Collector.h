@@ -26,6 +26,7 @@ private:
     WeatherStation weatherStation;
     LoraRadio radio;
     Memory memory;
+    bool sendStatus = false;
 
 public:
     Collector();
@@ -44,6 +45,7 @@ private:
     void logTransition(const char *name);
     void idlePeriod();
     void checkAirwaves();
+    bool sendStatusTransmission();
 
 };
 
