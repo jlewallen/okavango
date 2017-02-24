@@ -200,6 +200,7 @@ String Transmissions::diagnosticsToMessage() {
     message += "," + String(core->isSdAvailable());
     message += "," + String(diagnostics.hasGpsFix);
     message += "," + String(diagnostics.batterySleepTime);
+    message += "," + String(diagnostics.deepSleepTime);
     message += "," + String(diagnostics.numberOfTransmissionFailures);
     message += "," + String(diagnostics.numberOfTransmissionSkipped);
     message += "," + String(diagnostics.weatherReadingsReceived);
