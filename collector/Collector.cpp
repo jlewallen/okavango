@@ -34,9 +34,25 @@ Collector::Collector() :
     weatherStation(&memory) {
 }
 
+static void blinkSlow(int8_t pin) {
+    digitalWrite(pin, HIGH);
+    delay(500);
+    digitalWrite(pin, LOW);
+    delay(500);
+}
+
+static void blinkQuick(int8_t pin) {
+    digitalWrite(pin, HIGH);
+    delay(50);
+    digitalWrite(pin, LOW);
+    delay(100);
+}
+
 void Collector::setup() {
     pinMode(PIN_ROCK_BLOCK, OUTPUT);
     digitalWrite(PIN_ROCK_BLOCK, LOW);
+
+    blinkQuick(PIN_RED_LED);
 
     Wire.begin();
 
@@ -89,21 +105,21 @@ void Collector::setup() {
 
     weatherStation.setup();
 
+    digitalWrite(PIN_RED_LED, HIGH);
+
     Preflight preflight(&configuration, &weatherStation, &radio);
-    if (!preflight.check()) {
-        for (uint8_t i = 0; i < 5; ++i) {
-            digitalWrite(PIN_RED_LED, HIGH);
-            delay(500);
-            digitalWrite(PIN_RED_LED, LOW);
-            delay(500);
+    bool passed = preflight.check();
+    digitalWrite(PIN_RED_LED, LOW);
+    delay(500);
+
+    if (!passed) {
+        for (uint8_t i = 0; i < 10; ++i) {
+            blinkSlow(PIN_RED_LED);
         }
     }
     else {
         for (uint8_t i = 0; i < 3; ++i) {
-            digitalWrite(PIN_RED_LED, HIGH);
-            delay(50);
-            digitalWrite(PIN_RED_LED, LOW);
-            delay(100);
+            blinkQuick(PIN_RED_LED);
         }
     }
 }
