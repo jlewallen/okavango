@@ -97,8 +97,8 @@ void Memory::setup() {
 
         fk_transmission_schedule_t default_schedules[TRANSMISSION_KIND_KINDS] = {
             { 24, 24 }, // Location
-            { 0,   6 }, // Sensors
-            { 2,   6 }  // Weather
+            { 0,  12 }, // Sensors
+            { 2,  12 }  // Weather
         };
 
         memcpy(&state.schedules, &default_schedules, sizeof(default_schedules));
