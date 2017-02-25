@@ -18,9 +18,9 @@ public:
     }
 };
 
-IridiumSBD rockBlock(Serial2, -1, new WatchdogCallbacks());
-
 bool RockBlock::tick() {
+    IridiumSBD rockBlock(Serial2, -1, new WatchdogCallbacks());
+
     if (Serial) {
         rockBlock.attachConsole(Serial);
         rockBlock.attachDiags(Serial);
@@ -32,7 +32,8 @@ bool RockBlock::tick() {
     bool success = false;
 
     rockBlock.setPowerProfile(0);
-    if (rockBlock.begin() == ISBD_SUCCESS) {
+    int32_t status = rockBlock.begin();
+    if (status == ISBD_SUCCESS || status == ISBD_ALREADY_AWAKE) {
         for (uint8_t i = 0; i < 2; ++i) {
             int signalQuality = 0;
             int32_t error = rockBlock.getSignalQuality(signalQuality);
