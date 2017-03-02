@@ -84,7 +84,6 @@ bool AtlasSensorBoard::tick() {
             Watchdog.reset();
 
             #ifdef HAVE_DHT22
-            DEBUG_PRINTLN("DHT22");
             DHT dht(PIN_DHT, DHT22);
             dht.begin();
             float humidity = dht.readHumidity();
@@ -94,7 +93,7 @@ bool AtlasSensorBoard::tick() {
             packet.values[packetValueIndex++] = 0.0;
             packet.values[packetValueIndex++] = temperature;
 
-            DEBUG_PRINT("DHT ");
+            DEBUG_PRINT("DHT22 ");
             DEBUG_PRINT(humidity);
             DEBUG_PRINT(" ");
             DEBUG_PRINTLN(temperature);
@@ -103,8 +102,10 @@ bool AtlasSensorBoard::tick() {
             Watchdog.reset();
 
             #ifdef PIN_DS18B20
-            DEBUG_PRINTLN("DS18B20");
-            packet.values[packetValueIndex++] = getWaterTemperature();
+            DEBUG_PRINT("DS18B20 ");
+            float waterTemperature = getWaterTemperature();
+            packet.values[packetValueIndex++] = waterTemperature;
+            DEBUG_PRINTLN(waterTemperature);
             #endif
 
             DEBUG_PRINTLN("Metrics");

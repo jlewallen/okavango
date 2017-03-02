@@ -35,10 +35,14 @@ bool ParallelizedAtlasScientificSensors::tick() {
     }
     if (getSendsCounter() == 5) {
         hasPortFailed[portNumber] = true;
-        handle("*OK(NOT)\r");
+        DEBUG_PRINT("PORT: ");
+        DEBUG_PRINTLN(portNumber);
+        handle("*OK(NOT-FAILED)\r");
         return true;
     }
     else if (hasPortFailed[portNumber]) {
+        DEBUG_PRINT("PORT: ");
+        DEBUG_PRINTLN(portNumber);
         if (state == ParallelizedAtlasScientificSensorsState::Sleeping) {
             handle("*SL(NOT)\r");
         }
@@ -116,11 +120,11 @@ bool ParallelizedAtlasScientificSensors::tick() {
 
 bool ParallelizedAtlasScientificSensors::handle(String reply) {
     if (reply.indexOf("*") >= 0) {
-        if (reply.length() > 0) {
-            DEBUG_PRINT(uint32_t(state));
-            DEBUG_PRINT(">");
-            DEBUG_PRINTLN(reply);
-        }
+        DEBUG_PRINT(uint32_t(state));
+        DEBUG_PRINT(" ");
+        DEBUG_PRINT(portNumber);
+        DEBUG_PRINT(">");
+        DEBUG_PRINTLN(reply);
 
         switch (state) {
             case ParallelizedAtlasScientificSensorsState::DisableContinuousReading: {
