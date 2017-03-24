@@ -20,16 +20,7 @@ public:
         return port;
     }
 
-    SerialType *getSerial() {
-        if (port == 3 && conductivityConfig == OnSerial2) {
-            return &Serial2;
-
-        }
-        else {
-            Serial1.begin(9600);
-            return &Serial1;
-        }
-    }
+    SerialType *getSerial();
 
 public:
     void setup();

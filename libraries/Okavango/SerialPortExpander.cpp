@@ -16,6 +16,18 @@ bool SerialPortExpander::tick() {
     return false;
 }
 
+SerialType *SerialPortExpander::getSerial() {
+    if (port == 3 && conductivityConfig == OnSerial2) {
+        platformSerial2Begin(9600);
+        return &Serial2;
+
+    }
+    else {
+        Serial1.begin(9600);
+        return &Serial1;
+    }
+}
+
 void SerialPortExpander::select(byte port) {
     digitalWrite(selector[0], bitRead(port, 0));
     digitalWrite(selector[1], bitRead(port, 1));
