@@ -49,9 +49,6 @@ static void blinkQuick(int8_t pin) {
 }
 
 void Collector::setup() {
-    pinMode(PIN_ROCK_BLOCK, OUTPUT);
-    digitalWrite(PIN_ROCK_BLOCK, LOW);
-
     blinkQuick(PIN_RED_LED);
 
     Wire.begin();
