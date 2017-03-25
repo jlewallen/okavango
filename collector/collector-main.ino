@@ -7,8 +7,9 @@ Collector collector;
 void setup() {
     pinMode(PIN_ROCK_BLOCK, OUTPUT);
     digitalWrite(PIN_ROCK_BLOCK, LOW);
+
     pinMode(PIN_WEATHER_STATION_RESET, OUTPUT);
-    digitalWrite(PIN_ROCK_BLOCK, LOW);
+    digitalWrite(PIN_WEATHER_STATION_RESET, LOW);
 
     Watchdog.enable();
 
