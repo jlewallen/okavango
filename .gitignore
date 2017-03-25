@@ -27,3 +27,5 @@ data
 firmwaretool.properties
 gradle.properties
 config.h
+
+gitdeps

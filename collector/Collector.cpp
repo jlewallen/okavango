@@ -61,7 +61,7 @@ void Collector::setup() {
 
     waitForBattery();
 
-    // We turn on the RockBloc now and leave this on. I think allowing the cap
+    // We turn on the RockBlock now and leave this on. I think allowing the cap
     // to discharge, especially after 6 hours of inactivity is causing problems.
     // We're only really worried about the RB keeping us from powering up which
     // we've prevented here with the above call to waitForBattery. The cap
