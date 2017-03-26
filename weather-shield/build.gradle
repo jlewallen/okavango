@@ -18,10 +18,11 @@ model {
             libraries = [
                 "SoftwareSerial",
                 "Wire",
-                "SparkFun_MPL3115A2",
-                "SparkFun_HTU21D",
-                "TinyGPSPlus",
-                "RTClib"
+
+                "https://github.com/adafruit/RTClib.git",
+                "https://github.com/mikalhart/TinyGPSPlus.git",
+                "https://github.com/sparkfun/SparkFun_HTU21D_Breakout_Arduino_Library.git",
+                "https://github.com/sparkfun/MPL3115A2_Breakout.git"
             ]
         }
     }
