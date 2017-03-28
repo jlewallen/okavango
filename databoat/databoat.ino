@@ -58,7 +58,8 @@ void setup() {
 
     Serial.println("Begin");
 
-    corePlatform.setup();
+    corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST, true);
+
     #ifdef UPLOAD_ONLY
     uint32_t started = millis();
     DataBoat dataBoat(&Serial2, 9, NULL);

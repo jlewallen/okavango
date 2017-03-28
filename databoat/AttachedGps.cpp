@@ -27,7 +27,7 @@ bool AttachedGps::tick(data_boat_packet_t *packet) {
                 Serial.println("GOT NMEA");
                 DateTime dateTime = DateTime(gps.year, gps.month, gps.year, gps.hour, gps.minute, gps.seconds);
                 uint32_t time = dateTime.unixtime();
-                SystemClock.set(time);
+                SystemClock->set(time);
                 packet->time = time;
                 packet->latitude = gps.latitudeDegrees;
                 packet->longitude = gps.longitudeDegrees;
