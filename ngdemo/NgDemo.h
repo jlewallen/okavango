@@ -6,10 +6,10 @@
 #include <RTClib.h>
 #include <DHT.h>
 #include "core.h"
-#include <pb_encode.h>
-#include <pb_decode.h>
-#include "fkcomms.pb.h"
-#include "AuthToken.h"
+#include "Config.h"
+
+#define NGD_WIFI
+// #define NGD_ROCKBLOCK
 
 enum NgDemoState {
     WaitingGpsFix,
@@ -25,7 +25,7 @@ const uint32_t STATE_MAX_SLEEP_TIME = (2 * 60 * 1000);
 class NgDemo {
 private:
     Adafruit_GPS gps;
-    AuthToken token;
+    Config config;
     NgDemoState state;
     uint32_t stateChangedAt;
     uint32_t batteryLoggedAt;

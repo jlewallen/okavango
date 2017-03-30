@@ -2,6 +2,7 @@
 #include <SD.h>
 #include "NgDemo.h"
 #include "Diagnostics.h"
+#include "WifiConnection.h"
 #include "WatchdogCallbacks.h"
 #include "Logger.h"
 
@@ -13,7 +14,9 @@ bool NgDemo::setup() {
     platformSerial2Begin(9600);
     Serial1.begin(9600);
 
-    token.read("AUTH.BIN");
+    if (!config.read()) {
+        platformCatastrophe(PIN_RED_LED);
+    }
 
     state = NgDemoState::WaitingGpsFix;
     stateChangedAt = millis();
@@ -50,6 +53,7 @@ bool NgDemo::configure() {
 bool NgDemo::preflight() {
     DEBUG_PRINTLN("preflight: Start");
 
+    #ifdef NGD_ROCKBLOCK
     // Check RockBlock
     rockBlockSerialBegin();
     IridiumSBD rockBlock(Serial2, PIN_ROCK_BLOCK, new WatchdogCallbacks());
@@ -68,6 +72,17 @@ bool NgDemo::preflight() {
     }
 
     DEBUG_PRINTLN("preflight: RockBlock good");
+    #endif
+
+    #ifdef NGD_WIFI
+    WifiConnection wifi(config.getSsid(), config.getPassword(), Serial);
+    if (!wifi.open()) {
+        DEBUG_PRINTLN("preflight: WiFi failed");
+        failPreflight(1);
+    }
+
+    DEBUG_PRINTLN("preflight: WiFi good");
+    #endif
 
     // Check Sensor
     DHT dht(PIN_DHT, DHT22);
@@ -232,7 +247,6 @@ size_t NgDemo::encodeMessage(uint8_t *buffer, size_t bufferSize) {
     };
 
     uint8_t *ptr = buffer;
-    ptr += token.include(ptr, bufferSize - 1 - 4 - sizeof(values));
     ptr += encode_varint(1, ptr);
     ptr += encode_varint(SystemClock->now(), ptr);
     memcpy(ptr, values, sizeof(values));
@@ -258,6 +272,11 @@ bool NgDemo::transmission() {
     logPrinter.flush();
 
     bool success = false;
+
+    #ifdef NGD_WIFI
+    #endif
+
+    #ifdef NGD_ROCKBLOCK
     uint32_t started = millis();
     if (size > 0) {
         for (uint8_t i = 0; i < 2; ++i) {
@@ -282,6 +301,7 @@ bool NgDemo::transmission() {
             }
         }
     }
+    #endif
 
     logPrinter.flush();
 

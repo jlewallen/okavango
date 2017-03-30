@@ -17,25 +17,32 @@ model {
             boards = [ "adafruit:samd:adafruit_feather_m0" ]
             libraries = [
                 "SPI",
-                "Adafruit_ASFcore",
-                "RadioHead",
-                "Adafruit_GPS-master",
-                "RTClib",
+                "Wire",
+                "SD",
+                "OneWire",
+
+                "https://github.com/Conservify/Adafruit_ASFcore.git",
+                "https://github.com/Conservify/AtSamd.git",
+                "https://github.com/Conservify/Adafruit_SleepyDog.git",
+
+                "https://github.com/Conservify/max1704x.git",
+
+                "https://github.com/PaulStoffregen/RadioHead.git",
+                "https://github.com/adafruit/Adafruit_WINC1500.git",
+                "https://github.com/adafruit/Adafruit_GPS.git",
+
+                "https://github.com/adafruit/RTClib.git",
+
+                "https://github.com/adafruit/DHT-sensor-library.git",
+                "https://github.com/adafruit/Adafruit_Sensor.git",
+                "https://github.com/milesburton/Arduino-Temperature-Control-Library.git",
+
+                "ArduinoJson",
+                "IridiumSBD",
+
                 "OkaUtilities",
                 "Okavango",
-                "SimpleBuffer",
-                "Wire",
-                "DHT-sensor-library",
-                "SD",
                 "OkaCommon",
-                "Adafruit_SleepyDog",
-                "Adafruit_WINC1500",
-                "OneWire",
-                "Arduino-Temperature-Control-Library",
-                "IridiumSBD",
-                "AtSamd",
-                "fkcomms",
-                "max1704x"
             ]
         }
     }
