@@ -19,7 +19,7 @@ enum NgDemoState {
     Sleep
 };
 
-const uint32_t STATE_MAX_GPS_FIX_TIME = 3 * 60 * 1000;
+const uint32_t STATE_MAX_GPS_FIX_TIME = 10 * 1000;
 const uint32_t STATE_MAX_PREFLIGHT_GPS_FIX_TIME = 60 * 1000;
 const uint32_t STATE_MAX_SLEEP_TIME = (2 * 60 * 1000);
 
@@ -29,16 +29,16 @@ private:
     Adafruit_GPS gps;
     Config config;
     NgDemoState state;
-    size_t messageSize;
-    uint32_t stateChangedAt;
-    uint32_t batteryLoggedAt;
-    float latitude;
-    float longitude;
-    float altitude;
-    float humidity;
-    float temperature;
-    float batteryLevel;
-    float batteryVoltage;
+    size_t messageSize = 0;
+    uint32_t stateChangedAt = 0;
+    uint32_t batteryLoggedAt = 0;
+    float latitude = 0.0f;
+    float longitude = 0.0f;
+    float altitude = 0.0f;
+    float humidity = 0.0f;
+    float temperature = 0.0f;
+    float batteryLevel = 0.0f;
+    float batteryVoltage = 0.0f;
 
 public:
     NgDemo();
