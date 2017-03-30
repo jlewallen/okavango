@@ -7,6 +7,7 @@
 #include <DHT.h>
 #include "core.h"
 #include "Config.h"
+#include "Queue.h"
 
 #define NGD_WIFI
 // #define NGD_ROCKBLOCK
@@ -24,9 +25,11 @@ const uint32_t STATE_MAX_SLEEP_TIME = (2 * 60 * 1000);
 
 class NgDemo {
 private:
+    Queue data;
     Adafruit_GPS gps;
     Config config;
     NgDemoState state;
+    size_t messageSize;
     uint32_t stateChangedAt;
     uint32_t batteryLoggedAt;
     float latitude;

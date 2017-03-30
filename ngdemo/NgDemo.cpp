@@ -6,8 +6,8 @@
 #include "WatchdogCallbacks.h"
 #include "Logger.h"
 
-NgDemo::NgDemo()
-    : gps(&Serial1) {
+NgDemo::NgDemo() :
+    gps(&Serial1), data("DATA.BIN") {
 }
 
 bool NgDemo::setup() {
@@ -81,6 +81,7 @@ bool NgDemo::preflight() {
         failPreflight(1);
     }
 
+    wifi.off();
     DEBUG_PRINTLN("preflight: WiFi good");
     #endif
 
@@ -155,6 +156,14 @@ void NgDemo::tick() {
         temperature = dht.readTemperature();
         batteryLevel = platformBatteryLevel();
         batteryVoltage = platformBatteryVoltage();
+
+        uint8_t buffer[128];
+        DEBUG_PRINTLN("Encoding and queueing message");
+        messageSize = encodeMessage(buffer, sizeof(buffer));
+
+        DEBUG_PRINT("Message: ");
+        DEBUG_PRINTLN(messageSize);
+        data.enqueue(buffer);
 
         File file = Logger::open("DATA.CSV");
         if (file) {
@@ -256,6 +265,31 @@ size_t NgDemo::encodeMessage(uint8_t *buffer, size_t bufferSize) {
 }
 
 bool NgDemo::transmission() {
+    bool success = false;
+
+    #ifdef NGD_WIFI
+    WifiConnection wifi(config.getSsid(), config.getPassword(), Serial);
+    if (wifi.open()) {
+        Queue failed("FAILED.BIN");
+
+        while (true) {
+            uint8_t *message = (uint8_t *)data.dequeue();
+            if (message == NULL) {
+                break;
+            }
+            if (!wifi.post(config.getUrlServer(), config.getUrlPath(), "application/octet-stream", message, messageSize)) {
+                failed.enqueue((uint8_t *)message);
+            }
+        }
+
+        failed.copyInto(&data);
+        failed.removeAll();
+
+        wifi.off();
+    }
+    #endif
+
+    #ifdef NGD_ROCKBLOCK
     uint8_t buffer[128];
 
     DEBUG_PRINTLN("Encoding message...");
@@ -271,12 +305,6 @@ bool NgDemo::transmission() {
 
     logPrinter.flush();
 
-    bool success = false;
-
-    #ifdef NGD_WIFI
-    #endif
-
-    #ifdef NGD_ROCKBLOCK
     uint32_t started = millis();
     if (size > 0) {
         for (uint8_t i = 0; i < 2; ++i) {
