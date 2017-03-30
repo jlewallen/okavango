@@ -2,7 +2,12 @@
 #define WIFI_CONNECTION_H
 
 #include "Platforms.h"
-#include <Adafruit_WINC1500.h>
+#include <WiFi101.h>
+
+#define PIN_WINC_CS   8
+#define PIN_WINC_IRQ  7
+#define PIN_WINC_RST  4
+#define PIN_WINC_EN   2
 
 class WifiConnection {
 private:

@@ -1,14 +1,32 @@
 #include <SPI.h>
 #include <Adafruit_SleepyDog.h>
 #include "WifiConnection.h"
+#include <driver/source/nmasic.h>
 
-#define PIN_WINC_CS   8
-#define PIN_WINC_IRQ  7
-#define PIN_WINC_RST  4
-#define PIN_WINC_EN   2
+WiFiClient client;
 
-Adafruit_WINC1500 WiFi(PIN_WINC_CS, PIN_WINC_IRQ, PIN_WINC_RST);
-Adafruit_WINC1500Client client;
+void firmwareCheck() {
+    String fv = WiFi.firmwareVersion();
+    String latestFv;
+    Serial.print("Firmware version: ");
+    Serial.println(fv);
+
+    if (REV(GET_CHIPID()) >= REV_3A0) {
+        latestFv = WIFI_FIRMWARE_LATEST_MODEL_B;
+    } else {
+        latestFv = WIFI_FIRMWARE_LATEST_MODEL_A;
+    }
+
+    Serial.print("Latest available: ");
+    Serial.println(latestFv);
+
+    if (fv == latestFv) {
+        Serial.println("Firmware check: PASSED");
+    }
+    else {
+        Serial.println("Firmware check: FAILED");
+    }
+}
 
 void logNetworkInformation(Stream &stream) {
     IPAddress ip = WiFi.localIP();
@@ -38,7 +56,6 @@ WifiConnection::WifiConnection(const char *ssid, const char *psk, Stream &logStr
 void WifiConnection::on() {
     pinMode(PIN_WINC_EN, OUTPUT);
     digitalWrite(PIN_WINC_EN, HIGH);
-
 }
 
 void WifiConnection::off() {
@@ -46,18 +63,23 @@ void WifiConnection::off() {
 }
 
 bool WifiConnection::open() {
+    off();
+
+    delay(500);
+
     on();
 
+    delay(500);
+
     if (WiFi.status() == WL_NO_SHIELD) {
-        logStream.println("Wifi: missing");
         DEBUG_PRINTLN("Wifi: missing");
         return false;
     }
 
+    firmwareCheck();
+
     uint32_t started = millis();
     while (WiFi.status() != WL_CONNECTED) {
-        logStream.print("Wifi: attempting ");
-        logStream.println(ssid);
         DEBUG_PRINT("Wifi: attempting ");
         DEBUG_PRINTLN(ssid);
 
@@ -76,11 +98,11 @@ bool WifiConnection::open() {
     }
 
     logNetworkInformation(Serial);
-    logNetworkInformation(logStream);
 
     status = WiFi.status();
 
     if (status != WL_CONNECTED) {
+        WiFi.end();
         off();
         return false;
     }
@@ -89,7 +111,7 @@ bool WifiConnection::open() {
 }
 
 bool WifiConnection::post(const char *server, const char *path, const char *contentType, const char *body) {
-    logStream.println(body);
+    DEBUG_PRINTLN(body);
 
     return post(server, path, contentType, (uint8_t *)body, strlen(body));
 }
@@ -99,9 +121,10 @@ bool WifiConnection::post(const char *server, const char *path, const char *cont
 
     bool success = false;
 
+    client.stop();
+
     if (client.connect(server, 80)) {
         DEBUG_PRINTLN("Connected");
-        logStream.println("Connected, sending:");
 
         client.print("POST ");
         client.print(path);
@@ -124,9 +147,6 @@ bool WifiConnection::post(const char *server, const char *path, const char *cont
             }
 
             if (!client.connected()) {
-                DEBUG_PRINTLN();
-                DEBUG_PRINTLN("Yay");
-                logStream.println("Closed");
                 client.stop();
                 success = true;
                 break;
@@ -134,8 +154,10 @@ bool WifiConnection::post(const char *server, const char *path, const char *cont
         }
     }
     else {
-        logStream.println("Unable to connect.");
+        DEBUG_PRINTLN("Unable to connect.");
     }
+
+    client.stop();
 
     Watchdog.enable();
     return success;
