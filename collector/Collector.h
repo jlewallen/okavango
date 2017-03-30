@@ -39,6 +39,7 @@ private:
     uint32_t deepSleep(uint32_t ms);
 
 private:
+    void preflight();
     void waitForBattery();
     void tick();
     bool checkWeatherStation();

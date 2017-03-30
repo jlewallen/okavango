@@ -103,14 +103,18 @@ void Collector::setup() {
 
     logPrinter.flush();
 
+    weatherStation.setup();
+
+    preflight();
+
     if (!configuration.read(corePlatform.isSdAvailable())) {
         DEBUG_PRINTLN("Error reading configuration");
         logPrinter.flush();
         platformCatastrophe(PIN_RED_LED);
     }
+}
 
-    weatherStation.setup();
-
+void Collector::preflight() {
     digitalWrite(PIN_RED_LED, HIGH);
 
     Preflight preflight(&configuration, &weatherStation, &radio);
