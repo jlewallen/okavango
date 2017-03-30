@@ -75,6 +75,8 @@ bool NgDemo::preflight() {
     #endif
 
     #ifdef NGD_WIFI
+    WiFi.setPins(PIN_WINC_CS, PIN_WINC_IRQ, PIN_WINC_RST, PIN_WINC_EN);
+
     WifiConnection wifi(config.getSsid(), config.getPassword(), Serial);
     if (!wifi.open()) {
         DEBUG_PRINTLN("preflight: WiFi failed");
@@ -103,10 +105,12 @@ bool NgDemo::preflight() {
         delay(10);
 
         while (Serial1.available()) {
-            gps.read();
+            char c = gps.read();
+            Serial.print(c);
         }
 
-        if (millis() - startTime > STATE_MAX_PREFLIGHT_GPS_FIX_TIME) {
+        if (millis() - startTime > STATE_MAX_PREFLIGHT_GPS_TIME) {
+            DEBUG_PRINTLN("");
             DEBUG_PRINTLN("preflight: GPS failed");
             failPreflight(3);
         }
@@ -124,6 +128,7 @@ bool NgDemo::preflight() {
         Watchdog.reset();
     }
 
+    DEBUG_PRINTLN("");
     DEBUG_PRINTLN("preflight: GPS good");
 
     DEBUG_PRINTLN("preflight: Passed");
@@ -148,7 +153,7 @@ void NgDemo::tick() {
         break;
     }
     case NgDemoState::ReadingSensors: {
-        DEBUG_PRINTLN("ReadingSensors:");
+        DEBUG_PRINTLN("ReadingSensors...");
 
         DHT dht(PIN_DHT, DHT22);
         dht.begin();
@@ -158,12 +163,12 @@ void NgDemo::tick() {
         batteryVoltage = platformBatteryVoltage();
 
         uint8_t buffer[128];
-        DEBUG_PRINTLN("Encoding and queueing message");
+        DEBUG_PRINTLN("Encoding and queueing message...");
         messageSize = encodeMessage(buffer, sizeof(buffer));
 
         DEBUG_PRINT("Message: ");
         DEBUG_PRINTLN(messageSize);
-        data.enqueue(buffer);
+        data.enqueue(buffer, sizeof(buffer));
 
         File file = Logger::open("DATA.CSV");
         if (file) {
@@ -272,11 +277,16 @@ bool NgDemo::transmission() {
     if (wifi.open()) {
         Queue failed("FAILED.BIN");
 
+        data.startAtBeginning();
+
         while (true) {
             uint8_t *message = (uint8_t *)data.dequeue();
             if (message == NULL) {
                 break;
             }
+
+            DEBUG_PRINTLN("Dequeued, attempting to send...");
+
             if (!wifi.post(config.getUrlServer(), config.getUrlPath(), "application/octet-stream", message, messageSize)) {
                 failed.enqueue((uint8_t *)message);
             }
@@ -284,6 +294,9 @@ bool NgDemo::transmission() {
 
         failed.copyInto(&data);
         failed.removeAll();
+
+        WiFi.disconnect();
+        WiFi.end();
 
         wifi.off();
     }
@@ -347,7 +360,6 @@ bool NgDemo::checkGps() {
     if (gps.newNMEAreceived()) {
         if (gps.parse(gps.lastNMEA())) {
             if (gps.fix) {
-                DEBUG_PRINTLN("GOT NMEA");
                 DateTime dateTime = DateTime(gps.year, gps.month, gps.year, gps.hour, gps.minute, gps.seconds);
                 uint32_t time = dateTime.unixtime();
                 SystemClock->set(time);

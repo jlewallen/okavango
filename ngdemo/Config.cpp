@@ -1,6 +1,7 @@
 #include <SD.h>
 #include "Platforms.h"
 #include "Config.h"
+#include "WifiConnection.h"
 
 bool Config::read() {
     bool success = true;
@@ -42,7 +43,7 @@ bool Config::read() {
     File wifiFile = SD.open("WIFI.CFG");
     if (wifiFile) {
         String data = wifiFile.readString();
-        int32_t i = data.indexOf(' ');
+        int32_t i = data.indexOf('\n');
         if (i > 0) {
             ssid = data.substring(0, i);
             password = data.substring(i);
