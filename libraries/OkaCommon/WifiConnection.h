@@ -19,6 +19,7 @@ public:
     void on();
     bool open();
     bool post(const char *server, const char *path, const char *contentType, const char *body);
+    bool post(const char *server, const char *path, const char *contentType, const uint8_t *body, size_t length);
 };
 
 #endif

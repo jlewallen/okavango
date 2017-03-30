@@ -89,6 +89,12 @@ bool WifiConnection::open() {
 }
 
 bool WifiConnection::post(const char *server, const char *path, const char *contentType, const char *body) {
+    logStream.println(body);
+
+    return post(server, path, contentType, (uint8_t *)body, strlen(body));
+}
+
+bool WifiConnection::post(const char *server, const char *path, const char *contentType, const uint8_t *body, size_t length) {
     Watchdog.disable();
 
     bool success = false;
@@ -97,17 +103,15 @@ bool WifiConnection::post(const char *server, const char *path, const char *cont
         DEBUG_PRINTLN("Connected");
         logStream.println("Connected, sending:");
 
-        logStream.println(body);
-
         client.print("POST ");
         client.print(path);
         client.println(" HTTP/1.1");
         client.print("Host: "); client.println(server);
         client.print("Content-Type: "); client.println(contentType);
-        client.print("Content-Length: "); client.println(strlen(body));
+        client.print("Content-Length: "); client.println(length);
         client.println("Connection: close");
         client.println();
-        client.println(body);
+        client.write(body, length);
 
         uint32_t started = millis();
         while (millis() - started < ONE_MINUTE) {
