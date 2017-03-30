@@ -43,7 +43,6 @@ void WifiConnection::on() {
 
 void WifiConnection::off() {
     digitalWrite(PIN_WINC_EN, LOW);
-
 }
 
 bool WifiConnection::open() {
@@ -81,7 +80,12 @@ bool WifiConnection::open() {
 
     status = WiFi.status();
 
-    return status == WL_CONNECTED;
+    if (status != WL_CONNECTED) {
+        off();
+        return false;
+    }
+
+    return true;
 }
 
 bool WifiConnection::post(const char *server, const char *path, const char *contentType, const char *body) {
