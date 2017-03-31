@@ -4,7 +4,6 @@
 #include "Collector.h"
 #include "Transmissions.h"
 #include "Diagnostics.h"
-#include "SelfRestart.h"
 #include "network.h"
 #include "CollectorNetworkCallbacks.h"
 #include "Queue.h"
@@ -353,7 +352,9 @@ void Collector::tick() {
 
         TransmissionStatus status;
         if (!status.anyTransmissionsThisHour()) {
-            if (SelfRestart::isRestartNecessary(millis() + diagnostics.deepSleepTime)) {
+            uint32_t uptime = millis() + diagnostics.deepSleepTime;
+
+            if (uptime > memory.intervals()->restart) {
                 DEBUG_PRINT("Restarting: ");
                 DEBUG_PRINT(millis());
                 DEBUG_PRINT(" ");

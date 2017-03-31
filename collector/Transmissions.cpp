@@ -351,14 +351,16 @@ void Transmissions::onMessage(String message) {
             if (valid) {
                 fk_memory_core_intervals_t *intervals = memory->intervals();
 
-                intervals->idle = values[0];
-                intervals->airwaves = values[1];
-                intervals->weather = values[2];
+                intervals->idle = values[0] / 1000;
+                intervals->airwaves = values[1] / 1000;
+                intervals->weather = values[2] / 1000;
 
-                intervals->weatherStation.start = values[3];
-                intervals->weatherStation.ignore = values[4];
-                intervals->weatherStation.off = values[5];
-                intervals->weatherStation.reading = values[6];
+                intervals->weatherStation.start = values[3] / 1000;
+                intervals->weatherStation.ignore = values[4] / 1000;
+                intervals->weatherStation.off = values[5] / 1000;
+                intervals->weatherStation.reading = values[6] / 1000;
+
+                intervals->restart = values[7] / 1000;
 
                 DEBUG_PRINT("New Intervals:");
 
