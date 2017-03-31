@@ -99,6 +99,30 @@ void NetworkProtocolState::tick() {
     }
 }
 
+static void logAtlasPacket(atlas_sensors_packet_t *p) {
+    DEBUG_PRINT("ATLAS: ");
+    DEBUG_PRINT(p->time);
+    DEBUG_PRINT(",");
+    DEBUG_PRINT(p->battery);
+
+    for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
+        DEBUG_PRINT(",");
+        DEBUG_PRINT(p->values[i]);
+    }
+}
+
+static void logSonarPacket(sonar_station_packet_t *p) {
+    DEBUG_PRINT("SONAR: ");
+    DEBUG_PRINT(p->time);
+    DEBUG_PRINT(",");
+    DEBUG_PRINT(p->battery);
+
+    for (uint8_t i = 0; i < FK_SONAR_STATION_PACKET_NUMBER_VALUES; ++i) {
+        DEBUG_PRINT(",");
+        DEBUG_PRINT(p->values[i]);
+    }
+}
+
 void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize) {
     packetsReceived++;
 
@@ -126,12 +150,11 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize
 
             diagnostics.recordSonarPacket();
 
-            DEBUG_PRINTLN("Queuing");
-
             {
                 sonar_station_packet_t sonar_station_packet;
                 memcpy((void *)&sonar_station_packet, packet, sizeof(sonar_station_packet_t));
                 sonar_station_packet.time = SystemClock->now();
+                logSonarPacket(&sonar_station_packet);
                 queue->enqueue((uint8_t *)&sonar_station_packet, sizeof(sonar_station_packet_t));
             }
 
@@ -145,9 +168,12 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize
 
             diagnostics.recordAtlasPacket();
 
-            DEBUG_PRINTLN("Queuing");
-
-            queue->enqueue((uint8_t *)packet);
+            {
+                atlas_sensors_packet_t atlas_sensors_packet;
+                memcpy((void *)&atlas_sensors_packet, packet, sizeof(atlas_sensors_packet_t));
+                logAtlasPacket(&atlas_sensors_packet);
+                queue->enqueue((uint8_t *)&atlas_sensors_packet, sizeof(atlas_sensors_packet_t));
+            }
 
             sendAck();
         }
