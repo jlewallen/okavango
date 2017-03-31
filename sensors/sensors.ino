@@ -34,7 +34,10 @@ void LoraAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet
 
     tryAndSendLocalQueue(queue);
 
-    platformLowPowerSleep(LOW_POWER_SLEEP_SENSORS_END);
+    int32_t remaining = LOW_POWER_SLEEP_SENSORS_END;
+    while (remaining > 0) {
+        remaining -= Watchdog.sleep(8192);
+    }
 }
 
 void LoraAtlasSensorBoard::tryAndSendLocalQueue(Queue *queue) {
