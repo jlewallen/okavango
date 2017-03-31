@@ -413,6 +413,7 @@ uint32_t Collector::deepSleep(uint32_t ms) {
     }
     uint32_t time = Watchdog.sleep(ms);
     diagnostics.recordDeepSleep(time);
+    platformAdjustUptime(time);
     return time;
 }
 

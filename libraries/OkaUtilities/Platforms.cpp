@@ -144,3 +144,13 @@ void platformLowPowerSleep(uint32_t numberOfMs) {
         }
     }
 }
+
+static uint32_t uptime = 0;
+
+uint32_t platformUptime() {
+    return uptime + millis();
+}
+
+uint32_t platformAdjustUptime(uint32_t by) {
+    return uptime += by;
+}
