@@ -196,7 +196,7 @@ bool Collector::checkWeatherStation() {
 
     bool success = false;
     uint32_t started = platformUptime();
-    while (platformUptime() - started < memory.intervals()->weather) {
+    while (platformUptime() - started < intervalToMs(memory.intervals()->weather)) {
         weatherStation.tick();
 
         Watchdog.reset();
@@ -256,7 +256,7 @@ void Collector::checkAirwaves() {
 
     uint32_t started = platformUptime();
     uint32_t last = platformUptime();
-    while (platformUptime() - started < memory.intervals()->airwaves || !networkProtocol.isQuiet()) {
+    while (platformUptime() - started < intervalToMs(memory.intervals()->airwaves) || !networkProtocol.isQuiet()) {
         networkProtocol.tick();
 
         weatherStation.ignore();
@@ -287,7 +287,7 @@ void Collector::idlePeriod() {
     DEBUG_PRINTLN("Idle: Begin");
     logPrinter.flush();
 
-    int32_t remaining = memory.intervals()->idle;
+    int32_t remaining = intervalToMs(memory.intervals()->idle);
     while (remaining >= 0) {
         remaining -= deepSleep(IDLE_PERIOD_SLEEP);
         Watchdog.reset();
@@ -352,7 +352,7 @@ void Collector::tick() {
 
         TransmissionStatus status;
         if (!status.anyTransmissionsThisHour()) {
-            if (platformUptime() > memory.intervals()->restart) {
+            if (platformUptime() > intervalToMs(memory.intervals()->restart)) {
                 DEBUG_PRINT("Restarting: ");
                 DEBUG_PRINT(platformUptime());
                 DEBUG_PRINT(" ");

@@ -211,14 +211,16 @@ String Transmissions::diagnosticsToMessage() {
 
     fk_memory_core_intervals_t *intervals = memory->intervals();
 
-    message += "," + String(intervals->idle);
-    message += "," + String(intervals->airwaves);
-    message += "," + String(intervals->weather);
+    message += "," + String(intervalToMs(intervals->idle));
+    message += "," + String(intervalToMs(intervals->airwaves));
+    message += "," + String(intervalToMs(intervals->weather));
 
-    message += "," + String(intervals->weatherStation.start);
-    message += "," + String(intervals->weatherStation.ignore);
-    message += "," + String(intervals->weatherStation.off);
-    message += "," + String(intervals->weatherStation.reading);
+    message += "," + String(intervalToMs(intervals->weatherStation.start));
+    message += "," + String(intervalToMs(intervals->weatherStation.ignore));
+    message += "," + String(intervalToMs(intervals->weatherStation.off));
+    message += "," + String(intervalToMs(intervals->weatherStation.reading));
+
+    message += "," + String(intervalToMs(intervals->restart));
 
     fk_transmission_schedule_t *schedules = memory->schedules();
 
@@ -351,16 +353,16 @@ void Transmissions::onMessage(String message) {
             if (valid) {
                 fk_memory_core_intervals_t *intervals = memory->intervals();
 
-                intervals->idle = values[0] / 1000;
-                intervals->airwaves = values[1] / 1000;
-                intervals->weather = values[2] / 1000;
+                intervals->idle = msToInterval(values[0]);
+                intervals->airwaves = msToInterval(values[1]);
+                intervals->weather = msToInterval(values[2]);
 
-                intervals->weatherStation.start = values[3] / 1000;
-                intervals->weatherStation.ignore = values[4] / 1000;
-                intervals->weatherStation.off = values[5] / 1000;
-                intervals->weatherStation.reading = values[6] / 1000;
+                intervals->weatherStation.start = msToInterval(values[3]);
+                intervals->weatherStation.ignore = msToInterval(values[4]);
+                intervals->weatherStation.off = msToInterval(values[5]);
+                intervals->weatherStation.reading = msToInterval(values[6]);
 
-                intervals->restart = values[7] / 1000;
+                intervals->restart = msToInterval(values[7]);
 
                 DEBUG_PRINT("New Intervals:");
 

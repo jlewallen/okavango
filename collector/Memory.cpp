@@ -56,6 +56,14 @@ static status_code eeprom_emulation_configure(void) {
     return error_code;
 }
 
+uint32_t msToInterval(uint32_t ms) {
+    return ms;
+}
+
+uint32_t intervalToMs(uint32_t interval) {
+    return interval;
+}
+
 void Memory::setup() {
     Serial.print("Memory size: ");
     Serial.print(sizeof(fk_memory_state_t));
@@ -82,20 +90,20 @@ void Memory::setup() {
         #define WEATHER_STATION_CHECK_TIME             (1000 * 10)
         #define MANDATORY_RESTART_INTERVAL             (1000 * 60 * 60 * 6)
 
-        state.intervals.idle = IDLE_PERIOD;
-        state.intervals.airwaves = AIRWAVES_CHECK_TIME;
-        state.intervals.weather = WEATHER_STATION_CHECK_TIME;
-        state.intervals.restart = MANDATORY_RESTART_INTERVAL;
+        state.intervals.idle = msToInterval(IDLE_PERIOD);
+        state.intervals.airwaves = msToInterval(AIRWAVES_CHECK_TIME);
+        state.intervals.weather = msToInterval(WEATHER_STATION_CHECK_TIME);
+        state.intervals.restart = msToInterval(MANDATORY_RESTART_INTERVAL);
 
         #define WEATHER_STATION_INTERVAL_START         (1000 * 60)
         #define WEATHER_STATION_INTERVAL_IGNORE        (1000 * 60 * 30)
         #define WEATHER_STATION_INTERVAL_OFF           (1000 * 60 * 30)
         #define WEATHER_STATION_INTERVAL_READING       (1000 * 1000 * 60 * 2)
 
-        state.intervals.weatherStation.start = WEATHER_STATION_INTERVAL_START;
-        state.intervals.weatherStation.ignore = WEATHER_STATION_INTERVAL_IGNORE;
-        state.intervals.weatherStation.off = WEATHER_STATION_INTERVAL_OFF;
-        state.intervals.weatherStation.reading = WEATHER_STATION_INTERVAL_READING;
+        state.intervals.weatherStation.start = msToInterval(WEATHER_STATION_INTERVAL_START);
+        state.intervals.weatherStation.ignore = msToInterval(WEATHER_STATION_INTERVAL_IGNORE);
+        state.intervals.weatherStation.off = msToInterval(WEATHER_STATION_INTERVAL_OFF);
+        state.intervals.weatherStation.reading = msToInterval(WEATHER_STATION_INTERVAL_READING);
 
         fk_transmission_schedule_t default_schedules[TRANSMISSION_KIND_KINDS] = {
             { 24, 24 }, // Location

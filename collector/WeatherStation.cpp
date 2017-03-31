@@ -63,7 +63,7 @@ bool WeatherStation::tick() {
         if (on) {
             off();
         }
-        if (platformUptime() - lastTransitionAt > intervals->start) {
+        if (platformUptime() - lastTransitionAt > intervalToMs(intervals->start)) {
             DEBUG_PRINTLN("WS: >Ignoring");
             transition(WeatherStationState::Ignoring);
         }
@@ -74,7 +74,7 @@ bool WeatherStation::tick() {
             hup();
         }
         ignore();
-        if (platformUptime() - lastTransitionAt > intervals->ignore) {
+        if (platformUptime() - lastTransitionAt > intervalToMs(intervals->ignore)) {
             DEBUG_PRINTLN("WS: >Reading");
             transition(WeatherStationState::Reading);
             startReading = false;
@@ -82,7 +82,7 @@ bool WeatherStation::tick() {
         break;
     }
     case WeatherStationState::Reading: {
-        if (platformUptime() - lastTransitionAt > intervals->reading) {
+        if (platformUptime() - lastTransitionAt > intervalToMs(intervals->reading)) {
             DEBUG_PRINTLN("WS: >Ignoring");
             transition(WeatherStationState::Ignoring);
             break;
@@ -194,7 +194,7 @@ bool WeatherStation::tick() {
                 off();
             }
         }
-        if (intervals->off == 0 || platformUptime() - lastTransitionAt > intervals->off) {
+        if (intervals->off == 0 || platformUptime() - lastTransitionAt > intervalToMs(intervals->off)) {
             DEBUG_PRINTLN("WS: >Ignoring");
             transition(WeatherStationState::Ignoring);
         }

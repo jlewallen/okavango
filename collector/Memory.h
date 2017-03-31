@@ -31,6 +31,10 @@ typedef struct fk_memory_state_t {
     fk_transmission_schedule_t schedules[TRANSMISSION_KIND_KINDS];
 } fk_memory_state_t;
 
+uint32_t msToInterval(uint32_t ms);
+
+uint32_t intervalToMs(uint32_t interval);
+
 class Memory {
 private:
     bool initialized = false;
