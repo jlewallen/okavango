@@ -195,8 +195,8 @@ bool Collector::checkWeatherStation() {
     logPrinter.flush();
 
     bool success = false;
-    uint32_t started = millis();
-    while (millis() - started < memory.intervals()->weather) {
+    uint32_t started = platformUptime();
+    while (platformUptime() - started < memory.intervals()->weather) {
         weatherStation.tick();
 
         Watchdog.reset();
@@ -254,17 +254,17 @@ void Collector::checkAirwaves() {
     DEBUG_PRINTLN("AW: RR");
     logPrinter.flush();
 
-    uint32_t started = millis();
-    uint32_t last = millis();
-    while (millis() - started < memory.intervals()->airwaves || !networkProtocol.isQuiet()) {
+    uint32_t started = platformUptime();
+    uint32_t last = platformUptime();
+    while (platformUptime() - started < memory.intervals()->airwaves || !networkProtocol.isQuiet()) {
         networkProtocol.tick();
 
         weatherStation.ignore();
 
-        if (millis() - last > AIRWAVES_BLINK_INTERVAL) {
+        if (platformUptime() - last > AIRWAVES_BLINK_INTERVAL) {
             platformBlinks(PIN_RED_LED, BLINKS_AIRWAVES);
             Serial.print(".");
-            last = millis();
+            last = platformUptime();
 
             Watchdog.reset();
         }
@@ -352,11 +352,9 @@ void Collector::tick() {
 
         TransmissionStatus status;
         if (!status.anyTransmissionsThisHour()) {
-            uint32_t uptime = millis() + diagnostics.deepSleepTime;
-
-            if (uptime > memory.intervals()->restart) {
+            if (platformUptime() > memory.intervals()->restart) {
                 DEBUG_PRINT("Restarting: ");
-                DEBUG_PRINT(millis());
+                DEBUG_PRINT(platformUptime());
                 DEBUG_PRINT(" ");
                 DEBUG_PRINT(diagnostics.deepSleepTime);
                 DEBUG_PRINTLN(" ");

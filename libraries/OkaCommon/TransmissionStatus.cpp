@@ -5,7 +5,6 @@
 #include "core.h"
 
 typedef struct fk_transmission_kind_status_t {
-    uint32_t millis;
     uint32_t time;
     uint32_t previousHour;
 } fk_transmission_kind_status_t;

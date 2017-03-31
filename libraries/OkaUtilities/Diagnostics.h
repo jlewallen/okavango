@@ -70,7 +70,7 @@ public:
     }
 
     uint32_t getUptime() {
-        return (millis() + deepSleepTime) / (1000 * 60);
+        return platformUptime() / (1000 * 60);
     }
 
 };

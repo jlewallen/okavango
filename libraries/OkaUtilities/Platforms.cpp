@@ -133,18 +133,6 @@ void platformCatastrophe(uint8_t pin, uint8_t mode) {
     }
 }
 
-void platformLowPowerSleep(uint32_t numberOfMs) {
-    if (numberOfMs > 0) {
-        uint32_t slept = 0;
-        while (slept < numberOfMs) {
-            uint32_t before = millis();
-            Watchdog.sleep();
-            platformBlink(PIN_SLEEP_LED);
-            slept += millis() - before;
-        }
-    }
-}
-
 static uint32_t uptime = 0;
 
 uint32_t platformUptime() {

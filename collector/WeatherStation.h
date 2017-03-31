@@ -97,10 +97,7 @@ public:
     void ignore();
     void hup();
     void off();
-    void transition(WeatherStationState newState) {
-        state = newState;
-        lastTransitionAt = millis();
-    }
+    void transition(WeatherStationState newState);
 
 };
 

@@ -63,7 +63,7 @@ bool WeatherStation::tick() {
         if (on) {
             off();
         }
-        if (millis() - lastTransitionAt > intervals->start) {
+        if (platformUptime() - lastTransitionAt > intervals->start) {
             DEBUG_PRINTLN("WS: >Ignoring");
             transition(WeatherStationState::Ignoring);
         }
@@ -74,7 +74,7 @@ bool WeatherStation::tick() {
             hup();
         }
         ignore();
-        if (millis() - lastTransitionAt > intervals->ignore) {
+        if (platformUptime() - lastTransitionAt > intervals->ignore) {
             DEBUG_PRINTLN("WS: >Reading");
             transition(WeatherStationState::Reading);
             startReading = false;
@@ -82,7 +82,7 @@ bool WeatherStation::tick() {
         break;
     }
     case WeatherStationState::Reading: {
-        if (millis() - lastTransitionAt > intervals->reading) {
+        if (platformUptime() - lastTransitionAt > intervals->reading) {
             DEBUG_PRINTLN("WS: >Ignoring");
             transition(WeatherStationState::Ignoring);
             break;
@@ -194,7 +194,7 @@ bool WeatherStation::tick() {
                 off();
             }
         }
-        if (intervals->off == 0 || millis() - lastTransitionAt > intervals->off) {
+        if (intervals->off == 0 || platformUptime() - lastTransitionAt > intervals->off) {
             DEBUG_PRINTLN("WS: >Ignoring");
             transition(WeatherStationState::Ignoring);
         }
@@ -221,6 +221,11 @@ void WeatherStation::logReadingLocally() {
     else {
         Serial.println("Unable to open WeatherStation log");
     }
+}
+
+void WeatherStation::transition(WeatherStationState newState) {
+    state = newState;
+    lastTransitionAt = platformUptime();
 }
 
 #endif
