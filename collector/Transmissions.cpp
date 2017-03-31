@@ -214,10 +214,8 @@ String Transmissions::diagnosticsToMessage() {
     message += "," + String(intervalToMs(intervals->idle));
     message += "," + String(intervalToMs(intervals->airwaves));
     message += "," + String(intervalToMs(intervals->weather));
-
-    message += "," + String(intervals->weatherStation.stop);
-
     message += "," + String(intervalToMs(intervals->restart));
+    message += "," + String(intervals->weatherStation.stop);
 
     fk_transmission_schedule_t *schedules = memory->schedules();
 
@@ -333,30 +331,21 @@ bool message_parse_csv(String message, uint8_t numberExpected, uint32_t *values)
 }
 
 void Transmissions::onMessage(String message) {
-    // Defaults: IV,600000,600000,10000,60000,1800000,1800000,120000
+    // Defaults: IV,600000,600000,10000,21600000,30
     if (message.startsWith("IV,")) {
         const uint8_t numberOfValues = 7;
         uint32_t values[numberOfValues] = { 0 };
         bool valid = true;
 
         if (message_parse_csv(message, numberOfValues, values)) {
-            const uint32_t minimum = 1000 * 10;          // 10 Seconds
-            const uint32_t maximum = 1000 * 60 * 60 * 2; // 2 Hours
-
-            for (uint8_t i = 0; i < numberOfValues; ++i) {
-                valid = valid && values[i] >= minimum && values[i] <= maximum;
-            }
-
             if (valid) {
                 fk_memory_core_intervals_t *intervals = memory->intervals();
 
                 intervals->idle = msToInterval(values[0]);
                 intervals->airwaves = msToInterval(values[1]);
                 intervals->weather = msToInterval(values[2]);
-
-                intervals->weatherStation.stop = values[3];
-
-                intervals->restart = msToInterval(values[7]);
+                intervals->restart = msToInterval(values[3]);
+                intervals->weatherStation.stop = values[4];
 
                 DEBUG_PRINT("New Intervals:");
 
