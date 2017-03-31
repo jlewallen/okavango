@@ -97,14 +97,14 @@ bool WeatherStation::tick() {
     }
     case WeatherStationState::Reading: {
         while (state == WeatherStationState::Reading) {
+            delay(10);
+
             if (platformUptime() - lastTransitionAt > 10 * 1000) {
                 DEBUG_PRINTLN("WS: >Waiting (no reading)");
                 transition(WeatherStationState::Waiting);
             }
 
             if (WeatherSerial.available()) {
-                delay(50);
-
                 while (WeatherSerial.available()) {
                     int16_t c = WeatherSerial.read();
                     if (c >= 0) {

@@ -55,8 +55,8 @@ String Transmissions::weatherStationPacketToMessage(weather_station_packet_t *pa
     message += "," + String(fuel->stateOfCharge(), 2);
     message += "," + String(packet->battery, 2);
     uint8_t fields[] = {
-        FK_WEATHER_STATION_FIELD_TEMPERATURE,
-        FK_WEATHER_STATION_FIELD_HUMIDITY,
+        FK_WEATHER_STATION_FIELD_TEMPERATURE_OUTSIDE,
+        FK_WEATHER_STATION_FIELD_HUMIDITY_OUTSIDE,
         FK_WEATHER_STATION_FIELD_PRESSURE,
         FK_WEATHER_STATION_FIELD_WIND_SPEED_2M,
         FK_WEATHER_STATION_FIELD_WIND_DIR_2M,
