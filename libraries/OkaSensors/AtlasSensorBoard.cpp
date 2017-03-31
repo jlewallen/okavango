@@ -3,6 +3,8 @@
 #include <Adafruit_SleepyDog.h>
 
 #define PIN_DS18B20                                          12
+// #define HAVE_DHT22
+// #define PIN_DHT                                           18
 
 AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *portExpander, SensorBoard *board) :
     corePlatform(corePlatform), board(board), portExpander(portExpander) {

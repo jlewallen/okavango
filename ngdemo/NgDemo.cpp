@@ -6,6 +6,8 @@
 #include "WatchdogCallbacks.h"
 #include "Logger.h"
 
+#define PIN_DHT                                           18
+
 NgDemo::NgDemo() :
     gps(&Serial1), data("DATA.BIN") {
 }

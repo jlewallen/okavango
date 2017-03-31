@@ -58,9 +58,6 @@
 #define PIN_WEATHER_STATION_RESET                            19
 #define PIN_POWER_HARD_RESET                                 5
 
-#define HAVE_DHT22
-#define PIN_DHT                                              18
-
 extern Uart Serial2;
 
 typedef Uart SerialType;
