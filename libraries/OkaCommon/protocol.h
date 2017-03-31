@@ -12,10 +12,6 @@
 #define FK_PACKET_KIND_SONAR_STATION                        0x6
 #define FK_PACKET_KIND_NACK                                 0x7
 
-#define FK_PACKET_KIND_FORCE_TRANSMISSION                   0x8
-#define FK_PACKET_KIND_RUN_DIAGNOSTICS                      0x9
-#define FK_PACKET_KIND_DIAGNOSTICS_COLLECTOR                0x10
-
 /**
  * Ideas:
  * Negotiate addresses with collector.

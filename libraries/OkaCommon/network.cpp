@@ -153,6 +153,16 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize
         }
         break;
     }
+    case FK_PACKET_KIND_WEATHER_STATION: {
+        if (state == NetworkState::EnqueueFromNetwork) {
+            delay(50);
+
+            DEBUG_PRINTLN("Weather Packet?");
+
+            sendAck();
+        }
+        break;
+    }
     case FK_PACKET_KIND_PONG: {
         if (state == NetworkState::ListenForPong) {
             // M0 requires word aligned access!
@@ -173,17 +183,13 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize
         }
         break;
     }
+    case FK_PACKET_KIND_NACK: {
+        DEBUG_PRINTLN(F("NAck"));
+        break;
+    }
     case FK_PACKET_KIND_ACK: {
         DEBUG_PRINTLN(F("Ack"));
         dequeueAndSend();
-        break;
-    }
-    case FK_PACKET_KIND_FORCE_TRANSMISSION: {
-        if (networkCallbacks != NULL) {
-            DEBUG_PRINTLN(F("FORCE_TX"));
-            networkCallbacks->forceTransmission(this);
-            sendAck();
-        }
         break;
     }
     default: {
@@ -223,7 +229,7 @@ void NetworkProtocolState::sendAck() {
 }
 
 void NetworkProtocolState::sendNack(uint8_t status) {
-    DEBUG_PRINTLN(F("Acking"));
+    DEBUG_PRINTLN(F("Nacking"));
 
     fk_network_ack_t ack;
     memzero((uint8_t *)&ack, sizeof(fk_network_ack_t));
@@ -237,6 +243,10 @@ void NetworkProtocolState::sendNack(uint8_t status) {
 void sendNack(uint8_t status);
 void NetworkProtocolState::checkForPacket() {
     radio->tick();
+
+    // system_set_sleepmode(SYSTEM_SLEEPMODE_STANDBY);
+    // system_sleep();
+    // platformAdjustUptime(8192);
 
     if (radio->hasPacket()) {
         handle((fk_network_packet_t *)radio->getPacket(), radio->getPacketSize());
