@@ -20,7 +20,7 @@ model {
                 "SPI",
                 "SD",
                 "Wire",
-                "OneWire",
+                "https://github.com/PaulStoffregen/OneWire.git",
 
                 "https://github.com/Conservify/Adafruit_ASFcore.git",
                 "https://github.com/Conservify/AtSamd.git",
