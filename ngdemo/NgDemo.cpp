@@ -7,6 +7,9 @@
 #include "Logger.h"
 
 #define PIN_DHT                                           18
+#define PIN_OUTSIDE_LED1                                  12
+#define PIN_OUTSIDE_LED2                                  11
+#define PIN_OUTSIDE_LED3                                  10
 
 NgDemo::NgDemo() :
     gps(&Serial1), data("DATA.BIN") {
@@ -22,6 +25,13 @@ bool NgDemo::setup() {
 
     state = NgDemoState::WaitingGpsFix;
     stateChangedAt = millis();
+
+    pinMode(PIN_OUTSIDE_LED1, OUTPUT);
+    digitalWrite(PIN_OUTSIDE_LED1, LOW);
+    pinMode(PIN_OUTSIDE_LED2, OUTPUT);
+    digitalWrite(PIN_OUTSIDE_LED2, LOW);
+    pinMode(PIN_OUTSIDE_LED3, OUTPUT);
+    digitalWrite(PIN_OUTSIDE_LED3, LOW);
 
     return true;
 }
@@ -155,7 +165,7 @@ void NgDemo::tick() {
         break;
     }
     case NgDemoState::ReadingSensors: {
-        DEBUG_PRINTLN("ReadingSensors...");
+        DEBUG_PRINT("ReadingSensors: ");
 
         DHT dht(PIN_DHT, DHT22);
         dht.begin();
@@ -163,6 +173,11 @@ void NgDemo::tick() {
         temperature = dht.readTemperature();
         batteryLevel = platformBatteryLevel();
         batteryVoltage = platformBatteryVoltage();
+
+        DEBUG_PRINT(humidity);
+        DEBUG_PRINT(", ");
+        DEBUG_PRINT(temperature);
+        DEBUG_PRINTLN("");
 
         uint8_t buffer[128];
         DEBUG_PRINTLN("Encoding and queueing message...");
