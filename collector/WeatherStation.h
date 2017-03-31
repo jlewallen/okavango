@@ -32,8 +32,8 @@
 
 enum class WeatherStationState {
     Start,
+    Waiting,
     Reading,
-    Ignoring,
     CommunicationsOk,
     Off
 };
@@ -94,7 +94,6 @@ public:
     bool areCommunicationsOk() {
         return state == WeatherStationState::CommunicationsOk;
     }
-    void ignore();
     void hup();
     void off();
     void transition(WeatherStationState newState);

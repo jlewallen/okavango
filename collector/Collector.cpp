@@ -202,20 +202,6 @@ bool Collector::checkWeatherStation() {
         Watchdog.reset();
 
         if (weatherStation.hasReading()) {
-            DEBUG_PRINTLN("");
-
-            DEBUG_PRINT("&");
-
-            weatherStation.logReadingLocally();
-
-            gps_fix_t *fix = weatherStation.getFix();
-            if (fix->valid) {
-                DEBUG_PRINT("%");
-                SystemClock->set(fix->time);
-            }
-
-            DEBUG_PRINT("%");
-
             float *values = weatherStation.getValues();
             weather_station_packet_t packet;
             memzero((uint8_t *)&packet, sizeof(weather_station_packet_t));
@@ -226,12 +212,9 @@ bool Collector::checkWeatherStation() {
                 packet.values[i] = values[i];
             }
 
-            DEBUG_PRINT("%");
-
             queue.enqueue((uint8_t *)&packet, sizeof(weather_station_packet_t));
 
             weatherStation.clear();
-            DEBUG_PRINTLN("^");
             logPrinter.flush();
 
             success = true;
@@ -259,7 +242,7 @@ void Collector::checkAirwaves() {
     while (platformUptime() - started < intervalToMs(memory.intervals()->airwaves) || !networkProtocol.isQuiet()) {
         networkProtocol.tick();
 
-        weatherStation.ignore();
+        weatherStation.tick();
 
         if (platformUptime() - last > AIRWAVES_BLINK_INTERVAL) {
             platformBlinks(PIN_RED_LED, BLINKS_AIRWAVES);
@@ -292,6 +275,8 @@ void Collector::idlePeriod() {
         remaining -= deepSleep(IDLE_PERIOD_SLEEP);
         Watchdog.reset();
         platformBlinks(PIN_RED_LED, BLINKS_IDLE);
+
+        weatherStation.tick();
     }
 
     DEBUG_PRINTLN("Idle: Done");

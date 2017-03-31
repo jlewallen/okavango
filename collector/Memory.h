@@ -7,10 +7,7 @@
 // Turn these into number of minutes or seconds.
 
 typedef struct fk_memory_weather_intervals_t {
-    uint32_t start;
-    uint32_t ignore;
-    uint32_t off;
-    uint32_t reading;
+    uint8_t stop;
 } fk_memory_weather_intervals_t;
 
 typedef struct fk_memory_core_intervals_t {

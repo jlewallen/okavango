@@ -95,15 +95,9 @@ void Memory::setup() {
         state.intervals.weather = msToInterval(WEATHER_STATION_CHECK_TIME);
         state.intervals.restart = msToInterval(MANDATORY_RESTART_INTERVAL);
 
-        #define WEATHER_STATION_INTERVAL_START         (1000 * 60)
-        #define WEATHER_STATION_INTERVAL_IGNORE        (1000 * 60 * 30)
-        #define WEATHER_STATION_INTERVAL_OFF           (1000 * 60 * 30)
-        #define WEATHER_STATION_INTERVAL_READING       (1000 * 1000 * 60 * 2)
+        #define WEATHER_STATION_INTERVAL_STOP          (30)
 
-        state.intervals.weatherStation.start = msToInterval(WEATHER_STATION_INTERVAL_START);
-        state.intervals.weatherStation.ignore = msToInterval(WEATHER_STATION_INTERVAL_IGNORE);
-        state.intervals.weatherStation.off = msToInterval(WEATHER_STATION_INTERVAL_OFF);
-        state.intervals.weatherStation.reading = msToInterval(WEATHER_STATION_INTERVAL_READING);
+        state.intervals.weatherStation.stop = WEATHER_STATION_INTERVAL_STOP;
 
         fk_transmission_schedule_t default_schedules[TRANSMISSION_KIND_KINDS] = {
             { 24, 24 }, // Location

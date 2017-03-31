@@ -12,7 +12,7 @@ WeatherStation::WeatherStation(Memory *memory) : memory(memory) {
 
 void WeatherStation::setup() {
     off();
-    transition(WeatherStationState::Ignoring);
+    transition(WeatherStationState::Start);
 }
 
 void WeatherStation::clear() {
@@ -20,12 +20,6 @@ void WeatherStation::clear() {
     buffer[0] = 0;
     length = 0;
     hasUnreadReading = false;
-}
-
-void WeatherStation::ignore() {
-    while (WeatherSerial.available()) {
-        WeatherSerial.read();
-    }
 }
 
 void WeatherStation::off() {
@@ -39,7 +33,6 @@ void WeatherStation::off() {
 }
 
 void WeatherStation::hup() {
-    DEBUG_PRINTLN("WS: hup");
     if (!on) {
         DEBUG_PRINTLN("WS: on");
     }
@@ -58,145 +51,159 @@ void WeatherStation::hup() {
 bool WeatherStation::tick() {
     fk_memory_weather_intervals_t *intervals = &memory->intervals()->weatherStation;
 
+    DateTime dt(SystemClock->now());
+
+    if (state != WeatherStationState::CommunicationsOk) {
+        bool shouldBeOn = checkingCommunications || dt.minute() < intervals->stop;
+        if (on && !shouldBeOn) {
+            DEBUG_PRINTLN("WS: >Off");
+            transition(WeatherStationState::Off);
+        }
+        else if (!on && shouldBeOn) {
+            DEBUG_PRINT("WS: >Waiting ");
+            DEBUG_PRINT(checkingCommunications);
+            DEBUG_PRINT(", ");
+            DEBUG_PRINT(dt.minute());
+            DEBUG_PRINT(" < ");
+            DEBUG_PRINTLN(intervals->stop);
+            transition(WeatherStationState::Waiting);
+        }
+    }
+
     switch (state) {
     case WeatherStationState::Start: {
-        if (on) {
-            off();
-        }
-        if (platformUptime() - lastTransitionAt > intervalToMs(intervals->start)) {
-            DEBUG_PRINTLN("WS: >Ignoring");
-            transition(WeatherStationState::Ignoring);
-        }
         break;
     }
-    case WeatherStationState::Ignoring: {
+    case WeatherStationState::Waiting: {
         if (!on) {
             hup();
         }
-        ignore();
-        if (platformUptime() - lastTransitionAt > intervalToMs(intervals->ignore)) {
+        /*
+        while (WeatherSerial.available()) {
+            WeatherSerial.read();
+        }
+        */
+        if (platformUptime() - lastTransitionAt > 60 * 1000) {
             DEBUG_PRINTLN("WS: >Reading");
             transition(WeatherStationState::Reading);
-            startReading = false;
-        }
-        break;
-    }
-    case WeatherStationState::Reading: {
-        if (platformUptime() - lastTransitionAt > intervalToMs(intervals->reading)) {
-            DEBUG_PRINTLN("WS: >Ignoring");
-            transition(WeatherStationState::Ignoring);
-            break;
-        }
-        if (WeatherSerial.available()) {
-            delay(50);
-
-            while (WeatherSerial.available()) {
-                int16_t c = WeatherSerial.read();
-                if (c >= 0) {
-                    if (!startReading) {
-                        if (c == '\n') {
-                            startReading = true;
-                        }
-                    }
-                    else if (c == ',' || c == '\r' || c == '\n') {
-                        if (length > 0) {
-                            buffer[length] = 0;
-                            if (numberOfValues < FK_WEATHER_STATION_MAX_VALUES) {
-                                values[numberOfValues] = atof(buffer);
-                                // DEBUG_PRINT("Parsed ");
-                                // DEBUG_PRINT(buffer);
-                                // DEBUG_PRINT(" = ");
-                                // DEBUG_PRINTLN(values[numberOfValues]);
-                                numberOfValues++;
-                            }
-                            length = 0;;
-                        }
-                        if (c == '\r' || c == '\n') {
-                            bool success = numberOfValues == FK_WEATHER_STATION_PACKET_NUMBER_VALUES;
-                            if (success) {
-                                DEBUG_PRINTLN("WS: have reading");
-                                for (uint8_t i = 0; i < FK_WEATHER_STATION_PACKET_NUMBER_VALUES; ++i) {
-                                    if (i > 0) {
-                                        DEBUG_PRINT(",");
-                                    }
-                                    DEBUG_PRINT(values[i]);
-                                }
-                                DEBUG_PRINTLN("");
-
-                                // Sanity check the reading.
-                                #define JANUARY_1ST_2020   (1577836800)
-                                #define AUGUST_29TH_2016   (1472428800)
-
-                                bool hasGoodFix =
-                                    (values[FK_WEATHER_STATION_FIELD_UNIXTIME] < JANUARY_1ST_2020 && values[FK_WEATHER_STATION_FIELD_UNIXTIME] > AUGUST_29TH_2016) &&
-                                    (values[FK_WEATHER_STATION_FIELD_SATELLITES] > 0);
-
-                                if (hasGoodFix) {
-                                    fix.time = values[FK_WEATHER_STATION_FIELD_UNIXTIME];
-                                    fix.latitude = values[FK_WEATHER_STATION_FIELD_LATITUDE];
-                                    fix.longitude = values[FK_WEATHER_STATION_FIELD_LONGITUDE];
-                                    fix.altitude = values[FK_WEATHER_STATION_FIELD_ALTITUDE];
-                                    fix.satellites = values[FK_WEATHER_STATION_FIELD_SATELLITES];
-                                    fix.valid = true;
-                                }
-                                else {
-                                    // There's a good chance our RTC has a good
-                                    // time, so just insert this so that logged
-                                    // entries don't have 0s.
-                                    values[FK_WEATHER_STATION_FIELD_UNIXTIME] = SystemClock->now();
-                                    fix.time = 0;
-                                    fix.latitude = 0;
-                                    fix.longitude = 0;
-                                    fix.altitude = 0;
-                                    fix.satellites = 0;
-                                    fix.valid = false;
-                                }
-
-                                hasUnreadReading = true;
-
-                                diagnostics.updateGpsStatus(hasGoodFix);
-                                diagnostics.recordWeatherReading();
-
-                                if (checkingCommunications) {
-                                    DEBUG_PRINTLN("WS: >CommunicationsOk");
-                                    transition(WeatherStationState::CommunicationsOk);
-                                }
-                                else {
-                                    DEBUG_PRINTLN("WS: >Off");
-                                    transition(WeatherStationState::Off);
-                                }
-                            }
-                            else {
-                                DEBUG_PRINT("WS: no reading: ");
-                                DEBUG_PRINT(numberOfValues);
-                                DEBUG_PRINT(" ");
-                                DEBUG_PRINT(FK_WEATHER_STATION_PACKET_NUMBER_VALUES);
-                                DEBUG_PRINTLN("");
-                            }
-
-                            numberOfValues = 0;
-
-                            break;
-                        }
-                    }
-                    else if (length < FK_WEATHER_STATION_MAX_BUFFER - 1) {
-                        buffer[length++] = (char)c;
-                        buffer[length] = 0;
-                    }
-                }
-            }
         }
         break;
     }
     case WeatherStationState::Off: {
-        if (intervals->off > 0) {
-            if (on) {
-                off();
-            }
+        if (on) {
+            off();
         }
-        if (intervals->off == 0 || platformUptime() - lastTransitionAt > intervalToMs(intervals->off)) {
-            DEBUG_PRINTLN("WS: >Ignoring");
-            transition(WeatherStationState::Ignoring);
+        break;
+    }
+    case WeatherStationState::Reading: {
+        while (state == WeatherStationState::Reading) {
+            if (platformUptime() - lastTransitionAt > 10 * 1000) {
+                DEBUG_PRINTLN("WS: >Waiting (no reading)");
+                transition(WeatherStationState::Waiting);
+            }
+
+            if (WeatherSerial.available()) {
+                delay(50);
+
+                while (WeatherSerial.available()) {
+                    int16_t c = WeatherSerial.read();
+                    if (c >= 0) {
+                        if (!startReading) {
+                            if (c == '\n') {
+                                startReading = true;
+                            }
+                        }
+                        else if (c == ',' || c == '\r' || c == '\n') {
+                            if (length > 0) {
+                                buffer[length] = 0;
+                                if (numberOfValues < FK_WEATHER_STATION_MAX_VALUES) {
+                                    values[numberOfValues] = atof(buffer);
+                                    numberOfValues++;
+                                }
+                                length = 0;;
+                            }
+                            if (c == '\r' || c == '\n') {
+                                bool success = numberOfValues == FK_WEATHER_STATION_PACKET_NUMBER_VALUES;
+                                if (success) {
+                                    // DEBUG_PRINTLN("WS: have reading");
+                                    for (uint8_t i = 0; i < FK_WEATHER_STATION_PACKET_NUMBER_VALUES; ++i) {
+                                        if (i > 0) {
+                                            DEBUG_PRINT(",");
+                                        }
+                                        DEBUG_PRINT(values[i]);
+                                    }
+                                    DEBUG_PRINTLN("");
+
+                                    // Sanity check the reading.
+                                    #define JANUARY_1ST_2020   (1577836800)
+                                    #define AUGUST_29TH_2016   (1472428800)
+
+                                    bool hasGoodFix =
+                                        (values[FK_WEATHER_STATION_FIELD_UNIXTIME] < JANUARY_1ST_2020 && values[FK_WEATHER_STATION_FIELD_UNIXTIME] > AUGUST_29TH_2016) &&
+                                        (values[FK_WEATHER_STATION_FIELD_SATELLITES] > 0);
+
+                                    if (hasGoodFix) {
+                                        fix.time = values[FK_WEATHER_STATION_FIELD_UNIXTIME];
+                                        fix.latitude = values[FK_WEATHER_STATION_FIELD_LATITUDE];
+                                        fix.longitude = values[FK_WEATHER_STATION_FIELD_LONGITUDE];
+                                        fix.altitude = values[FK_WEATHER_STATION_FIELD_ALTITUDE];
+                                        fix.satellites = values[FK_WEATHER_STATION_FIELD_SATELLITES];
+                                        fix.valid = true;
+
+                                        SystemClock->set(fix.time);
+                                    }
+                                    else {
+                                        // There's a good chance our RTC has a good
+                                        // time, so just insert this so that logged
+                                        // entries don't have 0s.
+                                        values[FK_WEATHER_STATION_FIELD_UNIXTIME] = SystemClock->now();
+                                        fix.time = 0;
+                                        fix.latitude = 0;
+                                        fix.longitude = 0;
+                                        fix.altitude = 0;
+                                        fix.satellites = 0;
+                                        fix.valid = false;
+                                    }
+
+                                    hasUnreadReading = true;
+
+                                    diagnostics.updateGpsStatus(hasGoodFix);
+                                    diagnostics.recordWeatherReading();
+
+                                    if (checkingCommunications) {
+                                        DEBUG_PRINTLN("WS: >CommunicationsOk");
+                                        checkingCommunications = false;
+                                        transition(WeatherStationState::CommunicationsOk);
+                                    }
+                                    else {
+                                        logReadingLocally();
+
+                                        // DEBUG_PRINTLN("WS: >Waiting");
+                                        transition(WeatherStationState::Waiting);
+                                    }
+                                }
+                                else {
+                                    if (false) {
+                                        DEBUG_PRINT("WS: no reading: ");
+                                        DEBUG_PRINT(numberOfValues);
+                                        DEBUG_PRINT(" ");
+                                        DEBUG_PRINT(FK_WEATHER_STATION_PACKET_NUMBER_VALUES);
+                                        DEBUG_PRINTLN("");
+                                    }
+                                }
+
+                                numberOfValues = 0;
+
+                                break;
+                            }
+                        }
+                        else if (length < FK_WEATHER_STATION_MAX_BUFFER - 1) {
+                            buffer[length++] = (char)c;
+                            buffer[length] = 0;
+                        }
+                    }
+                }
+            }
         }
         break;
     }
@@ -208,7 +215,6 @@ bool WeatherStation::tick() {
 void WeatherStation::logReadingLocally() {
     File file = Logger::open(FK_SETTINGS_WEATHER_STATION_DATA_FILENAME);
     if (file) {
-        Serial.print("*");
         for (uint8_t i = 0; i < FK_WEATHER_STATION_PACKET_NUMBER_VALUES; ++i) {
             if (i > 0) {
                 file.print(",");
