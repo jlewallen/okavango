@@ -77,20 +77,20 @@ void Memory::setup() {
     default:
         memset((uint8_t *)&state, 0, sizeof(fk_memory_state_t));
 
-        #define IDLE_PERIOD                            (60 * 10)
-        #define AIRWAVES_CHECK_TIME                    (60 * 10)
-        #define WEATHER_STATION_CHECK_TIME             (10)
-        #define MANDATORY_RESTART_INTERVAL             (60 * 60 * 6)
+        #define IDLE_PERIOD                            (1000 * 60 * 10)
+        #define AIRWAVES_CHECK_TIME                    (1000 * 60 * 10)
+        #define WEATHER_STATION_CHECK_TIME             (1000 * 10)
+        #define MANDATORY_RESTART_INTERVAL             (1000 * 60 * 60 * 6)
 
         state.intervals.idle = IDLE_PERIOD;
         state.intervals.airwaves = AIRWAVES_CHECK_TIME;
         state.intervals.weather = WEATHER_STATION_CHECK_TIME;
         state.intervals.restart = MANDATORY_RESTART_INTERVAL;
 
-        #define WEATHER_STATION_INTERVAL_START         (60)
-        #define WEATHER_STATION_INTERVAL_IGNORE        (60 * 30)
-        #define WEATHER_STATION_INTERVAL_OFF           (60 * 30)
-        #define WEATHER_STATION_INTERVAL_READING       (60 * 2)
+        #define WEATHER_STATION_INTERVAL_START         (1000 * 60)
+        #define WEATHER_STATION_INTERVAL_IGNORE        (1000 * 60 * 30)
+        #define WEATHER_STATION_INTERVAL_OFF           (1000 * 60 * 30)
+        #define WEATHER_STATION_INTERVAL_READING       (1000 * 1000 * 60 * 2)
 
         state.intervals.weatherStation.start = WEATHER_STATION_INTERVAL_START;
         state.intervals.weatherStation.ignore = WEATHER_STATION_INTERVAL_IGNORE;
