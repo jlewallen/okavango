@@ -2,6 +2,8 @@
 #include "AtlasSensorBoard.h"
 #include <Adafruit_SleepyDog.h>
 
+#define PIN_DS18B20                                          12
+
 AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *portExpander, SensorBoard *board) :
     corePlatform(corePlatform), board(board), portExpander(portExpander) {
     memzero((uint8_t *)&packet, sizeof(atlas_sensors_packet_t));

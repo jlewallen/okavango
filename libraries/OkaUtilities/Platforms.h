@@ -56,7 +56,6 @@
 
 #define PIN_ROCK_BLOCK                                       18
 #define PIN_WEATHER_STATION_RESET                            19
-#define PIN_DS18B20                                          17
 #define PIN_POWER_HARD_RESET                                 5
 
 #define HAVE_DHT22
