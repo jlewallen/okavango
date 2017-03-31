@@ -26,6 +26,6 @@ libraries/OkaUtilities/config.h
 data
 firmwaretool.properties
 gradle.properties
-config.h
+collector/config.h
 
 gitdeps
