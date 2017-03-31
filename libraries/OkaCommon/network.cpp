@@ -100,26 +100,39 @@ void NetworkProtocolState::tick() {
 }
 
 static void logAtlasPacket(atlas_sensors_packet_t *p) {
-    DEBUG_PRINT("ATLAS: ");
-    DEBUG_PRINT(p->time);
-    DEBUG_PRINT(",");
-    DEBUG_PRINT(p->battery);
+    File file = SD.open("ATLAS.CSV");
+    if (file) {
+        file.print("ATLAS: ");
+        file.print(p->time);
+        file.print(",");
+        file.print(p->battery);
 
-    for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
-        DEBUG_PRINT(",");
-        DEBUG_PRINT(p->values[i]);
+        for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
+            file.print(",");
+            file.print(p->values[i]);
+        }
+
+        file.println();
+
+        file.close();
     }
 }
 
 static void logSonarPacket(sonar_station_packet_t *p) {
-    DEBUG_PRINT("SONAR: ");
-    DEBUG_PRINT(p->time);
-    DEBUG_PRINT(",");
-    DEBUG_PRINT(p->battery);
+    File file = SD.open("SONAR.CSV");
+    if (file) {
+        file.print(p->time);
+        file.print(",");
+        file.print(p->battery);
 
-    for (uint8_t i = 0; i < FK_SONAR_STATION_PACKET_NUMBER_VALUES; ++i) {
-        DEBUG_PRINT(",");
-        DEBUG_PRINT(p->values[i]);
+        for (uint8_t i = 0; i < FK_SONAR_STATION_PACKET_NUMBER_VALUES; ++i) {
+            file.print(",");
+            file.print(p->values[i]);
+        }
+
+        file.println();
+
+        file.close();
     }
 }
 
