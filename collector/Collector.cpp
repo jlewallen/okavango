@@ -207,6 +207,7 @@ void Collector::checkAirwaves() {
             Watchdog.reset();
 
             if (quickTransmissionCheck()) {
+                DEBUG_PRINTLN("Fast track to transmission.");
                 break;
             }
 
@@ -243,6 +244,7 @@ void Collector::idlePeriod() {
         weatherStation.tick();
 
         if (quickTransmissionCheck()) {
+            DEBUG_PRINTLN("Fast track to transmission.");
             break;
         }
     }
