@@ -1,53 +1,13 @@
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 #include "Adafruit_STMPE610.h"
-
-#define TOUCH_HYSTERESIS     100
+#include "Menu.h"
 
 #ifdef HX8357
-
-#include <Adafruit_HX8357.h>
-
-#define TFT_CS               10
-#define TFT_DC               9
-#define TFT_RST              6
-
-#define COLOR_BLACK          HX8357_BLACK
-#define COLOR_WHITE          HX8357_WHITE
-#define SCREEN_WIDTH         320
-#define SCREEN_HEIGHT        480
-
-#define TS_MINX              318
-#define TS_MINY              235
-#define TS_MAXX              3815
-#define TS_MAXY              3859
-
 Adafruit_HX8357 tft(TFT_CS, TFT_DC, TFT_RST);
-
 #else
-
-#include <Adafruit_ILI9341.h>
-
-#define TFT_CS               9
-#define TFT_DC               10
-#define STMPE_CS             6
-#define SD_CS                5
-
-#define COLOR_BLACK          ILI9341_BLACK
-#define COLOR_WHITE          ILI9341_WHITE
-#define SCREEN_WIDTH         320
-#define SCREEN_HEIGHT        240
-
-#define TS_MINX              150
-#define TS_MINY              130
-#define TS_MAXX              3800
-#define TS_MAXY              4000
-
 Adafruit_ILI9341 tft(TFT_CS, TFT_DC);
-
 #endif
-
-#include "Menu.h"
 
 Adafruit_STMPE610 touch(STMPE_CS);
 

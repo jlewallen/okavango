@@ -1,6 +1,47 @@
 #ifndef MENU_H_INCLUDED
 #define MENU_H_INCLUDED
 
+#include <Arduino.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_STMPE610.h>
+
+#define TOUCH_HYSTERESIS     100
+
+#ifdef HX8357
+#include <Adafruit_HX8357.h>
+
+#define TFT_CS               10
+#define TFT_DC               9
+#define TFT_RST              6
+
+#define COLOR_BLACK          HX8357_BLACK
+#define COLOR_WHITE          HX8357_WHITE
+#define SCREEN_WIDTH         320
+#define SCREEN_HEIGHT        480
+
+#define TS_MINX              318
+#define TS_MINY              235
+#define TS_MAXX              3815
+#define TS_MAXY              3859
+#else
+#include <Adafruit_ILI9341.h>
+
+#define TFT_CS               9
+#define TFT_DC               10
+#define STMPE_CS             6
+#define SD_CS                5
+
+#define COLOR_BLACK          ILI9341_BLACK
+#define COLOR_WHITE          ILI9341_WHITE
+#define SCREEN_WIDTH         320
+#define SCREEN_HEIGHT        240
+
+#define TS_MINX              150
+#define TS_MINY              130
+#define TS_MAXX              3800
+#define TS_MAXY              4000
+#endif
+
 class Vector2 {
 public:
     uint16_t x;
@@ -30,34 +71,6 @@ static inline Vector2 operator+(const Vector2 &lhs, const Vector2 &rhs) {
     return lhs.plus(rhs);
 }
 
-class Touch : public Vector2 {
-public:
-    uint8_t z;
-
-public:
-    Vector2 toPixelCoordinates(uint8_t rotation = 1) {
-        Vector2 minimum(TS_MINX, TS_MINY);
-        Vector2 maximum(TS_MAXX, TS_MAXY);
-        Vector2 screen(SCREEN_WIDTH, SCREEN_HEIGHT);
-        Vector2 size = maximum - minimum;
-        Vector2 zeroed = *this - minimum;
-        float scaledX = (zeroed.x / (float)size.x);
-        float scaledY = (zeroed.y / (float)size.y);
-
-        // Only using rotation 1 now.
-        switch (rotation) {
-        case 1:
-            #ifdef HX8357
-            return Vector2((1.0 - scaledY) * screen.x, scaledX * screen.y);
-            #else
-            return Vector2(scaledY * screen.x, scaledX * screen.y);
-            #endif
-        default:
-            return Vector2(scaledX * screen.x, scaledY * screen.y);
-        }
-    }
-};
-
 class Rect {
 public:
     Vector2 position;
@@ -78,6 +91,15 @@ public:
     }
 };
 
+class Touch : public Vector2 {
+public:
+    uint8_t z;
+
+public:
+    Vector2 toPixelCoordinates(uint8_t rotation = 1);
+
+};
+
 class MenuOption {
 private:
     const char *label;
@@ -87,68 +109,16 @@ private:
     uint32_t pressedAt = 0;
 
 public:
-    MenuOption(const char *label, uint8_t value) :
-        label(label), value(value) {
-    }
+    MenuOption(const char *label, uint8_t value);
 
 public:
-    const char *getLabel() const {
-        return label;
-    }
-
-    const uint8_t getValue() const {
-        return value;
-    }
-
-    bool redrawNecessary() {
-        return redraw;
-    }
-
-    void redrawNecessary(bool necessary) {
-        redraw = necessary;
-    }
-
-    void draw(Adafruit_GFX *gfx, const Rect &rect) {
-        uint8_t textSize = 4;
-
-        uint16_t fore = pressing ? COLOR_BLACK : COLOR_WHITE;
-        uint16_t back = pressing ? COLOR_WHITE : COLOR_BLACK;
-
-        gfx->fillRect(rect.position.x, rect.position.y, rect.size.x, rect.size.y, back);
-        gfx->drawRect(rect.position.x, rect.position.y, rect.size.x, rect.size.y, fore);
-        gfx->setCursor(rect.position.x + (rect.size.x / 2) - strlen(label) * 3 * textSize, rect.position.y + (rect.size.y / 2) - 4 * textSize);
-        gfx->setTextColor(fore);
-        gfx->setTextSize(textSize);
-        gfx->print(label);
-
-        redraw = false;
-    }
-
-    bool touched() {
-        if (pressedAt > 0 && millis() - pressedAt > TOUCH_HYSTERESIS) {
-            if (!pressing) {
-                Serial.print(label);
-                Serial.println(": touched, redrawing");
-                redraw = true;
-                pressedAt = 0;
-            }
-            pressing = true;
-        }
-        else if (pressedAt == 0) {
-            pressedAt = millis();
-        }
-        return redraw;
-    }
-
-    bool untouch() {
-        if (pressing) {
-            Serial.print(label);
-            Serial.println(": untouched, redrawing");
-            redraw = true;
-        }
-        pressing = false;
-        return redraw;
-    }
+    const char *getLabel() const;
+    const uint8_t getValue() const;
+    bool redrawNecessary();
+    void redrawNecessary(bool necessary);
+    void draw(Adafruit_GFX *gfx, const Rect &rect);
+    bool touched();
+    bool untouch();
 
 };
 
@@ -165,101 +135,14 @@ public:
     Menu(Adafruit_GFX *gfx, Adafruit_STMPE610 *touch, MenuOption (&array)[N]) :
         gfx(gfx), touch(touch), options(array), numberOfOptions(N) {
     }
-
-    void show() {
-        if (!visible) {
-            for (size_t i = 0; i < numberOfOptions; ++i) {
-                options[i].redrawNecessary(true);
-            }
-        }
-        visible = true;
-    }
-
-    void hide() {
-        visible = false;
-    }
-
-    void tick() {
-        if (visible) {
-            for (size_t i = 0; i < numberOfOptions; ++i) {
-                if (options[i].redrawNecessary()) {
-                    Rect rect = getButtonRect(i);
-                    options[i].draw(gfx, rect);
-
-                    Serial.print(options[i].getLabel());
-                    Serial.print(": ");
-                    Serial.print(rect.position.x);
-                    Serial.print(", ");
-                    Serial.print(rect.position.y);
-                    Serial.print("  ");
-                    Serial.print(rect.position.x + rect.size.x);
-                    Serial.print(", ");
-                    Serial.print(rect.position.y + rect.size.y);
-                    Serial.println("");
-                }
-            }
-            if (touch->touched()) {
-                while (!touch->bufferEmpty()) {
-                    Touch position;
-                    touch->readData(&position.x, &position.y, &position.z);
-                    Vector2 pixel = position.toPixelCoordinates();
-                    MenuOption *option = getOptionAtPixel(pixel);
-                    if (option != nullptr) {
-                        option->touched();
-                        /*
-                        Serial.print(option->getLabel());
-                        Serial.print(": ");
-                        Serial.print(pixel.x);
-                        Serial.print(", ");
-                        Serial.print(pixel.y);
-                        Serial.println("");
-                        */
-                    }
-                }
-                touch->writeRegister8(STMPE_INT_STA, 0xFF);
-            }
-            else {
-                if (touch->bufferSize() > 0) {
-                    Serial.println("Clearing STMPE610...");
-                    while (!touch->bufferEmpty()) {
-                        Touch position;
-                        touch->readData(&position.x, &position.y, &position.z);
-                    }
-                    touch->writeRegister8(STMPE_INT_STA, 0xFF);
-                }
-                untouch();
-            }
-        }
-    }
+    void show();
+    void hide();
+    void tick();
 
 private:
-    MenuOption *getOptionAtPixel(Vector2& position) {
-        for (size_t i = 0; i < numberOfOptions; ++i) {
-            Rect rect = getButtonRect(i);
-            if (rect.contains(position)) {
-                return &options[i];
-            }
-        }
-        return nullptr;
-    }
-
-    void untouch() {
-        for (size_t i = 0; i < numberOfOptions; ++i) {
-            options[i].untouch();
-        }
-    }
-
-    Rect getButtonRect(size_t i) {
-        const uint8_t numberOfRows = 2;
-        const uint8_t numberOfColumns = 2;
-        uint8_t row = i / numberOfColumns;
-        uint8_t column = i % numberOfColumns;
-        uint16_t w = SCREEN_WIDTH / numberOfColumns;
-        uint16_t h = SCREEN_HEIGHT / numberOfRows;
-        uint16_t x = w * column;
-        uint16_t y = h * row;
-        return Rect(x, y, w, h);
-    }
+    MenuOption *getOptionAtPixel(Vector2& position);
+    void untouch();
+    Rect getButtonRect(size_t i);
 };
 
 #endif
