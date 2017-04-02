@@ -11,6 +11,7 @@
 #include "network.h"
 #include "Logger.h"
 
+#include "FuelGauge.h"
 #include "SensorBoard.h"
 #include "AtlasScientific.h"
 #include "SerialPortExpander.h"
@@ -37,12 +38,13 @@ private:
     CorePlatform *corePlatform;
     SerialPortExpander *portExpander;
     SensorBoard *board;
+    FuelGauge *gauge;
     Adafruit_BME280 bme;
     atlas_sensors_packet_t packet;
     uint8_t packetValueIndex = 0;
 
 public:
-    AtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *portExpander, SensorBoard *board);
+    AtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *portExpander, SensorBoard *board, FuelGauge *gauge);
 
 public:
     bool tick();

@@ -282,6 +282,7 @@ void Collector::idlePeriod() {
 
         platformBlinks(PIN_RED_LED, BLINKS_IDLE);
         Serial.print("+");
+        Serial.flush();
 
         weatherStation.tick();
 

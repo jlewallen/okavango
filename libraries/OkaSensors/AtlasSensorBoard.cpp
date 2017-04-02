@@ -3,11 +3,9 @@
 #include <Adafruit_SleepyDog.h>
 
 #define PIN_DS18B20                                          12
-// #define HAVE_DHT22
-// #define PIN_DHT                                           18
 
-AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *portExpander, SensorBoard *board) :
-    corePlatform(corePlatform), board(board), portExpander(portExpander) {
+AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *portExpander, SensorBoard *board, FuelGauge *gauge) :
+    corePlatform(corePlatform), board(board), portExpander(portExpander), gauge(gauge) {
     memzero((uint8_t *)&packet, sizeof(atlas_sensors_packet_t));
 }
 
@@ -117,7 +115,7 @@ bool AtlasSensorBoard::tick() {
             Watchdog.reset();
 
             packet.time = SystemClock->now();
-            packet.battery = platformBatteryVoltage();
+            packet.battery = gauge->stateOfCharge();
             packet.fk.kind = FK_PACKET_KIND_ATLAS_SENSORS;
 
             DEBUG_PRINTLN(packet.time);
