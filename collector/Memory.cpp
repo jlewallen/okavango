@@ -92,7 +92,6 @@ void Memory::setup() {
 
         state.intervals.idle = msToInterval(IDLE_PERIOD);
         state.intervals.airwaves = msToInterval(AIRWAVES_CHECK_TIME);
-        state.intervals.weather = msToInterval(WEATHER_STATION_CHECK_TIME);
         state.intervals.restart = msToInterval(MANDATORY_RESTART_INTERVAL);
 
         #define WEATHER_STATION_INTERVAL_STOP          (30)

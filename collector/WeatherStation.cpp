@@ -2,10 +2,12 @@
 #include "protocol.h"
 #include "Logger.h"
 #include "Diagnostics.h"
+#include "Queue.h"
 
 #ifdef ARDUINO_SAMD_FEATHER_M0
 
-WeatherStation::WeatherStation(Memory *memory) : memory(memory) {
+WeatherStation::WeatherStation(Memory *memory, FuelGauge *gauge) :
+    memory(memory), gauge(gauge) {
     clear();
     memzero((uint8_t *)&fix, sizeof(gps_fix_t));
 }
@@ -36,8 +38,6 @@ void WeatherStation::hup() {
     if (!on) {
         DEBUG_PRINTLN("WS: on");
     }
-
-    weatherSerialBegin();
 
     pinMode(PIN_WEATHER_STATION_RESET, OUTPUT);
     digitalWrite(PIN_WEATHER_STATION_RESET, LOW);
@@ -78,11 +78,6 @@ bool WeatherStation::tick() {
         if (!on) {
             hup();
         }
-        /*
-        while (WeatherSerial.available()) {
-            WeatherSerial.read();
-        }
-        */
         if (platformUptime() - lastTransitionAt > 60 * 1000) {
             DEBUG_PRINTLN("WS: >Reading");
             transition(WeatherStationState::Reading);
@@ -98,17 +93,34 @@ bool WeatherStation::tick() {
     case WeatherStationState::Reading: {
         startReading = false;
 
+        WeatherSerial.end();
+
+        delay(100);
+
+        weatherSerialBegin();
+
+        delay(100);
+
+        while (WeatherSerial.available()) {
+            WeatherSerial.read();
+        }
+
+        uint16_t bytesRead = 0;
+
         while (state == WeatherStationState::Reading) {
             delay(10);
 
             if (platformUptime() - lastTransitionAt > 10 * 1000) {
                 DEBUG_PRINTLN("WS: >Waiting (no reading)");
+                DEBUG_PRINT("WS: > ");
+                DEBUG_PRINTLN(bytesRead);
                 transition(WeatherStationState::Waiting);
             }
 
             if (WeatherSerial.available()) {
                 while (WeatherSerial.available()) {
                     int16_t c = WeatherSerial.read();
+                    bytesRead++;
                     if (startReading) {
                         Serial.print((char)c);
                     }
@@ -188,6 +200,8 @@ bool WeatherStation::tick() {
                                         logReadingLocally();
 
                                         DEBUG_PRINTLN("WS: >Waiting");
+                                        DEBUG_PRINT("WS: > ");
+                                        DEBUG_PRINTLN(bytesRead);
                                         transition(WeatherStationState::Waiting);
                                     }
                                 }
@@ -214,6 +228,9 @@ bool WeatherStation::tick() {
                 }
             }
         }
+
+        WeatherSerial.end();
+
         break;
     }
     }
@@ -236,6 +253,19 @@ void WeatherStation::logReadingLocally() {
     else {
         Serial.println("Unable to open WeatherStation log");
     }
+
+    Queue queue;
+
+    weather_station_packet_t packet;
+    memzero((uint8_t *)&packet, sizeof(weather_station_packet_t));
+    packet.fk.kind = FK_PACKET_KIND_WEATHER_STATION;
+    packet.time = SystemClock->now();
+    packet.battery = gauge->stateOfCharge();
+    for (uint8_t i = 0; i < FK_WEATHER_STATION_PACKET_NUMBER_VALUES; ++i) {
+        packet.values[i] = values[i];
+    }
+
+    queue.enqueue((uint8_t *)&packet, sizeof(weather_station_packet_t));
 }
 
 void WeatherStation::transition(WeatherStationState newState) {

@@ -11,7 +11,6 @@
 
 enum class CollectorState {
     Airwaves,
-    WeatherStation,
     Idle,
     Transmission
 };
@@ -42,7 +41,6 @@ private:
     void preflight();
     void waitForBattery();
     void tick();
-    bool checkWeatherStation();
     void logTransition(const char *name);
     void idlePeriod();
     void checkAirwaves();

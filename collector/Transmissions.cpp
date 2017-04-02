@@ -213,7 +213,6 @@ String Transmissions::diagnosticsToMessage() {
 
     message += "," + String(intervalToMs(intervals->idle));
     message += "," + String(intervalToMs(intervals->airwaves));
-    message += "," + String(intervalToMs(intervals->weather));
     message += "," + String(intervalToMs(intervals->restart));
     message += "," + String(intervals->weatherStation.stop);
 
@@ -343,9 +342,8 @@ void Transmissions::onMessage(String message) {
 
                 intervals->idle = msToInterval(values[0]);
                 intervals->airwaves = msToInterval(values[1]);
-                intervals->weather = msToInterval(values[2]);
-                intervals->restart = msToInterval(values[3]);
-                intervals->weatherStation.stop = values[4];
+                intervals->restart = msToInterval(values[2]);
+                intervals->weatherStation.stop = values[3];
 
                 DEBUG_PRINT("New Intervals:");
 

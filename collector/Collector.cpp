@@ -30,7 +30,7 @@
 Collector::Collector() :
     configuration(&memory, FK_SETTINGS_CONFIGURATION_FILENAME),
     radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST, PIN_RFM95_RST),
-    weatherStation(&memory) {
+    weatherStation(&memory, &gauge) {
 }
 
 static void blinkSlow(int8_t pin) {
@@ -186,50 +186,6 @@ void Collector::waitForBattery() {
     memory.markAlive(SystemClock->now());
 }
 
-bool Collector::checkWeatherStation() {
-    Queue queue;
-
-    Watchdog.reset();
-
-    DEBUG_PRINTLN("WS: Check");
-    logPrinter.flush();
-
-    bool success = false;
-    uint32_t started = platformUptime();
-    while (platformUptime() - started < intervalToMs(memory.intervals()->weather)) {
-        weatherStation.tick();
-
-        Watchdog.reset();
-
-        if (weatherStation.hasReading()) {
-            float *values = weatherStation.getValues();
-            weather_station_packet_t packet;
-            memzero((uint8_t *)&packet, sizeof(weather_station_packet_t));
-            packet.fk.kind = FK_PACKET_KIND_WEATHER_STATION;
-            packet.time = SystemClock->now();
-            packet.battery = gauge.stateOfCharge();
-            for (uint8_t i = 0; i < FK_WEATHER_STATION_PACKET_NUMBER_VALUES; ++i) {
-                packet.values[i] = values[i];
-            }
-
-            queue.enqueue((uint8_t *)&packet, sizeof(weather_station_packet_t));
-
-            weatherStation.clear();
-            logPrinter.flush();
-
-            success = true;
-        }
-
-        delay(10);
-    }
-
-    DEBUG_PRINTLN("");
-    DEBUG_PRINTLN("WS: Done");
-    logPrinter.flush();
-
-    return success;
-}
-
 void Collector::checkAirwaves() {
     Queue queue;
     NetworkProtocolState networkProtocol(NetworkState::EnqueueFromNetwork, &radio, &queue, new CollectorNetworkCallbacks());
@@ -334,12 +290,6 @@ void Collector::tick() {
     switch (state) {
     case CollectorState::Airwaves: {
         checkAirwaves();
-        logTransition("WS");
-        state = CollectorState::WeatherStation;
-        break;
-    }
-    case CollectorState::WeatherStation: {
-        checkWeatherStation();
         logTransition("ID");
         state = CollectorState::Idle;
         break;

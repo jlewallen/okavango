@@ -13,7 +13,6 @@ typedef struct fk_memory_weather_intervals_t {
 typedef struct fk_memory_core_intervals_t {
     uint32_t idle;
     uint32_t airwaves;
-    uint32_t weather;
     uint32_t restart;
     fk_memory_weather_intervals_t weatherStation;
 } fk_memory_core_intervals_t;

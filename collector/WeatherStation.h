@@ -3,6 +3,7 @@
 
 #include "Platforms.h"
 #include "Memory.h"
+#include "FuelGauge.h"
 
 #define FK_WEATHER_STATION_FIELD_UNIXTIME                    0
 #define FK_WEATHER_STATION_FIELD_WIND_DIR                    1
@@ -53,6 +54,7 @@ class WeatherStation {
 private:
     WeatherStationState state;
     Memory *memory;
+    FuelGauge *gauge;
     uint32_t lastTransitionAt;
     uint8_t numberOfValues;
     float values[FK_WEATHER_STATION_MAX_VALUES];
@@ -65,7 +67,7 @@ private:
     gps_fix_t fix;
 
 public:
-    WeatherStation(Memory *memory);
+    WeatherStation(Memory *memory, FuelGauge *gauge);
 
 public:
     gps_fix_t *getFix() {
