@@ -25,7 +25,7 @@ bool TransmissionStatus::anyTransmissionsThisHour() {
     return false;
 }
 
-int8_t TransmissionStatus::shouldWe(fk_transmission_schedule_t *schedules) {
+int8_t TransmissionStatus::shouldWe(fk_transmission_schedule_t *schedules, bool quietly) {
     uint32_t rtcNow = SystemClock->now();
     DateTime dt(rtcNow);
 
@@ -34,21 +34,23 @@ int8_t TransmissionStatus::shouldWe(fk_transmission_schedule_t *schedules) {
         int32_t hour = (dt.hour() + schedules[i].offset) % schedules[i].interval;
         int32_t triggered = hour == 0 && status.kinds[i].previousHour != (dt.hour() + 1);
 
-        DEBUG_PRINT("TS: #");
-        DEBUG_PRINT(i);
-        DEBUG_PRINT(": +");
-        DEBUG_PRINT(schedules[i].offset);
-        DEBUG_PRINT(" % ");
-        DEBUG_PRINT(schedules[i].interval);
-        DEBUG_PRINT(" == ");
-        DEBUG_PRINT(hour);
-        DEBUG_PRINT(" previousHour=");
-        DEBUG_PRINT(status.kinds[i].previousHour);
-        DEBUG_PRINT(" hour=");
-        DEBUG_PRINT(dt.hour());
-        DEBUG_PRINT(" ");
-        DEBUG_PRINT(triggered);
-        DEBUG_PRINTLN();
+        if (!quietly) {
+            DEBUG_PRINT("TS: #");
+            DEBUG_PRINT(i);
+            DEBUG_PRINT(": +");
+            DEBUG_PRINT(schedules[i].offset);
+            DEBUG_PRINT(" % ");
+            DEBUG_PRINT(schedules[i].interval);
+            DEBUG_PRINT(" == ");
+            DEBUG_PRINT(hour);
+            DEBUG_PRINT(" previousHour=");
+            DEBUG_PRINT(status.kinds[i].previousHour);
+            DEBUG_PRINT(" hour=");
+            DEBUG_PRINT(dt.hour());
+            DEBUG_PRINT(" ");
+            DEBUG_PRINT(triggered);
+            DEBUG_PRINTLN();
+        }
 
         if (which == -1 && triggered) {
             status.kinds[i].previousHour = dt.hour() + 1;
@@ -61,9 +63,11 @@ int8_t TransmissionStatus::shouldWe(fk_transmission_schedule_t *schedules) {
         }
     }
 
-    DEBUG_PRINT("TS: ");
-    DEBUG_PRINT(which);
-    DEBUG_PRINTLN();
+    if (!quietly) {
+        DEBUG_PRINT("TS: ");
+        DEBUG_PRINT(which);
+        DEBUG_PRINTLN();
+    }
 
     return which;
 }

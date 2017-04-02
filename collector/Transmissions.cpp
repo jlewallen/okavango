@@ -235,7 +235,7 @@ bool Transmissions::sendStatusTransmission() {
 void Transmissions::handleTransmissionIfNecessary() {
     TransmissionStatus status;
 
-    int8_t kind = status.shouldWe(memory->schedules());
+    int8_t kind = status.shouldWe(memory->schedules(), false);
     if (kind == TRANSMISSION_KIND_SENSORS) {
         sendSensorTransmission(true, false, true);
     }

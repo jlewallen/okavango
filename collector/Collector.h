@@ -47,6 +47,7 @@ private:
     void idlePeriod();
     void checkAirwaves();
     bool sendStatusTransmission();
+    bool quickTransmissionCheck();
 
 };
 

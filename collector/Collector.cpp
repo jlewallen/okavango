@@ -246,10 +246,15 @@ void Collector::checkAirwaves() {
 
         if (platformUptime() - last > AIRWAVES_BLINK_INTERVAL) {
             platformBlinks(PIN_RED_LED, BLINKS_AIRWAVES);
-            Serial.print(".");
-            last = platformUptime();
+            Serial.print("+");
 
             Watchdog.reset();
+
+            if (quickTransmissionCheck()) {
+                break;
+            }
+
+            last = platformUptime();
         }
 
         delay(10);
@@ -276,9 +281,13 @@ void Collector::idlePeriod() {
         Watchdog.reset();
 
         platformBlinks(PIN_RED_LED, BLINKS_IDLE);
-        Serial.print(".");
+        Serial.print("+");
 
         weatherStation.tick();
+
+        if (quickTransmissionCheck()) {
+            break;
+        }
     }
 
     DEBUG_PRINTLN("Idle: Done");
@@ -389,6 +398,12 @@ void Collector::loop() {
     while (true) {
         tick();
     }
+}
+
+bool Collector::quickTransmissionCheck() {
+    TransmissionStatus status;
+    int8_t kind = status.shouldWe(memory.schedules(), true);
+    return kind >= 0;
 }
 
 uint32_t Collector::deepSleep(uint32_t ms) {

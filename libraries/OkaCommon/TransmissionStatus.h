@@ -14,7 +14,7 @@ typedef struct fk_transmission_schedule_t {
 class TransmissionStatus {
 public:
     bool anyTransmissionsThisHour();
-    int8_t shouldWe(fk_transmission_schedule_t *schedules);
+    int8_t shouldWe(fk_transmission_schedule_t *schedules, bool quietly);
 
 };
 
