@@ -1,3 +1,4 @@
+#include <Adafruit_SleepyDog.h>
 #include "WeatherStation.h"
 #include "protocol.h"
 #include "Logger.h"
@@ -103,14 +104,19 @@ bool WeatherStation::tick() {
 
         delay(100);
 
+        uint32_t started = millis();
         uint16_t bytesRead = 0;
 
         while (state == WeatherStationState::Reading) {
             delay(10);
 
+            Watchdog.reset();
+
             if (platformUptime() - lastTransitionAt > WEATHER_STATION_READ_TIME) {
                 DEBUG_PRINTLN("WS: >Waiting (no reading)");
                 DEBUG_PRINT("WS: > ");
+                DEBUG_PRINT(millis() - started);
+                DEBUG_PRINT(" ");
                 DEBUG_PRINTLN(bytesRead);
                 transition(WeatherStationState::Waiting);
             }
@@ -199,6 +205,8 @@ bool WeatherStation::tick() {
 
                                         DEBUG_PRINTLN("WS: >Waiting");
                                         DEBUG_PRINT("WS: > ");
+                                        DEBUG_PRINT(millis() - started);
+                                        DEBUG_PRINT(" ");
                                         DEBUG_PRINTLN(bytesRead);
                                         transition(WeatherStationState::Waiting);
                                     }
