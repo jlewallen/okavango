@@ -304,8 +304,6 @@ void Collector::tick() {
             if (platformUptime() > intervalToMs(memory.intervals()->restart)) {
                 DEBUG_PRINT("Restarting: ");
                 DEBUG_PRINT(platformUptime());
-                DEBUG_PRINT(" ");
-                DEBUG_PRINT(diagnostics.deepSleepTime);
                 DEBUG_PRINTLN(" ");
 
                 for (uint8_t i = 0; i < 3; ++i) {
@@ -365,7 +363,6 @@ uint32_t Collector::deepSleep(uint32_t ms) {
         return ms;
     }
     uint32_t time = Watchdog.sleep(ms);
-    diagnostics.recordDeepSleep(time);
     platformAdjustUptime(time);
     return time;
 }
