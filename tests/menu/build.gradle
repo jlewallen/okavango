@@ -18,13 +18,11 @@ model {
             libraries = [
                 "SPI",
                 "Wire",
-                "Adafruit-GFX-Library",
-                // "Adafruit_HX8357_Library",
-                "Adafruit_ILI9341",
-                "Adafruit_STMPE610"
+                "https://github.com/adafruit/Adafruit-GFX-Library.git",
+                "https://github.com/adafruit/Adafruit_ILI9341.git",
+                "https://github.com/adafruit/Adafruit_STMPE610.git"
             ]
         }
     }
 }
 
-// vim: set ft=groovy:
