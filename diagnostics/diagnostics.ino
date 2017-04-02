@@ -2,7 +2,6 @@
 #include <Adafruit_SleepyDog.h>
 #include "Platforms.h"
 #include "core.h"
-#include "Repl.h"
 #include "LoraRadio.h"
 #include "Queue.h"
 #include "TransmissionStatus.h"
@@ -106,6 +105,8 @@ private:
         logPrinter.print(",");
         logPrinter.print(header->rssi);
         logPrinter.print("] ");
+        logPrinter.print(millis());
+        logPrinter.print(" ");
         logPrinter.print(kind);
         logPrinter.print(" ");
         logPrinter.print(packet->name);
@@ -141,6 +142,22 @@ private:
             DEBUG_PRINTLN();
             break;
         }
+        case FK_PACKET_KIND_SONAR_STATION: {
+            atlas_sensors_packet_t atlas_sensors;
+            memcpy((uint8_t *)&atlas_sensors, (uint8_t *)packet, sizeof(atlas_sensors_packet_t));
+
+            logHeader(header, &atlas_sensors.fk, "SONAR_SENSORS");
+            DEBUG_PRINT("time=");
+            DEBUG_PRINT(atlas_sensors.time);
+            DEBUG_PRINT(" battery=");
+            DEBUG_PRINT(atlas_sensors.battery);
+            for (uint8_t i = 0; i < FK_SONAR_STATION_PACKET_NUMBER_VALUES; ++i) {
+                DEBUG_PRINT(" ");
+                DEBUG_PRINT(String(atlas_sensors.values[i], 2));
+            }
+            DEBUG_PRINTLN();
+            break;
+        }
         case FK_PACKET_KIND_ATLAS_SENSORS: {
             atlas_sensors_packet_t atlas_sensors;
             memcpy((uint8_t *)&atlas_sensors, (uint8_t *)packet, sizeof(atlas_sensors_packet_t));
@@ -150,7 +167,7 @@ private:
             DEBUG_PRINT(atlas_sensors.time);
             DEBUG_PRINT(" battery=");
             DEBUG_PRINT(atlas_sensors.battery);
-            for (uint8_t i = 0; i < FK_WEATHER_STATION_PACKET_NUMBER_VALUES; ++i) {
+            for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
                 DEBUG_PRINT(" ");
                 DEBUG_PRINT(String(atlas_sensors.values[i], 2));
             }
@@ -208,153 +225,29 @@ private:
     }
 };
 
-typedef enum DiagnosticsReplState {
-    Normal,
-    Stressing
-} DiagnosticsReplState;
-
-class DiagnosticsRepl : public Repl {
-private:
-    Sniffer *sniffer;
-    LoraRadio *radio;
-    uint8_t pingsLeft;
-
-public:
-    DiagnosticsRepl(Sniffer *sniffer, LoraRadio *radio) :
-        sniffer(sniffer), radio(radio), pingsLeft(0) {
-    }
-
-    bool doWork() {
-        if (pingsLeft > 0) {
-            return true;
-        }
-        return false;
-    }
-
-    void handle(String command) {
-        if (command == "tx") {
-            fk_network_force_transmission_t  force_transmission;
-            memzero((uint8_t *)&force_transmission, sizeof(fk_network_force_transmission_t));
-            force_transmission.fk.kind = FK_PACKET_KIND_FORCE_TRANSMISSION;
-            radio->send((uint8_t *)&force_transmission, sizeof(fk_network_force_transmission_t));
-            radio->waitPacketSent();
-        }
-        else if (command == "ping") {
-            fk_network_ping_t ping;
-            memzero((uint8_t *)&ping, sizeof(fk_network_ping_t));
-            ping.fk.kind = FK_PACKET_KIND_PING;
-            radio->send((uint8_t *)&ping, sizeof(fk_network_ping_t));
-            radio->waitPacketSent();
-        }
-        else if (command = "stress") {
-            pingsLeft = 5;
-        }
-    }
-};
-
 CorePlatform corePlatform;
 
 void setup() {
     Serial.begin(115200);
 
-    #ifdef WAIT_FOR_SERIAL
-    while (!Serial) {
-        delay(100);
-        if (millis() > WAIT_FOR_SERIAL) {
-            break;
-        }
-    }
-    #endif
-
-    Serial.println(PIN_SD_CS);
-
-    pinMode(PIN_SD_CS, OUTPUT);
-    digitalWrite(PIN_SD_CS, HIGH);
-
-    corePlatform.setup();
-
-    /*
-    if (!SD.begin(PIN_SD_CS)) {
-        DEBUG_PRINTLN(F("SD Missing"));
-        platformCatastrophe(PIN_RED_LED);
-    }
-    */
-
-    #ifdef FK_WRITE_LOG_FILE
-    logPrinter.open();
-    #endif
-
     Serial.println("Begin");
-
-    DEBUG_PRINTLN("Loop");
 }
 
 void loop() {
-    LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST);
+    LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST, PIN_RFM95_RST);
     Sniffer sniffer(&radio);
-    DiagnosticsRepl repl(&sniffer, &radio);
 
     if (!radio.setup()) {
         platformCatastrophe(PIN_RED_LED);
     }
 
-    TransmissionStatus transmissionStatus;
-    transmissionStatus.dump();
-
-    Queue queue;
-
-    if (queue.size() > 0) {
-        DEBUG_PRINT("Queue Size: ");
-        DEBUG_PRINTLN(queue.size());
-
-        atlas_sensors_packet_t atlas_sensors;
-        memzero((uint8_t *)&atlas_sensors, sizeof(atlas_sensors_packet_t));
-        weather_station_packet_t weather_station_sensors;
-        memzero((uint8_t *)&weather_station_sensors, sizeof(weather_station_packet_t));
-
-        while (true) {
-            fk_network_packet_t *packet = (fk_network_packet_t *)queue.dequeue();
-            if (packet == NULL) {
-                break;
-            }
-
-            switch (packet->kind) {
-            case FK_PACKET_KIND_WEATHER_STATION: {
-                memcpy((uint8_t *)&weather_station_sensors, (uint8_t *)packet, sizeof(weather_station_packet_t));
-                DEBUG_PRINT("Weather: ");
-                DEBUG_PRINTLN(weather_station_sensors.time);
-                break;
-            }
-            case FK_PACKET_KIND_ATLAS_SENSORS: {
-                memcpy((uint8_t *)&atlas_sensors, (uint8_t *)packet, sizeof(atlas_sensors_packet_t));
-                DEBUG_PRINT("Atlas: ");
-                DEBUG_PRINTLN(atlas_sensors.time);
-                break;
-            }
-            default: {
-                DEBUG_PRINT("Unknown: ");
-                DEBUG_PRINTLN(packet->kind);
-                break;
-            }
-            }
-        }
-    }
-
     Watchdog.enable();
 
     while (1) {
-        if (!sniffer.tick()) {
-            repl.promptIfNecessary();
-            repl.tick();
-        }
-        else {
-            repl.busy();
-        }
+        sniffer.tick();
 
         Watchdog.reset();
 
         delay(50);
     }
 }
-
-// vim: set ft=cpp:

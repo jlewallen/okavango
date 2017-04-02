@@ -1,27 +1,46 @@
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+    dependencies {
+        classpath group: 'com.github.jlewallen.arduino', name: 'arduino-gradle', version: '1.0'
+    }
+}
+
 apply plugin: 'com.github.jlewallen.arduino'
 
-arduino {
-    libraries = [
-        "SPI",
-        "RadioHead",
-        "RTClib",
-        "OkaUtilities",
-        "Okavango",
-        "SimpleBuffer",
-        "Wire",
-        "SD",
-        "OkaCommon",
-        "Adafruit_SleepyDog",
-        "OneWire",
-        "Arduino-Temperature-Control-Library",
-        "IridiumSBD",
-        "Adafruit_WINC1500"
-        ]
+import com.github.jlewallen.arduino.*
 
-    defaultBoard = "adafruit:samd:adafruit_feather_m0"
-    boards = [
-        "adafruit:samd:adafruit_feather_m0"
-        ]
-    projectName = "diagnostics.ino"
-    projectLibrariesDir = "$projectDir/../libraries"
+model {
+    components {
+        diagnostics(ArduinoComponentSpec) {
+            userCppSourcesFlags = System.env.JOB_NAME == null ? "" : "-DBUILD_JOB='$System.env.JOB_NAME' -DBUILD_COMMIT='$System.env.GIT_COMMIT'"
+            boards = [ "adafruit:samd:adafruit_feather_m0" ]
+            libraries = [
+                "SPI",
+                "Wire",
+                "SD",
+                "https://github.com/PaulStoffregen/OneWire.git",
+
+                "https://github.com/Conservify/Adafruit_ASFcore.git",
+                "https://github.com/Conservify/AtSamd.git",
+                "https://github.com/Conservify/Adafruit_SleepyDog.git",
+
+                "https://github.com/PaulStoffregen/RadioHead.git",
+                "https://github.com/arduino-libraries/WiFi101.git",
+
+                "https://github.com/Conservify/max1704x.git",
+                "https://github.com/adafruit/RTClib.git",
+
+                "https://github.com/milesburton/Arduino-Temperature-Control-Library.git",
+
+                "OkaUtilities",
+                "Okavango",
+                "OkaCommon",
+                "IridiumSBD",
+            ]
+        }
+    }
 }
+
+// vim: set ft=groovy:
