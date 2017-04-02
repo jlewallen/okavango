@@ -107,13 +107,18 @@ bool WeatherStation::tick() {
             if (WeatherSerial.available()) {
                 while (WeatherSerial.available()) {
                     int16_t c = WeatherSerial.read();
+                    Serial.print((char)c);
+
                     if (c >= 0) {
-                        if (!startReading) {
+                        if (c == '\r')  {
+                            // Ignore
+                        }
+                        else if (!startReading) {
                             if (c == '\n') {
                                 startReading = true;
                             }
                         }
-                        else if (c == ',' || c == '\r' || c == '\n') {
+                        else if (c == ',' || c == '\n') {
                             if (length > 0) {
                                 buffer[length] = 0;
                                 if (numberOfValues < FK_WEATHER_STATION_MAX_VALUES) {
@@ -122,7 +127,7 @@ bool WeatherStation::tick() {
                                 }
                                 length = 0;;
                             }
-                            if (c == '\r' || c == '\n') {
+                            if (c == '\n') {
                                 bool success = numberOfValues == FK_WEATHER_STATION_PACKET_NUMBER_VALUES;
                                 if (success) {
                                     // DEBUG_PRINTLN("WS: have reading");
@@ -178,12 +183,12 @@ bool WeatherStation::tick() {
                                     else {
                                         logReadingLocally();
 
-                                        // DEBUG_PRINTLN("WS: >Waiting");
+                                        DEBUG_PRINTLN("WS: >Waiting");
                                         transition(WeatherStationState::Waiting);
                                     }
                                 }
                                 else {
-                                    if (false) {
+                                    if (true) {
                                         DEBUG_PRINT("WS: no reading: ");
                                         DEBUG_PRINT(numberOfValues);
                                         DEBUG_PRINT(" ");

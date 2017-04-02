@@ -274,7 +274,9 @@ void Collector::idlePeriod() {
     while (remaining >= 0) {
         remaining -= deepSleep(IDLE_PERIOD_SLEEP);
         Watchdog.reset();
+
         platformBlinks(PIN_RED_LED, BLINKS_IDLE);
+        Serial.print(".");
 
         weatherStation.tick();
     }
