@@ -39,20 +39,6 @@ LoraAtlasSensorBoard::LoraAtlasSensorBoard(CorePlatform *corePlatform, SerialPor
 }
 
 void LoraAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) {
-    #ifdef SEND_FAKE_SONAR_PACKET_FOR_TESTING
-    // Fake a sonar packet for testing.
-    sonar_station_packet_t sonar_packet;
-    memzero((void *)&sonar_packet, sizeof(sonar_station_packet_t));
-    sonar_packet.time = SystemClock->now();
-    sonar_packet.battery = gauge.stateOfCharge();
-    sonar_packet.fk.kind = FK_PACKET_KIND_SONAR_STATION;
-    for (int8_t i = 0; i < FK_SONAR_STATION_PACKET_NUMBER_VALUES; ++i) {
-        sonar_packet.values[i] = (float)i;
-    }
-    queue->enqueue((uint8_t *)&sonar_packet, sizeof(sonar_station_packet_t));
-    queue->startAtBeginning();
-    #endif
-
     tryAndSendLocalQueue(queue);
 
     Serial.println("Beginning sleep!");

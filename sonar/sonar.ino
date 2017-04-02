@@ -10,6 +10,7 @@
 #include "Logger.h"
 
 #define FK_SONAR_DISTANCE_FROM_GROUND_IN_METERS               (1.25f)
+#define VERBOSE_LOGGING
 
 sonar_station_packet_t packet;
 Pcf8523SystemClock Clock;
@@ -27,8 +28,6 @@ static uint32_t deepSleep(uint32_t ms) {
 void setup() {
     Serial.begin(115200);
 
-    Serial.println("Starting...");
-
     #ifdef WAIT_FOR_SERIAL
     while (!Serial) {
         delay(100);
@@ -37,6 +36,10 @@ void setup() {
         }
     }
     #endif
+
+    Wire.begin();
+
+    gauge.powerOn();
 
     Watchdog.enable();
 
@@ -53,10 +56,11 @@ void setup() {
     Serial.println("Log...");
     logPrinter.open();
 
-    Serial.print("Now: ");
-    Serial.println(SystemClock->now());
+    DEBUG_PRINT("Now: ");
+    DEBUG_PRINTLN(SystemClock->now());
 
-    Serial.println("Ready!");
+    DEBUG_PRINTLN("Ready!");
+    logPrinter.flush();
 }
 
 void tryAndSendLocalQueue(Queue *queue) {
@@ -66,9 +70,11 @@ void tryAndSendLocalQueue(Queue *queue) {
     int32_t watchdogMs = Watchdog.enable();
     DEBUG_PRINT("Watchdog enabled: ");
     DEBUG_PRINTLN(watchdogMs);
+    logPrinter.flush();
 
     if (radio.setup()) {
         DEBUG_PRINTLN("Enabling radio");
+        logPrinter.flush();
 
         if (radio.setup()) {
             DEBUG_PRINT("Queue: ");
@@ -93,13 +99,13 @@ void tryAndSendLocalQueue(Queue *queue) {
         DEBUG_PRINTLN("No radio available");
     }
 
+    logPrinter.flush();
     Watchdog.disable();
 }
 
 void logPacketLocally(sonar_station_packet_t *packet) {
     File file = Logger::open(FK_SETTINGS_SONAR_DATA_FILENAME);
     if (file) {
-        #define VERBOSE_LOGGING
         #ifdef VERBOSE_LOGGING
         DEBUG_PRINT("Packet:");
         #else
@@ -131,6 +137,8 @@ void logPacketLocally(sonar_station_packet_t *packet) {
         DEBUG_PRINTLN("");
         #endif
     }
+
+    logPrinter.flush();
 }
 
 void loop() {
@@ -139,10 +147,13 @@ void loop() {
     memzero((void *)&packet, sizeof(sonar_station_packet_t));
 
     packet.time = SystemClock->now();
+
     packet.battery = gauge.stateOfCharge();
+
     packet.fk.kind = FK_PACKET_KIND_SONAR_STATION;
 
     DEBUG_PRINTLN(packet.time);
+    logPrinter.flush();
 
     for (int8_t i = 0; i < FK_SONAR_STATION_PACKET_NUMBER_VALUES; ++i) {
         float value = analogRead(PIN_ULTRASONIC_SENSOR);
@@ -150,13 +161,14 @@ void loop() {
         float distance = voltage * (1000.0f / 3.2f);
         float waterLevel = FK_SONAR_DISTANCE_FROM_GROUND_IN_METERS - (distance / 100.0);
 
-        Serial.print(voltage);
-        Serial.print(" ");
-        Serial.print(waterLevel);
-        Serial.print(" ");
-        Serial.print(distance);
-        Serial.print(" ");
-        Serial.println(value);
+        DEBUG_PRINT(voltage);
+        DEBUG_PRINT(" ");
+        DEBUG_PRINT(waterLevel);
+        DEBUG_PRINT(" ");
+        DEBUG_PRINT(distance);
+        DEBUG_PRINT(" ");
+        DEBUG_PRINTLN(value);
+        logPrinter.flush();
 
         packet.values[i] = waterLevel;
 
@@ -165,22 +177,28 @@ void loop() {
         Watchdog.reset();
     }
 
+    platformBlinks(PIN_RED_LED, 3);
+
     logPacketLocally(&packet);
 
     queue.enqueue((uint8_t *)&packet, sizeof(sonar_station_packet_t));
     queue.startAtBeginning();
+
     tryAndSendLocalQueue(&queue);
 
-    Serial.println("Beginning sleep!");
+    DEBUG_PRINTLN("Beginning sleep!");
+    logPrinter.flush();
 
     int32_t remaining = LOW_POWER_SLEEP_SENSORS_END;
     while (remaining > 0) {
         remaining -= deepSleep(8192);
         Watchdog.reset();
         DEBUG_PRINTLN(remaining);
+        logPrinter.flush();
     }
 
     DEBUG_PRINTLN("Bye!");
+    logPrinter.flush();
     delay(100);
 
     platformRestart();

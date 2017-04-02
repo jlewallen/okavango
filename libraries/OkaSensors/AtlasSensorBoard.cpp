@@ -131,6 +131,7 @@ bool AtlasSensorBoard::tick() {
             doneReadingSensors(&queue, &packet);
 
             DEBUG_PRINTLN("Bye!");
+            logPrinter.flush();
             delay(100);
 
             platformRestart();

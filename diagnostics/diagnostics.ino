@@ -222,6 +222,10 @@ private:
             break;
         }
         }
+        default: {
+            DEBUG_PRINT("UNKNOWN: ");
+            DEBUG_PRINTLN(packet->kind);
+        }
     }
 };
 
