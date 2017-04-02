@@ -1,8 +1,7 @@
-#define FEATHER_WING_LORA
-
 #include <Arduino.h>
 #include <Adafruit_SleepyDog.h>
 #include "core.h"
+#include "FuelGauge.h"
 #include "Platforms.h"
 #include "protocol.h"
 #include "Queue.h"
@@ -13,10 +12,17 @@
 #define FK_SONAR_DISTANCE_FROM_GROUND_IN_METERS               (1.25f)
 
 sonar_station_packet_t packet;
-MillisSystemClock Clock;
-// Ds1307SystemClock Clock;
-// Pcf8523SystemClock Clock;
+Pcf8523SystemClock Clock;
 CorePlatform corePlatform;
+FuelGauge gauge;
+
+static uint32_t deepSleep(uint32_t ms) {
+    if (Serial) {
+        delay(ms);
+        return ms;
+    }
+    return Watchdog.sleep(ms);
+}
 
 void setup() {
     Serial.begin(115200);
@@ -35,7 +41,11 @@ void setup() {
     Watchdog.enable();
 
     Serial.println("Core...");
-    corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST);
+    corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST, false);
+
+    if (corePlatform.isSdAvailable()) {
+        logPrinter.open();
+    }
 
     Serial.println("Clock...");
     SystemClock->setup();
@@ -129,7 +139,7 @@ void loop() {
     memzero((void *)&packet, sizeof(sonar_station_packet_t));
 
     packet.time = SystemClock->now();
-    packet.battery = platformBatteryVoltage();
+    packet.battery = gauge.stateOfCharge();
     packet.fk.kind = FK_PACKET_KIND_SONAR_STATION;
 
     DEBUG_PRINTLN(packet.time);
@@ -161,7 +171,14 @@ void loop() {
     queue.startAtBeginning();
     tryAndSendLocalQueue(&queue);
 
-    platformLowPowerSleep(LOW_POWER_SLEEP_SENSORS_END);
+    Serial.println("Beginning sleep!");
+
+    int32_t remaining = LOW_POWER_SLEEP_SENSORS_END;
+    while (remaining > 0) {
+        remaining -= deepSleep(8192);
+        Watchdog.reset();
+        DEBUG_PRINTLN(remaining);
+    }
 
     DEBUG_PRINTLN("Bye!");
     delay(100);

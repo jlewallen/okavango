@@ -168,11 +168,12 @@ void setup() {
     waitForBattery();
 
     corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST, false);
-    SystemClock->setup();
 
     if (corePlatform.isSdAvailable()) {
         logPrinter.open();
     }
+
+    SystemClock->setup();
 
     loraAtlasSensorBoard.setup();
     Serial1.begin(9600);

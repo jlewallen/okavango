@@ -27,7 +27,7 @@ model {
                 "https://github.com/Conservify/Adafruit_SleepyDog.git",
 
                 "https://github.com/PaulStoffregen/RadioHead.git",
-                "https://github.com/adafruit/Adafruit_WINC1500.git",
+                "https://github.com/arduino-libraries/WiFi101.git",
 
                 "OkaUtilities",
                 "Okavango",
