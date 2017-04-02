@@ -107,6 +107,8 @@ bool WeatherStation::tick() {
         uint32_t started = millis();
         uint16_t bytesRead = 0;
 
+        Watchdog.enable();
+
         while (state == WeatherStationState::Reading) {
             delay(10);
 
@@ -150,7 +152,6 @@ bool WeatherStation::tick() {
                             if (c == '\n') {
                                 bool success = numberOfValues == FK_WEATHER_STATION_PACKET_NUMBER_VALUES;
                                 if (success) {
-                                    // DEBUG_PRINTLN("WS: have reading");
                                     for (uint8_t i = 0; i < FK_WEATHER_STATION_PACKET_NUMBER_VALUES; ++i) {
                                         if (i > 0) {
                                             DEBUG_PRINT(",");
@@ -234,6 +235,8 @@ bool WeatherStation::tick() {
                 }
             }
         }
+
+        DEBUG_PRINTLN("WS: Done");
 
         WeatherSerial.end();
 
