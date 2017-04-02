@@ -96,6 +96,8 @@ bool WeatherStation::tick() {
         break;
     }
     case WeatherStationState::Reading: {
+        startReading = false;
+
         while (state == WeatherStationState::Reading) {
             delay(10);
 
@@ -107,7 +109,9 @@ bool WeatherStation::tick() {
             if (WeatherSerial.available()) {
                 while (WeatherSerial.available()) {
                     int16_t c = WeatherSerial.read();
-                    Serial.print((char)c);
+                    if (startReading) {
+                        Serial.print((char)c);
+                    }
 
                     if (c >= 0) {
                         if (c == '\r')  {
