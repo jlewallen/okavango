@@ -4,6 +4,8 @@
 #include "Diagnostics.h"
 #include "Queue.h"
 
+#define WEATHER_STATION_READ_TIME         (20 * 1000)
+
 #ifdef ARDUINO_SAMD_FEATHER_M0
 
 WeatherStation::WeatherStation(Memory *memory, FuelGauge *gauge) :
@@ -101,16 +103,12 @@ bool WeatherStation::tick() {
 
         delay(100);
 
-        while (WeatherSerial.available()) {
-            WeatherSerial.read();
-        }
-
         uint16_t bytesRead = 0;
 
         while (state == WeatherStationState::Reading) {
             delay(10);
 
-            if (platformUptime() - lastTransitionAt > 10 * 1000) {
+            if (platformUptime() - lastTransitionAt > WEATHER_STATION_READ_TIME) {
                 DEBUG_PRINTLN("WS: >Waiting (no reading)");
                 DEBUG_PRINT("WS: > ");
                 DEBUG_PRINTLN(bytesRead);
