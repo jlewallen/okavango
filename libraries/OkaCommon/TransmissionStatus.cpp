@@ -25,7 +25,7 @@ bool TransmissionStatus::anyTransmissionsThisHour() {
     return false;
 }
 
-int8_t TransmissionStatus::shouldWe(fk_transmission_schedule_t *schedules, bool quietly) {
+int8_t TransmissionStatus::shouldWe(fk_transmission_schedule_t *schedules, bool testOnly) {
     uint32_t rtcNow = SystemClock->now();
     DateTime dt(rtcNow);
 
@@ -34,7 +34,7 @@ int8_t TransmissionStatus::shouldWe(fk_transmission_schedule_t *schedules, bool 
         int32_t hour = (dt.hour() + schedules[i].offset) % schedules[i].interval;
         int32_t triggered = hour == 0 && status.kinds[i].previousHour != (dt.hour() + 1);
 
-        if (!quietly) {
+        if (!testOnly) {
             DEBUG_PRINT("TS: #");
             DEBUG_PRINT(i);
             DEBUG_PRINT(": +");
@@ -53,17 +53,21 @@ int8_t TransmissionStatus::shouldWe(fk_transmission_schedule_t *schedules, bool 
         }
 
         if (which == -1 && triggered) {
-            status.kinds[i].previousHour = dt.hour() + 1;
+            if (!testOnly) {
+                status.kinds[i].previousHour = dt.hour() + 1;
+            }
             which = i;
         }
         // Clear the previousHour if we're in an hour that won't trigger. This
         // way if it's the same hour of the day everytime we'll still trigger.
         else if (hour != 0) {
-            status.kinds[i].previousHour = 0;
+            if (!testOnly) {
+                status.kinds[i].previousHour = 0;
+            }
         }
     }
 
-    if (!quietly) {
+    if (!testOnly) {
         DEBUG_PRINT("TS: ");
         DEBUG_PRINT(which);
         DEBUG_PRINTLN();
