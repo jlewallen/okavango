@@ -183,7 +183,7 @@ void loop() {
 
     int32_t remaining = LOW_POWER_SLEEP_SENSORS_END;
     while (remaining > 0) {
-        remaining -= platformDeepSleep(false);
+        remaining -= platformDeepSleep(true);
         Watchdog.reset();
         DEBUG_PRINTLN(remaining);
         logPrinter.flush();

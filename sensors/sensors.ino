@@ -33,13 +33,14 @@ LoraAtlasSensorBoard::LoraAtlasSensorBoard(CorePlatform *corePlatform, SerialPor
 void LoraAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) {
     tryAndSendLocalQueue(queue);
 
-    Serial.println("Beginning sleep!");
+    DEBUG_PRINTLN("Beginning sleep!");
 
     int32_t remaining = LOW_POWER_SLEEP_SENSORS_END;
     while (remaining > 0) {
-        remaining -= platformDeepSleep(false);
+        remaining -= platformDeepSleep(true);
         Watchdog.reset();
-        Serial.println(remaining);
+        DEBUG_PRINTLN(remaining);
+        logPrinter.flush();
     }
 }
 
@@ -112,7 +113,7 @@ void waitForBattery() {
 
             uint32_t sinceCheck = 0;
             while (sinceCheck < BATTERY_WAIT_CHECK_INTERVAL) {
-                sinceCheck += platformDeepSleep(false);
+                sinceCheck += platformDeepSleep(true);
                 Watchdog.reset();
                 platformBlinks(PIN_RED_LED, 1);
             }
@@ -128,10 +129,6 @@ void waitForBattery() {
 void setup() {
     Serial.begin(115200);
 
-    Wire.begin();
-
-    gauge.powerOn();
-
     #ifdef WAIT_FOR_SERIAL
     while (!Serial) {
         delay(100);
@@ -143,15 +140,19 @@ void setup() {
 
     Serial.println("Begin");
 
-    waitForBattery();
-
     corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST, false);
+
+    SystemClock->setup();
 
     if (corePlatform.isSdAvailable()) {
         logPrinter.open();
     }
 
-    SystemClock->setup();
+    Wire.begin();
+
+    gauge.powerOn();
+
+    waitForBattery();
 
     loraAtlasSensorBoard.setup();
     Serial1.begin(9600);

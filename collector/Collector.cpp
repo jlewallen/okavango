@@ -50,11 +50,15 @@ static void blinkQuick(int8_t pin) {
 void Collector::setup() {
     blinkQuick(PIN_RED_LED);
 
-    Wire.begin();
-
     memory.setup();
 
+    Serial.println("Powering on fuel gauge...");
+
+    Wire.begin();
+
     gauge.powerOn();
+
+    Serial.println("Checking battery...");
 
     delay(500);
 
