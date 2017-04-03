@@ -17,14 +17,6 @@ SerialPortExpander serialPortExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_
 ParallelizedAtlasScientificSensors sensorBoard(&serialPortExpander, false);
 Pcf8523SystemClock Clock;
 
-static uint32_t deepSleep(uint32_t ms) {
-    if (Serial) {
-        delay(ms);
-        return ms;
-    }
-    return Watchdog.sleep(ms);
-}
-
 class LoraAtlasSensorBoard : public AtlasSensorBoard {
 public:
     LoraAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard, FuelGauge *gauge);
@@ -45,7 +37,7 @@ void LoraAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet
 
     int32_t remaining = LOW_POWER_SLEEP_SENSORS_END;
     while (remaining > 0) {
-        remaining -= deepSleep(8192);
+        remaining -= platformDeepSleep(false);
         Watchdog.reset();
         Serial.println(remaining);
     }
@@ -120,7 +112,7 @@ void waitForBattery() {
 
             uint32_t sinceCheck = 0;
             while (sinceCheck < BATTERY_WAIT_CHECK_INTERVAL) {
-                sinceCheck += deepSleep(BATTERY_WAIT_CHECK_SLEEP);
+                sinceCheck += platformDeepSleep(false);
                 Watchdog.reset();
                 platformBlinks(PIN_RED_LED, 1);
             }

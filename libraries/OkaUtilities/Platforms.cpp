@@ -142,3 +142,13 @@ uint32_t platformUptime() {
 uint32_t platformAdjustUptime(uint32_t by) {
     return uptime += by;
 }
+
+uint32_t platformDeepSleep(bool forceDelay) {
+    if (forceDelay || Serial) {
+        delay(8192);
+        return 8192;
+    }
+    uint32_t actual = Watchdog.sleep(8192);
+    platformAdjustUptime(actual);
+    return actual;
+}

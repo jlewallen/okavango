@@ -17,14 +17,6 @@ Pcf8523SystemClock Clock;
 CorePlatform corePlatform;
 FuelGauge gauge;
 
-static uint32_t deepSleep(uint32_t ms) {
-    if (Serial) {
-        delay(ms);
-        return ms;
-    }
-    return Watchdog.sleep(ms);
-}
-
 void setup() {
     Serial.begin(115200);
 
@@ -191,7 +183,7 @@ void loop() {
 
     int32_t remaining = LOW_POWER_SLEEP_SENSORS_END;
     while (remaining > 0) {
-        remaining -= deepSleep(8192);
+        remaining -= platformDeepSleep(false);
         Watchdog.reset();
         DEBUG_PRINTLN(remaining);
         logPrinter.flush();

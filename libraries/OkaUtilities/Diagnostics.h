@@ -9,7 +9,6 @@
 class Diagnostics {
 public:
     uint32_t batterySleepTime = 0;
-    uint32_t deepSleepTime = 0;
     uint16_t numberOfTransmissionFailures = 0;
     uint16_t numberOfTransmissionSkipped = 0;
     uint16_t weatherReadingsReceived = 0;
@@ -23,10 +22,6 @@ public:
 public:
     void recordBatterySleep(uint32_t ms) {
         batterySleepTime += ms;
-    }
-
-    void recordDeepSleep(uint32_t ms) {
-        deepSleepTime += ms;
     }
 
     void recordTransmissionSkipped() {

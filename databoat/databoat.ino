@@ -6,17 +6,18 @@
 #include "core.h"
 #include "AtlasSensorBoard.h"
 #include "DataBoat.h"
+#include "FuelGauge.h"
 
 class WifiAtlasSensorBoard : public AtlasSensorBoard {
 public:
-    WifiAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard);
+    WifiAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard, FuelGauge *gauge);
 
 public:
     void doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) override;
 };
 
-WifiAtlasSensorBoard::WifiAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard) :
-    AtlasSensorBoard(corePlatform, serialPortExpander, sensorBoard) {
+WifiAtlasSensorBoard::WifiAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard, FuelGauge *gauge) :
+    AtlasSensorBoard(corePlatform, serialPortExpander, sensorBoard, gauge) {
 }
 
 void WifiAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) {
@@ -36,13 +37,20 @@ void WifiAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet
 
     Watchdog.disable();
 
-    platformLowPowerSleep(LOW_POWER_SLEEP_DATA_BOAT_END);
+    int32_t remaining = LOW_POWER_SLEEP_SENSORS_END;
+    while (remaining > 0) {
+        remaining -= platformDeepSleep(false);
+        Watchdog.reset();
+        DEBUG_PRINTLN(remaining);
+        logPrinter.flush();
+    }
 }
 
 CorePlatform corePlatform;
+FuelGauge gauge;
 SerialPortExpander serialPortExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1, ConductivityConfig::OnExpanderPort4);
 ParallelizedAtlasScientificSensors sensorBoard(&serialPortExpander, false);
-WifiAtlasSensorBoard wifiAtlasSensorBoard(&corePlatform, &serialPortExpander, &sensorBoard);
+WifiAtlasSensorBoard wifiAtlasSensorBoard(&corePlatform, &serialPortExpander, &sensorBoard, &gauge);
 
 void setup() {
     Serial.begin(115200);

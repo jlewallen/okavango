@@ -106,7 +106,7 @@ void platformCatastrophe(uint8_t pin, uint8_t mode = PLATFORM_CATASTROPHE_PULSE)
 void platformBlink(uint8_t pin);
 void platformBlinks(uint8_t pin, uint8_t number);
 uint32_t platformFreeMemory();
-
+uint32_t platformDeepSleep(bool forceDelay);
 uint32_t platformUptime();
 uint32_t platformAdjustUptime(uint32_t by);
 
