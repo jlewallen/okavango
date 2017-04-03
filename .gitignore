@@ -23,7 +23,6 @@ libraries/OkaCommon/config.h
 libraries/OkaUtilities/config.h
 
 .gradle
-data
 firmwaretool.properties
 gradle.properties
 collector/config.h
