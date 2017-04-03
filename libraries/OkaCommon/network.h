@@ -37,9 +37,10 @@ private:
     uint32_t lastTickNonDelayed;
     bool pingAgainAfterDequeue;
     NetworkCallbacks *networkCallbacks;
-    
+    uint8_t identity;
+
 public:
-    NetworkProtocolState(NetworkState state, LoraRadio *radio, Queue *queue, NetworkCallbacks *networkCallbacks);
+    NetworkProtocolState(uint8_t identity, NetworkState state, LoraRadio *radio, Queue *queue, NetworkCallbacks *networkCallbacks);
 
 public:
     void tick();

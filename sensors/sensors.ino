@@ -46,7 +46,7 @@ void LoraAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet
 
 void LoraAtlasSensorBoard::tryAndSendLocalQueue(Queue *queue) {
     LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST, PIN_RFM95_RST);
-    NetworkProtocolState networkProtocol(NetworkState::PingForListener, &radio, queue, NULL);
+    NetworkProtocolState networkProtocol(FK_IDENTITY_ATLAS, NetworkState::PingForListener, &radio, queue, NULL);
 
     int32_t watchdogMs = Watchdog.enable();
     DEBUG_PRINT("Watchdog enabled: ");

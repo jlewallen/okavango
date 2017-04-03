@@ -4,8 +4,8 @@
 
 #define RETRY_DELAY         2500
 
-NetworkProtocolState::NetworkProtocolState(NetworkState state, LoraRadio *radio, Queue *queue, NetworkCallbacks *networkCallbacks) :
-    state(state), radio(radio), queue(queue), stateDelay(0), lastTick(0), lastTickNonDelayed(0),
+NetworkProtocolState::NetworkProtocolState(uint8_t identity, NetworkState state, LoraRadio *radio, Queue *queue, NetworkCallbacks *networkCallbacks) :
+    identity(identity), state(state), radio(radio), queue(queue), stateDelay(0), lastTick(0), lastTickNonDelayed(0),
     pingAgainAfterDequeue(true), packetsReceived(0), lastPacketTime(0),
     networkCallbacks(networkCallbacks) {
 }
@@ -251,6 +251,7 @@ void NetworkProtocolState::sendPing() {
     fk_network_ping_t ping;
     memzero((uint8_t *)&ping, sizeof(fk_network_ping_t));
     ping.fk.kind = FK_PACKET_KIND_PING;
+    ping.identity = identity;
     radio->send((uint8_t *)&ping, sizeof(fk_network_ping_t));
     radio->waitPacketSent();
     checkForPacket();

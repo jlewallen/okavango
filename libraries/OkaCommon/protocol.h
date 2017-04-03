@@ -3,6 +3,10 @@
 
 #include "settings.h"
 
+#define FK_IDENTITY_COLLECTOR                               0
+#define FK_IDENTITY_ATLAS                                   1
+#define FK_IDENTITY_SONAR                                   2
+
 #define FK_PACKET_KIND_PING                                 0x0
 #define FK_PACKET_KIND_PONG                                 0x1
 #define FK_PACKET_KIND_ACK                                  0x2
@@ -34,6 +38,7 @@ typedef struct fk_network_packet_t {
 typedef struct fk_network_ping_t {
     fk_network_packet_t fk;
     uint8_t batch;
+    uint8_t identity;
 } network_ping_t;
 
 typedef struct fk_network_pong_t {
