@@ -115,8 +115,7 @@ bool WeatherStation::tick() {
             Watchdog.reset();
 
             if (platformUptime() - lastTransitionAt > WEATHER_STATION_READ_TIME) {
-                DEBUG_PRINTLN("WS: >Waiting (no reading)");
-                DEBUG_PRINT("WS: > ");
+                DEBUG_PRINT("WS: >Waiting (no reading) ms=");
                 DEBUG_PRINT(millis() - started);
                 DEBUG_PRINT(" ");
                 DEBUG_PRINTLN(bytesRead);
@@ -204,8 +203,7 @@ bool WeatherStation::tick() {
                                     else {
                                         logReadingLocally();
 
-                                        DEBUG_PRINTLN("WS: >Waiting");
-                                        DEBUG_PRINT("WS: > ");
+                                        DEBUG_PRINT("WS: >Waiting ms=");
                                         DEBUG_PRINT(millis() - started);
                                         DEBUG_PRINT(" ");
                                         DEBUG_PRINTLN(bytesRead);
@@ -235,8 +233,6 @@ bool WeatherStation::tick() {
                 }
             }
         }
-
-        DEBUG_PRINTLN("WS: Done");
 
         WeatherSerial.end();
 

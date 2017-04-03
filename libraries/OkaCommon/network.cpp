@@ -100,7 +100,7 @@ void NetworkProtocolState::tick() {
 }
 
 static void logAtlasPacket(atlas_sensors_packet_t *p) {
-    File file = SD.open("ATLAS.CSV");
+    File file = SD.open("ATLAS.CSV", FILE_WRITE);
     if (file) {
         file.print("ATLAS: ");
         file.print(p->time);
@@ -119,7 +119,7 @@ static void logAtlasPacket(atlas_sensors_packet_t *p) {
 }
 
 static void logSonarPacket(sonar_station_packet_t *p) {
-    File file = SD.open("SONAR.CSV");
+    File file = SD.open("SONAR.CSV", FILE_WRITE);
     if (file) {
         file.print(p->time);
         file.print(",");

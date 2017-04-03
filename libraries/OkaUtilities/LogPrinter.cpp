@@ -7,9 +7,6 @@ LogPrinter logPrinter;
 bool LogPrinter::open(bool serial1Relay) {
     this->serial1Relay = serial1Relay;
 
-    Serial.print("Serial1Relay: ");
-    Serial.println(this->serial1Relay);
-
     fileLog = SD.open("DEBUG.LOG", FILE_WRITE);
     if (fileLog) {
         fileAvailable = true;
