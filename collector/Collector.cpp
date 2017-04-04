@@ -236,6 +236,8 @@ void Collector::idlePeriod() {
     DEBUG_PRINTLN("Idle: Begin");
     logPrinter.flush();
 
+    Watchdog.reset();
+
     int32_t remaining = intervalToMs(memory.intervals()->idle);
     while (remaining >= 0) {
         remaining -= deepSleep(IDLE_PERIOD_SLEEP);
