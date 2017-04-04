@@ -257,7 +257,7 @@ void setup() {
 
     Serial.println("Begin");
 
-    corePlatform.setup();
+    corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST, false);
 
     Serial1.begin(9600);
     platformSerial2Begin(9600);
