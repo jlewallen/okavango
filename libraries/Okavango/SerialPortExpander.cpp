@@ -16,14 +16,14 @@ bool SerialPortExpander::tick() {
     return false;
 }
 
-SerialType *SerialPortExpander::getSerial() {
+SerialType *SerialPortExpander::getSerial(uint32_t baud) {
     if (port == 3 && conductivityConfig == OnSerial2) {
-        platformSerial2Begin(9600);
+        platformSerial2Begin(baud);
         return &Serial2;
 
     }
     else {
-        Serial1.begin(9600);
+        Serial1.begin(baud);
         return &Serial1;
     }
 }

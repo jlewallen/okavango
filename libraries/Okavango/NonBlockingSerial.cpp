@@ -47,14 +47,21 @@ void NonBlockingSerialProtocol::appendToBuffer(char newChar) {
             buffer += '\n';
         }
 
-        lastStateChangeOrReplyAt = millis();
-
-        if (handle(buffer)) {
+        NonBlockingHandleStatus status = handle(buffer);
+        switch (status) {
+        case NonBlockingHandleStatus::Handled:
+            lastStateChangeOrReplyAt = millis();
             transition(NonBlockingSerialProtocolState::Idle);
             buffer = "";
-        }
-        else if (emptyBufferAfterEveryLine) {
-            buffer = "";
+            break;
+        case NonBlockingHandleStatus::Ignored:
+            lastStateChangeOrReplyAt = millis();
+            if (emptyBufferAfterEveryLine) {
+                buffer = "";
+            }
+            break;
+        case NonBlockingHandleStatus::Unknown:
+            break;
         }
     }
 }
@@ -68,8 +75,8 @@ void NonBlockingSerialProtocol::sendCommand(const char *cmd) {
     sendsCounter++;
 }
 
-bool NonBlockingSerialProtocol::handle(String reply) {
-    return true; // No protocol here.
+NonBlockingHandleStatus NonBlockingSerialProtocol::handle(String reply) {
+    return NonBlockingHandleStatus::Handled; // No protocol here.
 }
 
 void NonBlockingSerialProtocol::transition(NonBlockingSerialProtocolState newState) {

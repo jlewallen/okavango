@@ -20,7 +20,7 @@ public:
         return port;
     }
 
-    SerialType *getSerial();
+    SerialType *getSerial(uint32_t baud = 9600);
 
 public:
     void setup();

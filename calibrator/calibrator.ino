@@ -144,7 +144,7 @@ public:
         return sizeof(commands) / sizeof(String);
     }
 
-    bool handle(String reply) {
+    virtual NonBlockingHandleStatus handle(String reply) override {
         if (reply.length() > 0) {
             Serial.print("# ");
             Serial.print(reply);
@@ -152,7 +152,7 @@ public:
         if (expectedResponse != NULL && reply.indexOf(expectedResponse) == 0) {
             if (nextPort >= 4) {
                 state = ScriptRunnerState::DeviceIdle;
-                return true;
+                return NonBlockingHandleStatus::Handled;
             }
             else if (nextPort > 0) {
                 Serial.print("PORT ");
@@ -160,21 +160,21 @@ public:
                 select(nextPort);
                 send(activeCommand, expectedResponse);
                 nextPort++;
-                return false;
+                return NonBlockingHandleStatus::Ignored;
             }
             state = ScriptRunnerState::DeviceIdle;
-            return true;
+            return NonBlockingHandleStatus::Handled;
         }
         else if (reply.indexOf("*W") == 0) {
             Serial.println("Woke up, resend...");
             send(activeCommand, expectedResponse);
-            return true;
+            return NonBlockingHandleStatus::Handled;
         }
         else if (reply.indexOf("*ER") == 0) {
             state = ScriptRunnerState::DeviceIdle;
-            return true;
+            return NonBlockingHandleStatus::Handled;
         }
-        return false;
+        return NonBlockingHandleStatus::Unknown;
     }
 };
 

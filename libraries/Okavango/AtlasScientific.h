@@ -55,7 +55,7 @@ public:
 
 protected:
     void transition(AtlasScientificBoardState newState);
-    virtual bool handle(String reply);
+    virtual NonBlockingHandleStatus handle(String reply);
 };
 
 #endif

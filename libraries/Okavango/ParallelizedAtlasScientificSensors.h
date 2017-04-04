@@ -58,7 +58,7 @@ public:
 
 protected:
     void transition(ParallelizedAtlasScientificSensorsState newState);
-    virtual bool handle(String reply);
+    virtual NonBlockingHandleStatus handle(String reply);
 };
 
 #endif

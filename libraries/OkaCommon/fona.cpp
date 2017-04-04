@@ -88,7 +88,7 @@ bool FonaChild::tick() {
     return true;
 }
 
-bool FonaChild::handle(String reply) {
+NonBlockingHandleStatus FonaChild::handle(String reply) {
     if (reply.length() > 0) {
         DEBUG_PRINT(state);
         DEBUG_PRINT(">");
@@ -143,7 +143,7 @@ bool FonaChild::handle(String reply) {
                 break;
             }
         }
-        return true;
+        return NonBlockingHandleStatus::Handled;
     }
     else if (reply.startsWith("ER")) {
         switch (state) {
@@ -162,13 +162,14 @@ bool FonaChild::handle(String reply) {
                 break;
             }
         }
-        return true;
+        return NonBlockingHandleStatus::Handled;
     }
     else if (reply.startsWith("+STATUS")) {
         int8_t comma = reply.indexOf(",");
         int8_t status = reply.substring(comma + 1, comma + 2).toInt(); 
         registered = status == 1 || status == 5; // Home or Roaming
     }
-    return false;
+
+    return NonBlockingHandleStatus::Ignored;
 }
 

@@ -9,6 +9,12 @@ enum class NonBlockingSerialProtocolState {
     Closed
 };
 
+enum class NonBlockingHandleStatus {
+    Handled,
+    Ignored,
+    Unknown
+};
+
 class NonBlockingSerialProtocol {
 private:
     SerialType *serial;
@@ -48,7 +54,7 @@ protected:
     }
     void sendCommand(const char *cmd);
     void transition(NonBlockingSerialProtocolState newState);
-    virtual bool handle(String reply);
+    virtual NonBlockingHandleStatus handle(String reply);
     void appendToBuffer(char newChar);
     void close();
 };

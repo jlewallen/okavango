@@ -33,7 +33,7 @@ public:
     FonaChild(String phoneNumber, String message);
 
     virtual bool tick();
-    virtual bool handle(String reply);
+    virtual NonBlockingHandleStatus handle(String reply);
 
     void transition(FonaChildState newState) {
         state = newState;

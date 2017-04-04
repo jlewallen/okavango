@@ -107,7 +107,7 @@ String getFirstLine(String &str) {
     return str;
 }
 
-bool AtlasScientificBoard::handle(String reply) {
+NonBlockingHandleStatus AtlasScientificBoard::handle(String reply) {
     if (reply.indexOf("*") >= 0) {
         if (reply.length() > 0) {
             DEBUG_PRINT(uint32_t(state));
@@ -199,7 +199,8 @@ bool AtlasScientificBoard::handle(String reply) {
                 break;
             }
         }
-        return true;
+        return NonBlockingHandleStatus::Handled;
     }
-    return false;
+
+    return NonBlockingHandleStatus::Ignored;
 }
