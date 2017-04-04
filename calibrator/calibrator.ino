@@ -12,7 +12,7 @@ String phScript[] = {
     "cal,low,4.00",
     "cal,high,10.00",
     "l,0",
-    "STATUS"
+    "r"
 };
 
 String doScript[] = {
@@ -21,8 +21,8 @@ String doScript[] = {
     "cal,clear",
     "cal",
     "cal,0",
-    "L,0",
-    "STATUS"
+    "l,0",
+    "r"
 };
 
 String orpScript[] = {
@@ -30,8 +30,8 @@ String orpScript[] = {
     "l,1",
     "cal,clear",
     "cal,225",
-    "L,0",
-    "STATUS"
+    "l,0",
+    "r"
 };
 
 String ecScript[] = {
@@ -41,8 +41,8 @@ String ecScript[] = {
     "cal,dry",
     "cal,low,12880",
     "cal,high,80000",
-    "L,0",
-    "STATUS"
+    "l,0",
+    "r"
 };
 
 ConductivityConfig conductivityConfig = ConductivityConfig::OnSerial2;
