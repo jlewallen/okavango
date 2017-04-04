@@ -6,19 +6,19 @@
 
 String phScript[] = {
     "c,0",
-    "c,0",
-    "L,1",
+    "l,1",
+    "cal,clear",
     "cal,mid,7.00",
     "cal,low,4.00",
     "cal,high,10.00",
-    "L,0",
+    "l,0",
     "STATUS"
 };
 
 String doScript[] = {
     "c,0",
-    "c,0",
-    "L,1",
+    "l,1",
+    "cal,clear",
     "cal",
     "cal,0",
     "L,0",
@@ -27,8 +27,7 @@ String doScript[] = {
 
 String orpScript[] = {
     "c,0",
-    "c,0",
-    "L,1",
+    "l,1",
     "cal,clear",
     "cal,225",
     "L,0",
@@ -37,11 +36,11 @@ String orpScript[] = {
 
 String ecScript[] = {
     "c,0",
-    "c,0",
-    "L,1",
+    "l,1",
+    "cal,clear",
     "cal,dry",
-    "cal,low,",
-    "cal,high,",
+    "cal,low,?",
+    "cal,high,?",
     "L,0",
     "STATUS"
 };
@@ -67,11 +66,11 @@ class ScriptRunner : public NonBlockingSerialProtocol {
 private:
     SerialPortExpander *portExpander;
     ScriptRunnerState state;
-    uint8_t position;
+    int8_t position;
     char activeCommand[64];
     char expectedResponse[64];
     String *commands;
-    size_t length;
+    int8_t length;
     uint8_t nextPort;
 
 public:
@@ -89,7 +88,13 @@ public:
         drain();
     }
 
-    template<size_t N>
+    void noScript() {
+        commands = nullptr;
+        position = 0;
+        length = 0;
+    }
+
+    template<int8_t N>
     void setScript(String (&newCommands)[N]) {
         commands = newCommands;
         position = 0;
@@ -101,6 +106,25 @@ public:
             return "";
         }
         return commands[position].c_str();
+    }
+
+    void changePosition(int8_t by) {
+        int8_t newPosition = (int8_t)position + by;
+        Serial.print(newPosition);
+        Serial.print(" ");
+        Serial.print(position);
+        Serial.println();
+
+        if (newPosition >= length) {
+            position = length - 1;
+        }
+        else if (newPosition < 0) {
+            position = 0;
+        }
+        else {
+            position = newPosition;
+        }
+
     }
 
     void startOver() {
@@ -149,7 +173,7 @@ public:
             Serial.print("# ");
             Serial.print(reply);
         }
-        if (expectedResponse != NULL && reply.indexOf(expectedResponse) == 0) {
+        if (expectedResponse != NULL && reply.indexOf(expectedResponse) >= 0) {
             if (nextPort >= 4) {
                 state = ScriptRunnerState::DeviceIdle;
                 return NonBlockingHandleStatus::Handled;
@@ -202,12 +226,12 @@ public:
         else if (command.startsWith("ph")) {
             Serial.println("Ph Mode");
             scriptRunner->setScript(phScript);
-            scriptRunner->select(1);
+            scriptRunner->select(2);
         }
         else if (command.startsWith("do")) {
             Serial.println("Do Mode");
             scriptRunner->setScript(doScript);
-            scriptRunner->select(2);
+            scriptRunner->select(1);
         }
         else if (command.startsWith("orp")) {
             Serial.println("Orp Mode");
@@ -218,6 +242,21 @@ public:
             Serial.println("Ec Mode");
             scriptRunner->setScript(ecScript);
             scriptRunner->select(3);
+        }
+        else if (command.startsWith("none")) {
+            Serial.println("No script");
+            scriptRunner->noScript();
+        }
+        else if (command.startsWith("-")) {
+            scriptRunner->changePosition(-1);
+        }
+        else if (command.startsWith("+")) {
+            scriptRunner->changePosition(1);
+        }
+        else if (command.startsWith("wake")) {
+            scriptRunner->select(0);
+            scriptRunner->sendEverywhere("STATUS", "*OK");
+            transition(ReplState::Working);
         }
         else if (command.startsWith("factory")) {
             Serial.println("Factory Reset All The Things!");
@@ -233,6 +272,24 @@ public:
         else if (command.startsWith("$")) {
             scriptRunner->send(command.substring(1).c_str(), "*OK");
             transition(ReplState::Working);
+        }
+        else if (command.startsWith("?")) {
+            Serial.println("Help");
+            Serial.println();
+            Serial.println("  p N     change to port N where N is 0..3");
+            Serial.println("  !CMD    send CMD to every module");
+            Serial.println("  $CMD    send CMD to current module");
+            Serial.println("  factory send FACTORY to every module");
+            Serial.println("  wake    wake all modules");
+            Serial.println();
+            Serial.println("  orp     set orp script and change port to 0");
+            Serial.println("  do      set do script and change port to 1");
+            Serial.println("  ph      set ph script and change port to 2");
+            Serial.println("  ec      set ec script and change port to 3");
+            Serial.println("  none    clear script");
+            Serial.println("  -       backup one command in the script");
+            Serial.println("  +       forward one command in the script");
+
         }
         else if (command == "") {
             scriptRunner->send();
@@ -269,6 +326,8 @@ void loop() {
     SerialPortExpander portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1, conductivityConfig);
     ScriptRunner scriptRunner(&portExpander);
     CalibratorRepl repl(&scriptRunner);
+
+    scriptRunner.select(0);
 
     while (1) {
         repl.tick();
