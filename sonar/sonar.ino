@@ -33,6 +33,12 @@ void setup() {
 
     gauge.powerOn();
 
+    delay(500);
+
+    float level = gauge.stateOfCharge();
+    Serial.print("SoC: ");
+    Serial.println(level);
+
     Watchdog.enable();
 
     Serial.println("Core...");

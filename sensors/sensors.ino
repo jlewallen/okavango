@@ -86,6 +86,9 @@ LoraAtlasSensorBoard loraAtlasSensorBoard(&corePlatform, &serialPortExpander, &s
 
 void waitForBattery() {
     float level = gauge.stateOfCharge();
+    Serial.print("SoC: ");
+    Serial.println(level);
+
     if (level < BATTERY_WAIT_START_THRESHOLD) {
         float voltage = gauge.cellVoltage();
         DEBUG_PRINT("Waiting for charge: ");
@@ -151,6 +154,8 @@ void setup() {
     Wire.begin();
 
     gauge.powerOn();
+
+    delay(500);
 
     waitForBattery();
 
