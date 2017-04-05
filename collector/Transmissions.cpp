@@ -198,9 +198,12 @@ String Transmissions::diagnosticsToMessage() {
     message += "," + String(fuel->cellVoltage(), 2);
     message += "," + String(fuel->stateOfCharge(), 2);
     message += "," + String(core->isSdAvailable());
-    message += "," + String(diagnostics.communicationsPassed);
-    message += "," + String(diagnostics.weatherStationPassed );
-    message += "," + String(diagnostics.loraPassed );
+    fk_memory_preflight_t *preflight = memory->preflight();
+
+    message += "," + String(preflight->communicationsFailures);
+    message += "," + String(preflight->weatherStationFailures);
+    message += "," + String(preflight->loraFailures);
+
     message += "," + String(diagnostics.hasGpsFix);
     message += "," + String(diagnostics.batterySleepTime);
     message += "," + String(platformAdjustUptime(0));

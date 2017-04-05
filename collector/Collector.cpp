@@ -132,6 +132,8 @@ void Collector::preflight() {
             digitalWrite(PIN_ROCK_BLOCK, LOW);
         }
 
+        memory.recordPreflight(diagnostics.communicationsPassed, diagnostics.weatherStationPassed, diagnostics.loraPassed);
+
         for (uint8_t i = 0; i < 10; ++i) {
             blinkSlow(PIN_RED_LED);
         }

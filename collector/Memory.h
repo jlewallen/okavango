@@ -17,12 +17,19 @@ typedef struct fk_memory_core_intervals_t {
     fk_memory_weather_intervals_t weatherStation;
 } fk_memory_core_intervals_t;
 
+typedef struct fk_memory_preflight_t {
+    uint8_t communicationsFailures = 0;
+    uint8_t weatherStationFailures = 0;
+    uint8_t loraFailures = 0;
+} fk_memory_preflight_t;
+
 typedef struct fk_memory_state_t {
     char name[3];
     uint32_t dyingAt;
     uint32_t aliveAt;
     uint16_t restarts;
     uint32_t restartAt;
+    fk_memory_preflight_t preflight;
     fk_memory_core_intervals_t intervals;
     fk_transmission_schedule_t schedules[TRANSMISSION_KIND_KINDS];
 } fk_memory_state_t;
@@ -49,6 +56,17 @@ public:
     void restarting();
     void markDying(uint32_t time);
     void markAlive(uint32_t time);
+    void recordPreflight(bool communicationsPassed, bool weatherStationPassed, bool loraPassed) {
+        if (!communicationsPassed) {
+            state.preflight.communicationsFailures++;
+        }
+        if (!weatherStationPassed) {
+            state.preflight.weatherStationFailures++;
+        }
+        if (!loraPassed) {
+            state.preflight.loraFailures++;
+        }
+    }
 
     const char *getName() {
         return state.name;
@@ -60,6 +78,10 @@ public:
 
     fk_transmission_schedule_t *schedules() {
         return state.schedules;
+    }
+
+    fk_memory_preflight_t *preflight() {
+        return &state.preflight;
     }
 
 };
