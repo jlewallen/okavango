@@ -39,8 +39,8 @@ String ecScript[] = {
     "l,1",
     "cal,clear",
     "cal,dry",
-    "cal,low,?",
-    "cal,high,?",
+    "cal,low,12880",
+    "cal,high,80000",
     "L,0",
     "STATUS"
 };
@@ -110,10 +110,6 @@ public:
 
     void changePosition(int8_t by) {
         int8_t newPosition = (int8_t)position + by;
-        Serial.print(newPosition);
-        Serial.print(" ");
-        Serial.print(position);
-        Serial.println();
 
         if (newPosition >= length) {
             position = length - 1;
