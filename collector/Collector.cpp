@@ -110,6 +110,8 @@ void Collector::setup() {
 
     preflight();
 
+    Watchdog.reset();
+
     if (!configuration.read(corePlatform.isSdAvailable())) {
         DEBUG_PRINTLN("Error reading configuration");
         logPrinter.flush();
@@ -136,11 +138,15 @@ void Collector::preflight() {
 
         for (uint8_t i = 0; i < 10; ++i) {
             blinkSlow(PIN_RED_LED);
+
+            Watchdog.reset();
         }
     }
     else {
         for (uint8_t i = 0; i < 3; ++i) {
             blinkQuick(PIN_RED_LED);
+
+            Watchdog.reset();
         }
     }
 }
