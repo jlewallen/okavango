@@ -18,6 +18,9 @@ public:
     float totalTransmissionTime = 0.0;
     uint16_t numberOfTransmissions = 0;
     bool hasGpsFix = false;
+    bool communicationsPassed = false;
+    bool weatherStationPassed = false;
+    bool loraPassed = false;
 
 public:
     void recordBatterySleep(uint32_t ms) {
@@ -50,6 +53,12 @@ public:
 
     void recordDeadFor(uint32_t time) {
         deadFor = time;
+    }
+
+    void recordPreflight(bool communications, bool weatherStation, bool lora) {
+        communicationsPassed = communications;
+        weatherStationPassed = weatherStation;
+        loraPassed = lora;
     }
 
     void recordTransmission(uint32_t time) {

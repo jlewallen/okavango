@@ -4,6 +4,7 @@
 #include <Adafruit_SleepyDog.h>
 #include <IridiumSBD.h>
 #include "WatchdogCallbacks.h"
+#include "Diagnostics.h"
 
 Preflight::Preflight(Configuration *configuration, WeatherStation *weatherStation, LoraRadio *radio) :
     configuration(configuration), weatherStation(weatherStation), radio(radio) {
@@ -23,6 +24,8 @@ bool Preflight::check() {
     else {
         DEBUG_PRINTLN("preflight: LoRa failed");
     }
+
+    diagnostics.recordPreflight(communications, weatherStation, radioAvailable);
 
     return communications && weatherStation && radioAvailable;
 }

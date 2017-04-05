@@ -126,6 +126,12 @@ void Collector::preflight() {
     delay(500);
 
     if (!passed) {
+        // If no RockBlock just power down, maybe the rest will do the thing
+        // some good?
+        if (!diagnostics.communicationsPassed) {
+            digitalWrite(PIN_ROCK_BLOCK, LOW);
+        }
+
         for (uint8_t i = 0; i < 10; ++i) {
             blinkSlow(PIN_RED_LED);
         }

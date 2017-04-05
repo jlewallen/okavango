@@ -198,6 +198,9 @@ String Transmissions::diagnosticsToMessage() {
     message += "," + String(fuel->cellVoltage(), 2);
     message += "," + String(fuel->stateOfCharge(), 2);
     message += "," + String(core->isSdAvailable());
+    message += "," + String(diagnostics.communicationsPassed);
+    message += "," + String(diagnostics.weatherStationPassed );
+    message += "," + String(diagnostics.loraPassed );
     message += "," + String(diagnostics.hasGpsFix);
     message += "," + String(diagnostics.batterySleepTime);
     message += "," + String(platformAdjustUptime(0));
