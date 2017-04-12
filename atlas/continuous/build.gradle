@@ -13,7 +13,7 @@ import com.github.jlewallen.arduino.*
 
 model {
     components {
-        sensors(ArduinoComponentSpec) {
+        continuous(ArduinoComponentSpec) {
             userCppSourcesFlags = System.env.JOB_NAME == null ? "" : "-DBUILD_JOB='$System.env.JOB_NAME' -DBUILD_COMMIT='$System.env.GIT_COMMIT'"
             boards = [ "adafruit:samd:adafruit_feather_m0" ]
             libraries = [
