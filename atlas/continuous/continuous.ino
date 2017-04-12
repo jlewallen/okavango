@@ -14,7 +14,7 @@
 CorePlatform corePlatform;
 FuelGauge gauge;
 SerialPortExpander serialPortExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1, ConductivityConfig::OnSerial2);
-ParallelizedAtlasScientificSensors sensorBoard(&serialPortExpander, false);
+ParallelizedAtlasScientificSensors sensorBoard(&serialPortExpander, true);
 Pcf8523SystemClock Clock;
 
 class LoraAtlasSensorBoard : public AtlasSensorBoard {
@@ -27,7 +27,7 @@ public:
 };
 
 LoraAtlasSensorBoard::LoraAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard, FuelGauge *gauge) :
-    AtlasSensorBoard(corePlatform, serialPortExpander, sensorBoard, gauge) {
+    AtlasSensorBoard(corePlatform, serialPortExpander, sensorBoard, gauge, true) {
 }
 
 void LoraAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) {
@@ -35,7 +35,7 @@ void LoraAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet
 
     DEBUG_PRINTLN("Beginning sleep!");
 
-    int32_t remaining = LOW_POWER_SLEEP_SENSORS_END;
+    int32_t remaining = 60 * 1000;
     while (remaining > 0) {
         remaining -= platformDeepSleep(true);
         Watchdog.reset();
@@ -45,43 +45,9 @@ void LoraAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet
 }
 
 void LoraAtlasSensorBoard::tryAndSendLocalQueue(Queue *queue) {
-    LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST, PIN_RFM95_RST);
-    NetworkProtocolState networkProtocol(FK_IDENTITY_ATLAS, NetworkState::PingForListener, &radio, queue, NULL);
 
-    int32_t watchdogMs = Watchdog.enable();
-    DEBUG_PRINT("Watchdog enabled: ");
-    DEBUG_PRINTLN(watchdogMs);
-
-    if (radio.setup()) {
-        DEBUG_PRINTLN("Enabling radio");
-
-        if (radio.setup()) {
-            DEBUG_PRINT("Queue: ");
-            DEBUG_PRINTLN(queue->size());
-
-            while (true) {
-                Watchdog.reset();
-
-                networkProtocol.tick();
-
-                if (networkProtocol.isQueueEmpty() || networkProtocol.isNobodyListening()) {
-                    break;
-                }
-
-                delay(10);
-            }
-
-            radio.sleep();
-        }
-    }
-    else {
-        DEBUG_PRINTLN("No radio available");
-    }
-
-    Watchdog.disable();
 }
 
-// AtlasScientificBoard sensorBoard(&serialPortExpander, false);
 LoraAtlasSensorBoard loraAtlasSensorBoard(&corePlatform, &serialPortExpander, &sensorBoard, &gauge);
 
 void waitForBattery() {

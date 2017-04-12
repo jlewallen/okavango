@@ -4,8 +4,8 @@
 
 #define PIN_DS18B20                                          12
 
-AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *portExpander, SensorBoard *board, FuelGauge *gauge) :
-    corePlatform(corePlatform), board(board), portExpander(portExpander), gauge(gauge) {
+AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *portExpander, SensorBoard *board, FuelGauge *gauge, bool continuous) :
+    corePlatform(corePlatform), board(board), portExpander(portExpander), gauge(gauge), continuous(continuous) {
     memzero((uint8_t *)&packet, sizeof(atlas_sensors_packet_t));
 }
 
@@ -134,7 +134,13 @@ bool AtlasSensorBoard::tick() {
             logPrinter.flush();
             delay(100);
 
-            platformRestart();
+            if (!continuous) {
+                platformRestart();
+            }
+            else {
+                packetValueIndex = 0;
+                board->takeReading();
+            }
         }
     }
 

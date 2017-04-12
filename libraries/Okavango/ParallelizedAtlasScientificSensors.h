@@ -50,8 +50,22 @@ public:
         return state == ParallelizedAtlasScientificSensorsState::Done;
     }
 
+    virtual void takeReading() override {
+        portNumber = 0;
+        numberOfValues = 0;
+        numberOfRead0s = 0;
+        for (uint8_t i = 0; i < 4; ++i) {
+            hasPortFailed[i] = 0;
+        }
+        state = ParallelizedAtlasScientificSensorsState::Read1;
+        serialPortExpander->select(0);
+        setSerial(serialPortExpander->getSerial());
+        open();
+    }
+
     virtual void start() override {
         state = ParallelizedAtlasScientificSensorsState::Start;
+        serialPortExpander->select(0);
         setSerial(serialPortExpander->getSerial());
         open();
     }

@@ -47,6 +47,12 @@ public:
         return state == AtlasScientificBoardState::Done;
     }
 
+    virtual void takeReading() override {
+        state = AtlasScientificBoardState::Read0;
+        setSerial(serialPortExpander->getSerial());
+        open();
+    }
+
     virtual void start() override {
         state = AtlasScientificBoardState::Start;
         setSerial(serialPortExpander->getSerial());
