@@ -27,7 +27,7 @@ public:
 };
 
 LoraAtlasSensorBoard::LoraAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard, FuelGauge *gauge) :
-    AtlasSensorBoard(corePlatform, serialPortExpander, sensorBoard, gauge) {
+    AtlasSensorBoard(corePlatform, serialPortExpander, sensorBoard, gauge, false) {
 }
 
 void LoraAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) {
