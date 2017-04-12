@@ -17,7 +17,7 @@ public:
 };
 
 WifiAtlasSensorBoard::WifiAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard, FuelGauge *gauge) :
-    AtlasSensorBoard(corePlatform, serialPortExpander, sensorBoard, gauge) {
+    AtlasSensorBoard(corePlatform, serialPortExpander, sensorBoard, gauge, false) {
 }
 
 void WifiAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) {
