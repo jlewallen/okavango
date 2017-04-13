@@ -98,6 +98,10 @@ bool ParallelizedAtlasScientificSensors::tick() {
             sendCommand(CMD_READ);
             break;
         }
+        case ParallelizedAtlasScientificSensorsState::LedsOnBeforeRead: {
+            sendCommand(CMD_LED_ON);
+            break;
+        }
         case ParallelizedAtlasScientificSensorsState::Read1: {
             sendCommand(CMD_READ);
             break;
@@ -145,6 +149,19 @@ NonBlockingHandleStatus ParallelizedAtlasScientificSensors::handle(String reply)
             }
             case ParallelizedAtlasScientificSensorsState::LedsOn: {
                 transition(ParallelizedAtlasScientificSensorsState::Configure);
+                break;
+            }
+            case ParallelizedAtlasScientificSensorsState::LedsOnBeforeRead: {
+                portNumber++;
+                if (portNumber < 4) {
+                    transition(ParallelizedAtlasScientificSensorsState::LedsOnBeforeRead);
+                }
+                else {
+                    portNumber = 0;
+                    transition(ParallelizedAtlasScientificSensorsState::Read1);
+                }
+                serialPortExpander->select(portNumber);
+                setSerial(serialPortExpander->getSerial());
                 break;
             }
             case ParallelizedAtlasScientificSensorsState::Configure: {

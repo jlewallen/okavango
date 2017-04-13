@@ -1,6 +1,8 @@
 include 'weather-shield'
 include 'ngddemo'
 include 'sensors'
+include 'atlas/continuous'
+include 'atlas/rtc-sync'
 include 'sonar'
 include 'collector'
 include 'databoat'

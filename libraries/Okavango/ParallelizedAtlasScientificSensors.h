@@ -15,6 +15,7 @@ enum class ParallelizedAtlasScientificSensorsState {
     Configure,
     Waiting,
     Read0,
+    LedsOnBeforeRead,
     Read1,
     LedsOff,
     Sleeping,
@@ -57,7 +58,7 @@ public:
         for (uint8_t i = 0; i < 4; ++i) {
             hasPortFailed[i] = 0;
         }
-        state = ParallelizedAtlasScientificSensorsState::Read1;
+        state = ParallelizedAtlasScientificSensorsState::LedsOnBeforeRead;
         serialPortExpander->select(0);
         setSerial(serialPortExpander->getSerial());
         open();
