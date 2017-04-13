@@ -23,13 +23,13 @@ void NetworkProtocolState::tick() {
     bool inDelay = false;
     if (stateDelay > 0) {
         wasDelayed = true;
-        inDelay = millis() - lastTickNonDelayed < stateDelay;
+        inDelay = platformUptime() - lastTickNonDelayed < stateDelay;
         if (!inDelay) {
             stateDelay = 0;
         }
     }
 
-    lastTick = millis();
+    lastTick = platformUptime();
     if (!inDelay) {
         lastTickNonDelayed = lastTick;
     }
@@ -38,7 +38,8 @@ void NetworkProtocolState::tick() {
         case NetworkState::EnqueueFromNetwork: {
             checkForPacket();
 
-            if (millis() - lastPacketTime > 10000) {
+            int32_t lastPackageAge = (int32_t)platformUptime() - (int32_t)lastPacketTime;
+            if (lastPackageAge > 5 * 1000) {
                 transition(NetworkState::Quiet, 500);
             }
 
@@ -139,7 +140,7 @@ static void logSonarPacket(sonar_station_packet_t *p) {
 void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize) {
     packetsReceived++;
 
-    lastPacketTime = millis();
+    lastPacketTime = platformUptime();
 
     DEBUG_PRINT(F("P:"));
     DEBUG_PRINTLN(packet->kind);
@@ -274,7 +275,6 @@ void NetworkProtocolState::sendNack(uint8_t status) {
     fk_network_ack_t ack;
     memzero((uint8_t *)&ack, sizeof(fk_network_ack_t));
     ack.fk.kind = FK_PACKET_KIND_NACK;
-    // ack.status = status;
     radio->reply((uint8_t *)&ack, sizeof(fk_network_ack_t));
     radio->waitPacketSent();
     checkForPacket();
@@ -302,7 +302,7 @@ void NetworkProtocolState::startOver(NetworkState newState) {
 void NetworkProtocolState::transition(NetworkState newState, uint32_t newDelay) {
     state = newState;
     stateDelay = newDelay;
-    lastTickNonDelayed = millis();
+    lastTickNonDelayed = platformUptime();
 }
 
 void NetworkProtocolState::dequeueAndSend() {
