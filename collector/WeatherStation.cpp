@@ -35,6 +35,7 @@ void WeatherStation::off() {
     pinMode(PIN_WEATHER_STATION_RESET, OUTPUT);
     digitalWrite(PIN_WEATHER_STATION_RESET, LOW);
     on = false;
+    clockSet = false;
 }
 
 void WeatherStation::hup() {
@@ -175,7 +176,10 @@ bool WeatherStation::tick() {
                                         fix.satellites = values[FK_WEATHER_STATION_FIELD_SATELLITES];
                                         fix.valid = true;
 
-                                        SystemClock->set(fix.time);
+                                        if (!clockSet) {
+                                            SystemClock->set(fix.time);
+                                            clockSet = true;
+                                        }
                                     }
                                     else {
                                         // There's a good chance our RTC has a good

@@ -64,6 +64,7 @@ private:
     bool checkingCommunications;
     bool startReading;
     bool on;
+    bool clockSet = false;
     gps_fix_t fix;
 
 public:
