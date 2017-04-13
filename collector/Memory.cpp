@@ -138,6 +138,8 @@ void Memory::setup() {
 
         useDefaults();
 
+        save();
+
         initialized = true;
 
         break;
