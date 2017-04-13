@@ -240,15 +240,20 @@ bool Transmissions::sendStatusTransmission() {
 void Transmissions::handleTransmissionIfNecessary() {
     TransmissionStatus status;
 
-    int8_t kind = status.shouldWe(memory->schedules(), false);
-    if (kind == TRANSMISSION_KIND_SENSORS) {
-        sendSensorTransmission(true, false, true);
-    }
-    else if (kind == TRANSMISSION_KIND_WEATHER) {
-        sendSensorTransmission(false, true, false);
-    }
-    else if (kind == TRANSMISSION_KIND_LOCATION) {
-        sendLocationTransmission();
+    while (true) {
+        int8_t kind = status.shouldWe(memory->schedules(), false);
+        if (kind == TRANSMISSION_KIND_SENSORS) {
+            sendSensorTransmission(true, false, true);
+        }
+        else if (kind == TRANSMISSION_KIND_WEATHER) {
+            sendSensorTransmission(false, true, false);
+        }
+        else if (kind == TRANSMISSION_KIND_LOCATION) {
+            sendLocationTransmission();
+        }
+        else {
+            break;
+        }
     }
 }
 
