@@ -97,9 +97,10 @@ bool Pcf8523SystemClock::set(uint32_t newTime) {
         return false;
     }
     uint32_t before = now();
+    int32_t difference = newTime - before;
     bool uninitialized = !rtc.initialized();
-    DEBUG_PRINT("Clock Adjusted before=");
-    DEBUG_PRINTLN(before);
+    DEBUG_PRINT("Clock Adjusted delta=");
+    DEBUG_PRINTLN(difference);
     rtc.adjust(newTime);
     adjusted = newTime;
     return uninitialized;
