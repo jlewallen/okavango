@@ -50,8 +50,6 @@ static void blinkQuick(int8_t pin) {
 void Collector::setup() {
     blinkQuick(PIN_RED_LED);
 
-    memory.setup();
-
     Serial.println("Powering on fuel gauge...");
 
     Wire.begin();
@@ -74,11 +72,11 @@ void Collector::setup() {
 
     corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST, false);
 
-    SystemClock->setup();
-
     if (corePlatform.isSdAvailable()) {
         logPrinter.open();
     }
+
+    SystemClock->setup();
 
     #ifdef BUILD_COMMIT
     DEBUG_PRINT("SHA1: ");
@@ -103,6 +101,8 @@ void Collector::setup() {
         break;
     }
     }
+
+    memory.setup();
 
     logPrinter.flush();
 
