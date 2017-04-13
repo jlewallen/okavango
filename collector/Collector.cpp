@@ -225,6 +225,9 @@ void Collector::checkAirwaves() {
             Watchdog.reset();
 
             if (quickTransmissionCheck()) {
+                radio.sleep();
+                delay(100);
+
                 DEBUG_PRINTLN("Fast track to transmission.");
                 break;
             }
@@ -265,6 +268,7 @@ void Collector::idlePeriod() {
 
         if (quickTransmissionCheck()) {
             DEBUG_PRINTLN("Fast track to transmission.");
+            logPrinter.flush();
             break;
         }
     }
