@@ -216,13 +216,18 @@ void Collector::checkAirwaves() {
     while (platformUptime() - started < intervalToMs(memory.intervals()->airwaves) || !networkProtocol.isQuiet()) {
         networkProtocol.tick();
 
+        if (networkProtocol.beenRunningTooLong()) {
+            DEBUG_PRINTLN("We've been running too long, why?");
+            break;
+        }
+
         weatherStation.tick();
+
+        Watchdog.reset();
 
         if (platformUptime() - last > AIRWAVES_BLINK_INTERVAL) {
             platformBlinks(PIN_RED_LED, BLINKS_AIRWAVES);
             Serial.print("+");
-
-            Watchdog.reset();
 
             if (quickTransmissionCheck()) {
                 DEBUG_PRINTLN("Fast track to transmission.");
@@ -240,8 +245,6 @@ void Collector::checkAirwaves() {
 
     DEBUG_PRINTLN("");
     DEBUG_PRINTLN("AW: Done");
-    logPrinter.flush();
-
     DEBUG_PRINTLN("AW: Exit");
     logPrinter.flush();
 }
