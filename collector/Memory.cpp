@@ -64,6 +64,30 @@ uint32_t intervalToMs(uint32_t interval) {
     return interval;
 }
 
+void Memory::sanityCheck() {
+    bool sane = true;
+
+    for (uint8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
+        if (state.schedules[i].offset > 24 ||
+            state.schedules[i].interval > 24) {
+            sane = false;
+        }
+    }
+
+    const uint32_t INVALID_INTERVAL = 1000 * 60 * 60 * 24;
+
+    if (state.intervals.idle > INVALID_INTERVAL ||
+        state.intervals.airwaves > INVALID_INTERVAL ||
+        state.intervals.restart > INVALID_INTERVAL) {
+        sane = false;
+    }
+
+    if (!sane) {
+        DEBUG_PRINTLN("Insane schedule/interval, using defaults.");
+        useDefaults();
+    }
+}
+
 void Memory::setup() {
     Serial.print("Memory size: ");
     Serial.print(sizeof(fk_memory_state_t));
@@ -72,13 +96,15 @@ void Memory::setup() {
 
     switch (eeprom_emulation_configure()) {
     case STATUS_ERR_NO_MEMORY:
-        // This is very bad.
+        DEBUG_PRINTLN("No memory, use defaults.");
+
+        useDefaults();
+
         break;
     case STATUS_OK:
         uint8_t page[EEPROM_PAGE_SIZE];
         eeprom_emulator_read_page(0, page);
         memcpy((uint8_t *)&state, page, sizeof(fk_memory_state_t));
-        initialized = true;
 
         DEBUG_PRINTLN("Memory:");
         DEBUG_PRINT("Intervals: idle=");
@@ -91,42 +117,65 @@ void Memory::setup() {
         DEBUG_PRINT(state.intervals.weatherStation.stop);
         DEBUG_PRINTLN("");
 
+        for (uint8_t i = 0; i < TRANSMISSION_KIND_KINDS; ++i) {
+            DEBUG_PRINT("#");
+            DEBUG_PRINT(i);
+            DEBUG_PRINT(": +");
+            DEBUG_PRINT(state.schedules[i].offset);
+            DEBUG_PRINT(" % ");
+            DEBUG_PRINT(state.schedules[i].interval);
+            DEBUG_PRINTLN("");
+        }
+
+        sanityCheck();
+
+        initialized = true;
         break;
     case STATUS_ERR_IO:
     case STATUS_ERR_BAD_FORMAT:
     default:
-        memset((uint8_t *)&state, 0, sizeof(fk_memory_state_t));
+        DEBUG_PRINTLN("Reset memory, using defaults.");
 
-        #define IDLE_PERIOD                            (1000 * 60 * 10)
-        #define AIRWAVES_CHECK_TIME                    (1000 * 60 * 10)
-        #define WEATHER_STATION_CHECK_TIME             (1000 * 10)
-        #define MANDATORY_RESTART_INTERVAL             (1000 * 60 * 60 * 6)
+        useDefaults();
 
-        state.intervals.idle = msToInterval(IDLE_PERIOD);
-        state.intervals.airwaves = msToInterval(AIRWAVES_CHECK_TIME);
-        state.intervals.restart = msToInterval(MANDATORY_RESTART_INTERVAL);
-
-        #define WEATHER_STATION_INTERVAL_STOP          (30)
-
-        state.intervals.weatherStation.stop = WEATHER_STATION_INTERVAL_STOP;
-
-        fk_transmission_schedule_t default_schedules[TRANSMISSION_KIND_KINDS] = {
-            { 24, 24 }, // Location
-            { 0,  12 }, // Sensors
-            { 2,  12 }  // Weather
-        };
-
-        memcpy(&state.schedules, &default_schedules, sizeof(default_schedules));
+        initialized = true;
 
         break;
     }
 }
 
+void Memory::useDefaults() {
+    memset((uint8_t *)&state, 0, sizeof(fk_memory_state_t));
+
+    #define IDLE_PERIOD                            (1000 * 60 * 2)
+    #define AIRWAVES_CHECK_TIME                    (1000 * 60 * 10)
+    #define WEATHER_STATION_CHECK_TIME             (1000 * 10)
+    #define MANDATORY_RESTART_INTERVAL             (1000 * 60 * 60 * 6)
+
+    state.intervals.idle = msToInterval(IDLE_PERIOD);
+    state.intervals.airwaves = msToInterval(AIRWAVES_CHECK_TIME);
+    state.intervals.restart = msToInterval(MANDATORY_RESTART_INTERVAL);
+
+    #define WEATHER_STATION_INTERVAL_STOP          (60)
+
+    state.intervals.weatherStation.stop = WEATHER_STATION_INTERVAL_STOP;
+
+    fk_transmission_schedule_t default_schedules[TRANSMISSION_KIND_KINDS] = {
+        { 24, 24 }, // Location
+        { 0,  1 }, // Sensors
+        { 2,  12 }  // Weather
+    };
+
+    memcpy(&state.schedules, &default_schedules, sizeof(default_schedules));
+}
+
 void Memory::save() {
-    uint8_t page[EEPROM_PAGE_SIZE];
-    memcpy((uint8_t *)page, (uint8_t *)&state, sizeof(fk_memory_state_t));
-    eeprom_emulator_write_page(0, page);
-    eeprom_emulator_commit_page_buffer();
+    if (initialized) {
+        uint8_t page[EEPROM_PAGE_SIZE];
+        memcpy((uint8_t *)page, (uint8_t *)&state, sizeof(fk_memory_state_t));
+        eeprom_emulator_write_page(0, page);
+        eeprom_emulator_commit_page_buffer();
+    }
 }
 
 void Memory::update(String name) {
