@@ -90,6 +90,10 @@ bool Preflight::checkWeatherStation() {
     while (millis() - started < 60 * 1000) {
         weatherStation->tick();
 
+        if (weatherStation->shouldTakeReading()) {
+            weatherStation->takeReading();
+        }
+
         Watchdog.reset();
 
         if (weatherStation->areCommunicationsOk()) {

@@ -218,6 +218,13 @@ void Collector::checkAirwaves() {
 
         weatherStation.tick();
 
+        if (weatherStation.shouldTakeReading()) {
+            radio.sleep();
+            delay(100);
+
+            weatherStation.takeReading();
+        }
+
         if (platformUptime() - last > AIRWAVES_BLINK_INTERVAL) {
             platformBlinks(PIN_RED_LED, BLINKS_AIRWAVES);
             Serial.print("+");
@@ -265,6 +272,10 @@ void Collector::idlePeriod() {
         Serial.flush();
 
         weatherStation.tick();
+
+        if (weatherStation.shouldTakeReading()) {
+            weatherStation.takeReading();
+        }
 
         if (quickTransmissionCheck()) {
             DEBUG_PRINTLN("Fast track to transmission.");

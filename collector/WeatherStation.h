@@ -102,6 +102,10 @@ public:
     void hup();
     void off();
     void transition(WeatherStationState newState);
+    bool shouldTakeReading() {
+        return state == WeatherStationState::Reading;
+    }
+    void takeReading();
 
 };
 
