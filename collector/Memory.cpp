@@ -79,6 +79,18 @@ void Memory::setup() {
         eeprom_emulator_read_page(0, page);
         memcpy((uint8_t *)&state, page, sizeof(fk_memory_state_t));
         initialized = true;
+
+        DEBUG_PRINTLN("Memory:");
+        DEBUG_PRINT("Intervals: idle=");
+        DEBUG_PRINT(state.intervals.idle);
+        DEBUG_PRINT(" aw=");
+        DEBUG_PRINT(state.intervals.airwaves);
+        DEBUG_PRINT(" r=");
+        DEBUG_PRINT(state.intervals.restart);
+        DEBUG_PRINT(" stop=");
+        DEBUG_PRINT(state.intervals.weatherStation.stop);
+        DEBUG_PRINTLN("");
+
         break;
     case STATUS_ERR_IO:
     case STATUS_ERR_BAD_FORMAT:
