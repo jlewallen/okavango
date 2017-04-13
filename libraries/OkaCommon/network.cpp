@@ -291,7 +291,6 @@ void NetworkProtocolState::sendNack(uint8_t status) {
     checkForPacket();
 }
 
-void sendNack(uint8_t status);
 void NetworkProtocolState::checkForPacket() {
     radio->tick();
 
@@ -322,6 +321,7 @@ void NetworkProtocolState::dequeueAndSend() {
             fk_network_packet_t *packet = (fk_network_packet_t *)queue->dequeue();
             if (packet != NULL) {
                 if (packet->kind != FK_PACKET_KIND_ACK &&
+                    packet->kind != FK_PACKET_KIND_NACK &&
                     packet->kind != FK_PACKET_KIND_PING &&
                     packet->kind != FK_PACKET_KIND_PONG) {
 
