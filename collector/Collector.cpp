@@ -307,6 +307,8 @@ void Collector::logTransition(const char *name) {
 
     DEBUG_PRINT(" >");
     DEBUG_PRINTLN(name);
+
+    logPrinter.flush();
 }
 
 void Collector::tick() {

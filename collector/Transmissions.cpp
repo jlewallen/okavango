@@ -103,6 +103,8 @@ void Transmissions::sendSensorTransmission(bool sendAtlas, bool sendWeather, boo
             break;
         }
 
+        Watchdog.reset();
+
         switch (packet->kind) {
         case FK_PACKET_KIND_WEATHER_STATION: {
             if (sendWeather) {
