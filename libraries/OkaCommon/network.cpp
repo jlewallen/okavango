@@ -153,15 +153,20 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize
 
     switch (packet->kind) {
     case FK_PACKET_KIND_PING: {
-        DEBUG_PRINTLN("Ponging!");
+        if (state == NetworkState::EnqueueFromNetwork) {
+            DEBUG_PRINTLN("Ponging!");
 
-        fk_network_pong_t pong;
-        memzero((uint8_t *)&pong, sizeof(fk_network_pong_t));
-        pong.fk.kind = FK_PACKET_KIND_PONG;
-        pong.time = SystemClock->now();
-        radio->reply((uint8_t *)&pong, sizeof(fk_network_pong_t));
-        radio->waitPacketSent();
-        checkForPacket();
+            fk_network_pong_t pong;
+            memzero((uint8_t *)&pong, sizeof(fk_network_pong_t));
+            pong.fk.kind = FK_PACKET_KIND_PONG;
+            pong.time = SystemClock->now();
+            radio->reply((uint8_t *)&pong, sizeof(fk_network_pong_t));
+            radio->waitPacketSent();
+            checkForPacket();
+        }
+        else {
+            DEBUG_PRINTLN("Ignore ping.");
+        }
         break;
     }
     case FK_PACKET_KIND_SONAR_STATION: {

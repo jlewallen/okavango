@@ -79,7 +79,6 @@ void LoraAtlasSensorBoard::tryAndSendLocalQueue(Queue *queue) {
     Watchdog.disable();
 }
 
-// AtlasScientificBoard sensorBoard(&serialPortExpander, false);
 LoraAtlasSensorBoard loraAtlasSensorBoard(&corePlatform, &serialPortExpander, &sensorBoard, &gauge);
 
 void waitForBattery() {
