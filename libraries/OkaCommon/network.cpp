@@ -8,6 +8,12 @@ NetworkProtocolState::NetworkProtocolState(uint8_t identity, NetworkState state,
     identity(identity), state(state), radio(radio), queue(queue), stateDelay(0), lastTick(0), lastTickNonDelayed(0),
     pingAgainAfterDequeue(true), packetsReceived(0), lastPacketTime(0),
     networkCallbacks(networkCallbacks) {
+
+    startedAt = platformUptime();
+}
+
+bool NetworkProtocolState::beenRunningTooLong() {
+    return !(platformUptime() - startedAt < 1000 * 60 * 30);
 }
 
 void NetworkProtocolState::tick() {

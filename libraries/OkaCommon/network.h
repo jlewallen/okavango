@@ -35,6 +35,7 @@ private:
     uint32_t lastPacketTime;
     uint32_t lastTick;
     uint32_t lastTickNonDelayed;
+    uint32_t startedAt;
     bool pingAgainAfterDequeue;
     NetworkCallbacks *networkCallbacks;
     uint8_t identity;
@@ -45,6 +46,7 @@ public:
 public:
     void tick();
     void startOver(NetworkState state);
+    bool beenRunningTooLong();
     bool isQuiet() {
         return state == Quiet;
     }
