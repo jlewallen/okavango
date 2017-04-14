@@ -343,9 +343,9 @@ bool message_parse_csv(String message, uint8_t numberExpected, uint32_t *values)
 }
 
 void Transmissions::onMessage(String message) {
-    // Defaults: IV,600000,600000,10000,21600000,30
+    // Defaults: IV,600000,600000,21600000,30
     if (message.startsWith("IV,")) {
-        const uint8_t numberOfValues = 7;
+        const uint8_t numberOfValues = 4;
         uint32_t values[numberOfValues] = { 0 };
         bool valid = true;
 
