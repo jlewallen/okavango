@@ -42,5 +42,5 @@ bool Configuration::read(bool sdAvailable) {
     DEBUG_PRINT(name);
     DEBUG_PRINTLN("");
 
-    return true;
+    return name.length() == 2;
 }

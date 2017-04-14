@@ -111,19 +111,23 @@ void Collector::setup() {
     preflight();
 
     Watchdog.reset();
-
-    if (!configuration.read(corePlatform.isSdAvailable())) {
-        DEBUG_PRINTLN("Error reading configuration");
-        logPrinter.flush();
-        platformCatastrophe(PIN_RED_LED);
-    }
 }
 
 void Collector::preflight() {
     digitalWrite(PIN_RED_LED, HIGH);
 
     Preflight preflight(&configuration, &weatherStation, &radio);
-    bool passed = preflight.check();
+    bool passed = true;
+
+    if (!configuration.read(corePlatform.isSdAvailable())) {
+        DEBUG_PRINTLN("Error reading configuration");
+        logPrinter.flush();
+        passed = false;
+    }
+    else {
+        passed = preflight.check();
+    }
+
     digitalWrite(PIN_RED_LED, LOW);
     delay(500);
 

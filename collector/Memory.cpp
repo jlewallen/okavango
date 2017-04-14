@@ -138,9 +138,9 @@ void Memory::setup() {
 
         useDefaults();
 
-        save();
-
         initialized = true;
+
+        save();
 
         break;
     }
@@ -186,7 +186,10 @@ void Memory::update(String name) {
         memcpy(state.name, name.c_str(), len);
         state.name[2] = 0;
         save();
-        Serial.println("memory: Name updated");
+        DEBUG_PRINTLN("memory: Name updated");
+    }
+    else {
+        DEBUG_PRINTLN("memory: Name is same.");
     }
 }
 
