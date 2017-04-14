@@ -164,7 +164,7 @@ void Memory::useDefaults() {
 
     fk_transmission_schedule_t default_schedules[TRANSMISSION_KIND_KINDS] = {
         { 24, 24 }, // Location
-        { 0,  1 }, // Sensors
+        { 0,  12 }, // Sensors
         { 2,  12 }  // Weather
     };
 
