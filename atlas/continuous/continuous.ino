@@ -16,6 +16,7 @@ FuelGauge gauge;
 SerialPortExpander serialPortExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1, ConductivityConfig::OnSerial2);
 ParallelizedAtlasScientificSensors sensorBoard(&serialPortExpander, true);
 Pcf8523SystemClock Clock;
+LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST, PIN_RFM95_RST);
 
 class LoraAtlasSensorBoard : public AtlasSensorBoard {
 public:
@@ -45,7 +46,30 @@ void LoraAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet
 }
 
 void LoraAtlasSensorBoard::tryAndSendLocalQueue(Queue *queue) {
+    NetworkProtocolState networkProtocol(FK_IDENTITY_ATLAS, NetworkState::PingForListener, &radio, queue, NULL);
 
+    int32_t watchdogMs = Watchdog.enable();
+    DEBUG_PRINT("Watchdog enabled: ");
+    DEBUG_PRINTLN(watchdogMs);
+
+    DEBUG_PRINT("Queue: ");
+    DEBUG_PRINTLN(queue->size());
+
+    while (true) {
+        Watchdog.reset();
+
+        networkProtocol.tick();
+
+        if (networkProtocol.isQueueEmpty() || networkProtocol.isNobodyListening()) {
+            break;
+        }
+
+        delay(10);
+    }
+
+    radio.sleep();
+
+    Watchdog.disable();
 }
 
 LoraAtlasSensorBoard loraAtlasSensorBoard(&corePlatform, &serialPortExpander, &sensorBoard, &gauge);
@@ -120,6 +144,10 @@ void setup() {
     Wire.begin();
 
     gauge.powerOn();
+
+    if (!radio.setup()) {
+        DEBUG_PRINTLN("No radio");
+    }
 
     delay(500);
 

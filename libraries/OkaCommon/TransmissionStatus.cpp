@@ -73,6 +73,8 @@ int8_t TransmissionStatus::shouldWe(fk_transmission_schedule_t *schedules, bool 
         DEBUG_PRINTLN();
     }
 
+    logPrinter.flush();
+
     return which;
 }
 

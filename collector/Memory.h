@@ -45,6 +45,8 @@ private:
 
 private:
     void save();
+    void useDefaults();
+    void sanityCheck();
 
 public:
     bool isInitialized() {

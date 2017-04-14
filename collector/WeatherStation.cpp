@@ -53,6 +53,8 @@ void WeatherStation::hup() {
 }
 
 void WeatherStation::takeReading() {
+    Watchdog.enable();
+
     startReading = false;
 
     WeatherSerial.end();
@@ -63,10 +65,8 @@ void WeatherStation::takeReading() {
 
     delay(100);
 
-    uint32_t started = millis();
+    uint32_t started = platformUptime();
     uint16_t bytesRead = 0;
-
-    Watchdog.enable();
 
     while (state == WeatherStationState::Reading) {
         delay(10);
@@ -75,7 +75,7 @@ void WeatherStation::takeReading() {
 
         if (platformUptime() - lastTransitionAt > WEATHER_STATION_READ_TIME) {
             DEBUG_PRINT("WS: >Waiting (no reading) ms=");
-            DEBUG_PRINT(millis() - started);
+            DEBUG_PRINT(platformUptime() - started);
             DEBUG_PRINT(" ");
             DEBUG_PRINTLN(bytesRead);
             transition(WeatherStationState::Waiting);
@@ -166,7 +166,7 @@ void WeatherStation::takeReading() {
                                     logReadingLocally();
 
                                     DEBUG_PRINT("WS: >Waiting ms=");
-                                    DEBUG_PRINT(millis() - started);
+                                    DEBUG_PRINT(platformUptime() - started);
                                     DEBUG_PRINT(" ");
                                     DEBUG_PRINTLN(bytesRead);
                                     transition(WeatherStationState::Waiting);

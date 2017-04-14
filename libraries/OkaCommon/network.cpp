@@ -8,6 +8,12 @@ NetworkProtocolState::NetworkProtocolState(uint8_t identity, NetworkState state,
     identity(identity), state(state), radio(radio), queue(queue), stateDelay(0), lastTick(0), lastTickNonDelayed(0),
     pingAgainAfterDequeue(true), packetsReceived(0), lastPacketTime(0),
     networkCallbacks(networkCallbacks) {
+
+    startedAt = platformUptime();
+}
+
+bool NetworkProtocolState::beenRunningTooLong() {
+    return !(platformUptime() - startedAt < 1000 * 60 * 30);
 }
 
 void NetworkProtocolState::tick() {
@@ -23,13 +29,13 @@ void NetworkProtocolState::tick() {
     bool inDelay = false;
     if (stateDelay > 0) {
         wasDelayed = true;
-        inDelay = millis() - lastTickNonDelayed < stateDelay;
+        inDelay = platformUptime() - lastTickNonDelayed < stateDelay;
         if (!inDelay) {
             stateDelay = 0;
         }
     }
 
-    lastTick = millis();
+    lastTick = platformUptime();
     if (!inDelay) {
         lastTickNonDelayed = lastTick;
     }
@@ -38,7 +44,8 @@ void NetworkProtocolState::tick() {
         case NetworkState::EnqueueFromNetwork: {
             checkForPacket();
 
-            if (millis() - lastPacketTime > 10000) {
+            int32_t lastPackageAge = (int32_t)platformUptime() - (int32_t)lastPacketTime;
+            if (lastPackageAge > 5 * 1000) {
                 transition(NetworkState::Quiet, 500);
             }
 
@@ -139,22 +146,27 @@ static void logSonarPacket(sonar_station_packet_t *p) {
 void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize) {
     packetsReceived++;
 
-    lastPacketTime = millis();
+    lastPacketTime = platformUptime();
 
     DEBUG_PRINT(F("P:"));
     DEBUG_PRINTLN(packet->kind);
 
     switch (packet->kind) {
     case FK_PACKET_KIND_PING: {
-        DEBUG_PRINTLN("Ponging!");
+        if (state == NetworkState::EnqueueFromNetwork) {
+            DEBUG_PRINTLN("Ponging!");
 
-        fk_network_pong_t pong;
-        memzero((uint8_t *)&pong, sizeof(fk_network_pong_t));
-        pong.fk.kind = FK_PACKET_KIND_PONG;
-        pong.time = SystemClock->now();
-        radio->reply((uint8_t *)&pong, sizeof(fk_network_pong_t));
-        radio->waitPacketSent();
-        checkForPacket();
+            fk_network_pong_t pong;
+            memzero((uint8_t *)&pong, sizeof(fk_network_pong_t));
+            pong.fk.kind = FK_PACKET_KIND_PONG;
+            pong.time = SystemClock->now();
+            radio->reply((uint8_t *)&pong, sizeof(fk_network_pong_t));
+            radio->waitPacketSent();
+            checkForPacket();
+        }
+        else {
+            DEBUG_PRINTLN("Ignore ping.");
+        }
         break;
     }
     case FK_PACKET_KIND_SONAR_STATION: {
@@ -274,13 +286,11 @@ void NetworkProtocolState::sendNack(uint8_t status) {
     fk_network_ack_t ack;
     memzero((uint8_t *)&ack, sizeof(fk_network_ack_t));
     ack.fk.kind = FK_PACKET_KIND_NACK;
-    // ack.status = status;
     radio->reply((uint8_t *)&ack, sizeof(fk_network_ack_t));
     radio->waitPacketSent();
     checkForPacket();
 }
 
-void sendNack(uint8_t status);
 void NetworkProtocolState::checkForPacket() {
     radio->tick();
 
@@ -302,7 +312,7 @@ void NetworkProtocolState::startOver(NetworkState newState) {
 void NetworkProtocolState::transition(NetworkState newState, uint32_t newDelay) {
     state = newState;
     stateDelay = newDelay;
-    lastTickNonDelayed = millis();
+    lastTickNonDelayed = platformUptime();
 }
 
 void NetworkProtocolState::dequeueAndSend() {
@@ -311,6 +321,7 @@ void NetworkProtocolState::dequeueAndSend() {
             fk_network_packet_t *packet = (fk_network_packet_t *)queue->dequeue();
             if (packet != NULL) {
                 if (packet->kind != FK_PACKET_KIND_ACK &&
+                    packet->kind != FK_PACKET_KIND_NACK &&
                     packet->kind != FK_PACKET_KIND_PING &&
                     packet->kind != FK_PACKET_KIND_PONG) {
 

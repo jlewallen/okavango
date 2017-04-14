@@ -50,8 +50,6 @@ static void blinkQuick(int8_t pin) {
 void Collector::setup() {
     blinkQuick(PIN_RED_LED);
 
-    memory.setup();
-
     Serial.println("Powering on fuel gauge...");
 
     Wire.begin();
@@ -74,11 +72,11 @@ void Collector::setup() {
 
     corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST, false);
 
-    SystemClock->setup();
-
     if (corePlatform.isSdAvailable()) {
         logPrinter.open();
     }
+
+    SystemClock->setup();
 
     #ifdef BUILD_COMMIT
     DEBUG_PRINT("SHA1: ");
@@ -103,6 +101,8 @@ void Collector::setup() {
         break;
     }
     }
+
+    memory.setup();
 
     logPrinter.flush();
 
@@ -216,6 +216,11 @@ void Collector::checkAirwaves() {
     while (platformUptime() - started < intervalToMs(memory.intervals()->airwaves) || !networkProtocol.isQuiet()) {
         networkProtocol.tick();
 
+        if (networkProtocol.beenRunningTooLong()) {
+            DEBUG_PRINTLN("We've been running too long, why?");
+            break;
+        }
+
         weatherStation.tick();
 
         if (weatherStation.shouldTakeReading()) {
@@ -250,8 +255,6 @@ void Collector::checkAirwaves() {
 
     DEBUG_PRINTLN("");
     DEBUG_PRINTLN("AW: Done");
-    logPrinter.flush();
-
     DEBUG_PRINTLN("AW: Exit");
     logPrinter.flush();
 }
@@ -319,6 +322,8 @@ void Collector::logTransition(const char *name) {
 
     DEBUG_PRINT(" >");
     DEBUG_PRINTLN(name);
+
+    logPrinter.flush();
 }
 
 void Collector::tick() {

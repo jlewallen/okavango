@@ -55,24 +55,22 @@ void LoraAtlasSensorBoard::tryAndSendLocalQueue(Queue *queue) {
     if (radio.setup()) {
         DEBUG_PRINTLN("Enabling radio");
 
-        if (radio.setup()) {
-            DEBUG_PRINT("Queue: ");
-            DEBUG_PRINTLN(queue->size());
+        DEBUG_PRINT("Queue: ");
+        DEBUG_PRINTLN(queue->size());
 
-            while (true) {
-                Watchdog.reset();
+        while (true) {
+            Watchdog.reset();
 
-                networkProtocol.tick();
+            networkProtocol.tick();
 
-                if (networkProtocol.isQueueEmpty() || networkProtocol.isNobodyListening()) {
-                    break;
-                }
-
-                delay(10);
+            if (networkProtocol.isQueueEmpty() || networkProtocol.isNobodyListening()) {
+                break;
             }
 
-            radio.sleep();
+            delay(10);
         }
+
+        radio.sleep();
     }
     else {
         DEBUG_PRINTLN("No radio available");
@@ -81,7 +79,6 @@ void LoraAtlasSensorBoard::tryAndSendLocalQueue(Queue *queue) {
     Watchdog.disable();
 }
 
-// AtlasScientificBoard sensorBoard(&serialPortExpander, false);
 LoraAtlasSensorBoard loraAtlasSensorBoard(&corePlatform, &serialPortExpander, &sensorBoard, &gauge);
 
 void waitForBattery() {
