@@ -158,7 +158,7 @@ void Memory::useDefaults() {
     state.intervals.airwaves = msToInterval(AIRWAVES_CHECK_TIME);
     state.intervals.restart = msToInterval(MANDATORY_RESTART_INTERVAL);
 
-    #define WEATHER_STATION_INTERVAL_STOP          (60)
+    #define WEATHER_STATION_INTERVAL_STOP          (30)
 
     state.intervals.weatherStation.stop = WEATHER_STATION_INTERVAL_STOP;
 
