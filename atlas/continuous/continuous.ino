@@ -33,16 +33,6 @@ LoraAtlasSensorBoard::LoraAtlasSensorBoard(CorePlatform *corePlatform, SerialPor
 
 void LoraAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) {
     tryAndSendLocalQueue(queue);
-
-    DEBUG_PRINTLN("Beginning sleep!");
-
-    int32_t remaining = 60 * 1000;
-    while (remaining > 0) {
-        remaining -= platformDeepSleep(true);
-        Watchdog.reset();
-        DEBUG_PRINTLN(remaining);
-        logPrinter.flush();
-    }
 }
 
 void LoraAtlasSensorBoard::tryAndSendLocalQueue(Queue *queue) {
