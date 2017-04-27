@@ -9,12 +9,13 @@
  */
 class SerialPortExpander {
 private:
-    ConductivityConfig conductivityConfig;
     byte selector[2];
+    SerialType *defaultSerial;
+    ConductivityConfig conductivityConfig;
     byte port;
 
 public:
-    SerialPortExpander(byte p0, byte p1, ConductivityConfig conductivityConfig);
+    SerialPortExpander(byte p0, byte p1, ConductivityConfig conductivityConfig, SerialType *defaultSerial = nullptr);
 
     byte getPort() {
         return port;

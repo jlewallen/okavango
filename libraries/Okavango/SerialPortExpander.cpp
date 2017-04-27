@@ -1,10 +1,14 @@
 #include "SerialPortExpander.h"
 
-SerialPortExpander::SerialPortExpander(byte p0, byte p1, ConductivityConfig conductivityConfig) :
-    conductivityConfig(conductivityConfig) {
+SerialPortExpander::SerialPortExpander(byte p0, byte p1, ConductivityConfig conductivityConfig, SerialType *defaultSerial) :
+    conductivityConfig(conductivityConfig), defaultSerial(defaultSerial) {
 
     selector[0] = p0;
     selector[1] = p1;
+
+    if (defaultSerial == nullptr) {
+        defaultSerial = &Serial1;
+    }
 }
 
 void SerialPortExpander::setup() {
@@ -20,11 +24,15 @@ SerialType *SerialPortExpander::getSerial(uint32_t baud) {
     if (port == 3 && conductivityConfig == OnSerial2) {
         platformSerial2Begin(baud);
         return &Serial2;
-
     }
     else {
-        Serial1.begin(baud);
-        return &Serial1;
+        if (&Serial1 == defaultSerial) {
+            Serial1.begin(baud);
+        }
+        else {
+            platformSerial2Begin(baud);
+        }
+        return defaultSerial;
     }
 }
 
