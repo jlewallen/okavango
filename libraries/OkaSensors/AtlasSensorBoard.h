@@ -43,6 +43,7 @@ private:
     atlas_sensors_packet_t packet;
     uint8_t packetValueIndex = 0;
     bool continuous;
+    bool displayedWaterTemperature = false;
 
 public:
     AtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *portExpander, SensorBoard *board, FuelGauge *gauge, bool continuous);

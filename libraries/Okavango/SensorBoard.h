@@ -11,6 +11,9 @@ public:
     virtual bool isDone() = 0;
     virtual const float *getValues() = 0;
     virtual uint8_t getNumberOfValues() = 0;
+    virtual bool isStartingFakeReads() {
+        return false;
+    }
 };
 
 #endif

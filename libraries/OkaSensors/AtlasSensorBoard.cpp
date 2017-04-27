@@ -54,6 +54,20 @@ bool AtlasSensorBoard::tick() {
 
     board->tick();
 
+    #ifdef PIN_DS18B20
+    if (board->isStartingFakeReads()) {
+        if (!displayedWaterTemperature) {
+            DEBUG_PRINT("DS18B20 ");
+            float waterTemperature = getWaterTemperature();
+            DEBUG_PRINTLN(waterTemperature);
+            displayedWaterTemperature = true;
+        }
+    }
+    else {
+        displayedWaterTemperature = false;
+    }
+    #endif
+
     if (board->isDone()) {
         byte newPort = portExpander->getPort() + 1;
         portExpander->select(newPort);

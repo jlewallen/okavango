@@ -51,6 +51,10 @@ public:
         return state == ParallelizedAtlasScientificSensorsState::Done;
     }
 
+    virtual bool isStartingFakeReads() override {
+        return portNumber == 0 && state == ParallelizedAtlasScientificSensorsState::Read0;
+    }
+
     virtual void takeReading() override {
         portNumber = 0;
         numberOfValues = 0;
