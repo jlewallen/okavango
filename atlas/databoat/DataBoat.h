@@ -43,14 +43,11 @@ private:
     Queue queueB;
 
 public:
-    DataBoat(HardwareSerial *gpsStream, uint8_t pinGpsEnable, atlas_sensors_packet_t *atlasPacket);
+    DataBoat(HardwareSerial *gpsStream, atlas_sensors_packet_t *atlasPacket);
     bool setup(bool enableGps = true);
     bool tick();
     void upload();
 
-private:
-    String readingToJson(data_boat_packet_t *reading);
-    void logDataBoatPacketLocally(data_boat_packet_t *reading);
 };
 
 #endif

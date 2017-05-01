@@ -68,20 +68,7 @@ void setup() {
 
     corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST, true);
 
-    #ifdef UPLOAD_ONLY
-    uint32_t started = millis();
-    DataBoat dataBoat(&Serial2, 9, NULL);
-    Serial.println("Setup");
-    dataBoat.setup(false);
-    dataBoat.upload();
-
-    Watchdog.disable();
-
-    while (1) {
-    }
-    #else
     wifiAtlasSensorBoard.setup();
-    #endif
 
     Serial.println("Loop");
 }
