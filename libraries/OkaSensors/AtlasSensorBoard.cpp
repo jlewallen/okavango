@@ -129,12 +129,10 @@ bool AtlasSensorBoard::tick() {
             Watchdog.reset();
 
             packet.time = SystemClock->now();
-            packet.battery = gauge->stateOfCharge();
+            packet.battery = gauge != nullptr ? gauge->stateOfCharge() : 0;
             packet.fk.kind = FK_PACKET_KIND_ATLAS_SENSORS;
 
             DEBUG_PRINTLN(packet.time);
-
-            logPacketLocally();
 
             Queue queue;
             queue.enqueue((uint8_t *)&packet, sizeof(atlas_sensors_packet_t));
@@ -143,6 +141,8 @@ bool AtlasSensorBoard::tick() {
             Watchdog.disable();
 
             doneReadingSensors(&queue, &packet);
+
+            logPacketLocally();
 
             DEBUG_PRINTLN("Bye!");
             logPrinter.flush();
@@ -190,34 +190,25 @@ void AtlasSensorBoard::populatePacket() {
     }
 }
 
+void AtlasSensorBoard::writePacket(Stream &stream, atlas_sensors_packet_t *packet) {
+    stream.print(packet->fk.kind);
+    stream.print(",");
+    stream.print(packet->time);
+    stream.print(",");
+    stream.print(packet->battery);
+
+    for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
+        stream.print(",");
+        stream.print(packet->values[i]);
+    }
+}
+
 void AtlasSensorBoard::logPacketLocally() {
     File file = Logger::open(FK_SETTINGS_ATLAS_DATA_FILENAME);
     if (file) {
-        #define VERBOSE_LOGGING
-        #ifdef VERBOSE_LOGGING
-        DEBUG_PRINT("Packet:");
-        #else
-        DEBUG_PRINTLN("Logging");
-        #endif
+        writePacket(file, &packet);
+        writePacket(Serial, &packet);
 
-        file.print(packet.fk.kind);
-        file.print(",");
-        file.print(packet.time);
-        file.print(",");
-        file.print(packet.battery);
-        DEBUG_PRINT(" ");
-        DEBUG_PRINT(packet.fk.kind);
-        DEBUG_PRINT(" ");
-        DEBUG_PRINT(packet.time);
-        DEBUG_PRINT(" ");
-        DEBUG_PRINT(packet.battery);
-        for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
-            file.print(",");
-            file.print(packet.values[i]);
-
-            DEBUG_PRINT(" ");
-            DEBUG_PRINT(packet.values[i]);
-        }
         file.println();
         file.close();
 

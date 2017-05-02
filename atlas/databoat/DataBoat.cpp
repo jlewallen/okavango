@@ -6,13 +6,12 @@
 #include "WifiConnection.h"
 #include "AtlasSensorBoard.h"
 
-DataBoat::DataBoat(HardwareSerial *gpsStream, atlas_sensors_packet_t *atlasPacket) :
-    gps(gpsStream, atlasPacket(atlasPacket),
+DataBoat::DataBoat(atlas_sensors_packet_t *atlasPacket) :
+    atlasPacket(atlasPacket),
     queueA("DBQ-A.bin"), queueB("DBQ-B.bin") {
 }
 
 bool DataBoat::setup() {
-    gps.setup();
     log.open();
 
     return true;
@@ -32,32 +31,7 @@ bool DataBoat::tick() {
     reading.humidity          = atlasPacket->values[FK_ATLAS_SENSORS_FIELD_HUMIDITY];
     reading.pressure          = atlasPacket->values[FK_ATLAS_SENSORS_FIELD_PRESSURE]; // If Bme280
 
-    if (gps.tick(&reading)) {
-        Queue *writeQueue = NULL;
-        Queue backupQueue(FK_SETTINGS_BACKUP_DATA_FILENAME);
-
-        DEBUG_PRINTLN("Ok");
-
-        if (queueA.size() > 0) {
-            writeQueue = &queueA;
-            DEBUG_PRINT("Enqueue A: "); DEBUG_PRINTLN(queueA.size());
-            DEBUG_PRINT("Ignore B: "); DEBUG_PRINTLN(queueB.size());
-        }
-        else {
-            writeQueue = &queueB;
-            DEBUG_PRINT("Enqueue B: "); DEBUG_PRINTLN(queueB.size());
-            DEBUG_PRINT("Ignore A: "); DEBUG_PRINTLN(queueA.size());
-        }
-        writeQueue->enqueue((uint8_t *)&reading);
-        backupQueue.enqueue((uint8_t *)&reading);
-        logDataBoatPacketLocally(&reading);
-
-        delay(1000);
-
-        log.close();
-
-        return false;
-    }
+    logDataBoatPacketLocally(&reading);
 
     return true;
 }

@@ -1,82 +1,135 @@
 #include <SPI.h>
 #include <SD.h>
 #include <Adafruit_SleepyDog.h>
+#include <Adafruit_GPS.h>
 
 #include "Platforms.h"
 #include "core.h"
 #include "AtlasSensorBoard.h"
 #include "DataBoat.h"
-#include "FuelGauge.h"
 
-class WifiAtlasSensorBoard : public AtlasSensorBoard {
+const uint8_t PIN_SPE_ISO_SEL0 = 14;
+const uint8_t PIN_SPE_ISO_SEL1 = 15;
+const uint8_t PIN_SPE_SEL0 = 16;
+const uint8_t PIN_SPE_SEL1 = 17;
+
+CorePlatform corePlatform;
+SingleSerialPortExpander speIsolated(PIN_SPE_ISO_SEL0, PIN_SPE_ISO_SEL1, ConductivityConfig::None, &Serial2, 4);
+SingleSerialPortExpander speNormal(PIN_SPE_SEL0, PIN_SPE_SEL1, ConductivityConfig::None, &Serial1, 1);
+DualSerialPortExpander serialPortExpander(&speIsolated, &speNormal);
+ParallelizedAtlasScientificSensors sensorBoard(&serialPortExpander, true);
+ZeroSystemClock Clock;
+
+class LoggingAtlasSensorBoard : public AtlasSensorBoard {
+private:
+    data_boat_packet_t dataBoatPacket;
+
 public:
-    WifiAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard, FuelGauge *gauge);
+    LoggingAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard);
 
 public:
     void doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) override;
+
+protected:
+    void writePacket(Stream &stream, atlas_sensors_packet_t *packet) override;
 };
 
-WifiAtlasSensorBoard::WifiAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard, FuelGauge *gauge) :
-    AtlasSensorBoard(corePlatform, serialPortExpander, sensorBoard, gauge, false) {
+LoggingAtlasSensorBoard::LoggingAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard) :
+    AtlasSensorBoard(corePlatform, serialPortExpander, sensorBoard, nullptr, true) {
 }
 
-void WifiAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) {
-    int32_t watchdogMs = Watchdog.enable();
-    Serial.print("Watchdog enabled: ");
-    Serial.println(watchdogMs);
+void LoggingAtlasSensorBoard::writePacket(Stream &stream, atlas_sensors_packet_t *packet) {
+    stream.print(dataBoatPacket.latitude);
+    stream.print(",");
+    stream.print(dataBoatPacket.longitude);
+    stream.print(",");
+    stream.print(dataBoatPacket.altitude);
+    stream.print(",");
+    stream.print(dataBoatPacket.angle);
+    stream.print(",");
+    stream.print(dataBoatPacket.speed);
+
+    stream.print(dataBoatPacket.time);
+    stream.print(",");
+    stream.print(packet->battery);
+
+    for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
+        stream.print(",");
+        stream.print(packet->values[i]);
+    }
+
+    stream.println();
+}
+
+void LoggingAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) {
+    serialPortExpander.select(5);
+
+    HardwareSerial *serial = serialPortExpander.getSerial();
+    Adafruit_GPS gps(serial);
+
+    gps.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
+    gps.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);
+
+    DEBUG_PRINTLN("");
+    DEBUG_PRINTLN("Reading GPS...");
 
     uint32_t started = millis();
-    DataBoat dataBoat(&Serial2, 9, packet);
-    dataBoat.setup();
-    while (dataBoat.tick()) {
-        if (millis() - started < FIVE_MINUTES) {
-            Watchdog.reset();
+
+    while (millis() - started < 10 * 1000) {
+        while (serial->available()) {
+            gps.read();
+
+            if (gps.newNMEAreceived()) {
+                if (gps.parse(gps.lastNMEA())) {
+                    if (gps.fix) {
+                        DEBUG_PRINTLN("Fix");
+                        DateTime dateTime = DateTime(gps.year, gps.month, gps.year, gps.hour, gps.minute, gps.seconds);
+                        uint32_t time = dateTime.unixtime();
+                        SystemClock->set(time);
+                        dataBoatPacket.time = time;
+                        dataBoatPacket.latitude = gps.latitudeDegrees;
+                        dataBoatPacket.longitude = gps.longitudeDegrees;
+                        dataBoatPacket.altitude = gps.altitude;
+                        dataBoatPacket.angle = gps.angle;
+                        dataBoatPacket.speed = gps.speed;
+                        return;
+                    }
+                    else {
+                        DEBUG_PRINTLN("No fix");
+                    }
+                }
+            }
         }
-        delay(10);
     }
 
-    Watchdog.disable();
-
-    int32_t remaining = LOW_POWER_SLEEP_SENSORS_END;
-    while (remaining > 0) {
-        remaining -= platformDeepSleep(false);
-        Watchdog.reset();
-        DEBUG_PRINTLN(remaining);
-        logPrinter.flush();
-    }
+    serial->end();
 }
 
-CorePlatform corePlatform;
-FuelGauge gauge;
-SerialPortExpander serialPortExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1, ConductivityConfig::OnExpanderPort4);
-ParallelizedAtlasScientificSensors sensorBoard(&serialPortExpander, false);
-WifiAtlasSensorBoard wifiAtlasSensorBoard(&corePlatform, &serialPortExpander, &sensorBoard, &gauge);
+LoggingAtlasSensorBoard atlasSensorBoard(&corePlatform, &serialPortExpander, &sensorBoard);
 
 void setup() {
     Serial.begin(115200);
 
-    #ifdef WAIT_FOR_SERIAL
+#ifdef WAIT_FOR_SERIAL
     while (!Serial) {
         delay(100);
         if (millis() > WAIT_FOR_SERIAL) {
             break;
         }
     }
-    #endif
+#endif
 
     Serial.println("Begin");
 
-    corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST, true);
+    corePlatform.setup(4, PIN_RFM95_CS, PIN_RFM95_RST, true);
 
-    wifiAtlasSensorBoard.setup();
+    serialPortExpander.setup();
 
     Serial.println("Loop");
 }
 
 void loop() {
-    wifiAtlasSensorBoard.tick();
-
-    delay(50);
+    atlasSensorBoard.tick();
 }
 
 // vim: set ft=cpp:

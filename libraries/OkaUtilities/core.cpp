@@ -175,3 +175,43 @@ uint32_t MillisSystemClock::now() {
 bool MillisSystemClock::set(uint32_t newTime) {
     return true;
 }
+
+ZeroSystemClock::ZeroSystemClock() {
+    SystemClock = this;
+}
+
+bool ZeroSystemClock::setup() {
+    rtc.begin();
+
+    return true;
+}
+
+bool ZeroSystemClock::initialized() {
+    return true;
+}
+
+uint32_t ZeroSystemClock::now() {
+    DateTime dt(
+        rtc.getYear(),
+        rtc.getMonth(),
+        rtc.getDay(),
+        rtc.getHours(),
+        rtc.getMinutes(),
+        rtc.getSeconds()
+    );
+
+    return dt.unixtime();
+}
+
+bool ZeroSystemClock::set(uint32_t newTime) {
+    DateTime dt(newTime);
+
+    rtc.setYear(dt.year());
+    rtc.setMonth(dt.month());
+    rtc.setDay(dt.day());
+    rtc.setHours(dt.hour());
+    rtc.setMinutes(dt.minute());
+    rtc.setSeconds(dt.second());
+
+    return true;
+}

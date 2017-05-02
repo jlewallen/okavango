@@ -2,6 +2,7 @@
 #define CORE_H
 
 #include <RTClib.h>
+#include <RTCZero.h>
 #include "Platforms.h"
 
 class CorePlatform {
@@ -56,6 +57,18 @@ public:
 class MillisSystemClock : RtcAbstractSystemClock {
 public:
     MillisSystemClock();
+    virtual bool setup() override;
+    virtual bool initialized() override;
+    virtual uint32_t now() override;
+    virtual bool set(uint32_t now) override;
+};
+
+class ZeroSystemClock : RtcAbstractSystemClock {
+private:
+    RTCZero rtc;
+
+public:
+    ZeroSystemClock();
     virtual bool setup() override;
     virtual bool initialized() override;
     virtual uint32_t now() override;

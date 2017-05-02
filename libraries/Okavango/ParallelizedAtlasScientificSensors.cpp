@@ -15,7 +15,7 @@ extern String getFirstLine(String &str);
 
 ParallelizedAtlasScientificSensors::ParallelizedAtlasScientificSensors(SerialPortExpander *serialPortExpander, bool disableSleep) :
     serialPortExpander(serialPortExpander), portNumber(0), disableSleep(disableSleep), numberOfValues(0) {
-    for (uint8_t i = 0; i < 4; ++i) {
+    for (uint8_t i = 0; i < serialPortExpander->getNumberOfPorts(); ++i) {
         hasPortFailed[i] = false;
     }
     for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
@@ -153,7 +153,7 @@ NonBlockingHandleStatus ParallelizedAtlasScientificSensors::handle(String reply)
             }
             case ParallelizedAtlasScientificSensorsState::LedsOnBeforeRead: {
                 portNumber++;
-                if (portNumber < 4) {
+                if (portNumber < serialPortExpander->getNumberOfPorts()) {
                     transition(ParallelizedAtlasScientificSensorsState::LedsOnBeforeRead);
                 }
                 else {
@@ -166,7 +166,7 @@ NonBlockingHandleStatus ParallelizedAtlasScientificSensors::handle(String reply)
             }
             case ParallelizedAtlasScientificSensorsState::Configure: {
                 portNumber++;
-                if (portNumber < 4) {
+                if (portNumber < serialPortExpander->getNumberOfPorts()) {
                     transition(ParallelizedAtlasScientificSensorsState::DisableContinuousReading);
                 }
                 else {
@@ -180,10 +180,10 @@ NonBlockingHandleStatus ParallelizedAtlasScientificSensors::handle(String reply)
             }
             case ParallelizedAtlasScientificSensorsState::Read0: {
                 portNumber++;
-                if (portNumber < 4) {
+                if (portNumber < serialPortExpander->getNumberOfPorts()) {
                     transition(ParallelizedAtlasScientificSensorsState::Read0);
                 }
-                else if (numberOfRead0s < 16) {
+                else if (numberOfRead0s < 2) {
                     portNumber = 0;
                     numberOfRead0s++;
                     DEBUG_PRINT("Read0: ");
@@ -233,7 +233,7 @@ NonBlockingHandleStatus ParallelizedAtlasScientificSensors::handle(String reply)
             }
             case ParallelizedAtlasScientificSensorsState::LedsOff: {
                 portNumber++;
-                if (portNumber < 4) {
+                if (portNumber < serialPortExpander->getNumberOfPorts()) {
                     transition(ParallelizedAtlasScientificSensorsState::Read1);
                 }
                 else {
@@ -246,7 +246,7 @@ NonBlockingHandleStatus ParallelizedAtlasScientificSensors::handle(String reply)
             case ParallelizedAtlasScientificSensorsState::Sleeping: {
                 if (reply.indexOf("*SL") >= 0) {
                     portNumber++;
-                    if (portNumber < 4) {
+                    if (portNumber < serialPortExpander->getNumberOfPorts()) {
                         transition(ParallelizedAtlasScientificSensorsState::Read1);
                     }
                     else {

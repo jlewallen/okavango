@@ -3,30 +3,66 @@
 
 #include "Platforms.h"
 
+class SerialPortExpander {
+public:
+    virtual void setup() = 0;
+    virtual byte getPort() = 0;
+    virtual SerialType *getSerial(uint32_t baud = 9600) = 0;
+    virtual void select(byte port) = 0;
+    virtual byte getNumberOfPorts() = 0;
+
+};
+
 /**
  * This supports up to 8, we can only choose from 4 though because we route
  * through the power isolator.
  */
-class SerialPortExpander {
+class SingleSerialPortExpander : public SerialPortExpander {
 private:
     byte selector[2];
     SerialType *defaultSerial;
     ConductivityConfig conductivityConfig;
     byte port;
+    byte numberOfPorts;
 
 public:
-    SerialPortExpander(byte p0, byte p1, ConductivityConfig conductivityConfig, SerialType *defaultSerial = nullptr);
+    SingleSerialPortExpander(byte p0, byte p1, ConductivityConfig conductivityConfig, SerialType *defaultSerial = nullptr, byte numberOfPorts = 4);
 
-    byte getPort() {
+public:
+    void setup() override;
+    SerialType *getSerial(uint32_t baud = 9600) override;
+    void select(byte port) override;
+    byte getPort() override {
         return port;
     }
+    byte getNumberOfPorts() override {
+        return numberOfPorts;
+    }
 
-    SerialType *getSerial(uint32_t baud = 9600);
+};
+
+class DualSerialPortExpander : public SerialPortExpander {
+private:
+    SerialPortExpander *speA;
+    SerialPortExpander *speB;
+    byte port;
 
 public:
-    void setup();
-    bool tick();
-    void select(byte port);
+    DualSerialPortExpander(SerialPortExpander *speA, SerialPortExpander *speB) :
+        speA(speA), speB(speB) {
+    }
+
+public:
+    void setup() override;
+    SerialType *getSerial(uint32_t baud = 9600) override;
+    void select(byte port) override;
+    byte getPort() override {
+        return port;
+    }
+    byte getNumberOfPorts() override {
+        return speA->getNumberOfPorts() + speB->getNumberOfPorts();
+    }
+
 };
 
 #endif

@@ -17,7 +17,8 @@ model {
             boards = [ "adafruit:samd:adafruit_feather_m0" ]
             libraries = [
                 "Wire",
-                "https://github.com/adafruit/RTClib.git"
+                "https://github.com/adafruit/RTClib.git",
+                "https://github.com/arduino-libraries/RTCZero.git",
             ]
         }
     }

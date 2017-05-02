@@ -55,9 +55,12 @@ public:
 
 private:
     float getWaterTemperature();
-
     void populatePacket();
     void logPacketLocally();
+
+protected:
+    virtual void writePacket(Stream &stream, atlas_sensors_packet_t *packet);
+
 };
 
 #endif

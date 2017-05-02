@@ -61,25 +61,13 @@ typedef struct weather_station_packet_t {
 } weather_station_packet_t;
 
 typedef struct data_boat_packet_t {
-    fk_network_packet_t fk;
-    uint32_t time;
+    atlas_sensors_packet_t atlas;
+    float time;
     float latitude;
     float longitude;
     float altitude;
     float speed;
     float angle;
-
-    float water_temperature;
-
-    float pressure;
-    float humidity;
-    float temperature;
-
-    float conductivity;
-    float salinity;
-    float ph;
-    float dissolved_oxygen;
-    float orp;
 } data_boat_packet_t;
 
 typedef struct sonar_station_packet_t {

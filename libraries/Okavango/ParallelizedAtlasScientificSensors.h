@@ -31,7 +31,7 @@ private:
     uint8_t numberOfRead0s;
     uint8_t numberOfValues;
     uint8_t portNumber;
-    uint8_t hasPortFailed[4];
+    uint8_t hasPortFailed[8];
     bool disableSleep;
 
 public:
@@ -59,7 +59,7 @@ public:
         portNumber = 0;
         numberOfValues = 0;
         numberOfRead0s = 0;
-        for (uint8_t i = 0; i < 4; ++i) {
+        for (uint8_t i = 0; i < serialPortExpander->getNumberOfPorts(); ++i) {
             hasPortFailed[i] = 0;
         }
         state = ParallelizedAtlasScientificSensorsState::LedsOnBeforeRead;

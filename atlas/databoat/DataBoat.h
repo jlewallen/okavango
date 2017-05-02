@@ -2,7 +2,6 @@
 #define DATA_BOAT_H
 
 #include "core.h"
-#include "AttachedGps.h"
 #include "Queue.h"
 
 class DataBoatLog {
@@ -36,17 +35,17 @@ public:
 class DataBoat {
 private:
     CorePlatform corePlatform;
-    AttachedGps gps;
     atlas_sensors_packet_t *atlasPacket;
     DataBoatLog log;
     Queue queueA;
     Queue queueB;
 
 public:
-    DataBoat(HardwareSerial *gpsStream, atlas_sensors_packet_t *atlasPacket);
-    bool setup(bool enableGps = true);
+    DataBoat(atlas_sensors_packet_t *atlasPacket);
+    bool setup();
     bool tick();
     void upload();
+    void logDataBoatPacketLocally(data_boat_packet_t *reading);
 
 };
 

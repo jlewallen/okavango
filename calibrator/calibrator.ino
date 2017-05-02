@@ -45,6 +45,14 @@ String ecScript[] = {
     "r"
 };
 
+String tempScript[] = {
+    "c,0",
+    "l,1",
+    "cal,100",
+    "l,0",
+    "r"
+};
+
 ConductivityConfig conductivityConfig = ConductivityConfig::OnSerial2;
 
 SerialType *getSerialForPort(uint8_t port) {
@@ -237,6 +245,11 @@ public:
         else if (command.startsWith("ec")) {
             Serial.println("Ec Mode");
             scriptRunner->setScript(ecScript);
+            scriptRunner->select(4);
+        }
+        else if (command.startsWith("temp")) {
+            Serial.println("Temp Mode");
+            scriptRunner->setScript(tempScript);
             scriptRunner->select(3);
         }
         else if (command.startsWith("none")) {
@@ -282,6 +295,7 @@ public:
             Serial.println("  do      set do script and change port to 1");
             Serial.println("  ph      set ph script and change port to 2");
             Serial.println("  ec      set ec script and change port to 3");
+            Serial.println("  temp    set temp script and change port to 3");
             Serial.println("  none    clear script");
             Serial.println("  -       backup one command in the script");
             Serial.println("  +       forward one command in the script");
@@ -310,7 +324,7 @@ void setup() {
 
     Serial.println("Begin");
 
-    corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST, false);
+    corePlatform.setup(4, PIN_RFM95_CS, PIN_RFM95_RST, false);
 
     Serial1.begin(9600);
     platformSerial2Begin(9600);
@@ -319,7 +333,7 @@ void setup() {
 }
 
 void loop() {
-    SerialPortExpander portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1, conductivityConfig);
+    SingleSerialPortExpander portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1, conductivityConfig);
     ScriptRunner scriptRunner(&portExpander);
     CalibratorRepl repl(&scriptRunner);
 

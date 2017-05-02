@@ -1,7 +1,7 @@
 #include "SerialPortExpander.h"
 
-SerialPortExpander::SerialPortExpander(byte p0, byte p1, ConductivityConfig conductivityConfig, SerialType *defaultSerial) :
-    conductivityConfig(conductivityConfig), defaultSerial(defaultSerial) {
+SingleSerialPortExpander::SingleSerialPortExpander(byte p0, byte p1, ConductivityConfig conductivityConfig, SerialType *defaultSerial, byte numberOfPorts) :
+    conductivityConfig(conductivityConfig), defaultSerial(defaultSerial), numberOfPorts(numberOfPorts) {
 
     selector[0] = p0;
     selector[1] = p1;
@@ -11,16 +11,12 @@ SerialPortExpander::SerialPortExpander(byte p0, byte p1, ConductivityConfig cond
     }
 }
 
-void SerialPortExpander::setup() {
+void SingleSerialPortExpander::setup() {
     pinMode(selector[0], OUTPUT);
     pinMode(selector[1], OUTPUT);
 }
 
-bool SerialPortExpander::tick() {
-    return false;
-}
-
-SerialType *SerialPortExpander::getSerial(uint32_t baud) {
+SerialType *SingleSerialPortExpander::getSerial(uint32_t baud) {
     if (port == 3 && conductivityConfig == OnSerial2) {
         platformSerial2Begin(baud);
         return &Serial2;
@@ -36,9 +32,31 @@ SerialType *SerialPortExpander::getSerial(uint32_t baud) {
     }
 }
 
-void SerialPortExpander::select(byte port) {
+void SingleSerialPortExpander::select(byte port) {
     digitalWrite(selector[0], bitRead(port, 0));
     digitalWrite(selector[1], bitRead(port, 1));
-    delay(2); // Technically we're blocking, though... 2ms? Meh.
+    delay(2);
+    this->port = port;
+}
+
+void DualSerialPortExpander::setup() {
+    speA->setup();
+    speB->setup();
+}
+
+SerialType *DualSerialPortExpander::getSerial(uint32_t baud) {
+    if (this->port < 4) {
+        return speA->getSerial();
+    }
+    return speB->getSerial();
+}
+
+void DualSerialPortExpander::select(byte port) {
+    if (port < 4) {
+        speA->select(port);
+    }
+    else {
+        speB->select(port - 4);
+    }
     this->port = port;
 }
