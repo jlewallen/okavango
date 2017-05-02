@@ -49,6 +49,10 @@ float AtlasSensorBoard::getWaterTemperature() {
     return value / 16;
 }
 
+void AtlasSensorBoard::takeExtraReadings() {
+
+}
+
 bool AtlasSensorBoard::tick() {
     Watchdog.reset();
 
@@ -134,6 +138,10 @@ bool AtlasSensorBoard::tick() {
 
             DEBUG_PRINTLN(packet.time);
 
+            takeExtraReadings();
+
+            logPacketLocally();
+
             Queue queue;
             queue.enqueue((uint8_t *)&packet, sizeof(atlas_sensors_packet_t));
             queue.startAtBeginning();
@@ -141,8 +149,6 @@ bool AtlasSensorBoard::tick() {
             Watchdog.disable();
 
             doneReadingSensors(&queue, &packet);
-
-            logPacketLocally();
 
             DEBUG_PRINTLN("Bye!");
             logPrinter.flush();
@@ -201,6 +207,8 @@ void AtlasSensorBoard::writePacket(Stream &stream, atlas_sensors_packet_t *packe
         stream.print(",");
         stream.print(packet->values[i]);
     }
+
+    stream.println();
 }
 
 void AtlasSensorBoard::logPacketLocally() {
@@ -208,12 +216,6 @@ void AtlasSensorBoard::logPacketLocally() {
     if (file) {
         writePacket(file, &packet);
         writePacket(Serial, &packet);
-
-        file.println();
         file.close();
-
-        #ifdef VERBOSE_LOGGING
-        DEBUG_PRINTLN("");
-        #endif
     }
 }

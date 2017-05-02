@@ -13,7 +13,7 @@
 
 CorePlatform corePlatform;
 FuelGauge gauge;
-SerialPortExpander serialPortExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1, ConductivityConfig::OnSerial2);
+SingleSerialPortExpander serialPortExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1, ConductivityConfig::OnSerial2, &Serial1);
 ParallelizedAtlasScientificSensors sensorBoard(&serialPortExpander, false);
 Pcf8523SystemClock Clock;
 

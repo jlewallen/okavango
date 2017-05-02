@@ -31,6 +31,7 @@ public:
     void doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) override;
 
 protected:
+    void takeExtraReadings() override;
     void writePacket(Stream &stream, atlas_sensors_packet_t *packet) override;
 };
 
@@ -38,30 +39,7 @@ LoggingAtlasSensorBoard::LoggingAtlasSensorBoard(CorePlatform *corePlatform, Ser
     AtlasSensorBoard(corePlatform, serialPortExpander, sensorBoard, nullptr, true) {
 }
 
-void LoggingAtlasSensorBoard::writePacket(Stream &stream, atlas_sensors_packet_t *packet) {
-    stream.print(dataBoatPacket.latitude);
-    stream.print(",");
-    stream.print(dataBoatPacket.longitude);
-    stream.print(",");
-    stream.print(dataBoatPacket.altitude);
-    stream.print(",");
-    stream.print(dataBoatPacket.angle);
-    stream.print(",");
-    stream.print(dataBoatPacket.speed);
-
-    stream.print(dataBoatPacket.time);
-    stream.print(",");
-    stream.print(packet->battery);
-
-    for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
-        stream.print(",");
-        stream.print(packet->values[i]);
-    }
-
-    stream.println();
-}
-
-void LoggingAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) {
+void LoggingAtlasSensorBoard::takeExtraReadings() {
     serialPortExpander.select(5);
 
     HardwareSerial *serial = serialPortExpander.getSerial();
@@ -103,6 +81,32 @@ void LoggingAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_pac
     }
 
     serial->end();
+}
+
+void LoggingAtlasSensorBoard::writePacket(Stream &stream, atlas_sensors_packet_t *packet) {
+    stream.print(dataBoatPacket.latitude);
+    stream.print(",");
+    stream.print(dataBoatPacket.longitude);
+    stream.print(",");
+    stream.print(dataBoatPacket.altitude);
+    stream.print(",");
+    stream.print(dataBoatPacket.angle);
+    stream.print(",");
+    stream.print(dataBoatPacket.speed);
+
+    stream.print(dataBoatPacket.time);
+    stream.print(",");
+    stream.print(packet->battery);
+
+    for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
+        stream.print(",");
+        stream.print(packet->values[i]);
+    }
+
+    stream.println();
+}
+
+void LoggingAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) {
 }
 
 LoggingAtlasSensorBoard atlasSensorBoard(&corePlatform, &serialPortExpander, &sensorBoard);

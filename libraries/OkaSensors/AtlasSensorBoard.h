@@ -59,6 +59,7 @@ private:
     void logPacketLocally();
 
 protected:
+    virtual void takeExtraReadings();
     virtual void writePacket(Stream &stream, atlas_sensors_packet_t *packet);
 
 };
