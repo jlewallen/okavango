@@ -13,7 +13,7 @@
 
 CorePlatform corePlatform;
 FuelGauge gauge;
-SerialPortExpander serialPortExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1, ConductivityConfig::OnSerial2);
+SingleSerialPortExpander serialPortExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1, ConductivityConfig::OnSerial2);
 ParallelizedAtlasScientificSensors sensorBoard(&serialPortExpander, true);
 Pcf8523SystemClock Clock;
 LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST, PIN_RFM95_RST);
