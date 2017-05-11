@@ -68,6 +68,16 @@ typedef struct data_boat_packet_t {
     float altitude;
     float speed;
     float angle;
+
+    float water_temperature;
+    float conductivity;
+    float salinity;
+    float ph;
+    float dissolved_oxygen;
+    float orp;
+    float temperature;
+    float humidity;
+    float pressure;
 } data_boat_packet_t;
 
 typedef struct sonar_station_packet_t {
