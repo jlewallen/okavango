@@ -2,7 +2,7 @@
 #include "AtlasSensorBoard.h"
 #include <Adafruit_SleepyDog.h>
 
-#define PIN_DS18B20                                          12
+#define PIN_DHT22                                          9
 
 AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *portExpander, SensorBoard *board, FuelGauge *gauge, bool continuous) :
     corePlatform(corePlatform), board(board), portExpander(portExpander), gauge(gauge), continuous(continuous) {
@@ -10,6 +10,7 @@ AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpande
 }
 
 float AtlasSensorBoard::getWaterTemperature() {
+    #ifdef PIN_DS18B20
     OneWire ds(PIN_DS18B20);
 
     uint8_t data[12];
@@ -47,6 +48,9 @@ float AtlasSensorBoard::getWaterTemperature() {
 
     float value = ((msb << 8) | lsb);
     return value / 16;
+    #else
+    return 0.0f;
+    #endif
 }
 
 void AtlasSensorBoard::takeExtraReadings() {
@@ -103,8 +107,8 @@ bool AtlasSensorBoard::tick() {
 
             Watchdog.reset();
 
-            #ifdef HAVE_DHT22
-            DHT dht(PIN_DHT, DHT22);
+            #ifdef PIN_DHT22
+            DHT dht(PIN_DHT22, DHT22);
             dht.begin();
             float humidity = dht.readHumidity();
             float temperature = dht.readTemperature();
