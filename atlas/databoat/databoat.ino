@@ -84,11 +84,11 @@ void LoggingAtlasSensorBoard::takeExtraReadings() {
 }
 
 void LoggingAtlasSensorBoard::writePacket(Stream &stream, atlas_sensors_packet_t *packet) {
-    stream.print(dataBoatPacket.latitude);
+    stream.print(dataBoatPacket.latitude, 6);
     stream.print(",");
-    stream.print(dataBoatPacket.longitude);
+    stream.print(dataBoatPacket.longitude, 6);
     stream.print(",");
-    stream.print(dataBoatPacket.altitude);
+    stream.print(dataBoatPacket.altitude, 6);
     stream.print(",");
     stream.print(dataBoatPacket.angle);
     stream.print(",");
