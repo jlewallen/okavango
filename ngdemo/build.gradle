@@ -44,6 +44,7 @@ model {
                 "OkaUtilities",
                 "Okavango",
                 "OkaCommon",
+                "CortexM0Only",
             ]
         }
     }

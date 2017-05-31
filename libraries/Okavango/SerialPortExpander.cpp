@@ -18,15 +18,21 @@ void SingleSerialPortExpander::setup() {
 
 SerialType *SingleSerialPortExpander::getSerial(uint32_t baud) {
     if (port == 3 && conductivityConfig == OnSerial2) {
+        #ifdef ARDUINO_SAMD_FEATHER_M0
         platformSerial2Begin(baud);
         return &Serial2;
+        #else
+        return nullptr;
+        #endif
     }
     else {
         if (&Serial1 == defaultSerial) {
             Serial1.begin(baud);
         }
         else {
+            #ifdef ARDUINO_SAMD_FEATHER_M0
             platformSerial2Begin(baud);
+            #endif
         }
         return defaultSerial;
     }

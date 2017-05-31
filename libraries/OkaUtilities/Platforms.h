@@ -5,6 +5,27 @@
 
 #define FEATHER_WING_ADALOGGER
 
+#ifdef ARDUINO_AVR_FEATHER32U4
+
+#include <SoftwareSerial.h>
+
+#define PORT_EXPANDER_SELECT_PIN_0                           5
+#define PORT_EXPANDER_SELECT_PIN_1                           6
+
+#define PIN_FEATHER_32U4_ADALOGGER_WING_SD_CS                20
+
+#define PIN_RFM95_CS                                         -1
+#define PIN_RFM95_RST                                        -1
+#define PIN_RFM95_INT                                        -1
+#define PIN_SD_CS                                            PIN_FEATHER_32U4_ADALOGGER_WING_SD_CS
+
+#define PIN_RED_LED                                          13
+#define PIN_GREEN_LED                                        13
+
+typedef HardwareSerial SerialType;
+
+#endif
+
 #ifdef ARDUINO_SAMD_FEATHER_M0
 
 #include "wiring_private.h" // pinPeripheral() function

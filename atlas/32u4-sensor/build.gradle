@@ -1,0 +1,48 @@
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+    dependencies {
+        classpath group: 'com.github.jlewallen.arduino', name: 'arduino-gradle', version: '1.0'
+    }
+}
+
+apply plugin: 'com.github.jlewallen.arduino'
+
+import com.github.jlewallen.arduino.*
+
+model {
+    components {
+        sensors(ArduinoComponentSpec) {
+            userCppSourcesFlags = System.env.JOB_NAME == null ? "" : "-DBUILD_JOB='$System.env.JOB_NAME' -DBUILD_COMMIT='$System.env.GIT_COMMIT'"
+            boards = [ "adafruit:avr:feather32u4" ]
+            libraries = [
+                "SPI",
+                "SD",
+                "Wire",
+                "https://github.com/PaulStoffregen/OneWire.git",
+
+                "https://github.com/Conservify/Adafruit_SleepyDog.git",
+
+                "https://github.com/PaulStoffregen/RadioHead.git",
+
+                "OkaUtilities",
+                "Okavango",
+                "OkaCommon",
+                "OkaSensors",
+
+                "https://github.com/adafruit/Adafruit_Sensor.git",
+                "https://github.com/adafruit/Adafruit_BME280_Library.git",
+                "https://github.com/adafruit/DHT-sensor-library.git",
+                "https://github.com/milesburton/Arduino-Temperature-Control-Library.git",
+
+                "https://github.com/adafruit/RTClib.git",
+                "https://github.com/Conservify/max1704x.git",
+
+                "SoftwareSerial",
+            ]
+        }
+    }
+}
+
+// vim: set ft=groovy:

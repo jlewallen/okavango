@@ -176,6 +176,7 @@ bool MillisSystemClock::set(uint32_t newTime) {
     return true;
 }
 
+#ifdef ARDUINO_SAMD_FEATHER_M0
 ZeroSystemClock::ZeroSystemClock() {
     SystemClock = this;
 }
@@ -215,3 +216,4 @@ bool ZeroSystemClock::set(uint32_t newTime) {
 
     return true;
 }
+#endif

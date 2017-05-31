@@ -2,7 +2,11 @@
 #define CORE_H
 
 #include <RTClib.h>
+
+#ifdef ARDUINO_SAMD_FEATHER_M0
 #include <RTCZero.h>
+#endif
+
 #include "Platforms.h"
 
 class CorePlatform {
@@ -63,6 +67,7 @@ public:
     virtual bool set(uint32_t now) override;
 };
 
+#ifdef ARDUINO_SAMD_FEATHER_M0
 class ZeroSystemClock : RtcAbstractSystemClock {
 private:
     RTCZero rtc;
@@ -74,6 +79,7 @@ public:
     virtual uint32_t now() override;
     virtual bool set(uint32_t now) override;
 };
+#endif
 
 extern RtcAbstractSystemClock *SystemClock;
 

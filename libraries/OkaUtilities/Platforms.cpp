@@ -10,6 +10,19 @@
 // I've seen in practice, but sometimes things "work" around the 3.5v range.
 // https://learn.adafruit.com/li-ion-and-lipoly-batteries/voltages
 
+
+#ifdef ARDUINO_AVR_FEATHER32U4
+
+#include <avr/wdt.h>
+
+void platformRestart() {
+    wdt_enable(WDTO_15MS);
+    while (true) {
+    }
+}
+
+#endif
+
 #ifdef ARDUINO_SAMD_FEATHER_M0
 
 // PA16 = 11  SERCOM1/ PAD[0] SERCOM3/ PAD[0]
@@ -114,8 +127,8 @@ void platformCatastrophe(uint8_t pin, uint8_t mode) {
             Watchdog.reset();
         }
         else {
-            pinMode(PIN_POWER_HARD_RESET, OUTPUT);
-            digitalWrite(PIN_POWER_HARD_RESET, HIGH);
+            // pinMode(PIN_POWER_HARD_RESET, OUTPUT);
+            // digitalWrite(PIN_POWER_HARD_RESET, HIGH);
             delay(1000);
             platformRestart();
         }
