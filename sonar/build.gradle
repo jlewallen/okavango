@@ -33,6 +33,7 @@ model {
                 "Okavango",
                 "OkaCommon",
                 "OkaSensors",
+                "CortexM0Only",
 
                 "https://github.com/adafruit/Adafruit_Sensor.git",
                 "https://github.com/adafruit/Adafruit_BME280_Library.git",

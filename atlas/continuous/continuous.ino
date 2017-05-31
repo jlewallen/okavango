@@ -4,6 +4,8 @@
 
 #include "AtlasSensorBoard.h"
 #include "FuelGauge.h"
+#include "network.h"
+#include "LoraRadio.h"
 
 #define BATTERY_WAIT_START_THRESHOLD  10.0f
 #define BATTERY_WAIT_STOP_THRESHOLD   30.0f

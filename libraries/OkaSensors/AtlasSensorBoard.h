@@ -8,8 +8,8 @@
 
 #include "core.h"
 #include "protocol.h"
-#include "network.h"
 #include "Logger.h"
+#include "Queue.h"
 
 #include "FuelGauge.h"
 #include "SensorBoard.h"

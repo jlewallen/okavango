@@ -39,6 +39,7 @@ model {
                 "Okavango",
                 "OkaCommon",
                 "IridiumSBD",
+                "CortexM0Only",
             ]
         }
     }

@@ -24,8 +24,6 @@ model {
 
                 "https://github.com/Conservify/Adafruit_SleepyDog.git",
 
-                "https://github.com/PaulStoffregen/RadioHead.git",
-
                 "OkaUtilities",
                 "Okavango",
                 "OkaCommon",
@@ -38,8 +36,6 @@ model {
 
                 "https://github.com/adafruit/RTClib.git",
                 "https://github.com/Conservify/max1704x.git",
-
-                "SoftwareSerial",
             ]
         }
     }

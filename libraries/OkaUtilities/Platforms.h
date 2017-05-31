@@ -7,8 +7,6 @@
 
 #ifdef ARDUINO_AVR_FEATHER32U4
 
-#include <SoftwareSerial.h>
-
 #define PORT_EXPANDER_SELECT_PIN_0                           5
 #define PORT_EXPANDER_SELECT_PIN_1                           6
 
@@ -93,7 +91,9 @@ extern void platformSerial2Begin(int32_t baud);
 #endif /* ARDUINO_SAMD_FEATHER_M0 */
 
 #include <SPI.h>
+#ifdef ARDUINO_SAMD_FEATHER_M0
 #include <RH_RF95.h>
+#endif
 
 #define LOW_POWER_SLEEP_DATA_BOAT_END                        (1000 * 30 * 5)
 #define LOW_POWER_SLEEP_SENSORS_END                          (1000 * 60 * 30)
