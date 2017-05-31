@@ -10,6 +10,7 @@
 #include "Logger.h"
 
 #define FK_SONAR_DISTANCE_FROM_GROUND_IN_METERS               (1.25f)
+#define LOW_POWER_SLEEP_SENSORS_END                           (1000 * 60 * 30)
 #define VERBOSE_LOGGING
 
 sonar_station_packet_t packet;

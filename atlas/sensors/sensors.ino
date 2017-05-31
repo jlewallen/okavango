@@ -12,6 +12,7 @@
 #define BATTERY_WAIT_DYING_THRESHOLD   1.0f
 #define BATTERY_WAIT_CHECK_SLEEP      (8192)
 #define BATTERY_WAIT_CHECK_INTERVAL   (8192 * 8)
+#define LOW_POWER_SLEEP_SENSORS_END   (1000 * 60 * 30)
 
 CorePlatform corePlatform;
 FuelGauge gauge;
