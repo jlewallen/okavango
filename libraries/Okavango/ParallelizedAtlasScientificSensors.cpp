@@ -27,8 +27,8 @@ String getFirstLine(String &str) {
     return str;
 }
 
-ParallelizedAtlasScientificSensors::ParallelizedAtlasScientificSensors(Stream *debug, SerialPortExpander *serialPortExpander, bool disableSleep) :
-    debug(debug), serialPortExpander(serialPortExpander), portNumber(0), disableSleep(disableSleep), numberOfValues(0) {
+ParallelizedAtlasScientificSensors::ParallelizedAtlasScientificSensors(Stream *debug, SerialPortExpander *serialPortExpander, bool disableSleep, uint8_t maximumNumberOfRead0s) :
+    debug(debug), serialPortExpander(serialPortExpander), portNumber(0), disableSleep(disableSleep), numberOfValues(0), maximumNumberOfRead0s(maximumNumberOfRead0s) {
     for (uint8_t i = 0; i < serialPortExpander->getNumberOfPorts(); ++i) {
         hasPortFailed[i] = false;
     }
@@ -197,7 +197,7 @@ NonBlockingHandleStatus ParallelizedAtlasScientificSensors::handle(String reply)
                 if (portNumber < serialPortExpander->getNumberOfPorts()) {
                     transition(ParallelizedAtlasScientificSensorsState::Read0);
                 }
-                else if (numberOfRead0s < 2) {
+                else if (numberOfRead0s < maximumNumberOfRead0s) {
                     portNumber = 0;
                     numberOfRead0s++;
                     debug->print("Read0: ");

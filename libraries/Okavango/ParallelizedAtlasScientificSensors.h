@@ -31,13 +31,14 @@ private:
     float values[FK_ATLAS_BOARD_MAXIMUM_NUMBER_VALUES];
     uint32_t lastTransisitonAt;
     uint8_t numberOfRead0s;
+    uint8_t maximumNumberOfRead0s;
     uint8_t numberOfValues;
     uint8_t portNumber;
     uint8_t hasPortFailed[8];
     bool disableSleep;
 
 public:
-    ParallelizedAtlasScientificSensors(Stream *debug, SerialPortExpander *serialPortExpander, bool disableSleep);
+    ParallelizedAtlasScientificSensors(Stream *debug, SerialPortExpander *serialPortExpander, bool disableSleep, uint8_t maximumNumberOfRead0s = 20);
 
     virtual bool tick() override;
 
