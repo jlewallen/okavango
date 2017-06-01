@@ -2,8 +2,6 @@
 #include "AtlasSensorBoard.h"
 #include <Adafruit_SleepyDog.h>
 
-#define PIN_DHT22                                          9
-
 AtlasSensorBoard::AtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *portExpander, SensorBoard *board, FuelGauge *gauge, bool continuous) :
     corePlatform(corePlatform), board(board), portExpander(portExpander), gauge(gauge), continuous(continuous) {
     memzero((uint8_t *)&packet, sizeof(atlas_sensors_packet_t));
@@ -80,7 +78,7 @@ bool AtlasSensorBoard::tick() {
         byte newPort = portExpander->getPort() + 1;
         portExpander->select(newPort);
         if (newPort < 4) {
-            DEBUG_PRINTLN("Next sensor");
+            DEBUG_PRINTLN(F("Next sensor"));
             board->start();
         }
         else {
@@ -183,19 +181,19 @@ void AtlasSensorBoard::setup() {
     memset((void *)&packet, 0, sizeof(atlas_sensors_packet_t));
 
     int32_t watchdogMs = Watchdog.enable();
-    DEBUG_PRINT("Watchdog enabled: ");
+    DEBUG_PRINT(F("Watchdog enabled: "));
     DEBUG_PRINTLN(watchdogMs);
 }
 
 void AtlasSensorBoard::populatePacket() {
-    DEBUG_PRINT("NumberOfValues: ");
+    DEBUG_PRINT(F("NumberOfValues: "));
     DEBUG_PRINTLN(board->getNumberOfValues());
     for (uint8_t i = 0; i < board->getNumberOfValues(); ++i) {
         if (packetValueIndex < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES) {
             packet.values[packetValueIndex++] = board->getValues()[i];
         }
         else {
-            DEBUG_PRINTLN("Not enough room for values.");
+            DEBUG_PRINTLN(F("Not enough room for values."));
         }
     }
 }

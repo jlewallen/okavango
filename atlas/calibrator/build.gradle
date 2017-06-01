@@ -37,11 +37,15 @@ model {
                 "https://github.com/milesburton/Arduino-Temperature-Control-Library.git",
                 "https://github.com/Conservify/Adafruit_SleepyDog.git",
                 "https://github.com/Conservify/max1704x.git",
+
+                "Hardware",
                 "OkaUtilities",
                 "Okavango",
                 "OkaCommon",
                 "OkaSensors",
-                "Repl"
+                "Repl",
+                "AtlasBoards",
+                "NonBlockingSerial",
             ]
         }
     }

@@ -1,6 +1,7 @@
 include 'weather-shield'
 include 'ngddemo'
-include 'atlas/sensors'
+include 'atlas/lora-station'
+include 'atlas/cell-station'
 include 'atlas/continuous'
 include 'atlas/rtc-sync'
 include 'sonar'

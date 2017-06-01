@@ -71,7 +71,7 @@ void NonBlockingSerialProtocol::sendCommand(const char *cmd) {
     serial->print(cmd);
     serial->print('\r');
     transition(NonBlockingSerialProtocolState::Reading);
-    DEBUG_PRINTLN(cmd);
+    // DEBUG_PRINTLN(cmd);
     sendsCounter++;
 }
 

@@ -13,29 +13,24 @@ import com.github.jlewallen.arduino.*
 
 model {
     components {
-        sensors(ArduinoComponentSpec) {
+        cellStation(ArduinoComponentSpec) {
             userCppSourcesFlags = System.env.JOB_NAME == null ? "" : "-DBUILD_JOB='$System.env.JOB_NAME' -DBUILD_COMMIT='$System.env.GIT_COMMIT'"
             boards = [ "adafruit:avr:feather32u4" ]
             libraries = [
                 "SPI",
                 "SD",
-                "Wire",
+                "SoftwareSerial",
+                "https://github.com/adafruit/Adafruit_FONA.git",
+
+                "Hardware",
+                "NonBlockingSerial",
+                "AtlasBoards",
+
                 "https://github.com/PaulStoffregen/OneWire.git",
-
-                "https://github.com/Conservify/Adafruit_SleepyDog.git",
-
-                "OkaUtilities",
-                "Okavango",
-                "OkaCommon",
-                "OkaSensors",
-
                 "https://github.com/adafruit/Adafruit_Sensor.git",
-                "https://github.com/adafruit/Adafruit_BME280_Library.git",
                 "https://github.com/adafruit/DHT-sensor-library.git",
                 "https://github.com/milesburton/Arduino-Temperature-Control-Library.git",
-
-                "https://github.com/adafruit/RTClib.git",
-                "https://github.com/Conservify/max1704x.git",
+                "Okavango",
             ]
         }
     }

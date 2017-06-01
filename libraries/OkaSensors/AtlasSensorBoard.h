@@ -13,7 +13,6 @@
 
 #include "FuelGauge.h"
 #include "SensorBoard.h"
-#include "AtlasScientific.h"
 #include "SerialPortExpander.h"
 #include "ParallelizedAtlasScientificSensors.h"
 

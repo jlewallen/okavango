@@ -1,6 +1,7 @@
 #ifndef PARALLIZED_ATLAS_SCIENTIFICS_SENSORS_H
 #define PARALLIZED_ATLAS_SCIENTIFICS_SENSORS_H
 
+#include <Arduino.h>
 #include "SensorBoard.h"
 #include "SerialPortExpander.h"
 #include "NonBlockingSerial.h"
@@ -24,9 +25,10 @@ enum class ParallelizedAtlasScientificSensorsState {
 
 class ParallelizedAtlasScientificSensors : public NonBlockingSerialProtocol, public SensorBoard {
 private:
+    Stream *debug;
     ParallelizedAtlasScientificSensorsState state = ParallelizedAtlasScientificSensorsState::Start;
     SerialPortExpander *serialPortExpander;
-    float values[FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES];
+    float values[FK_ATLAS_BOARD_MAXIMUM_NUMBER_VALUES];
     uint32_t lastTransisitonAt;
     uint8_t numberOfRead0s;
     uint8_t numberOfValues;
@@ -35,7 +37,7 @@ private:
     bool disableSleep;
 
 public:
-    ParallelizedAtlasScientificSensors(SerialPortExpander *serialPortExpander, bool disableSleep);
+    ParallelizedAtlasScientificSensors(Stream *debug, SerialPortExpander *serialPortExpander, bool disableSleep);
 
     virtual bool tick() override;
 

@@ -1,7 +1,14 @@
 #ifndef SERIAL_PORT_EXPANDER_H
 #define SERIAL_PORT_EXPANDER_H
 
-#include "Platforms.h"
+#include "NonBlockingSerial.h"
+#include "Serials.h"
+
+typedef enum ConductivityConfig {
+    None,
+    OnSerial2,
+    OnExpanderPort4
+} ConductivityConfig;
 
 class SerialPortExpander {
 public:

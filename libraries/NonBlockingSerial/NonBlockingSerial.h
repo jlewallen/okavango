@@ -1,7 +1,8 @@
 #ifndef NON_BLOCKING_SERIAL_H
 #define NON_BLOCKING_SERIAL_H
 
-#include "Platforms.h"
+#include <Arduino.h>
+#include "Serials.h"
 
 enum class NonBlockingSerialProtocolState {
     Reading,

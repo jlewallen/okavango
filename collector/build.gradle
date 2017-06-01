@@ -35,11 +35,14 @@ model {
 
                 "https://github.com/milesburton/Arduino-Temperature-Control-Library.git",
 
+                "Hardware",
                 "OkaUtilities",
                 "Okavango",
                 "OkaCommon",
                 "IridiumSBD",
                 "CortexM0Only",
+                "NonBlockingSerial",
+                "AtlasBoards", // TODO: Remove
             ]
         }
     }

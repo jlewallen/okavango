@@ -13,7 +13,7 @@ import com.github.jlewallen.arduino.*
 
 model {
     components {
-        sensors(ArduinoComponentSpec) {
+        loraStation(ArduinoComponentSpec) {
             userCppSourcesFlags = System.env.JOB_NAME == null ? "" : "-DBUILD_JOB='$System.env.JOB_NAME' -DBUILD_COMMIT='$System.env.GIT_COMMIT'"
             boards = [ "adafruit:samd:adafruit_feather_m0" ]
             libraries = [
@@ -29,11 +29,14 @@ model {
                 "https://github.com/PaulStoffregen/RadioHead.git",
                 "https://github.com/arduino-libraries/WiFi101.git",
 
+                "Hardware",
                 "OkaUtilities",
                 "Okavango",
                 "OkaCommon",
                 "OkaSensors",
                 "CortexM0Only",
+                "AtlasBoards",
+                "NonBlockingSerial",
 
                 "https://github.com/adafruit/Adafruit_Sensor.git",
                 "https://github.com/adafruit/Adafruit_BME280_Library.git",

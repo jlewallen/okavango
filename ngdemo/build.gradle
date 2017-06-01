@@ -41,10 +41,13 @@ model {
                 "ArduinoJson",
                 "IridiumSBD",
 
+                "Hardware",
                 "OkaUtilities",
                 "Okavango",
                 "OkaCommon",
                 "CortexM0Only",
+                "NonBlockingSerial",
+                "AtlasBoards", // TODO: Remove
             ]
         }
     }

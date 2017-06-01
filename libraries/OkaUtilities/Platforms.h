@@ -2,6 +2,7 @@
 #define PLATFORMS_H
 
 #include <Arduino.h>
+#include "Serials.h"
 
 #define FEATHER_WING_ADALOGGER
 
@@ -20,13 +21,9 @@
 #define PIN_RED_LED                                          13
 #define PIN_GREEN_LED                                        13
 
-typedef HardwareSerial SerialType;
-
 #endif
 
 #ifdef ARDUINO_SAMD_FEATHER_M0
-
-#include "wiring_private.h" // pinPeripheral() function
 
 #define PORT_EXPANDER_SELECT_PIN_0                           5
 #define PORT_EXPANDER_SELECT_PIN_1                           6
@@ -77,14 +74,8 @@ typedef HardwareSerial SerialType;
 #define PIN_WEATHER_STATION_RESET                            19
 #define PIN_POWER_HARD_RESET                                 5
 
-extern Uart Serial2;
-
-typedef Uart SerialType;
-
 extern SerialType &portExpanderSerial;
 extern SerialType &conductivitySerial;
-
-extern void platformSerial2Begin(int32_t baud);
 
 #define F(text)                                              text
 
@@ -129,12 +120,6 @@ uint32_t platformFreeMemory();
 uint32_t platformDeepSleep(bool forceDelay);
 uint32_t platformUptime();
 uint32_t platformAdjustUptime(uint32_t by);
-
-typedef enum ConductivityConfig {
-    None,
-    OnSerial2,
-    OnExpanderPort4
-} ConductivityConfig;
 
 #define FIVE_MINUTES                                         (1000 * 60 * 5)
 #define THIRTY_MINUTES                                       (60 * 1000 * 30)

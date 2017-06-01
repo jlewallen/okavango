@@ -17,7 +17,7 @@ CorePlatform corePlatform;
 SingleSerialPortExpander speIsolated(PIN_SPE_ISO_SEL0, PIN_SPE_ISO_SEL1, ConductivityConfig::None, &Serial2, 4);
 SingleSerialPortExpander speNormal(PIN_SPE_SEL0, PIN_SPE_SEL1, ConductivityConfig::None, &Serial1, 1);
 DualSerialPortExpander serialPortExpander(&speIsolated, &speNormal);
-ParallelizedAtlasScientificSensors sensorBoard(&serialPortExpander, true);
+ParallelizedAtlasScientificSensors sensorBoard(&logPrinter, &serialPortExpander, true);
 ZeroSystemClock Clock;
 
 class LoggingAtlasSensorBoard : public AtlasSensorBoard {

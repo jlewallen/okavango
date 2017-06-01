@@ -1,24 +1,38 @@
-#include "Platforms.h"
 #include "ParallelizedAtlasScientificSensors.h"
 
-extern const char *CMD_RESPONSE1;
-extern const char *CMD_STATUS;
-extern const char *CMD_LED_ON;
-extern const char *CMD_LED_OFF;
-extern const char *CMD_CONTINUOUS_OFF;
-extern const char *CMD_SLEEP;
-extern const char *CMD_READ;
+const char *CMD_RESPONSE1 = "RESPONSE,1";
+const char *CMD_STATUS = "STATUS";
+const char *CMD_LED_ON = "L,1";
+const char *CMD_LED_OFF = "L,0";
+const char *CMD_CONTINUOUS_OFF = "C,0";
+const char *CMD_SLEEP = "SLEEP";
+const char *CMD_READ = "R";
 
-extern uint8_t numberOfOccurences(String &str, char chr);
+uint8_t numberOfOccurences(String &str, char chr) {
+    uint8_t number = 0;
+    for (uint16_t i = 0; i < str.length(); ++i) {
+        if (str[i] == chr) {
+            number++;
+        }
+    }
+    return number;
+}
 
-extern String getFirstLine(String &str);
+String getFirstLine(String &str) {
+    str.trim();
+    uint8_t cr = str.indexOf('\r');
+    if (cr >= 0) return str.substring(0, cr + 1);
+    uint8_t nl = str.indexOf('\n');
+    if (nl >= 0) return str.substring(0, nl + 1);
+    return str;
+}
 
-ParallelizedAtlasScientificSensors::ParallelizedAtlasScientificSensors(SerialPortExpander *serialPortExpander, bool disableSleep) :
-    serialPortExpander(serialPortExpander), portNumber(0), disableSleep(disableSleep), numberOfValues(0) {
+ParallelizedAtlasScientificSensors::ParallelizedAtlasScientificSensors(Stream *debug, SerialPortExpander *serialPortExpander, bool disableSleep) :
+    debug(debug), serialPortExpander(serialPortExpander), portNumber(0), disableSleep(disableSleep), numberOfValues(0) {
     for (uint8_t i = 0; i < serialPortExpander->getNumberOfPorts(); ++i) {
         hasPortFailed[i] = false;
     }
-    for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
+    for (uint8_t i = 0; i < FK_ATLAS_BOARD_MAXIMUM_NUMBER_VALUES; ++i) {
         values[i] = 0.0;
     }
 }
@@ -35,14 +49,14 @@ bool ParallelizedAtlasScientificSensors::tick() {
     }
     if (getSendsCounter() == 5) {
         hasPortFailed[portNumber] = true;
-        DEBUG_PRINT("PORT: ");
-        DEBUG_PRINTLN(portNumber);
+        debug->print("PORT: ");
+        debug->println(portNumber);
         handle("*OK(NOT-FAILED)\r");
         return true;
     }
     else if (hasPortFailed[portNumber]) {
-        DEBUG_PRINT("PORT: ");
-        DEBUG_PRINTLN(portNumber);
+        debug->print("PORT: ");
+        debug->println(portNumber);
         if (state == ParallelizedAtlasScientificSensorsState::Sleeping) {
             handle("*SL(NOT)\r");
         }
@@ -60,8 +74,8 @@ bool ParallelizedAtlasScientificSensors::tick() {
             break;
         }
         case ParallelizedAtlasScientificSensorsState::DisableContinuousReading: {
-            DEBUG_PRINT("PORT: ");
-            DEBUG_PRINTLN(portNumber);
+            debug->print("PORT: ");
+            debug->println(portNumber);
             sendCommand(CMD_CONTINUOUS_OFF);
             break;
         }
@@ -93,8 +107,8 @@ bool ParallelizedAtlasScientificSensors::tick() {
             break;
         }
         case ParallelizedAtlasScientificSensorsState::Read0: {
-            DEBUG_PRINT("PORT: ");
-            DEBUG_PRINTLN(portNumber);
+            debug->print("PORT: ");
+            debug->println(portNumber);
             sendCommand(CMD_READ);
             break;
         }
@@ -115,7 +129,7 @@ bool ParallelizedAtlasScientificSensors::tick() {
             break;
         }
         case ParallelizedAtlasScientificSensorsState::Done: {
-            DEBUG_PRINTLN("DONE");
+            debug->println("DONE");
             return false;
         }
     }
@@ -124,11 +138,11 @@ bool ParallelizedAtlasScientificSensors::tick() {
 
 NonBlockingHandleStatus ParallelizedAtlasScientificSensors::handle(String reply) {
     if (reply.indexOf("*") >= 0) {
-        DEBUG_PRINT(uint32_t(state));
-        DEBUG_PRINT(" ");
-        DEBUG_PRINT(portNumber);
-        DEBUG_PRINT(">");
-        DEBUG_PRINTLN(reply);
+        debug->print(uint32_t(state));
+        debug->print(" ");
+        debug->print(portNumber);
+        debug->print(">");
+        debug->println(reply);
 
         switch (state) {
             case ParallelizedAtlasScientificSensorsState::DisableContinuousReading: {
@@ -170,7 +184,7 @@ NonBlockingHandleStatus ParallelizedAtlasScientificSensors::handle(String reply)
                     transition(ParallelizedAtlasScientificSensorsState::DisableContinuousReading);
                 }
                 else {
-                    DEBUG_PRINTLN("Waiting...");
+                    debug->println("Waiting...");
                     portNumber = 0;
                     transition(ParallelizedAtlasScientificSensorsState::Waiting);
                 }
@@ -186,13 +200,13 @@ NonBlockingHandleStatus ParallelizedAtlasScientificSensors::handle(String reply)
                 else if (numberOfRead0s < 2) {
                     portNumber = 0;
                     numberOfRead0s++;
-                    DEBUG_PRINT("Read0: ");
-                    DEBUG_PRINTLN(numberOfRead0s);
+                    debug->print("Read0: ");
+                    debug->println(numberOfRead0s);
                     transition(ParallelizedAtlasScientificSensorsState::Read0);
                 }
                 else {
                     portNumber = 0;
-                    DEBUG_PRINTLN("Starting Real Reads");
+                    debug->println("Starting Real Reads");
                     transition(ParallelizedAtlasScientificSensorsState::Read1);
                 }
                 serialPortExpander->select(portNumber);
@@ -212,7 +226,7 @@ NonBlockingHandleStatus ParallelizedAtlasScientificSensors::handle(String reply)
                     if (index < 0) {
                         index = firstLine.indexOf('\n', position);
                     }
-                    if (index > position && numberOfValues < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES) {
+                    if (index > position && numberOfValues < FK_ATLAS_BOARD_MAXIMUM_NUMBER_VALUES) {
                         String part = firstLine.substring(position, index);
                         values[numberOfValues++] = part.toFloat();
                         position = index + 1;
