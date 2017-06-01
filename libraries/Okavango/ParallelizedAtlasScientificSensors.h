@@ -72,6 +72,9 @@ public:
     }
 
     virtual void start() override {
+        portNumber = 0;
+        numberOfValues = 0;
+        numberOfRead0s = 0;
         state = ParallelizedAtlasScientificSensorsState::Start;
         serialPortExpander->select(0);
         setSerial(serialPortExpander->getSerial());
