@@ -19,7 +19,7 @@
 
 SoftwareSerial fonaSerial(PIN_FONA_TX, PIN_FONA_RX);
 Adafruit_FONA fona(PIN_FONA_RST);
-SingleSerialPortExpander serialPortExpander(PIN_PORT_EXPANDER_SELECT_0, PIN_PORT_EXPANDER_SELECT_1, ConductivityConfig::OnSerial2, &Serial1, 4);
+SingleSerialPortExpander serialPortExpander(PIN_PORT_EXPANDER_SELECT_0, PIN_PORT_EXPANDER_SELECT_1, ConductivityConfig::OnSerial2, &Serial1, 1);
 ParallelizedAtlasScientificSensors sensorBoard(&Serial, &serialPortExpander, false);
 
 void setup() {
