@@ -85,6 +85,8 @@ void NonBlockingSerialProtocol::transition(NonBlockingSerialProtocolState newSta
 }
 
 void NonBlockingSerialProtocol::close() {
+    #ifdef ARDUINO_SAMD_FEATHER_M0
     serial->end();
+    #endif
     transition(NonBlockingSerialProtocolState::Closed);
 }

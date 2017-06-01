@@ -1,5 +1,15 @@
 #include "Serials.h"
 
+#ifdef ARDUINO_AVR_FEATHER32U4
+
+SoftwareSerial Serial2(11, 10);
+
+void platformSerial2Begin(int32_t baud) {
+    Serial2.begin(baud);
+}
+
+#endif
+
 #ifdef ARDUINO_SAMD_FEATHER_M0
 
 #include "wiring_private.h" // pinPeripheral() function

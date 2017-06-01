@@ -4,7 +4,13 @@
 #include <Arduino.h>
 
 #ifdef ARDUINO_AVR_FEATHER32U4
-typedef HardwareSerial SerialType;
+#include <SoftwareSerial.h>
+
+typedef Stream SerialType;
+
+extern SoftwareSerial Serial2;
+
+extern void platformSerial2Begin(int32_t baud);
 #endif
 
 #ifdef ARDUINO_SAMD_FEATHER_M0
