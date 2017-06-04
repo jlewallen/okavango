@@ -83,7 +83,7 @@ private:
 
 public:
     ScriptRunner(SerialPortExpander *portExpander) :
-        NonBlockingSerialProtocol(10000, true), portExpander(portExpander),
+        NonBlockingSerialProtocol(&Serial, 10000, true), portExpander(portExpander),
         commands(NULL), position(0), length(0), nextPort(0) {
         activeCommand[0] = 0;
         expectedResponse[0] = 0;
