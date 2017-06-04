@@ -3,8 +3,8 @@
 
 #include <IridiumSBD.h>
 
-RockBlock::RockBlock(RockBlockMessages *messages, uint8_t *buffer, size_t size) :
-    NonBlockingSerialProtocol(10 * 1000, true, false),
+RockBlock::RockBlock(Stream *debug, RockBlockMessages *messages, uint8_t *buffer, size_t size) :
+    NonBlockingSerialProtocol(debug, 10 * 1000, true, false),
     messages(messages),
     txBuffer(buffer), txSize(size), rxSize(0),
     sendTries(0), signalTries(0) {

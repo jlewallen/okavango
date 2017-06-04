@@ -43,7 +43,7 @@ private:
     size_t rxSize;
 
 public:
-    RockBlock(RockBlockMessages *messages, uint8_t *buffer, size_t size);
+    RockBlock(Stream *stream, RockBlockMessages *messages, uint8_t *buffer, size_t size);
 
     virtual bool tick();
 

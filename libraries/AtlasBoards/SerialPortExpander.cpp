@@ -14,6 +14,7 @@ SingleSerialPortExpander::SingleSerialPortExpander(byte p0, byte p1, Conductivit
 void SingleSerialPortExpander::setup() {
     pinMode(selector[0], OUTPUT);
     pinMode(selector[1], OUTPUT);
+    select(0);
 }
 
 SerialType *SingleSerialPortExpander::getSerial(uint32_t baud) {

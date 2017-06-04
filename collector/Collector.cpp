@@ -372,16 +372,18 @@ void Collector::tick() {
         break;
     }
     case CollectorState::Transmission: {
-        if (!Serial && sendStatus) {
-            float level = gauge.stateOfCharge();
-            if (level > 95) {
-                sendStatusTransmission();
+        if (configuration.hasRockBlock()) {
+            if (!Serial && sendStatus) {
+                float level = gauge.stateOfCharge();
+                if (level > 95) {
+                    sendStatusTransmission();
+                }
+                sendStatus = false;
             }
-            sendStatus = false;
-        }
 
-        Transmissions transmissions(&corePlatform, &weatherStation, SystemClock, &configuration, &status, &gauge, &memory);
-        transmissions.handleTransmissionIfNecessary();
+            Transmissions transmissions(&corePlatform, &weatherStation, SystemClock, &configuration, &status, &gauge, &memory);
+            transmissions.handleTransmissionIfNecessary();
+        }
         logTransition("AW");
         state = CollectorState::Airwaves;
         break;
@@ -396,6 +398,9 @@ void Collector::loop() {
 }
 
 bool Collector::quickTransmissionCheck() {
+    if (!configuration.hasRockBlock()) {
+        return false;
+    }
     TransmissionStatus status;
     int8_t kind = status.shouldWe(memory.schedules(), true);
     return kind >= 0;

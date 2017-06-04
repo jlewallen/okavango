@@ -26,9 +26,10 @@ private:
     bool emptyBufferAfterEveryLine;
     bool addNewLines;
     String buffer;
+    Stream *debug;
 
 public:
-    NonBlockingSerialProtocol(uint16_t replyWait = 5000, bool emptyBufferAfterEveryLine = false, bool addNewLine = true);
+    NonBlockingSerialProtocol(Stream *debug, uint16_t replyWait = 5000, bool emptyBufferAfterEveryLine = false, bool addNewLine = true);
 
     void drain();
 

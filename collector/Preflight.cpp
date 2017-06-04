@@ -1,6 +1,5 @@
 #include "Platforms.h"
 #include "Preflight.h"
-#include "fona.h"
 #include <Adafruit_SleepyDog.h>
 #include <IridiumSBD.h>
 #include "WatchdogCallbacks.h"
@@ -32,30 +31,7 @@ bool Preflight::check() {
 
 bool Preflight::checkCommunications() {
     uint32_t started = millis();
-    if (false) {
-        FonaChild fona;
-        platformSerial2Begin(9600);
-        SerialType &fonaSerial = Serial2;
-        fona.setSerial(&fonaSerial);
-        DEBUG_PRINTLN("Checking Fona...");
-        while (!fona.isDone() && !fona.isFailed()) {
-            if (millis() - started < THIRTY_MINUTES) {
-                Watchdog.reset();
-            }
-            fona.tick();
-            delay(10);
-        }
-
-        if (fona.isDone()) {
-            DEBUG_PRINTLN("preflight: Fona good");
-        }
-        else {
-            DEBUG_PRINTLN("preflight: Fona failed");
-        }
-        return fona.isDone();
-    }
-
-    if (true) {
+    if (configuration->hasRockBlock()) {
         IridiumSBD rockBlock(Serial2, -1, new WatchdogCallbacks());
 
         rockBlockSerialBegin();

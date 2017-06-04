@@ -7,6 +7,11 @@ Configuration::Configuration(Memory *memory, const char *filename) :
     memory(memory), filename(filename) {
 }
 
+
+bool Configuration::hasRockBlock() {
+    return true;
+}
+
 bool Configuration::read(bool sdAvailable) {
     if (sdAvailable) {
         File file = SD.open(filename);

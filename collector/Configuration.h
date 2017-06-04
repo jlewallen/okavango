@@ -19,6 +19,7 @@ public:
     }
 
     bool read(bool sdAvailable);
+    bool hasRockBlock();
 };
 
 #endif

@@ -1,8 +1,8 @@
 #include <string.h>
 #include "NonBlockingSerial.h"
 
-NonBlockingSerialProtocol::NonBlockingSerialProtocol(uint16_t replyWait, bool emptyBufferAfterEveryLine, bool addNewLine) :
-    replyWait(replyWait), emptyBufferAfterEveryLine(emptyBufferAfterEveryLine), addNewLines(addNewLine) {
+NonBlockingSerialProtocol::NonBlockingSerialProtocol(Stream *debug, uint16_t replyWait, bool emptyBufferAfterEveryLine, bool addNewLine) :
+    debug(debug), replyWait(replyWait), emptyBufferAfterEveryLine(emptyBufferAfterEveryLine), addNewLines(addNewLine) {
 }
 
 void NonBlockingSerialProtocol::drain() {
@@ -71,7 +71,9 @@ void NonBlockingSerialProtocol::sendCommand(const char *cmd) {
     serial->print(cmd);
     serial->print('\r');
     transition(NonBlockingSerialProtocolState::Reading);
-    // DEBUG_PRINTLN(cmd);
+    if (debug != nullptr) {
+        debug->println(cmd);
+    }
     sendsCounter++;
 }
 

@@ -5,7 +5,7 @@
 #include "SerialPortExpander.h"
 #include "ParallelizedAtlasScientificSensors.h"
 
-#define WAIT_FOR_SERIAL                             5000
+#define WAIT_FOR_SERIAL                             10000
 
 #define PIN_FONA_RX                                 9
 #define PIN_FONA_TX                                 8
@@ -33,68 +33,91 @@ void setup() {
     }
     #endif
 
-    pinMode(PIN_FONA_KEY, OUTPUT);
-    digitalWrite(PIN_FONA_KEY, LOW);
-
-    fonaSerial.begin(4800);
-    if (!fona.begin(fonaSerial)) {
-        Serial.println(F("No FONA"));
-        while (true) {
-
-        }
-    }
-
-    uint8_t type = fona.type();
-    Serial.println(F("FONA Ready"));
-
     serialPortExpander.setup();
     serialPortExpander.select(0);
 
-    sensorBoard.start();
-
     while (true) {
-        sensorBoard.tick();
+        sensorBoard.start();
 
-        if (sensorBoard.isDone()) {
-            byte newPort = serialPortExpander.getPort() + 1;
-            serialPortExpander.select(newPort);
-            if (newPort < serialPortExpander.getNumberOfPorts()) {
-                sensorBoard.start();
+        float values[8];
+
+        while (true) {
+            sensorBoard.tick();
+
+            if (sensorBoard.isDone()) {
+                byte newPort = serialPortExpander.getPort() + 1;
+                serialPortExpander.select(newPort);
+                if (newPort < serialPortExpander.getNumberOfPorts()) {
+                    sensorBoard.start();
+                }
+                else {
+                    for (uint8_t i = 0; i < sensorBoard.getNumberOfValues(); ++i) {
+                        values[i] = sensorBoard.getValues()[i];
+                    }
+                    break;
+                }
             }
-            else {
+        }
+
+
+        // NOTE: This code likes to be close together...
+
+        pinMode(PIN_FONA_KEY, OUTPUT);
+        digitalWrite(PIN_FONA_KEY, LOW);
+
+        fonaSerial.begin(4800);
+        if (!fona.begin(fonaSerial)) {
+            Serial.println(F("No FONA"));
+            while (true) {
+
+            }
+        }
+
+        uint8_t type = fona.type();
+        Serial.println(F("FONA Ready"));
+
+        while (true) {
+            uint8_t n = fona.getNetworkStatus();
+            Serial.print(F("Network status "));
+            Serial.print(n);
+            Serial.print(F(": "));
+            if (n == 0) Serial.println(F("Not registered"));
+            if (n == 1) {
+                Serial.println(F("Registered (home)"));
                 break;
             }
-        }
-    }
 
-    while (true) {
-        uint8_t n = fona.getNetworkStatus();
-        Serial.print(F("Network status "));
-        Serial.print(n);
-        Serial.print(F(": "));
-        if (n == 0) Serial.println(F("Not registered"));
-        if (n == 1) {
-            Serial.println(F("Registered (home)"));
-            break;
+            if (n == 2) Serial.println(F("Not registered (searching)"));
+            if (n == 3) Serial.println(F("Denied"));
+            if (n == 4) Serial.println(F("Unknown"));
+            if (n == 5) {
+                Serial.println(F("Registered roaming"));
+                break;
+            }
+
+            delay(1000);
         }
 
-        if (n == 2) Serial.println(F("Not registered (searching)"));
-        if (n == 3) Serial.println(F("Denied"));
-        if (n == 4) Serial.println(F("Unknown"));
-        if (n == 5) Serial.println(F("Registered roaming"));
+        String message("L2,AT");
+        for (uint8_t i = 0; i < sensorBoard.getNumberOfValues(); ++i) {
+            String field = "," + String(values[i], 2);
+            message += field;
+        }
 
-        delay(1000);
+        const char *sendTo = "2132617278";
+        if (!fona.sendSMS(sendTo, message.c_str())) {
+            Serial.println(F("Failed"));
+        } else {
+            Serial.println(F("Sent!"));
+        }
+
+        uint32_t start = millis();
+        uint32_t after = 10 * 60 * (uint32_t)1000;
+        while ((millis() - start) < after) {
+            delay(5000);
+            Serial.print(".");
+        }
     }
-
-    const char *sendTo = "2132617278";
-    const char *message = "Hello";
-    if (!fona.sendSMS(sendTo, message)) {
-        Serial.println(F("Failed"));
-    } else {
-        Serial.println(F("Sent!"));
-    }
-
-
 }
 
 void loop() {

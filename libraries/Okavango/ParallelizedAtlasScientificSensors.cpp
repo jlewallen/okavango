@@ -2,6 +2,7 @@
 
 const char *CMD_RESPONSE1 = "RESPONSE,1";
 const char *CMD_STATUS = "STATUS";
+const char *CMD_FACTORY = "FACTORY";
 const char *CMD_LED_ON = "L,1";
 const char *CMD_LED_OFF = "L,0";
 const char *CMD_CONTINUOUS_OFF = "C,0";
@@ -28,7 +29,7 @@ String getFirstLine(String &str) {
 }
 
 ParallelizedAtlasScientificSensors::ParallelizedAtlasScientificSensors(Stream *debug, SerialPortExpander *serialPortExpander, bool disableSleep, uint8_t maximumNumberOfRead0s) :
-    debug(debug), serialPortExpander(serialPortExpander), portNumber(0), disableSleep(disableSleep), numberOfValues(0), maximumNumberOfRead0s(maximumNumberOfRead0s) {
+    NonBlockingSerialProtocol(debug), debug(debug), serialPortExpander(serialPortExpander), portNumber(0), disableSleep(disableSleep), numberOfValues(0), maximumNumberOfRead0s(maximumNumberOfRead0s) {
     for (uint8_t i = 0; i < serialPortExpander->getNumberOfPorts(); ++i) {
         hasPortFailed[i] = false;
     }
