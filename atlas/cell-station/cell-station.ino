@@ -14,7 +14,7 @@
 #define PIN_FONA_KEY                                12
 #define PIN_PORT_EXPANDER_SELECT_0                  5
 #define PIN_PORT_EXPANDER_SELECT_1                  6
-#define PIN_FEATHER_32U4_ADALOGGER_WING_SD_CS       20
+#define PIN_FEATHER_32U4_ADALOGGER_WING_SD_CS       21
 #define PIN_SD_CS                                   PIN_FEATHER_32U4_ADALOGGER_WING_SD_CS
 
 SoftwareSerial fonaSerial(PIN_FONA_TX, PIN_FONA_RX);
@@ -32,6 +32,8 @@ void setup() {
         }
     }
     #endif
+
+    SD.begin(PIN_SD_CS);
 
     serialPortExpander.setup();
     serialPortExpander.select(0);
@@ -66,53 +68,65 @@ void setup() {
         digitalWrite(PIN_FONA_KEY, LOW);
 
         fonaSerial.begin(4800);
-        if (!fona.begin(fonaSerial)) {
+        if (fona.begin(fonaSerial)) {
+            uint8_t type = fona.type();
+            Serial.println(F("FONA Ready"));
+
+            uint32_t start = millis();
+            uint32_t after = 60 * (uint32_t)1000;
+            bool online = false;
+
+            while (!online && millis() - start < after) {
+                uint8_t n = fona.getNetworkStatus();
+                Serial.print(F("Network status "));
+                Serial.print(n);
+                Serial.print(F(": "));
+                if (n == 0) Serial.println(F("Not registered"));
+                if (n == 1) {
+                    Serial.println(F("Registered (home)"));
+                    online = true;
+                    break;
+                }
+
+                if (n == 2) Serial.println(F("Not registered (searching)"));
+                if (n == 3) Serial.println(F("Denied"));
+                if (n == 4) Serial.println(F("Unknown"));
+                if (n == 5) {
+                    Serial.println(F("Registered roaming"));
+                    online = true;
+                    break;
+                }
+
+                delay(1000);
+            }
+
+            String message("L2,AT");
+            for (uint8_t i = 0; i < sensorBoard.getNumberOfValues(); ++i) {
+                String field = "," + String(values[i], 2);
+                message += field;
+            }
+
+            if (online) {
+                const char *sendTo = "2132617278";
+                if (!fona.sendSMS(sendTo, message.c_str())) {
+                    Serial.println(F("Failed"));
+                } else {
+                    Serial.println(F("Sent!"));
+                }
+            }
+
+            File file = SD.open("ATLAS.CSV", FILE_WRITE);
+            if (file) {
+                file.println(message);
+                file.close();
+            }
+        }
+        else {
             Serial.println(F("No FONA"));
-            while (true) {
-
-            }
-        }
-
-        uint8_t type = fona.type();
-        Serial.println(F("FONA Ready"));
-
-        while (true) {
-            uint8_t n = fona.getNetworkStatus();
-            Serial.print(F("Network status "));
-            Serial.print(n);
-            Serial.print(F(": "));
-            if (n == 0) Serial.println(F("Not registered"));
-            if (n == 1) {
-                Serial.println(F("Registered (home)"));
-                break;
-            }
-
-            if (n == 2) Serial.println(F("Not registered (searching)"));
-            if (n == 3) Serial.println(F("Denied"));
-            if (n == 4) Serial.println(F("Unknown"));
-            if (n == 5) {
-                Serial.println(F("Registered roaming"));
-                break;
-            }
-
-            delay(1000);
-        }
-
-        String message("L2,AT");
-        for (uint8_t i = 0; i < sensorBoard.getNumberOfValues(); ++i) {
-            String field = "," + String(values[i], 2);
-            message += field;
-        }
-
-        const char *sendTo = "2132617278";
-        if (!fona.sendSMS(sendTo, message.c_str())) {
-            Serial.println(F("Failed"));
-        } else {
-            Serial.println(F("Sent!"));
         }
 
         uint32_t start = millis();
-        uint32_t after = 10 * 60 * (uint32_t)1000;
+        uint32_t after = 10 * (uint32_t)1000; // 10 * 60 * (uint32_t)1000;
         while ((millis() - start) < after) {
             delay(5000);
             Serial.print(".");
