@@ -267,22 +267,24 @@ bool Transmissions::transmission(String message) {
     bool success = false;
     uint32_t started = millis();
     if (message.length() > 0) {
-        RockBlock rockBlock(&logPrinter, this, (uint8_t *)message.c_str(), message.length());
-        rockBlockSerialBegin();
-        SerialType &rockBlockSerial = RockBlockSerial;
-        rockBlock.setSerial(&rockBlockSerial);
-        while (!rockBlock.isDone() && !rockBlock.isFailed()) {
-            if (millis() - started < THIRTY_MINUTES) {
-                Watchdog.reset();
+        if (configuration->hasRockBlock()) {
+            RockBlock rockBlock(&logPrinter, this, (uint8_t *)message.c_str(), message.length());
+            rockBlockSerialBegin();
+            SerialType &rockBlockSerial = RockBlockSerial;
+            rockBlock.setSerial(&rockBlockSerial);
+            while (!rockBlock.isDone() && !rockBlock.isFailed()) {
+                if (millis() - started < THIRTY_MINUTES) {
+                    Watchdog.reset();
+                }
+                weatherStation->tick(); // Remember with the IridiumSBD library
+                // this loop is only happens once.
+                rockBlock.tick();
+                delay(10);
             }
-            weatherStation->tick(); // Remember with the IridiumSBD library
-                                    // this loop is only happens once.
-            rockBlock.tick();
-            delay(10);
+            success = rockBlock.isDone();
+            DEBUG_PRINT("RockBlock: ");
+            DEBUG_PRINTLN(success);
         }
-        success = rockBlock.isDone();
-        DEBUG_PRINT("RockBlock: ");
-        DEBUG_PRINTLN(success);
     }
 
     diagnostics.recordTransmission(millis() - started);

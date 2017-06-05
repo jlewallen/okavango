@@ -63,7 +63,7 @@ bool Preflight::checkWeatherStation() {
     weatherStation->transition(WeatherStationState::Reading);
 
     uint32_t started = millis();
-    while (millis() - started < 60 * 1000) {
+    while (millis() - started < 60 * (uint32_t)1000) {
         weatherStation->tick();
 
         if (weatherStation->shouldTakeReading()) {

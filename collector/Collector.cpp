@@ -350,11 +350,14 @@ void Collector::tick() {
                 DEBUG_PRINT(platformUptime());
                 DEBUG_PRINTLN(" ");
 
-                for (uint8_t i = 0; i < 3; ++i) {
-                    if (sendStatusTransmission()) {
-                        break;
+                if (configuration.hasRockBlock()) {
+                    for (uint8_t i = 0; i < 3; ++i) {
+                        if (sendStatusTransmission()) {
+                            break;
+                        }
                     }
                 }
+
 
                 memory.restarting();
 
