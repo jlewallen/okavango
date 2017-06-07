@@ -1,6 +1,7 @@
 #include "network.h"
 #include "core.h"
 #include "Diagnostics.h"
+#include "Logger.h"
 
 #define RETRY_DELAY         2500
 
@@ -107,9 +108,9 @@ void NetworkProtocolState::tick() {
 }
 
 static void logAtlasPacket(atlas_sensors_packet_t *p) {
-    File file = SD.open("ATLAS.CSV", FILE_WRITE);
+    const char *header = "time,battery,temp,do,ph,ec,tds,salinity,sg";
+    File file = Logger::open("ATLAS.CSV", header);
     if (file) {
-        file.print("ATLAS: ");
         file.print(p->time);
         file.print(",");
         file.print(p->battery);
@@ -126,7 +127,8 @@ static void logAtlasPacket(atlas_sensors_packet_t *p) {
 }
 
 static void logSonarPacket(sonar_station_packet_t *p) {
-    File file = SD.open("SONAR.CSV", FILE_WRITE);
+    const char *header = "time,battery,level1,level2,level3,level4,level5";
+    File file = Logger::open("SONAR.CSV");
     if (file) {
         file.print(p->time);
         file.print(",");

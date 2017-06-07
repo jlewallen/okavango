@@ -6,6 +6,7 @@
 
 class Logger {
 public:
+    static File open(const char *filename, const char *header);
     static File open(const char *filename);
 };
 

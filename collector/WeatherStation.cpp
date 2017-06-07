@@ -250,6 +250,7 @@ bool WeatherStation::tick() {
 }
 
 void WeatherStation::logReadingLocally() {
+    const char *header = "time,winddir,windspeedmph,windgustmph,windgustdir,windspdmph_avg2m,winddir_avg2m,windgustmph_10m,windgustdir_10m,humidity,temp,humidity,temp,rainin,dailyrainin,pressure,light_lvl,lat,lat,altitude,sats,date,time,gpsCharsProcessed";
     File file = Logger::open(FK_SETTINGS_WEATHER_STATION_DATA_FILENAME);
     if (file) {
         for (uint8_t i = 0; i < FK_WEATHER_STATION_PACKET_NUMBER_VALUES; ++i) {
