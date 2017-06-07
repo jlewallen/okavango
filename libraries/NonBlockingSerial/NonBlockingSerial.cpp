@@ -72,6 +72,7 @@ void NonBlockingSerialProtocol::sendCommand(const char *cmd) {
     serial->print('\r');
     transition(NonBlockingSerialProtocolState::Reading);
     if (debug != nullptr) {
+        debug->print("Send: ");
         debug->println(cmd);
     }
     sendsCounter++;
@@ -91,4 +92,25 @@ void NonBlockingSerialProtocol::close() {
     serial->end();
     #endif
     transition(NonBlockingSerialProtocolState::Closed);
+}
+
+void NonBlockingSerialProtocol::setSerial(SerialType *newSerial) {
+    clearSendsCounter();
+    serial = newSerial;
+}
+
+SerialType *NonBlockingSerialProtocol::getSerial() {
+    return serial;
+}
+
+void NonBlockingSerialProtocol::open() {
+    transition(NonBlockingSerialProtocolState::Idle);
+}
+
+void NonBlockingSerialProtocol::clearSendsCounter() {
+    sendsCounter = 0;
+}
+
+int8_t NonBlockingSerialProtocol::getSendsCounter() {
+    return sendsCounter;
 }

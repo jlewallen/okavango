@@ -7,7 +7,7 @@
 #include "NonBlockingSerial.h"
 
 enum class ParallelizedAtlasScientificSensorsState {
-    Start,
+    Start = 0,
     DisableContinuousReading,
     ConfigureResponse,
     Status0,
@@ -83,7 +83,10 @@ public:
 
 protected:
     void transition(ParallelizedAtlasScientificSensorsState newState);
-    virtual NonBlockingHandleStatus handle(String reply);
+    NonBlockingHandleStatus handle(String reply, bool forceTransition = false);
+    virtual NonBlockingHandleStatus handle(String reply) override {
+        return handle(reply, false);
+    }
 };
 
 #endif

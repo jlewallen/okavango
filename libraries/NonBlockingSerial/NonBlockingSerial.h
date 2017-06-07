@@ -32,28 +32,16 @@ public:
     NonBlockingSerialProtocol(Stream *debug, uint16_t replyWait = 5000, bool emptyBufferAfterEveryLine = false, bool addNewLine = true);
 
     void drain();
+    void open();
+
+    void setSerial(SerialType *newSerial);
+    SerialType *getSerial();
 
     virtual bool tick();
 
-    void setSerial(SerialType *newSerial) {
-        serial = newSerial;
-    }
-
-    SerialType *getSerial() {
-        return serial;
-    }
-
-    void open() {
-        transition(NonBlockingSerialProtocolState::Idle);
-    }
-
 protected:
-    void clearSendsCounter() {
-        sendsCounter = 0;
-    }
-    int8_t getSendsCounter() {
-        return sendsCounter;
-    }
+    void clearSendsCounter();
+    int8_t getSendsCounter();
     void sendCommand(const char *cmd);
     void transition(NonBlockingSerialProtocolState newState);
     virtual NonBlockingHandleStatus handle(String reply);
