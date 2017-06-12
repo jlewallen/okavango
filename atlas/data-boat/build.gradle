@@ -13,7 +13,7 @@ import com.github.jlewallen.arduino.*
 
 model {
     components {
-        databoat(ArduinoComponentSpec) {
+        dataBoat(ArduinoComponentSpec) {
             boards = [ "adafruit:samd:adafruit_feather_m0" ]
             libraries = [
                 "SPI",
@@ -47,6 +47,7 @@ model {
                 "OkaSensors",
                 "AtlasBoards",
                 "NonBlockingSerial",
+                "DataBoats",
             ]
         }
     }

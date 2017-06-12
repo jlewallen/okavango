@@ -9,7 +9,7 @@ Configuration::Configuration(Memory *memory, const char *filename) :
 
 
 bool Configuration::hasRockBlock() {
-    return true;
+    return false;
 }
 
 bool Configuration::read(bool sdAvailable) {
