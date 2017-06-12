@@ -19,7 +19,7 @@
 
 SoftwareSerial fonaSerial(PIN_FONA_TX, PIN_FONA_RX);
 Adafruit_FONA fona(PIN_FONA_RST);
-SingleSerialPortExpander serialPortExpander(PIN_PORT_EXPANDER_SELECT_0, PIN_PORT_EXPANDER_SELECT_1, ConductivityConfig::OnSerial2, &Serial1, 1);
+SingleSerialPortExpander serialPortExpander(PIN_PORT_EXPANDER_SELECT_0, PIN_PORT_EXPANDER_SELECT_1, ConductivityConfig::OnSerial2, &Serial1, 4);
 ParallelizedAtlasScientificSensors sensorBoard(&Serial, &serialPortExpander, false);
 
 void setup() {
@@ -35,39 +35,42 @@ void setup() {
 
     SD.begin(PIN_SD_CS);
 
+    Serial2.begin(9600);
+
     serialPortExpander.setup();
     serialPortExpander.select(0);
 
     while (true) {
-        sensorBoard.start();
-
         float values[8];
 
-        while (true) {
-            sensorBoard.tick();
+        sensorBoard.start();
 
-            if (sensorBoard.isDone()) {
-                byte newPort = serialPortExpander.getPort() + 1;
-                serialPortExpander.select(newPort);
-                if (newPort < serialPortExpander.getNumberOfPorts()) {
-                    sensorBoard.start();
-                }
-                else {
+        if (true) {
+            while (true) {
+                sensorBoard.tick();
+
+                if (sensorBoard.isDone()) {
+                    Serial.println(sensorBoard.getNumberOfValues());
+
                     for (uint8_t i = 0; i < sensorBoard.getNumberOfValues(); ++i) {
                         values[i] = sensorBoard.getValues()[i];
                     }
                     break;
                 }
             }
-        }
 
+        }
 
         // NOTE: This code likes to be close together...
 
         pinMode(PIN_FONA_KEY, OUTPUT);
+        digitalWrite(PIN_FONA_KEY, HIGH);
+        delay(500);
         digitalWrite(PIN_FONA_KEY, LOW);
+        delay(100);
 
         fonaSerial.begin(4800);
+
         if (fona.begin(fonaSerial)) {
             uint8_t type = fona.type();
             Serial.println(F("FONA Ready"));
@@ -126,7 +129,7 @@ void setup() {
         }
 
         uint32_t start = millis();
-        uint32_t after = 10 * (uint32_t)1000; // 10 * 60 * (uint32_t)1000;
+        uint32_t after = 1 * 60 * (uint32_t)1000;
         while ((millis() - start) < after) {
             delay(5000);
             Serial.print(".");

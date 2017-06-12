@@ -11,7 +11,8 @@ enum class ParallelizedAtlasScientificSensorsState {
     DisableContinuousReading,
     ConfigureResponse,
     Status0,
-    Status1,
+    Factory,
+    Status2,
     LedsOn,
     Configure,
     Waiting,
@@ -35,6 +36,7 @@ private:
     uint8_t numberOfValues;
     uint8_t portNumber;
     uint8_t hasPortFailed[8];
+    uint32_t runs = 0;
     bool disableSleep;
 
 public:
@@ -58,28 +60,8 @@ public:
         return portNumber == 0 && state == ParallelizedAtlasScientificSensorsState::Read0;
     }
 
-    virtual void takeReading() override {
-        portNumber = 0;
-        numberOfValues = 0;
-        numberOfRead0s = 0;
-        for (uint8_t i = 0; i < serialPortExpander->getNumberOfPorts(); ++i) {
-            hasPortFailed[i] = 0;
-        }
-        state = ParallelizedAtlasScientificSensorsState::LedsOnBeforeRead;
-        serialPortExpander->select(0);
-        setSerial(serialPortExpander->getSerial());
-        open();
-    }
-
-    virtual void start() override {
-        portNumber = 0;
-        numberOfValues = 0;
-        numberOfRead0s = 0;
-        state = ParallelizedAtlasScientificSensorsState::Start;
-        serialPortExpander->select(0);
-        setSerial(serialPortExpander->getSerial());
-        open();
-    }
+    virtual void takeReading() override;
+    virtual void start() override;
 
 protected:
     void transition(ParallelizedAtlasScientificSensorsState newState);
