@@ -33,7 +33,7 @@
  * A board containing primarily Atlas sensors and a few others, including water temperature.
  */
 class AtlasSensorBoard {
-private:
+protected:
     CorePlatform *corePlatform;
     SerialPortExpander *portExpander;
     SensorBoard *board;
