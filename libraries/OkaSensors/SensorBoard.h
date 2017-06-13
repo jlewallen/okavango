@@ -1,8 +1,6 @@
 #ifndef SENSOR_BOARD_H
 #define SENSOR_BOARD_H
 
-#define FK_ATLAS_BOARD_MAXIMUM_NUMBER_VALUES   (1 + 1 + 1 + 1 + 3)
-
 class SensorBoard {
 public:
     virtual void start() = 0;

@@ -9,11 +9,14 @@ LoggingAtlasSensorBoard::LoggingAtlasSensorBoard(CorePlatform *corePlatform, Ser
 }
 
 void LoggingAtlasSensorBoard::done(SensorBoard *board) {
-    size_t index = 0;
+    size_t numberOfValues = 0;
 
     for (uint8_t i = 0; i < board->getNumberOfValues(); ++i) {
-        if (index < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES) {
-            packet.values[index++] = board->getValues()[i];
+        if (numberOfValues < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES) {
+            packet.values[numberOfValues++] = board->getValues()[i];
+        }
+        else {
+            Serial.println("Too many values in done!");
         }
     }
 
@@ -43,17 +46,16 @@ void LoggingAtlasSensorBoard::done(SensorBoard *board) {
                         uint32_t time = dateTime.unixtime();
                         SystemClock->set(time);
 
-                        packet.time = SystemClock->now();
+                        packet.time = time;
                         packet.battery = gauge != nullptr ? gauge->stateOfCharge() : 0;
                         packet.fk.kind = FK_PACKET_KIND_DATA_BOAT_SENSORS;
-                        packet.time = time;
                         packet.latitude = gps.latitudeDegrees;
                         packet.longitude = gps.longitudeDegrees;
                         packet.altitude = gps.altitude;
                         packet.angle = gps.angle;
                         packet.speed = gps.speed;
 
-                        logPacketLocally();
+                        logPacketLocally(numberOfValues);
 
                         board->takeReading();
 
@@ -70,7 +72,11 @@ void LoggingAtlasSensorBoard::done(SensorBoard *board) {
     serial->end();
 }
 
-void LoggingAtlasSensorBoard::writePacket(Stream &stream, data_boat_packet_t *packet) {
+void LoggingAtlasSensorBoard::writePacket(Stream &stream, data_boat_packet_t *packet, size_t numberOfValues) {
+    stream.print(packet->time);
+    stream.print(",");
+    stream.print(packet->battery);
+    stream.print(",");
     stream.print(packet->latitude, 6);
     stream.print(",");
     stream.print(packet->longitude, 6);
@@ -85,7 +91,7 @@ void LoggingAtlasSensorBoard::writePacket(Stream &stream, data_boat_packet_t *pa
     stream.print(",");
     stream.print(packet->battery);
 
-    for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
+    for (uint8_t i = 0; i < numberOfValues; ++i) {
         stream.print(",");
         stream.print(packet->values[i]);
     }
@@ -93,16 +99,16 @@ void LoggingAtlasSensorBoard::writePacket(Stream &stream, data_boat_packet_t *pa
     stream.println();
 }
 
-void LoggingAtlasSensorBoard::logPacketLocally() {
+void LoggingAtlasSensorBoard::logPacketLocally(size_t numberOfValues) {
     Queue queue;
     queue.enqueue((uint8_t *)&packet, sizeof(data_boat_packet_t));
     queue.startAtBeginning();
 
     File file = Logger::open(FK_SETTINGS_ATLAS_DATA_FILENAME);
     if (file) {
-        writePacket(file, &packet);
+        writePacket(file, &packet, numberOfValues);
         file.close();
     }
 
-    writePacket(Serial, &packet);
+    writePacket(Serial, &packet, numberOfValues);
 }

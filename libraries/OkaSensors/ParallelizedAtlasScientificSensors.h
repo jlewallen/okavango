@@ -28,19 +28,20 @@ class ParallelizedAtlasScientificSensors : public NonBlockingSerialProtocol, pub
 private:
     Stream *debug;
     ParallelizedAtlasScientificSensorsState state = ParallelizedAtlasScientificSensorsState::Start;
-    SerialPortExpander *serialPortExpander;
-    float values[FK_ATLAS_BOARD_MAXIMUM_NUMBER_VALUES];
-    uint32_t lastTransisitonAt;
-    uint8_t numberOfRead0s;
-    uint8_t maximumNumberOfRead0s;
-    uint8_t numberOfValues;
-    uint8_t portNumber;
-    uint8_t hasPortFailed[8];
+    SerialPortExpander *serialPortExpander = nullptr;
+    float *values = nullptr;
+    uint32_t lastTransisitonAt = 0;
+    uint8_t numberOfRead0s = 0;
+    uint8_t maximumNumberOfRead0s = 0;
+    uint8_t maximumNumberOfValues = 0;
+    uint8_t numberOfValues = 0;
+    uint8_t portNumber = 0;
+    uint8_t hasPortFailed[8] = { false };
     uint32_t runs = 0;
-    bool disableSleep;
+    bool disableSleep = false;
 
 public:
-    ParallelizedAtlasScientificSensors(Stream *debug, SerialPortExpander *serialPortExpander, bool disableSleep, uint8_t maximumNumberOfRead0s = 20);
+    ParallelizedAtlasScientificSensors(Stream *debug, SerialPortExpander *serialPortExpander, bool disableSleep, uint8_t maximumNumberOfValues, uint8_t maximumNumberOfRead0s = 20);
 
     virtual bool tick() override;
 

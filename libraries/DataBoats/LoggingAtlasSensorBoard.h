@@ -23,8 +23,8 @@ public:
     void done(SensorBoard *board) override;
 
 private:
-    void logPacketLocally();
-    void writePacket(Stream &stream, data_boat_packet_t *packet);
+    void logPacketLocally(size_t numberOfValues);
+    void writePacket(Stream &stream, data_boat_packet_t *packet, size_t numberOfValues);
 
 };
 

@@ -14,7 +14,7 @@
 CorePlatform corePlatform;
 FuelGauge gauge;
 SingleSerialPortExpander serialPortExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1, ConductivityConfig::OnSerial2, &Serial1);
-ParallelizedAtlasScientificSensors sensorBoard(&logPrinter, &serialPortExpander, false);
+ParallelizedAtlasScientificSensors sensorBoard(&logPrinter, &serialPortExpander, false, FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES);
 Pcf8523SystemClock Clock;
 LoraAtlasSensorBoard loraAtlasSensorBoard(&corePlatform, &serialPortExpander, &sensorBoard, &gauge);
 

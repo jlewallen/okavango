@@ -17,10 +17,12 @@
 #define PIN_FEATHER_32U4_ADALOGGER_WING_SD_CS       21
 #define PIN_SD_CS                                   PIN_FEATHER_32U4_ADALOGGER_WING_SD_CS
 
+#define FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES       11
+
 SoftwareSerial fonaSerial(PIN_FONA_TX, PIN_FONA_RX);
 Adafruit_FONA fona(PIN_FONA_RST);
 SingleSerialPortExpander serialPortExpander(PIN_PORT_EXPANDER_SELECT_0, PIN_PORT_EXPANDER_SELECT_1, ConductivityConfig::OnSerial2, &Serial1, 4);
-ParallelizedAtlasScientificSensors sensorBoard(&Serial, &serialPortExpander, false);
+ParallelizedAtlasScientificSensors sensorBoard(&Serial, &serialPortExpander, false, FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES);
 
 void setup() {
     Serial.begin(115200);
