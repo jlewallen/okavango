@@ -26,7 +26,7 @@ void LoraAtlasSensorBoard::done(SensorBoard *board) {
 }
 
 void LoraAtlasSensorBoard::tryAndSendLocalQueue() {
-    Queue queue;
+    FileQueue queue;
     LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST, PIN_RFM95_RST);
     PacketSender sender(&radio, &queue);
 

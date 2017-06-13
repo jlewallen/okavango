@@ -209,7 +209,7 @@ void Collector::waitForBattery() {
 }
 
 void Collector::checkAirwaves() {
-    Queue queue;
+    FileQueue queue;
     NetworkProtocolState networkProtocol(FK_IDENTITY_COLLECTOR, NetworkState::EnqueueFromNetwork, &radio, &queue, new CollectorNetworkCallbacks());
 
     DEBUG_PRINTLN("AW: RR");

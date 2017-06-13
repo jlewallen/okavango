@@ -133,7 +133,7 @@ void LegacyAtlasSensorBoard::writePacket(Stream &stream, atlas_sensors_packet_t 
 }
 
 void LegacyAtlasSensorBoard::logPacketLocally() {
-    Queue queue;
+    FileQueue queue;
     queue.enqueue((uint8_t *)&packet, sizeof(atlas_sensors_packet_t));
     queue.startAtBeginning();
 

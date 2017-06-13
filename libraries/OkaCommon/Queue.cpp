@@ -7,13 +7,13 @@ typedef struct header_t {
 
 #define FK_QUEUE_ENTRY_SIZE_ON_DISK    (sizeof(header_t) + FK_QUEUE_ENTRY_SIZE)
 
-Queue::Queue() : filename(FK_SETTINGS_QUEUE_FILENAME), dequeuePosition(0) {
+FileQueue::FileQueue() : filename(FK_SETTINGS_QUEUE_FILENAME), dequeuePosition(0) {
 }
 
-Queue::Queue(const char *filename) : filename(filename), dequeuePosition(0) {
+FileQueue::FileQueue(const char *filename) : filename(filename), dequeuePosition(0) {
 }
 
-File Queue::open() {
+File FileQueue::open() {
     File file = SD.open(filename, FILE_WRITE);
     if (!file) {
         DEBUG_PRINTLN(F("Queue unavailable"));
@@ -23,11 +23,11 @@ File Queue::open() {
     return file;
 }
 
-void Queue::startAtBeginning() {
+void FileQueue::startAtBeginning() {
     dequeuePosition = 0;
 }
 
-int16_t Queue::size() {
+int16_t FileQueue::size() {
     File file = open();
     if (file) {
         const uint32_t size = file.size();
@@ -39,7 +39,7 @@ int16_t Queue::size() {
     return -1;
 }
 
-void Queue::enqueue(uint8_t *entry, size_t size) {
+void FileQueue::enqueue(uint8_t *entry, size_t size) {
     File file = open();
     if (file) {
         header_t header = { true };
@@ -54,11 +54,11 @@ void Queue::enqueue(uint8_t *entry, size_t size) {
     }
 }
 
-void Queue::removeAll() {
+void FileQueue::removeAll() {
     SD.remove((char *)filename);
 }
 
-uint8_t *Queue::dequeue() {
+uint8_t *FileQueue::dequeue() {
     File file = open();
     if (file) {
         const uint32_t size = file.size();
@@ -109,7 +109,7 @@ uint8_t *Queue::dequeue() {
     return NULL;
 }
 
-void Queue::copyInto(Queue *into) {
+void FileQueue::copyInto(Queue *into) {
     while (true) {
         uint8_t *data = dequeue();
         if (data == NULL) {

@@ -5,7 +5,7 @@
 #include <SD.h>
 #include "protocol.h"
 
-class IQueue {
+class Queue {
 public:
     virtual void startAtBeginning() = 0;
     virtual int16_t size() = 0;
@@ -14,20 +14,47 @@ public:
 
 };
 
-class Queue : public IQueue {
+class SingleEntryQueue : public Queue {
+private:
+    uint8_t *saved = nullptr;
+    uint8_t *entry = nullptr;
+
+public:
+    SingleEntryQueue(uint8_t *entry) : entry(entry), saved(saved) {
+    }
+
+public:
+    virtual void startAtBeginning() override {
+        entry = saved;
+    }
+
+    virtual int16_t size() override {
+        return entry == nullptr ? 0 : 1;
+    }
+
+    virtual uint8_t *dequeue() override {
+        entry = nullptr;
+        return saved;
+    }
+
+    virtual void enqueue(uint8_t *entry, size_t size = FK_QUEUE_ENTRY_SIZE) override {
+    }
+};
+
+class FileQueue : public Queue {
 private:
     const char *filename;
     uint8_t buffer[FK_QUEUE_ENTRY_SIZE];
     uint32_t dequeuePosition;
 
 public:
-    Queue();
-    Queue(const char *filename);
-    int16_t size();
+    FileQueue();
+    FileQueue(const char *filename);
+    int16_t size() override;
+    uint8_t *dequeue() override;
+    void enqueue(uint8_t *entry, size_t size = FK_QUEUE_ENTRY_SIZE) override;
+    void startAtBeginning() override;
     void removeAll();
-    uint8_t *dequeue();
-    void enqueue(uint8_t *entry, size_t size = FK_QUEUE_ENTRY_SIZE);
-    void startAtBeginning();
     void copyInto(Queue *into);
 
 private:

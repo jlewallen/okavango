@@ -5,8 +5,8 @@
 
 class DoubleQueue {
 private:
-    Queue queueA;
-    Queue queueB;
+    FileQueue queueA;
+    FileQueue queueB;
     Queue *activeQueue;
     Queue *pendingQueue;
 

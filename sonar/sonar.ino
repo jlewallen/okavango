@@ -139,7 +139,7 @@ void logPacketLocally(sonar_station_packet_t *packet) {
 }
 
 void loop() {
-    Queue queue;
+    FileQueue queue;
 
     memzero((void *)&packet, sizeof(sonar_station_packet_t));
 

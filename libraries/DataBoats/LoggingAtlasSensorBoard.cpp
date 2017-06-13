@@ -104,7 +104,7 @@ void LoggingAtlasSensorBoard::writePacket(Stream &stream, data_boat_packet_t *pa
 }
 
 void LoggingAtlasSensorBoard::logPacketLocally(size_t numberOfValues) {
-    Queue queue;
+    FileQueue queue;
     queue.enqueue((uint8_t *)&packet, sizeof(data_boat_packet_t));
     queue.startAtBeginning();
 

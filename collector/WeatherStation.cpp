@@ -266,7 +266,7 @@ void WeatherStation::logReadingLocally() {
         Serial.println("Unable to open WeatherStation log");
     }
 
-    Queue queue;
+    FileQueue queue;
 
     weather_station_packet_t packet;
     memzero((uint8_t *)&packet, sizeof(weather_station_packet_t));

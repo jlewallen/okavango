@@ -292,7 +292,7 @@ bool NgDemo::transmission() {
     #ifdef NGD_WIFI
     WifiConnection wifi(config.getSsid(), config.getPassword(), Serial);
     if (wifi.open()) {
-        Queue failed("FAILED.BIN");
+        FileQueue failed("FAILED.BIN");
 
         data.startAtBeginning();
 

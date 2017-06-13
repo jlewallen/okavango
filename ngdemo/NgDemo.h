@@ -25,7 +25,7 @@ const uint32_t STATE_MAX_SLEEP_TIME = (1 * 30 * 1000);
 
 class NgDemo {
 private:
-    Queue data;
+    FileQueue data;
     Adafruit_GPS gps;
     Config config;
     NgDemoState state;

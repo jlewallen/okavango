@@ -2,7 +2,7 @@
 
 #include "PacketSender.h"
 
-PacketSender::PacketSender(LoraRadio *radio, IQueue *queue) :
+PacketSender::PacketSender(LoraRadio *radio, Queue *queue) :
     radio(radio), queue(queue) {
 }
 

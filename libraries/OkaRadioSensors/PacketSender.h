@@ -7,10 +7,10 @@
 class PacketSender {
 private:
     LoraRadio *radio = nullptr;
-    IQueue *queue = nullptr;
+    Queue *queue = nullptr;
 
 public:
-    PacketSender(LoraRadio *radio, IQueue *queue);
+    PacketSender(LoraRadio *radio, Queue *queue);
 
 public:
     void send();

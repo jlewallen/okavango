@@ -71,8 +71,8 @@ String Transmissions::weatherStationPacketToMessage(weather_station_packet_t *pa
 }
 
 void Transmissions::sendSensorTransmission(bool sendAtlas, bool sendWeather, bool sendSonar) {
-    Queue keeping("KEEPING.BIN");
-    Queue queue;
+    FileQueue keeping("KEEPING.BIN");
+    FileQueue queue;
 
     uint32_t queueSize = queue.size();
 
