@@ -31,11 +31,14 @@ void LoggingAtlasSensorBoard::done(SensorBoard *board) {
     DEBUG_PRINTLN("");
     DEBUG_PRINTLN("Reading GPS...");
 
+    bool haveFix = false;
     uint32_t started = millis();
 
-    while (millis() - started < 10 * 1000) {
+    while (!haveFix && millis() - started < 10 * 1000) {
         while (serial->available()) {
-            gps.read();
+            char c = gps.read();
+
+            Serial.print(c);
 
             if (gps.newNMEAreceived()) {
                 if (gps.parse(gps.lastNMEA())) {
@@ -46,24 +49,15 @@ void LoggingAtlasSensorBoard::done(SensorBoard *board) {
                         uint32_t time = dateTime.unixtime();
                         SystemClock->set(time);
 
-                        packet.time = time;
-                        packet.battery = gauge != nullptr ? gauge->stateOfCharge() : 0;
-                        packet.fk.kind = FK_PACKET_KIND_DATA_BOAT_SENSORS;
                         packet.latitude = gps.latitudeDegrees;
                         packet.longitude = gps.longitudeDegrees;
                         packet.altitude = gps.altitude;
                         packet.angle = gps.angle;
                         packet.speed = gps.speed;
 
-                        logPacketLocally(numberOfValues);
+                        haveFix = true;
 
-                        if (handler != nullptr) {
-                            handler->handleReading(&packet, numberOfValues);
-                        }
-
-                        board->takeReading();
-
-                        return;
+                        break;
                     }
                     else {
                         DEBUG_PRINTLN("No fix");
@@ -74,6 +68,18 @@ void LoggingAtlasSensorBoard::done(SensorBoard *board) {
     }
 
     serial->end();
+
+    packet.time = SystemClock->now();
+    packet.battery = gauge != nullptr ? gauge->stateOfCharge() : 0;
+    packet.fk.kind = FK_PACKET_KIND_DATA_BOAT_SENSORS;
+
+    logPacketLocally(numberOfValues);
+
+    if (handler != nullptr) {
+        handler->handleReading(&packet, numberOfValues);
+    }
+
+    board->takeReading();
 }
 
 void LoggingAtlasSensorBoard::writePacket(Stream &stream, data_boat_packet_t *packet, size_t numberOfValues) {
