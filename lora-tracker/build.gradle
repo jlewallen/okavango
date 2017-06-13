@@ -1,0 +1,42 @@
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+    dependencies {
+        classpath group: 'com.github.jlewallen.arduino', name: 'arduino-gradle', version: '1.0'
+    }
+}
+
+apply plugin: 'com.github.jlewallen.arduino'
+
+import com.github.jlewallen.arduino.*
+
+model {
+    components {
+        tracker(ArduinoComponentSpec) {
+            boards = [ "adafruit:samd:adafruit_feather_m0" ]
+            libraries = [
+                "SPI",
+                "SD",
+                "Wire",
+
+                "https://github.com/adafruit/Adafruit_ILI9341.git",
+                "https://github.com/adafruit/Adafruit-GFX-Library.git",
+                "https://github.com/PaulStoffregen/RadioHead.git",
+                "https://github.com/adafruit/RTClib.git",
+                "https://github.com/arduino-libraries/RTCZero.git",
+                "https://github.com/Conservify/max1704x.git",
+
+                "https://github.com/Conservify/Adafruit_ASFcore.git",
+                "https://github.com/Conservify/AtSamd.git",
+                "https://github.com/Conservify/Adafruit_SleepyDog.git",
+
+                "Hardware",
+                "OkaUtilities",
+                "OkaCommon",
+                "OkaRadio",
+            ]
+        }
+    }
+}
+
