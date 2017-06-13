@@ -5,7 +5,7 @@
 
 #define RETRY_DELAY         2500
 
-NetworkProtocolState::NetworkProtocolState(uint8_t identity, NetworkState state, LoraRadio *radio, Queue *queue, NetworkCallbacks *networkCallbacks) :
+NetworkProtocolState::NetworkProtocolState(uint8_t identity, NetworkState state, LoraRadio *radio, IQueue *queue, NetworkCallbacks *networkCallbacks) :
     identity(identity), state(state), radio(radio), queue(queue), stateDelay(0), lastTick(0), lastTickNonDelayed(0),
     pingAgainAfterDequeue(true), packetsReceived(0), lastPacketTime(0),
     networkCallbacks(networkCallbacks) {

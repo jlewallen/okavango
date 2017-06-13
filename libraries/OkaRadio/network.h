@@ -28,7 +28,7 @@ public:
 class NetworkProtocolState {
 private:
     LoraRadio *radio;
-    Queue *queue;
+    IQueue *queue;
     NetworkState state;
     uint16_t stateDelay;
     uint16_t packetsReceived;
@@ -41,7 +41,7 @@ private:
     uint8_t identity;
 
 public:
-    NetworkProtocolState(uint8_t identity, NetworkState state, LoraRadio *radio, Queue *queue, NetworkCallbacks *networkCallbacks);
+    NetworkProtocolState(uint8_t identity, NetworkState state, LoraRadio *radio, IQueue *queue, NetworkCallbacks *networkCallbacks);
 
 public:
     void tick();

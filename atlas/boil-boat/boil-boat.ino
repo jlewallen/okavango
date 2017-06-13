@@ -18,7 +18,7 @@ SingleSerialPortExpander speNormal(PIN_SPE_SEL0, PIN_SPE_SEL1, ConductivityConfi
 DualSerialPortExpander serialPortExpander(&speIsolated, &speNormal);
 ParallelizedAtlasScientificSensors sensorBoard(&logPrinter, &serialPortExpander, true, FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES);
 ZeroSystemClock Clock;
-LoggingAtlasSensorBoard atlasSensorBoard(&corePlatform, &serialPortExpander, &sensorBoard, nullptr);
+LoggingAtlasSensorBoard atlasSensorBoard(&corePlatform, &serialPortExpander, &sensorBoard, nullptr, nullptr);
 
 void setup() {
     Serial.begin(115200);

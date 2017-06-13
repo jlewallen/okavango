@@ -5,7 +5,16 @@
 #include <SD.h>
 #include "protocol.h"
 
-class Queue {
+class IQueue {
+public:
+    virtual void startAtBeginning() = 0;
+    virtual int16_t size() = 0;
+    virtual uint8_t *dequeue() = 0;
+    virtual void enqueue(uint8_t *entry, size_t size = FK_QUEUE_ENTRY_SIZE) = 0;
+
+};
+
+class Queue : public IQueue {
 private:
     const char *filename;
     uint8_t buffer[FK_QUEUE_ENTRY_SIZE];

@@ -8,7 +8,7 @@
 
 class DataBoatReadingHandler {
 public:
-    virtual void handleReading(data_boat_packet_t *packet) = 0;
+    virtual void handleReading(data_boat_packet_t *packet, size_t numberOfValues) = 0;
 };
 
 class LoggingAtlasSensorBoard : public AtlasSensorBoard {
@@ -17,7 +17,7 @@ private:
     DataBoatReadingHandler *handler;
 
 public:
-    LoggingAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard, DataBoatReadingHandler *handler);
+    LoggingAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard, FuelGauge *fuelGauge, DataBoatReadingHandler *handler);
 
 public:
     void done(SensorBoard *board) override;

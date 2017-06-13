@@ -4,8 +4,8 @@
 #include "Logger.h"
 #include "Queue.h"
 
-LoggingAtlasSensorBoard::LoggingAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard, DataBoatReadingHandler *handler) :
-    AtlasSensorBoard(corePlatform, serialPortExpander, sensorBoard, nullptr), handler(handler) {
+LoggingAtlasSensorBoard::LoggingAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard, FuelGauge *fuelGauge, DataBoatReadingHandler *handler) :
+    AtlasSensorBoard(corePlatform, serialPortExpander, sensorBoard, fuelGauge), handler(handler) {
 }
 
 void LoggingAtlasSensorBoard::done(SensorBoard *board) {
@@ -56,6 +56,10 @@ void LoggingAtlasSensorBoard::done(SensorBoard *board) {
                         packet.speed = gps.speed;
 
                         logPacketLocally(numberOfValues);
+
+                        if (handler != nullptr) {
+                            handler->handleReading(&packet, numberOfValues);
+                        }
 
                         board->takeReading();
 

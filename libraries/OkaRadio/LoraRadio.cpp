@@ -8,6 +8,10 @@ LoraRadio::LoraRadio(uint8_t pinCs, uint8_t pinG0, uint8_t pinEnable, uint8_t pi
 }
 
 bool LoraRadio::setup() {
+    if (available) {
+        return true;
+    }
+
     pinMode(pinCs, OUTPUT);
     digitalWrite(pinCs, HIGH);
 
