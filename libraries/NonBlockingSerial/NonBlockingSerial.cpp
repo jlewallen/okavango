@@ -97,6 +97,19 @@ void NonBlockingSerialProtocol::close() {
 void NonBlockingSerialProtocol::setSerial(SerialType *newSerial) {
     clearSendsCounter();
     serial = newSerial;
+    flush();
+}
+
+void NonBlockingSerialProtocol::flush() {
+    uint32_t started = millis();
+    while (true) {
+        if (millis() - started > 200) {
+            break;
+        }
+        while (serial->available()) {
+            serial->read();
+        }
+    }
 }
 
 SerialType *NonBlockingSerialProtocol::getSerial() {

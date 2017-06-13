@@ -37,12 +37,11 @@ model {
 
                 "Hardware",
                 "OkaUtilities",
-                "Okavango",
                 "OkaCommon",
                 "IridiumSBD",
                 "CortexM0Only",
                 "NonBlockingSerial",
-                "AtlasBoards", // TODO: Remove
+                "OkaRadio",
             ]
         }
     }

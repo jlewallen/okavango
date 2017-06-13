@@ -1,12 +1,22 @@
 #include <Adafruit_GPS.h>
 
 #include "LoggingAtlasSensorBoard.h"
+#include "Logger.h"
+#include "Queue.h"
 
-LoggingAtlasSensorBoard::LoggingAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard) :
-    AtlasSensorBoard(corePlatform, serialPortExpander, sensorBoard, nullptr, true) {
+LoggingAtlasSensorBoard::LoggingAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard, DataBoatReadingHandler *handler) :
+    AtlasSensorBoard(corePlatform, serialPortExpander, sensorBoard, nullptr), handler(handler) {
 }
 
-void LoggingAtlasSensorBoard::takeExtraReadings() {
+void LoggingAtlasSensorBoard::done(SensorBoard *board) {
+    size_t index = 0;
+
+    for (uint8_t i = 0; i < board->getNumberOfValues(); ++i) {
+        if (index < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES) {
+            packet.values[index++] = board->getValues()[i];
+        }
+    }
+
     portExpander->select(5);
 
     HardwareSerial *serial = portExpander->getSerial();
@@ -28,15 +38,25 @@ void LoggingAtlasSensorBoard::takeExtraReadings() {
                 if (gps.parse(gps.lastNMEA())) {
                     if (gps.fix) {
                         DEBUG_PRINTLN("Fix");
+
                         DateTime dateTime = DateTime(gps.year, gps.month, gps.year, gps.hour, gps.minute, gps.seconds);
                         uint32_t time = dateTime.unixtime();
                         SystemClock->set(time);
-                        dataBoatPacket.time = time;
-                        dataBoatPacket.latitude = gps.latitudeDegrees;
-                        dataBoatPacket.longitude = gps.longitudeDegrees;
-                        dataBoatPacket.altitude = gps.altitude;
-                        dataBoatPacket.angle = gps.angle;
-                        dataBoatPacket.speed = gps.speed;
+
+                        packet.time = SystemClock->now();
+                        packet.battery = gauge != nullptr ? gauge->stateOfCharge() : 0;
+                        packet.fk.kind = FK_PACKET_KIND_DATA_BOAT_SENSORS;
+                        packet.time = time;
+                        packet.latitude = gps.latitudeDegrees;
+                        packet.longitude = gps.longitudeDegrees;
+                        packet.altitude = gps.altitude;
+                        packet.angle = gps.angle;
+                        packet.speed = gps.speed;
+
+                        logPacketLocally();
+
+                        board->takeReading();
+
                         return;
                     }
                     else {
@@ -50,18 +70,18 @@ void LoggingAtlasSensorBoard::takeExtraReadings() {
     serial->end();
 }
 
-void LoggingAtlasSensorBoard::writePacket(Stream &stream, atlas_sensors_packet_t *packet) {
-    stream.print(dataBoatPacket.latitude, 6);
+void LoggingAtlasSensorBoard::writePacket(Stream &stream, data_boat_packet_t *packet) {
+    stream.print(packet->latitude, 6);
     stream.print(",");
-    stream.print(dataBoatPacket.longitude, 6);
+    stream.print(packet->longitude, 6);
     stream.print(",");
-    stream.print(dataBoatPacket.altitude, 6);
+    stream.print(packet->altitude, 6);
     stream.print(",");
-    stream.print(dataBoatPacket.angle);
+    stream.print(packet->angle);
     stream.print(",");
-    stream.print(dataBoatPacket.speed);
+    stream.print(packet->speed);
 
-    stream.print(dataBoatPacket.time);
+    stream.print(packet->time);
     stream.print(",");
     stream.print(packet->battery);
 
@@ -73,6 +93,16 @@ void LoggingAtlasSensorBoard::writePacket(Stream &stream, atlas_sensors_packet_t
     stream.println();
 }
 
-void LoggingAtlasSensorBoard::doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) {
-}
+void LoggingAtlasSensorBoard::logPacketLocally() {
+    Queue queue;
+    queue.enqueue((uint8_t *)&packet, sizeof(data_boat_packet_t));
+    queue.startAtBeginning();
 
+    File file = Logger::open(FK_SETTINGS_ATLAS_DATA_FILENAME);
+    if (file) {
+        writePacket(file, &packet);
+        file.close();
+    }
+
+    writePacket(Serial, &packet);
+}

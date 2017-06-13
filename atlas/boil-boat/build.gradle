@@ -41,11 +41,11 @@ model {
 
                 "Hardware",
                 "OkaUtilities",
-                "Okavango",
                 "OkaCommon",
                 "CortexM0Only",
                 "OkaSensors",
-                "AtlasBoards",
+                "OkaRadio",
+                "OkaRadioSensors",
                 "NonBlockingSerial",
                 "DataBoats",
             ]

@@ -31,12 +31,11 @@ model {
 
                 "Hardware",
                 "OkaUtilities",
-                "Okavango",
                 "OkaCommon",
                 "OkaSensors",
                 "CortexM0Only",
                 "NonBlockingSerial",
-                "AtlasBoards", // TODO: Remove
+                "OkaRadio",
 
                 "https://github.com/adafruit/Adafruit_Sensor.git",
                 "https://github.com/adafruit/Adafruit_BME280_Library.git",

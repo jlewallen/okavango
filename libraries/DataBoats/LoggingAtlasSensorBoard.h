@@ -2,22 +2,30 @@
 #define LOGGING_ATLAS_SENSOR_BOARD_INCLUDED
 
 #include "core.h"
+#include "protocol.h"
 #include "SerialPortExpander.h"
 #include "AtlasSensorBoard.h"
 
+class DataBoatReadingHandler {
+public:
+    virtual void handleReading(data_boat_packet_t *packet) = 0;
+};
+
 class LoggingAtlasSensorBoard : public AtlasSensorBoard {
 private:
-    data_boat_packet_t dataBoatPacket;
+    data_boat_packet_t packet;
+    DataBoatReadingHandler *handler;
 
 public:
-    LoggingAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard);
+    LoggingAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard, DataBoatReadingHandler *handler);
 
 public:
-    void doneReadingSensors(Queue *queue, atlas_sensors_packet_t *packet) override;
+    void done(SensorBoard *board) override;
 
-protected:
-    void takeExtraReadings() override;
-    void writePacket(Stream &stream, atlas_sensors_packet_t *packet) override;
+private:
+    void logPacketLocally();
+    void writePacket(Stream &stream, data_boat_packet_t *packet);
+
 };
 
 #endif

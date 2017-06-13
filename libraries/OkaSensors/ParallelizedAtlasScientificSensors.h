@@ -8,11 +8,11 @@
 
 enum class ParallelizedAtlasScientificSensorsState {
     Start = 0,
+    Factory,
     DisableContinuousReading,
     ConfigureResponse,
     Status0,
-    Factory,
-    Status2,
+    Status1,
     LedsOn,
     Configure,
     Waiting,

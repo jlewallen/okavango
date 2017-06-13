@@ -47,6 +47,7 @@ protected:
     virtual NonBlockingHandleStatus handle(String reply);
     void appendToBuffer(char newChar);
     void close();
+    void flush();
 };
 
 #endif

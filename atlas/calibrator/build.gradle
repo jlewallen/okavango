@@ -40,11 +40,9 @@ model {
 
                 "Hardware",
                 "OkaUtilities",
-                "Okavango",
                 "OkaCommon",
                 "OkaSensors",
                 "Repl",
-                "AtlasBoards",
                 "NonBlockingSerial",
             ]
         }

@@ -31,11 +31,11 @@ model {
 
                 "Hardware",
                 "OkaUtilities",
-                "Okavango",
                 "OkaCommon",
                 "OkaSensors",
                 "CortexM0Only",
-                "AtlasBoards",
+                "OkaRadio",
+                "OkaRadioSensors",
                 "NonBlockingSerial",
 
                 "https://github.com/adafruit/Adafruit_Sensor.git",

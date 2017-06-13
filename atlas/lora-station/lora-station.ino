@@ -3,7 +3,7 @@
 #include <Adafruit_SleepyDog.h>
 
 #include "network.h"
-#include "LoraAtlasBoard.h"
+#include "LoraAtlasSensorBoard.h"
 
 #define BATTERY_WAIT_START_THRESHOLD  10.0f
 #define BATTERY_WAIT_STOP_THRESHOLD   30.0f

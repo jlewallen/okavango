@@ -5,7 +5,6 @@
 #include "Platforms.h"
 #include "core.h"
 #include "AtlasSensorBoard.h"
-#include "DataBoat.h"
 #include "LoggingAtlasSensorBoard.h"
 
 const uint8_t PIN_SPE_ISO_SEL0 = 14;
@@ -19,7 +18,7 @@ SingleSerialPortExpander speNormal(PIN_SPE_SEL0, PIN_SPE_SEL1, ConductivityConfi
 DualSerialPortExpander serialPortExpander(&speIsolated, &speNormal);
 ParallelizedAtlasScientificSensors sensorBoard(&logPrinter, &serialPortExpander, true);
 ZeroSystemClock Clock;
-LoggingAtlasSensorBoard atlasSensorBoard(&corePlatform, &serialPortExpander, &sensorBoard);
+LoggingAtlasSensorBoard atlasSensorBoard(&corePlatform, &serialPortExpander, &sensorBoard, nullptr);
 
 void setup() {
     Serial.begin(115200);
