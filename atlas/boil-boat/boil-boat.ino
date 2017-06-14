@@ -16,6 +16,7 @@ const uint8_t PIN_SPE_SEL1 = 17;
 class SendSinglePacketHandler : public DataBoatReadingHandler {
 private:
     LoraRadio radio;
+
 public:
     SendSinglePacketHandler() : radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST, PIN_RFM95_RST) {
     }

@@ -7,22 +7,31 @@
 #include "protocol.h"
 
 enum NetworkState {
-    EnqueueFromNetwork,
-    PingForListener,
-    ListenForPong,
-    ListenForAck,
-    GiveListenerABreak,
-    Sleep,
-    QueueEmpty,
-    NobodyListening,
-    Quiet
+    EnqueueFromNetwork = 0,
+    PingForListener = 1,
+    ListenForPong = 2,
+    ListenForAck = 3,
+    GiveListenerABreak = 4,
+    Sleep = 5,
+    QueueEmpty = 6,
+    NobodyListening = 7,
+    Quiet = 8
 };
+
+typedef struct rf95_header_t {
+    uint8_t to;
+    uint8_t from;
+    uint8_t flags;
+    uint8_t id;
+    uint8_t rssi;
+} rf95_header_t;
 
 class NetworkProtocolState;
 
 class NetworkCallbacks {
 public:
     virtual bool forceTransmission(NetworkProtocolState *networknetworkProtocol) = 0;
+    virtual void handlePacket(rf95_header_t *header, fk_network_packet_t *packet, size_t packetSize) = 0;
 };
 
 class NetworkProtocolState {

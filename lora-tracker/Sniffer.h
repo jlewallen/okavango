@@ -5,14 +5,6 @@
 #include "network.h"
 #include "LoraRadio.h"
 
-typedef struct rf95_header_t {
-    uint8_t to;
-    uint8_t from;
-    uint8_t flags;
-    uint8_t id;
-    uint8_t rssi;
-} rf95_header_t;
-
 typedef struct packet_queue_entry_t {
     packet_queue_entry_t *next;
     rf95_header_t header;
@@ -26,10 +18,11 @@ public:
 
 };
 
-class Sniffer {
+class Sniffer : public NetworkCallbacks {
 private:
+    FileQueue queue;
+    NetworkProtocolState networkProtocol;
     packet_queue_entry_t *head = nullptr;
-    LoraRadio *radio = nullptr;
     PacketHandler *handler = nullptr;
     uint32_t lastPacket = 0;
     bool receiving = 0;
@@ -39,6 +32,10 @@ public:
 
 public:
     void tick();
+
+public:
+    virtual bool forceTransmission(NetworkProtocolState *networknetworkProtocol) override;
+    virtual void handlePacket(rf95_header_t *header, fk_network_packet_t *packet, size_t packetSize) override;
 
 };
 

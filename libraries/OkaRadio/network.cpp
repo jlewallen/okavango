@@ -153,6 +153,17 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize
     DEBUG_PRINT(F("P:"));
     DEBUG_PRINTLN(packet->kind);
 
+    if (networkCallbacks != nullptr) {
+        rf95_header_t header = { 0 };
+        header.to = radio->headerTo();
+        header.from = radio->headerFrom();
+        header.flags = radio->headerFlags();
+        header.id = radio->headerId();
+        header.rssi = radio->lastRssi();
+
+        networkCallbacks->handlePacket(&header, packet, packetSize);
+    }
+
     switch (packet->kind) {
     case FK_PACKET_KIND_PING: {
         if (state == NetworkState::EnqueueFromNetwork) {
@@ -247,7 +258,9 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize
     }
     default: {
         DEBUG_PRINT(F("Unknown: "));
-        DEBUG_PRINTLN(packetSize);
+        DEBUG_PRINT(packetSize);
+        DEBUG_PRINT(", ");
+        DEBUG_PRINTLN(packet->kind);
 
         // So this is actually weird. I'm thinking that sometimes things get corrupted and we
         // should avoid that rather than causing the remote end to retry all over again. I saw
@@ -321,7 +334,9 @@ void NetworkProtocolState::dequeueAndSend() {
     if (state == NetworkState::ListenForPong || state == NetworkState::ListenForAck) {
         while (true) {
             fk_network_packet_t *packet = (fk_network_packet_t *)queue->dequeue();
-            if (packet != NULL) {
+            if (packet != nullptr) {
+                Serial.println("Sending packet");
+
                 if (packet->kind != FK_PACKET_KIND_ACK &&
                     packet->kind != FK_PACKET_KIND_NACK &&
                     packet->kind != FK_PACKET_KIND_PING &&
@@ -331,14 +346,15 @@ void NetworkProtocolState::dequeueAndSend() {
                     radio->reply((uint8_t *)packet, packetSize);
                     radio->waitPacketSent();
                     checkForPacket();
-                    packet = NULL;
+                    packet = nullptr;
 
                     transition(NetworkState::ListenForAck, 5000);
 
                     break;
                 }
                 else {
-                    DEBUG_PRINTLN(F("Ign non-ACK"));
+                    DEBUG_PRINT(F("Ignore: "));
+                    DEBUG_PRINTLN(packet->kind);
                 }
             }
             else {
