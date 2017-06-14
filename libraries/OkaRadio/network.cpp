@@ -134,7 +134,7 @@ static void logAtlasPacket(atlas_sensors_packet_t *p) {
 
 static void logDataBoatPacket(data_boat_packet_t *p) {
     const char *header = "time,battery,lat,lon,alt,speed,angle,temp,do,ph,ec,tds,salinity,sg";
-    File file = Logger::open("DATA_BOAT.CSV", header);
+    File file = Logger::open("DATABOAT.CSV", header);
     if (file) {
         file.print(p->time);
         file.print(",");
