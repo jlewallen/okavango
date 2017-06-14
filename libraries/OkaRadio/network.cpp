@@ -132,6 +132,35 @@ static void logAtlasPacket(atlas_sensors_packet_t *p) {
     }
 }
 
+static void logDataBoatPacket(data_boat_packet_t *p) {
+    const char *header = "time,battery,lat,lon,alt,speed,angle,temp,do,ph,ec,tds,salinity,sg";
+    File file = Logger::open("DATA_BOAT.CSV", header);
+    if (file) {
+        file.print(p->time);
+        file.print(",");
+        file.print(p->battery);
+        file.print(",");
+        file.print(p->latitude);
+        file.print(",");
+        file.print(p->longitude);
+        file.print(",");
+        file.print(p->altitude);
+        file.print(",");
+        file.print(p->speed);
+        file.print(",");
+        file.print(p->angle);
+
+        for (uint8_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
+            file.print(",");
+            file.print(p->values[i]);
+        }
+
+        file.println();
+
+        file.close();
+    }
+}
+
 static void logSonarPacket(sonar_station_packet_t *p) {
     const char *header = "time,battery,level1,level2,level3,level4,level5";
     File file = Logger::open("SONAR.CSV");
@@ -200,6 +229,21 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize
                 sonar_station_packet.time = SystemClock->now();
                 logSonarPacket(&sonar_station_packet);
                 queue->enqueue((uint8_t *)&sonar_station_packet, sizeof(sonar_station_packet_t));
+            }
+
+            sendAck();
+        }
+        break;
+    }
+    case FK_PACKET_KIND_DATA_BOAT_SENSORS: {
+        if (state == NetworkState::EnqueueFromNetwork) {
+            delay(50);
+
+            {
+                data_boat_packet_t data_boat_packet_t;
+                memcpy((void *)&data_boat_packet_t, packet, sizeof(data_boat_packet_t));
+                logDataBoatPacket(&data_boat_packet_t);
+                queue->enqueue((uint8_t *)&data_boat_packet_t, sizeof(data_boat_packet_t));
             }
 
             sendAck();
