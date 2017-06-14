@@ -48,9 +48,10 @@ private:
     bool pingAgainAfterDequeue;
     NetworkCallbacks *networkCallbacks;
     uint8_t identity;
+    bool sendSystemTimeInPong;
 
 public:
-    NetworkProtocolState(uint8_t identity, NetworkState state, LoraRadio *radio, Queue *queue, NetworkCallbacks *networkCallbacks);
+    NetworkProtocolState(uint8_t identity, NetworkState state, LoraRadio *radio, Queue *queue, NetworkCallbacks *networkCallbacks, bool sendSystemTimeInPong = true);
 
 public:
     void tick();

@@ -7,9 +7,9 @@
 #define QUIET_DURATION      300
 #define RETRY_DELAY         2500
 
-NetworkProtocolState::NetworkProtocolState(uint8_t identity, NetworkState state, LoraRadio *radio, Queue *queue, NetworkCallbacks *networkCallbacks) :
+NetworkProtocolState::NetworkProtocolState(uint8_t identity, NetworkState state, LoraRadio *radio, Queue *queue, NetworkCallbacks *networkCallbacks, bool sendSystemTimeInPong) :
     identity(identity), state(state), radio(radio), queue(queue), stateDelay(0), lastTick(0), lastTickNonDelayed(0),
-    pingAgainAfterDequeue(true), packetsReceived(0), lastPacketTime(0),
+    pingAgainAfterDequeue(true), packetsReceived(0), lastPacketTime(0), sendSystemTimeInPong(sendSystemTimeInPong),
     networkCallbacks(networkCallbacks) {
 
     startedAt = platformUptime();
@@ -207,7 +207,9 @@ void NetworkProtocolState::handle(fk_network_packet_t *packet, size_t packetSize
             fk_network_pong_t pong;
             memzero((uint8_t *)&pong, sizeof(fk_network_pong_t));
             pong.fk.kind = FK_PACKET_KIND_PONG;
-            pong.time = SystemClock->now();
+            if (sendSystemTimeInPong) {
+                pong.time = SystemClock->now();
+            }
             radio->reply((uint8_t *)&pong, sizeof(fk_network_pong_t));
             radio->waitPacketSent();
             checkForPacket();

@@ -7,7 +7,7 @@ PacketSender::PacketSender(LoraRadio *radio, Queue *queue) :
 }
 
 void PacketSender::send() {
-    NetworkProtocolState networkProtocol(FK_IDENTITY_ATLAS, NetworkState::PingForListener, radio, queue, NULL);
+    NetworkProtocolState networkProtocol(FK_IDENTITY_ATLAS, NetworkState::PingForListener, radio, queue, nullptr, false);
 
     Watchdog.enable();
 

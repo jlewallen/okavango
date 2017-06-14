@@ -1,7 +1,7 @@
 #include "Sniffer.h"
 
 Sniffer::Sniffer(LoraRadio *radio, PacketHandler *handler) :
-    networkProtocol(FK_IDENTITY_COLLECTOR, NetworkState::EnqueueFromNetwork, radio, &queue, this), handler(handler) {
+    networkProtocol(FK_IDENTITY_COLLECTOR, NetworkState::EnqueueFromNetwork, radio, &queue, this, false), handler(handler) {
 }
 
 bool Sniffer::forceTransmission(NetworkProtocolState *networknetworkProtocol) {
