@@ -55,6 +55,8 @@ void setup() {
 
     corePlatform.setup(PIN_SD_CS, PIN_RFM95_CS, PIN_RFM95_RST, true);
 
+    SystemClock->setup();
+
     serialPortExpander.setup();
 
     Serial.println("Loop");

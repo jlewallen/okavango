@@ -16,7 +16,7 @@ void LoggingAtlasSensorBoard::done(SensorBoard *board) {
             packet.values[numberOfValues++] = board->getValues()[i];
         }
         else {
-            Serial.println("Too many values in done!");
+            Serial.println("Too many values (in done)!");
         }
     }
 
@@ -45,9 +45,27 @@ void LoggingAtlasSensorBoard::done(SensorBoard *board) {
                     if (gps.fix) {
                         DEBUG_PRINTLN("Fix");
 
-                        DateTime dateTime = DateTime(gps.year, gps.month, gps.year, gps.hour, gps.minute, gps.seconds);
-                        uint32_t time = dateTime.unixtime();
-                        SystemClock->set(time);
+                        if (lastClockAdjustment == 0) {
+                            DateTime dateTime = DateTime(gps.year, gps.month, gps.year, gps.hour, gps.minute, gps.seconds);
+                            uint32_t time = dateTime.unixtime();
+                            SystemClock->set(time);
+
+                            Serial.print(gps.year);
+                            Serial.print(" ");
+                            Serial.print(gps.month);
+                            Serial.print(" ");
+                            Serial.print(gps.year);
+                            Serial.print(" ");
+                            Serial.print(gps.hour);
+                            Serial.print(" ");
+                            Serial.print(gps.minute);
+                            Serial.print(" ");
+                            Serial.print(gps.seconds);
+                            Serial.print(" ");
+                            Serial.println(time);
+
+                            lastClockAdjustment = millis();
+                        }
 
                         packet.latitude = gps.latitudeDegrees;
                         packet.longitude = gps.longitudeDegrees;
@@ -69,7 +87,8 @@ void LoggingAtlasSensorBoard::done(SensorBoard *board) {
 
     serial->end();
 
-    packet.time = SystemClock->now();
+    uint32_t now = SystemClock->now();
+    packet.time = now;
     packet.battery = gauge != nullptr ? gauge->stateOfCharge() : 0;
     packet.fk.kind = FK_PACKET_KIND_DATA_BOAT_SENSORS;
 
@@ -96,10 +115,6 @@ void LoggingAtlasSensorBoard::writePacket(Stream &stream, data_boat_packet_t *pa
     stream.print(packet->angle);
     stream.print(",");
     stream.print(packet->speed);
-
-    stream.print(packet->time);
-    stream.print(",");
-    stream.print(packet->battery);
 
     for (uint8_t i = 0; i < numberOfValues; ++i) {
         stream.print(",");

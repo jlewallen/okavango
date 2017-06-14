@@ -62,7 +62,7 @@ typedef struct weather_station_packet_t {
 
 typedef struct data_boat_packet_t {
     fk_network_packet_t fk;
-    float time;
+    uint32_t time;
     float battery;
     float latitude;
     float longitude;

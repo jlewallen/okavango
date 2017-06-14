@@ -14,7 +14,8 @@ public:
 class LoggingAtlasSensorBoard : public AtlasSensorBoard {
 private:
     data_boat_packet_t packet;
-    DataBoatReadingHandler *handler;
+    DataBoatReadingHandler *handler = nullptr;
+    uint32_t lastClockAdjustment = 0;
 
 public:
     LoggingAtlasSensorBoard(CorePlatform *corePlatform, SerialPortExpander *serialPortExpander, SensorBoard *sensorBoard, FuelGauge *fuelGauge, DataBoatReadingHandler *handler);
