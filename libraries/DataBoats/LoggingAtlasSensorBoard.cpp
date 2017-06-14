@@ -54,7 +54,7 @@ void LoggingAtlasSensorBoard::done(SensorBoard *board) {
                             Serial.print(" ");
                             Serial.print(gps.month);
                             Serial.print(" ");
-                            Serial.print(gps.year);
+                            Serial.print(gps.day);
                             Serial.print(" ");
                             Serial.print(gps.hour);
                             Serial.print(" ");

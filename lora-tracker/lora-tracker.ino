@@ -49,7 +49,12 @@ public:
                 tft->setTextColor(ILI9341_WHITE);
 
                 char buffer[256];
-                snprintf(buffer, sizeof(buffer), "%d\n%f\n%f\n%f\n%f", db.time, db.latitude, db.longitude, db.altitude, db.speed);
+
+                DateTime dateTime = DateTime(db.time);
+
+                snprintf(buffer, sizeof(buffer), "%d/%d %02d:%02d:%02d\n%f\n%f\n%f\n%f",
+                         dateTime.month(), dateTime.day(), dateTime.hour(), dateTime.minute(), dateTime.second(),
+                         db.latitude, db.longitude, db.altitude, db.speed);
 
                 tft->println(buffer);
             } else {
