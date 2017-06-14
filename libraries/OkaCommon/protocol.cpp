@@ -10,6 +10,6 @@ size_t fk_packet_get_size(fk_network_packet_t *packet) {
     case FK_PACKET_KIND_WEATHER_STATION: return sizeof(weather_station_packet_t);
     case FK_PACKET_KIND_SONAR_STATION: return sizeof(sonar_station_packet_t);
     case FK_PACKET_KIND_DATA_BOAT_SENSORS: return sizeof(data_boat_packet_t);
-    defaut: return FK_QUEUE_ENTRY_SIZE;
+    default: return FK_QUEUE_ENTRY_SIZE;
     }
 }
