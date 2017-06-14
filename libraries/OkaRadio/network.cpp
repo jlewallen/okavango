@@ -387,11 +387,7 @@ void NetworkProtocolState::dequeueAndSend() {
             if (packet != nullptr) {
                 Serial.println("Sending packet");
 
-                if (packet->kind != FK_PACKET_KIND_ACK &&
-                    packet->kind != FK_PACKET_KIND_NACK &&
-                    packet->kind != FK_PACKET_KIND_PING &&
-                    packet->kind != FK_PACKET_KIND_PONG) {
-
+                if (!fk_packet_is_control(packet)) {
                     size_t packetSize = fk_packet_get_size(packet);
                     radio->reply((uint8_t *)packet, packetSize);
                     radio->waitPacketSent();

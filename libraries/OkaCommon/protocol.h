@@ -107,5 +107,7 @@ typedef struct fk_network_diagnostics_collector_t {
 #define FK_QUEUE_ENTRY_SIZE                                 242
 
 extern size_t fk_packet_get_size(fk_network_packet_t *packet);
+extern const char *fk_packet_get_kind(fk_network_packet_t *packet);
+extern bool fk_packet_is_control(fk_network_packet_t *packet);
 
 #endif
