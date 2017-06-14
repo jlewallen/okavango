@@ -118,3 +118,25 @@ void FileQueue::copyInto(Queue *into) {
         into->enqueue(data);
     }
 }
+
+SingleEntryQueue::SingleEntryQueue(uint8_t *entry) : entry(entry), saved(entry) {
+}
+
+void SingleEntryQueue::startAtBeginning() {
+    entry = saved;
+}
+
+int16_t SingleEntryQueue::size() {
+    return entry == nullptr ? 0 : 1;
+}
+
+uint8_t *SingleEntryQueue::dequeue() {
+    if (entry == nullptr) {
+        return nullptr;
+    }
+    entry = nullptr;
+    return saved;
+}
+
+void SingleEntryQueue::enqueue(uint8_t *entry, size_t size) {
+}

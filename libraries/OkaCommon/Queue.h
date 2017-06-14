@@ -20,25 +20,14 @@ private:
     uint8_t *entry = nullptr;
 
 public:
-    SingleEntryQueue(uint8_t *entry) : entry(entry), saved(saved) {
-    }
+    SingleEntryQueue(uint8_t *entry);
 
 public:
-    virtual void startAtBeginning() override {
-        entry = saved;
-    }
+    virtual void startAtBeginning() override;
+    virtual int16_t size() override;
+    virtual uint8_t *dequeue() override;
+    virtual void enqueue(uint8_t *entry, size_t size = FK_QUEUE_ENTRY_SIZE) override;
 
-    virtual int16_t size() override {
-        return entry == nullptr ? 0 : 1;
-    }
-
-    virtual uint8_t *dequeue() override {
-        entry = nullptr;
-        return saved;
-    }
-
-    virtual void enqueue(uint8_t *entry, size_t size = FK_QUEUE_ENTRY_SIZE) override {
-    }
 };
 
 class FileQueue : public Queue {
