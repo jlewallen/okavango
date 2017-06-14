@@ -3,6 +3,8 @@
 #include "Diagnostics.h"
 #include "Logger.h"
 
+#define QUIET_DELAY         3000
+#define QUIET_DURATION      300
 #define RETRY_DELAY         2500
 
 NetworkProtocolState::NetworkProtocolState(uint8_t identity, NetworkState state, LoraRadio *radio, Queue *queue, NetworkCallbacks *networkCallbacks) :
@@ -45,14 +47,18 @@ void NetworkProtocolState::tick() {
         case NetworkState::EnqueueFromNetwork: {
             checkForPacket();
 
-            int32_t lastPackageAge = (int32_t)platformUptime() - (int32_t)lastPacketTime;
-            if (lastPackageAge > 5 * 1000) {
-                transition(NetworkState::Quiet, 500);
+            if (lastPacketTime > 0) {
+                int32_t lastPacketAge = (int32_t)platformUptime() - (int32_t)lastPacketTime;
+                if (lastPacketAge > QUIET_DELAY) {
+                    transition(NetworkState::Quiet, QUIET_DURATION);
+                }
             }
 
             break;
         }
         case NetworkState::Quiet: {
+            lastPacketTime = 0;
+
             transition(NetworkState::EnqueueFromNetwork, 0);
 
             break;
