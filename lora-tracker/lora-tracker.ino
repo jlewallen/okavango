@@ -28,20 +28,23 @@
 class DisplayPacketOnTft : public PacketHandler {
 private:
     Adafruit_ILI9341 *tft;
+    LoraRadio *radio;
+
 public:
-    DisplayPacketOnTft(Adafruit_ILI9341 *tft) : tft(tft) {
+    DisplayPacketOnTft(Adafruit_ILI9341 *tft, LoraRadio *radio) : tft(tft), radio(radio) {
     }
 
 public:
     virtual void handle(rf95_header_t *header, fk_network_packet_t *packet, size_t packetSize) override {
         if (!fk_packet_is_control(packet)) {
             if (packet->kind == FK_PACKET_KIND_DATA_BOAT_SENSORS) {
+                radio->sleep();
+
                 data_boat_packet_t db = { 0 };
                 memcpy((uint8_t *)&db, (uint8_t *)packet, sizeof(data_boat_packet_t));
 
                 Serial.println("Dispalying packet...");
 
-                // tft->fillScreen(ILI9341_BLACK);
                 tft->fillRect(0, 0, tft->width(), 100, ILI9341_BLACK);
 
                 tft->setCursor(0, 0);
@@ -74,7 +77,7 @@ CorePlatform corePlatform;
 Adafruit_ILI9341 tft(TFT_CS, TFT_DC);
 RH_RF95 rf95;
 LoraRadio radio(PIN_RFM95_CS, PIN_RFM95_INT, PIN_RFM95_RST, PIN_RFM95_RST);
-DisplayPacketOnTft handler(&tft);
+DisplayPacketOnTft handler(&tft, &radio);
 Sniffer sniffer(&radio, &handler);
 MillisSystemClock Clock;
 
