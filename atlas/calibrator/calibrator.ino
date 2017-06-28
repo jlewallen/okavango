@@ -53,18 +53,6 @@ String tempScript[] = {
     "r"
 };
 
-ConductivityConfig conductivityConfig = ConductivityConfig::OnSerial2;
-
-SerialType *getSerialForPort(uint8_t port) {
-    if (port < 3 || conductivityConfig != ConductivityConfig::OnSerial2) {
-        return &Serial1;
-    }
-    else if (port == 3) {
-        return &Serial2;
-    }
-    return &Serial1;
-}
-
 typedef enum ScriptRunnerState {
     WaitingOnReply,
     DeviceIdle
@@ -91,7 +79,7 @@ public:
 
     void select(uint8_t port) {
         portExpander->select(port);
-        SerialType *serial = getSerialForPort(port);
+        SerialType *serial = portExpander->getSerial();
         setSerial(serial);
         drain();
     }
@@ -226,6 +214,8 @@ public:
         if (command.startsWith("p ")) {
             uint8_t number = command.substring(2).toInt();
             scriptRunner->select(number);
+            Serial.print("Selected port ");
+            Serial.println(number);
         }
         else if (command.startsWith("ph")) {
             Serial.println("Ph Mode");
@@ -332,8 +322,21 @@ void setup() {
     Serial.println("Loop");
 }
 
+#define DATA_BOAT
+
 void loop() {
+    #ifdef DATA_BOAT
+    const uint8_t PIN_SPE_ISO_SEL0 = 14;
+    const uint8_t PIN_SPE_ISO_SEL1 = 15;
+    const uint8_t PIN_SPE_SEL0 = 16;
+    const uint8_t PIN_SPE_SEL1 = 17;
+
+    SingleSerialPortExpander speIsolated(PIN_SPE_ISO_SEL0, PIN_SPE_ISO_SEL1, ConductivityConfig::None, &Serial2, 4);
+    SingleSerialPortExpander speNormal(PIN_SPE_SEL0, PIN_SPE_SEL1, ConductivityConfig::None, &Serial1, 1);
+    DualSerialPortExpander portExpander(&speIsolated, &speNormal);
+    #else
     SingleSerialPortExpander portExpander(PORT_EXPANDER_SELECT_PIN_0, PORT_EXPANDER_SELECT_PIN_1, conductivityConfig);
+    #endif
     ScriptRunner scriptRunner(&portExpander);
     CalibratorRepl repl(&scriptRunner);
 
