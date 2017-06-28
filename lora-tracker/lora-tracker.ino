@@ -73,10 +73,10 @@ private:
             snprintf(buffer, len, "%ds ago", secs);
         }
         else if (secs < 60 * 60) {
-            snprintf(buffer, len, "%fm ago", secs / 60.0f);
+            snprintf(buffer, len, "%.2fm ago", secs / 60.0f);
         }
         else {
-            snprintf(buffer, len, "%dh ago", secs / 60.0f / 60.0f);
+            snprintf(buffer, len, "%.2fh ago", secs / 60.0f / 60.0f);
         }
     }
 
