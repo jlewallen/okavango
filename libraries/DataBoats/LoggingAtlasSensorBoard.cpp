@@ -1,4 +1,5 @@
 #include <Adafruit_GPS.h>
+#include <Adafruit_SleepyDog.h>
 
 #include "LoggingAtlasSensorBoard.h"
 #include "Logger.h"
@@ -8,10 +9,24 @@ LoggingAtlasSensorBoard::LoggingAtlasSensorBoard(CorePlatform *corePlatform, Ser
     AtlasSensorBoard(corePlatform, serialPortExpander, sensorBoard, fuelGauge), handler(handler) {
 }
 
+uint32_t LoggingAtlasSensorBoard::deepSleep(uint32_t ms) {
+    if (Serial) {
+        delay(ms);
+        return ms;
+    }
+    uint32_t time = Watchdog.sleep(ms);
+    platformAdjustUptime(time);
+    return time;
+}
+
 void LoggingAtlasSensorBoard::done(SensorBoard *board) {
     size_t numberOfValues = 0;
 
-    for (uint8_t i = 0; i < board->getNumberOfValues(); ++i) {
+    for (size_t i = 0; i < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES; ++i) {
+        packet.values[i] = 0.0f;
+    }
+
+    for (size_t i = 0; i < board->getNumberOfValues(); ++i) {
         if (numberOfValues < FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES) {
             packet.values[numberOfValues++] = board->getValues()[i];
         }
@@ -20,6 +35,43 @@ void LoggingAtlasSensorBoard::done(SensorBoard *board) {
         }
     }
 
+    updateGps();
+
+    updateAndHandlePacket(numberOfValues);
+
+    if (shouldWaitForBattery()) {
+        while (shouldWaitForBattery()) {
+            updateGps();
+
+            updateAndHandlePacket(numberOfValues);
+
+            int32_t remaining = 10 * 1000 * 30;
+            while (remaining >= 0) {
+                remaining -= deepSleep(8192);
+                Watchdog.reset();
+            }
+        }
+        DEBUG_PRINTLN("Waiting for charge...");
+    }
+    else {
+        board->takeReading();
+    }
+}
+
+void LoggingAtlasSensorBoard::updateAndHandlePacket(size_t numberOfValues) {
+    uint32_t now = SystemClock->now();
+    packet.time = now;
+    packet.battery = gauge != nullptr ? gauge->stateOfCharge() : 0;
+    packet.fk.kind = FK_PACKET_KIND_DATA_BOAT_SENSORS;
+
+    logPacketLocally(numberOfValues);
+
+    if (handler != nullptr) {
+        handler->handleReading(&packet, numberOfValues);
+    }
+}
+
+void LoggingAtlasSensorBoard::updateGps() {
     portExpander->select(5);
 
     HardwareSerial *serial = portExpander->getSerial();
@@ -33,7 +85,6 @@ void LoggingAtlasSensorBoard::done(SensorBoard *board) {
 
     bool haveFix = false;
     uint32_t started = millis();
-
     while (!haveFix && millis() - started < 10 * 1000) {
         while (serial->available()) {
             char c = gps.read();
@@ -86,19 +137,16 @@ void LoggingAtlasSensorBoard::done(SensorBoard *board) {
     }
 
     serial->end();
+}
 
-    uint32_t now = SystemClock->now();
-    packet.time = now;
-    packet.battery = gauge != nullptr ? gauge->stateOfCharge() : 0;
-    packet.fk.kind = FK_PACKET_KIND_DATA_BOAT_SENSORS;
-
-    logPacketLocally(numberOfValues);
-
-    if (handler != nullptr) {
-        handler->handleReading(&packet, numberOfValues);
+bool LoggingAtlasSensorBoard::shouldWaitForBattery() {
+    if (gauge == nullptr) {
+        return false;
     }
 
-    board->takeReading();
+    float charge = gauge->stateOfCharge();
+
+    return charge < 15.0f;
 }
 
 void LoggingAtlasSensorBoard::writePacket(Stream &stream, data_boat_packet_t *packet, size_t numberOfValues) {

@@ -26,6 +26,10 @@ public:
 private:
     void logPacketLocally(size_t numberOfValues);
     void writePacket(Stream &stream, data_boat_packet_t *packet, size_t numberOfValues);
+    bool shouldWaitForBattery();
+    void updateGps();
+    void updateAndHandlePacket(size_t numberOfValues);
+    uint32_t deepSleep(uint32_t ms);
 
 };
 

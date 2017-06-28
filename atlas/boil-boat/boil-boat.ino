@@ -30,6 +30,7 @@ public:
     }
 };
 
+FuelGauge gauge;
 CorePlatform corePlatform;
 SingleSerialPortExpander speIsolated(PIN_SPE_ISO_SEL0, PIN_SPE_ISO_SEL1, ConductivityConfig::None, &Serial2, 4);
 SingleSerialPortExpander speNormal(PIN_SPE_SEL0, PIN_SPE_SEL1, ConductivityConfig::None, &Serial1, 1);
@@ -37,7 +38,7 @@ DualSerialPortExpander serialPortExpander(&speIsolated, &speNormal);
 ParallelizedAtlasScientificSensors sensorBoard(&logPrinter, &serialPortExpander, true, FK_ATLAS_SENSORS_PACKET_NUMBER_VALUES);
 Pcf8523SystemClock Clock;
 SendSinglePacketHandler packetHandler;
-LoggingAtlasSensorBoard atlasSensorBoard(&corePlatform, &serialPortExpander, &sensorBoard, nullptr, &packetHandler);
+LoggingAtlasSensorBoard atlasSensorBoard(&corePlatform, &serialPortExpander, &sensorBoard, &gauge, &packetHandler);
 
 void setup() {
     Serial.begin(115200);
@@ -58,6 +59,10 @@ void setup() {
     SystemClock->setup();
 
     serialPortExpander.setup();
+
+    Wire.begin();
+
+    gauge.powerOn();
 
     Serial.println("Loop");
 }
