@@ -131,9 +131,9 @@ public:
                 char buffer[256];
 
                 DateTime dateTime = DateTime(db.time);
-                snprintf(buffer, sizeof(buffer), " %d/%d %02d:%02d:%02d\n\n %f\n %f\n A: %f\n S: %f",
+                snprintf(buffer, sizeof(buffer), " %d/%d %02d:%02d:%02d\n\n %f\n %f\n A: %f\n S: %f\n B: %d%%",
                          dateTime.month(), dateTime.day(), dateTime.hour(), dateTime.minute(), dateTime.second(),
-                         db.latitude, db.longitude, db.altitude, db.speed);
+                         db.latitude, db.longitude, db.altitude, db.speed, (int32_t)db.battery);
                 tft->println(buffer);
 
             } else {
