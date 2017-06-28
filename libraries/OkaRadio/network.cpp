@@ -366,6 +366,7 @@ void NetworkProtocolState::checkForPacket() {
     // platformAdjustUptime(8192);
 
     if (radio->hasPacket()) {
+        radio->idle();
         handle((fk_network_packet_t *)radio->getPacket(), radio->getPacketSize());
         radio->clear();
     }

@@ -65,6 +65,10 @@ public:
         digitalWrite(pinEnable, LOW);
     }
 
+    void idle() {
+        rf95.setModeIdle();
+    }
+
     void reset() {
         powerOff();
         delay(10);
