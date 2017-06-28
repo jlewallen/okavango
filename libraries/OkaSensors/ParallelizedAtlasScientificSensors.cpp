@@ -35,31 +35,22 @@ ParallelizedAtlasScientificSensors::ParallelizedAtlasScientificSensors(Stream *d
 }
 
 void ParallelizedAtlasScientificSensors::takeReading() {
-    portNumber = 0;
-    numberOfValues = 0;
-    numberOfRead0s = 0;
-    for (uint8_t i = 0; i < serialPortExpander->getNumberOfPorts(); ++i) {
-        hasPortFailed[i] = 0;
-    }
-    for (size_t i = 0; i < maximumNumberOfValues; ++i) {
-        values[0] = 0.0f;
-    }
+    start();
     state = ParallelizedAtlasScientificSensorsState::LedsOnBeforeRead;
-    serialPortExpander->select(0);
-    setSerial(serialPortExpander->getSerial());
-    open();
 }
 
 void ParallelizedAtlasScientificSensors::start() {
-    for (uint8_t i = 0; i < serialPortExpander->getNumberOfPorts(); ++i) {
-        hasPortFailed[i] = false;
+    portNumber = 0;
+    numberOfValues = 0;
+    numberOfRead0s = 0;
+    if (runs == 0) {
+        for (uint8_t i = 0; i < serialPortExpander->getNumberOfPorts(); ++i) {
+            hasPortFailed[i] = 0;
+        }
     }
     for (size_t i = 0; i < maximumNumberOfValues; ++i) {
         values[0] = 0.0f;
     }
-    portNumber = 0;
-    numberOfValues = 0;
-    numberOfRead0s = 0;
     state = ParallelizedAtlasScientificSensorsState::Start;
     serialPortExpander->select(0);
     setSerial(serialPortExpander->getSerial());
@@ -106,7 +97,7 @@ bool ParallelizedAtlasScientificSensors::tick() {
             break;
         }
         case ParallelizedAtlasScientificSensorsState::Factory: {
-            if (runs == 0) {
+            if (false && runs == 0) {
                 sendCommand(CMD_FACTORY);
             } else {
                 sendCommand(CMD_STATUS);
@@ -176,7 +167,7 @@ bool ParallelizedAtlasScientificSensors::tick() {
 }
 
 NonBlockingHandleStatus ParallelizedAtlasScientificSensors::handle(String reply, bool forceTransition) {
-    if (forceTransition || reply.indexOf("*") >= 0) {
+    if (forceTransition || reply.indexOf("*OK") >= 0) {
         if (!forceTransition) {
             debug->print(uint32_t(state));
             debug->print(" ");
@@ -187,7 +178,7 @@ NonBlockingHandleStatus ParallelizedAtlasScientificSensors::handle(String reply,
 
         switch (state) {
             case ParallelizedAtlasScientificSensorsState::Factory: {
-                if (forceTransition || runs > 0 || reply.indexOf("*RE") >= 0) {
+                if (forceTransition || runs >= 0 || reply.indexOf("*RE") >= 0) {
                     transition(ParallelizedAtlasScientificSensorsState::DisableContinuousReading);
                 }
                 else {
