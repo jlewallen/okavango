@@ -97,7 +97,7 @@ void LoggingAtlasSensorBoard::updateGps() {
                         DEBUG_PRINTLN("Fix");
 
                         if (lastClockAdjustment == 0) {
-                            DateTime dateTime = DateTime(gps.year, gps.month, gps.year, gps.hour, gps.minute, gps.seconds);
+                            DateTime dateTime = DateTime(gps.year, gps.month, gps.day, gps.hour, gps.minute, gps.seconds);
                             uint32_t time = dateTime.unixtime();
                             SystemClock->set(time);
 

@@ -76,9 +76,8 @@ public:
 
         char buffer[256];
 
-        DateTime dateTime(gps->year, gps->month, gps->year, gps->hour, gps->minute, gps->seconds);
         snprintf(buffer, sizeof(buffer), " %d/%d %02d:%02d:%02d\n\n %f\n %f\n A: %f\n S: %f\n D: %f",
-                 dateTime.month(), dateTime.day(), dateTime.hour(), dateTime.minute(), dateTime.second(),
+                 gps->month, gps->day, gps->hour, gps->minute, gps->seconds,
                  gps->latitudeDegrees, gps->longitudeDegrees, gps->altitude, gps->speed,
                  calculateDistance(gps->latitudeDegrees, gps->longitudeDegrees, db.latitude, db.longitude)
             );
