@@ -30,6 +30,7 @@ model {
                 "https://github.com/Conservify/Adafruit_ASFcore.git",
                 "https://github.com/Conservify/AtSamd.git",
                 "https://github.com/Conservify/Adafruit_SleepyDog.git",
+                "https://github.com/adafruit/Adafruit_GPS.git",
 
                 "Hardware",
                 "OkaUtilities",
