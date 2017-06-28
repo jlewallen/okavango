@@ -28,33 +28,6 @@
 
 #define DEGREES_TO_RADIANS(d) ((d) * (PI / 180.0f))
 
-float calculateDistance(float lat1, float lon1, float lat2, float lon2) {
-    float earthsRadius = 6371.0f;
-    float dLat = DEGREES_TO_RADIANS(lat2 - lat1);
-    float dLon = DEGREES_TO_RADIANS(lon2 - lon1);
-    float a =
-        sin(dLat / 2.0f) * sin(dLat / 2.0f) +
-        cos(DEGREES_TO_RADIANS(lat1)) * cos(DEGREES_TO_RADIANS(lat2)) *
-        sin(dLon / 2.0f) * sin(dLon / 2.0f);
-    float c = 2.0f * atan2(sqrt(a), sqrt(1 - a));
-    float d = earthsRadius * c;
-
-    /*
-    Serial.print(dLat);
-    Serial.print(" ");
-    Serial.print(dLon);
-    Serial.print(" ");
-    Serial.print(a);
-    Serial.print(" ");
-    Serial.print(c);
-    Serial.print(" ");
-    Serial.print(d);
-    Serial.println("");
-    */
-
-    return d;
-}
-
 class DisplayPacketOnTft : public PacketHandler {
 private:
     data_boat_packet_t db;
@@ -67,6 +40,46 @@ public:
         memset((uint8_t *)&db, 0, sizeof(data_boat_packet_t));
     }
 
+private:
+    float calculateDistance(float lat1, float lon1, float lat2, float lon2) {
+        float earthsRadius = 6371.0f;
+        float dLat = DEGREES_TO_RADIANS(lat2 - lat1);
+        float dLon = DEGREES_TO_RADIANS(lon2 - lon1);
+        float a =
+            sin(dLat / 2.0f) * sin(dLat / 2.0f) +
+            cos(DEGREES_TO_RADIANS(lat1)) * cos(DEGREES_TO_RADIANS(lat2)) *
+            sin(dLon / 2.0f) * sin(dLon / 2.0f);
+        float c = 2.0f * atan2(sqrt(a), sqrt(1 - a));
+        float d = earthsRadius * c;
+
+        /*
+          Serial.print(dLat);
+          Serial.print(" ");
+          Serial.print(dLon);
+          Serial.print(" ");
+          Serial.print(a);
+          Serial.print(" ");
+          Serial.print(c);
+          Serial.print(" ");
+          Serial.print(d);
+          Serial.println("");
+        */
+
+        return d;
+    }
+
+    void secondsToDuration(int16_t secs, char *buffer, size_t len) {
+        if (secs < 60) {
+            snprintf(buffer, len, "%ds ago", secs);
+        }
+        else if (secs < 60 * 60) {
+            snprintf(buffer, len, "%fm ago", secs / 60.0f);
+        }
+        else {
+            snprintf(buffer, len, "%dh ago", secs / 60.0f / 60.0f);
+        }
+    }
+
 public:
     void drawLocalInformation(bool indicator) {
         tft->fillRect(0, 150, tft->width(), 150, ILI9341_WHITE);
@@ -76,10 +89,16 @@ public:
 
         char buffer[256];
 
-        snprintf(buffer, sizeof(buffer), " %d/%d %02d:%02d:%02d\n\n %f\n %f\n A: %f\n S: %f\n D: %f",
+        DateTime now = DateTime(gps->year, gps->month, gps->day, gps->hour, gps->minute, gps->seconds);
+        int16_t age = now.unixtime() - db.time;
+        char prettyAge[32];
+        secondsToDuration(age, prettyAge, sizeof(prettyAge));
+
+        snprintf(buffer, sizeof(buffer), " %d/%d %02d:%02d:%02d\n\n %f\n %f\n A: %f\n S: %f\n D: %f\n Age: %s",
                  gps->month, gps->day, gps->hour, gps->minute, gps->seconds,
                  gps->latitudeDegrees, gps->longitudeDegrees, gps->altitude, gps->speed,
-                 calculateDistance(gps->latitudeDegrees, gps->longitudeDegrees, db.latitude, db.longitude)
+                 calculateDistance(gps->latitudeDegrees, gps->longitudeDegrees, db.latitude, db.longitude),
+                 prettyAge
             );
         tft->println(buffer);
 
