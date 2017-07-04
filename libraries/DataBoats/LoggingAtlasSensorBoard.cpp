@@ -9,7 +9,7 @@ LoggingAtlasSensorBoard::LoggingAtlasSensorBoard(CorePlatform *corePlatform, Ser
     AtlasSensorBoard(corePlatform, serialPortExpander, sensorBoard, fuelGauge), handler(handler) {
 }
 
-uint32_t LoggingAtlasSensorBoard::deepSleep(uint32_t ms) {
+int32_t LoggingAtlasSensorBoard::deepSleep(int32_t ms) {
     if (Serial) {
         delay(ms);
         return ms;
@@ -39,19 +39,34 @@ void LoggingAtlasSensorBoard::done(SensorBoard *board) {
 
     updateAndHandlePacket(numberOfValues);
 
+    logPrinter.flush();
+
     if (shouldWaitForBattery()) {
         while (shouldWaitForBattery()) {
+            DEBUG_PRINTLN("Waiting for charge, updating GPS...");
+
             updateGps();
+
+            DEBUG_PRINTLN("Sending packet...");
 
             updateAndHandlePacket(numberOfValues);
 
-            int32_t remaining = 10 * 1000 * 30;
+            DEBUG_PRINTLN("Sleeping...");
+
+            logPrinter.flush();
+
+            int32_t remaining = (int32_t)300000;
             while (remaining >= 0) {
-                remaining -= deepSleep(8192);
+                int32_t time = deepSleep(8192);
+                remaining -= time;
                 Watchdog.reset();
+
+                DEBUG_PRINT(time);
+                DEBUG_PRINT(" ");
+                DEBUG_PRINTLN(remaining);
+                logPrinter.flush();
             }
         }
-        DEBUG_PRINTLN("Waiting for charge...");
     }
     else {
         board->takeReading();

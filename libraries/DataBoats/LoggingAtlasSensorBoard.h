@@ -29,7 +29,7 @@ private:
     bool shouldWaitForBattery();
     void updateGps();
     void updateAndHandlePacket(size_t numberOfValues);
-    uint32_t deepSleep(uint32_t ms);
+    int32_t deepSleep(int32_t ms);
 
 };
 
