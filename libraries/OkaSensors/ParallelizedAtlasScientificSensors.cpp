@@ -4,6 +4,7 @@ const char *CMD_RESPONSE1 = "RESPONSE,1";
 const char *CMD_STATUS = "STATUS";
 const char *CMD_SLOPE = "SLOPE,?";
 const char *CMD_FACTORY = "FACTORY";
+const char *CMD_DEVICE_INFORMATION = "I";
 const char *CMD_LED_ON = "L,1";
 const char *CMD_LED_OFF = "L,0";
 const char *CMD_CONTINUOUS_OFF = "C,0";
@@ -46,13 +47,14 @@ void ParallelizedAtlasScientificSensors::start() {
     if (runs == 0) {
         for (uint8_t i = 0; i < serialPortExpander->getNumberOfPorts(); ++i) {
             hasPortFailed[i] = 0;
+            kinds[i] = AtlasSensorKind::Unknown;
         }
     }
     for (size_t i = 0; i < maximumNumberOfValues; ++i) {
         values[0] = 0.0f;
     }
     state = ParallelizedAtlasScientificSensorsState::Start;
-    serialPortExpander->select(0);
+    serialPortExpander->select(portNumber);
     setSerial(serialPortExpander->getSerial());
     open();
 }
@@ -97,20 +99,19 @@ bool ParallelizedAtlasScientificSensors::tick() {
             break;
         }
         case ParallelizedAtlasScientificSensorsState::Factory: {
-            if (false && runs == 0) {
-                sendCommand(CMD_FACTORY);
-            } else {
-                sendCommand(CMD_STATUS);
-            }
+            sendCommand(CMD_STATUS);
             break;
         }
         case ParallelizedAtlasScientificSensorsState::DisableContinuousReading: {
-            debug->println(serialPortExpander->getPort());
             sendCommand(CMD_CONTINUOUS_OFF);
             break;
         }
         case ParallelizedAtlasScientificSensorsState::ConfigureResponse: {
             sendCommand(CMD_RESPONSE1);
+            break;
+        }
+        case ParallelizedAtlasScientificSensorsState::DeviceInformation: {
+            sendCommand(CMD_DEVICE_INFORMATION);
             break;
         }
         case ParallelizedAtlasScientificSensorsState::Status0: {
@@ -178,12 +179,7 @@ NonBlockingHandleStatus ParallelizedAtlasScientificSensors::handle(String reply,
 
         switch (state) {
             case ParallelizedAtlasScientificSensorsState::Factory: {
-                if (forceTransition || runs >= 0 || reply.indexOf("*RE") >= 0) {
-                    transition(ParallelizedAtlasScientificSensorsState::DisableContinuousReading);
-                }
-                else {
-                    return NonBlockingHandleStatus::Unknown;
-                }
+                transition(ParallelizedAtlasScientificSensorsState::DisableContinuousReading);
                 break;
             }
             case ParallelizedAtlasScientificSensorsState::DisableContinuousReading: {
@@ -191,6 +187,10 @@ NonBlockingHandleStatus ParallelizedAtlasScientificSensors::handle(String reply,
                 break;
             }
             case ParallelizedAtlasScientificSensorsState::ConfigureResponse: {
+                transition(ParallelizedAtlasScientificSensorsState::DeviceInformation);
+                break;
+            }
+            case ParallelizedAtlasScientificSensorsState::DeviceInformation: {
                 transition(ParallelizedAtlasScientificSensorsState::Status0);
                 break;
             }
@@ -199,12 +199,7 @@ NonBlockingHandleStatus ParallelizedAtlasScientificSensors::handle(String reply,
                 break;
             }
             case ParallelizedAtlasScientificSensorsState::Status1: {
-                if (true || forceTransition || reply.indexOf("?SLOPE") >= 0) {
-                    transition(ParallelizedAtlasScientificSensorsState::LedsOn);
-                }
-                else {
-                    return NonBlockingHandleStatus::Unknown;
-                }
+                transition(ParallelizedAtlasScientificSensorsState::LedsOn);
                 break;
             }
             case ParallelizedAtlasScientificSensorsState::LedsOn: {
@@ -214,7 +209,7 @@ NonBlockingHandleStatus ParallelizedAtlasScientificSensors::handle(String reply,
             case ParallelizedAtlasScientificSensorsState::Configure: {
                 portNumber++;
                 if (portNumber < serialPortExpander->getNumberOfPorts()) {
-                    transition(ParallelizedAtlasScientificSensorsState::DisableContinuousReading);
+                    transition(ParallelizedAtlasScientificSensorsState::Factory);
                 }
                 else {
                     debug->println("Waiting...");
@@ -330,6 +325,26 @@ NonBlockingHandleStatus ParallelizedAtlasScientificSensors::handle(String reply,
         }
 
         return NonBlockingHandleStatus::Handled;
+    }
+    else if (reply.indexOf("?I") >= 0) {
+        if (reply.indexOf("pH") >= 0) {
+            kinds[portNumber] = AtlasSensorKind::PH;
+        }
+        else if (reply.indexOf("DO") >= 0) {
+            kinds[portNumber] = AtlasSensorKind::DO;
+        }
+        else if (reply.indexOf("ORP") >= 0) {
+            kinds[portNumber] = AtlasSensorKind::ORP;
+        }
+        else if (reply.indexOf("RTD") >= 0) {
+            kinds[portNumber] = AtlasSensorKind::RTD;
+        }
+        else if (reply.indexOf("EC") >= 0) {
+            kinds[portNumber] = AtlasSensorKind::EC;
+        }
+        else {
+            debug->println("Unknown AtlasBoardKind");
+        }
     }
     else if (reply.indexOf("?STATUS") >= 0) {
         return NonBlockingHandleStatus::Ignored;

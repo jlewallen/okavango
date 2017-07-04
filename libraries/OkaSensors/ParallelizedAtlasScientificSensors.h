@@ -6,9 +6,19 @@
 #include "SerialPortExpander.h"
 #include "NonBlockingSerial.h"
 
+enum class AtlasSensorKind {
+    Unknown,
+    DO,
+    ORP,
+    PH,
+    RTD,
+    EC
+};
+
 enum class ParallelizedAtlasScientificSensorsState {
     Start = 0,
     Factory,
+    DeviceInformation,
     DisableContinuousReading,
     ConfigureResponse,
     Status0,
@@ -39,6 +49,7 @@ private:
     uint8_t hasPortFailed[8] = { false };
     uint32_t runs = 0;
     bool disableSleep = false;
+    AtlasSensorKind kinds[8];
 
 public:
     ParallelizedAtlasScientificSensors(Stream *debug, SerialPortExpander *serialPortExpander, bool disableSleep, uint8_t maximumNumberOfValues, uint8_t maximumNumberOfRead0s = 20);
