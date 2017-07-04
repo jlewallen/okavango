@@ -349,6 +349,10 @@ NonBlockingHandleStatus ParallelizedAtlasScientificSensors::handle(String reply,
     else if (reply.indexOf("?STATUS") >= 0) {
         return NonBlockingHandleStatus::Ignored;
     }
+    else if (reply.indexOf("*ER") >= 0) {
+        Serial.println("*ER");
+        return NonBlockingHandleStatus::Handled;
+    }
     else {
         switch (state) {
         case ParallelizedAtlasScientificSensorsState::Read0:
