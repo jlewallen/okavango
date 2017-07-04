@@ -13,7 +13,9 @@ SingleSerialPortExpander::SingleSerialPortExpander(byte p0, byte p1, Conductivit
 
 void SingleSerialPortExpander::setup() {
     pinMode(selector[0], OUTPUT);
-    pinMode(selector[1], OUTPUT);
+    if (selector[1] > 0) {
+        pinMode(selector[1], OUTPUT);
+    }
     select(0);
 }
 
@@ -33,11 +35,13 @@ SerialType *SingleSerialPortExpander::getSerial(uint32_t baud) {
     }
 }
 
-void SingleSerialPortExpander::select(byte port) {
-    digitalWrite(selector[0], bitRead(port, 0));
-    digitalWrite(selector[1], bitRead(port, 1));
-    delay(2);
-    this->port = port;
+void SingleSerialPortExpander::select(byte newPort) {
+    digitalWrite(selector[0], bitRead(newPort, 0));
+    if (selector[1] > 0) {
+        digitalWrite(selector[1], bitRead(newPort, 1));
+    }
+    delay(20);
+    port = newPort;
 }
 
 void DualSerialPortExpander::setup() {
@@ -52,12 +56,12 @@ SerialType *DualSerialPortExpander::getSerial(uint32_t baud) {
     return speB->getSerial();
 }
 
-void DualSerialPortExpander::select(byte port) {
-    if (port < 4) {
-        speA->select(port);
+void DualSerialPortExpander::select(byte newPort) {
+    if (newPort < 4) {
+        speA->select(newPort);
     }
     else {
-        speB->select(port - 4);
+        speB->select(newPort - 4);
     }
-    this->port = port;
+    port = newPort;
 }
