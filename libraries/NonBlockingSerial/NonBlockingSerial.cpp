@@ -68,13 +68,13 @@ void NonBlockingSerialProtocol::appendToBuffer(char newChar) {
 
 void NonBlockingSerialProtocol::sendCommand(const char *cmd) {
     // Precondition: state == Idle
-    serial->print(cmd);
-    serial->print('\r');
-    transition(NonBlockingSerialProtocolState::Reading);
     if (debug != nullptr) {
         debug->print("Send: ");
         debug->println(cmd);
     }
+    serial->print(cmd);
+    serial->print('\r');
+    transition(NonBlockingSerialProtocolState::Reading);
     sendsCounter++;
 }
 
@@ -97,18 +97,29 @@ void NonBlockingSerialProtocol::close() {
 void NonBlockingSerialProtocol::setSerial(SerialType *newSerial) {
     clearSendsCounter();
     serial = newSerial;
+    delay(10);
     flush();
 }
 
 void NonBlockingSerialProtocol::flush() {
     uint32_t started = millis();
+    uint32_t read = 0;
+
     while (true) {
-        if (millis() - started > 200) {
+        if (millis() - started > 50) {
             break;
         }
         while (serial->available()) {
-            serial->read();
+            if (read == 0) {
+                Serial.print("FLUSH: ");
+            }
+            char c = serial->read();
+            Serial.print(c);
+            read++;
         }
+    }
+    if (read > 0) {
+        Serial.println("");
     }
 }
 
