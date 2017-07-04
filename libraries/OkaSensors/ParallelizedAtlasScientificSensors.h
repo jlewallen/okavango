@@ -25,6 +25,7 @@ enum class ParallelizedAtlasScientificSensorsState {
     Status1,
     LedsOn,
     Configure,
+    Calibrate,
     Waiting,
     Read0,
     LedsOnBeforeRead,
@@ -50,6 +51,7 @@ private:
     uint32_t runs = 0;
     bool disableSleep = false;
     AtlasSensorKind kinds[8];
+    float temperature = 0.0f;
 
 public:
     ParallelizedAtlasScientificSensors(Stream *debug, SerialPortExpander *serialPortExpander, bool disableSleep, uint8_t maximumNumberOfValues, uint8_t maximumNumberOfRead0s = 20);
@@ -81,6 +83,10 @@ protected:
     virtual NonBlockingHandleStatus handle(String reply) override {
         return handle(reply, false);
     }
+
+private:
+    size_t parseReadings(String reply);
+
 };
 
 #endif

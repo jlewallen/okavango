@@ -10,6 +10,7 @@ const char *CMD_LED_OFF = "L,0";
 const char *CMD_CONTINUOUS_OFF = "C,0";
 const char *CMD_SLEEP = "SLEEP";
 const char *CMD_READ = "R";
+const char *CMD_CALIBRATE_TEMP = "T,";
 
 uint8_t numberOfOccurences(String &str, char chr) {
     uint8_t number = 0;
@@ -147,6 +148,18 @@ bool ParallelizedAtlasScientificSensors::tick() {
             sendCommand(CMD_LED_ON);
             break;
         }
+        case ParallelizedAtlasScientificSensorsState::Calibrate: {
+            if (kinds[portNumber] == AtlasSensorKind::DO ||
+                kinds[portNumber] == AtlasSensorKind::PH ||
+                kinds[portNumber] == AtlasSensorKind::EC) {
+                String cal = "T,";
+                cal += temperature;
+                sendCommand(cal.c_str());
+            } else {
+                transition(ParallelizedAtlasScientificSensorsState::Read1);
+            }
+            break;
+        }
         case ParallelizedAtlasScientificSensorsState::Read1: {
             sendCommand(CMD_READ);
             break;
@@ -165,6 +178,40 @@ bool ParallelizedAtlasScientificSensors::tick() {
         }
     }
     return true;
+}
+
+size_t ParallelizedAtlasScientificSensors::parseReadings(String reply) {
+    String firstLine = getFirstLine(reply);
+    int8_t position = 0;
+
+    while (true) {
+        int16_t index = firstLine.indexOf(',', position);
+        if (index < 0) {
+            index = firstLine.indexOf('\r', position);
+        }
+        if (index < 0) {
+            index = firstLine.indexOf('\n', position);
+        }
+        if (index > position && numberOfValues < maximumNumberOfValues) {
+            String part = firstLine.substring(position, index);
+            values[numberOfValues++] = part.toFloat();
+            position = index + 1;
+
+            if (kinds[portNumber] == AtlasSensorKind::RTD) {
+                temperature = part.toFloat();
+                debug->print("Temp: ");
+                debug->println(temperature);
+            }
+        }
+        else {
+            if (numberOfValues >= maximumNumberOfValues) {
+                Serial.println("Too many values!");
+            }
+            break;
+        }
+    }
+
+    return numberOfValues;
 }
 
 NonBlockingHandleStatus ParallelizedAtlasScientificSensors::handle(String reply, bool forceTransition) {
@@ -227,60 +274,41 @@ NonBlockingHandleStatus ParallelizedAtlasScientificSensors::handle(String reply,
                 }
                 else {
                     portNumber = 0;
-                    transition(ParallelizedAtlasScientificSensorsState::Read1);
+                    transition(ParallelizedAtlasScientificSensorsState::Calibrate);
                 }
                 serialPortExpander->select(portNumber);
                 setSerial(serialPortExpander->getSerial());
                 break;
             }
+            case ParallelizedAtlasScientificSensorsState::Calibrate: {
+                transition(ParallelizedAtlasScientificSensorsState::Read1);
+                break;
+            }
             case ParallelizedAtlasScientificSensorsState::Read0: {
+                if (!forceTransition) {
+                    parseReadings(reply);
+                    numberOfValues = 0;
+                }
+
                 portNumber++;
-                if (portNumber < serialPortExpander->getNumberOfPorts()) {
-                    transition(ParallelizedAtlasScientificSensorsState::Read0);
+                if (portNumber == serialPortExpander->getNumberOfPorts()) {
+                    if (numberOfRead0s < maximumNumberOfRead0s) {
+                        portNumber = 0;
+                        numberOfRead0s++;
+                    }
+                    else {
+                        portNumber = 0;
+                        debug->println("Starting Real Reads");
+                        transition(ParallelizedAtlasScientificSensorsState::Read1);
+                    }
                 }
-                else if (numberOfRead0s < maximumNumberOfRead0s) {
-                    portNumber = 0;
-                    numberOfRead0s++;
-                    debug->print("Read0: ");
-                    debug->println(numberOfRead0s);
-                    transition(ParallelizedAtlasScientificSensorsState::Read0);
-                }
-                else {
-                    portNumber = 0;
-                    debug->println("Starting Real Reads");
-                    transition(ParallelizedAtlasScientificSensorsState::Read1);
-                }
+
                 serialPortExpander->select(portNumber);
                 setSerial(serialPortExpander->getSerial());
                 break;
             }
             case ParallelizedAtlasScientificSensorsState::Read1: {
-                int8_t position = 0;
-
-                if (!forceTransition) {
-                    String firstLine = getFirstLine(reply);
-
-                    while (true) {
-                        int16_t index = firstLine.indexOf(',', position);
-                        if (index < 0) {
-                            index = firstLine.indexOf('\r', position);
-                        }
-                        if (index < 0) {
-                            index = firstLine.indexOf('\n', position);
-                        }
-                        if (index > position && numberOfValues < maximumNumberOfValues) {
-                            String part = firstLine.substring(position, index);
-                            values[numberOfValues++] = part.toFloat();
-                            position = index + 1;
-                        }
-                        else {
-                            if (numberOfValues >= maximumNumberOfValues) {
-                                Serial.println("Too many values!");
-                            }
-                            break;
-                        }
-                    }
-                }
+                parseReadings(reply);
 
                 if (disableSleep) {
                     transition(ParallelizedAtlasScientificSensorsState::LedsOff);
@@ -294,7 +322,7 @@ NonBlockingHandleStatus ParallelizedAtlasScientificSensors::handle(String reply,
             case ParallelizedAtlasScientificSensorsState::LedsOff: {
                 portNumber++;
                 if (portNumber < serialPortExpander->getNumberOfPorts()) {
-                    transition(ParallelizedAtlasScientificSensorsState::Read1);
+                    transition(ParallelizedAtlasScientificSensorsState::Calibrate);
                 }
                 else {
                     transition(ParallelizedAtlasScientificSensorsState::Done);
