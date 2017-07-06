@@ -1,6 +1,9 @@
 #include <SPI.h>
 #include <SD.h>
 #include <Adafruit_SleepyDog.h>
+#include <wdt.h>
+#include <system.h>
+#include <power.h>
 
 #include "Platforms.h"
 #include "core.h"
@@ -60,13 +63,15 @@ void setup() {
         logPrinter.open();
     }
 
-    SystemClock->setup();
-
-    serialPortExpander.setup();
-
     Wire.begin();
 
     gauge.powerOn();
+
+    atlasSensorBoard.waitForBattery(0);
+
+    SystemClock->setup();
+
+    serialPortExpander.setup();
 
     Serial.println("Loop");
 }

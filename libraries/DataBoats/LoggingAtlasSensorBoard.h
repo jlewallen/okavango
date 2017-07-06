@@ -22,6 +22,7 @@ public:
 
 public:
     void done(SensorBoard *board) override;
+    void waitForBattery(size_t numberOfValues);
 
 private:
     void logPacketLocally(size_t numberOfValues);

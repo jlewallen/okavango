@@ -1,5 +1,8 @@
 #include <Adafruit_GPS.h>
 #include <Adafruit_SleepyDog.h>
+#include <wdt.h>
+#include <system.h>
+#include <power.h>
 
 #include "LoggingAtlasSensorBoard.h"
 #include "Logger.h"
@@ -42,34 +45,56 @@ void LoggingAtlasSensorBoard::done(SensorBoard *board) {
     logPrinter.flush();
 
     if (shouldWaitForBattery()) {
-        while (shouldWaitForBattery()) {
-            DEBUG_PRINTLN("Waiting for charge, updating GPS...");
-
-            updateGps();
-
-            DEBUG_PRINTLN("Sending packet...");
-
-            updateAndHandlePacket(numberOfValues);
-
-            DEBUG_PRINTLN("Sleeping...");
-
-            logPrinter.flush();
-
-            int32_t remaining = (int32_t)300000;
-            while (remaining >= 0) {
-                int32_t time = deepSleep(8192);
-                remaining -= time;
-                Watchdog.reset();
-
-                DEBUG_PRINT(time);
-                DEBUG_PRINT(" ");
-                DEBUG_PRINTLN(remaining);
-                logPrinter.flush();
-            }
-        }
+        waitForBattery(numberOfValues);
     }
     else {
         board->takeReading();
+    }
+}
+
+static void blink() {
+    digitalWrite(13, LOW);
+    delay(500);
+    digitalWrite(13, HIGH);
+    delay(1000);
+    digitalWrite(13, LOW);
+}
+
+void LoggingAtlasSensorBoard::waitForBattery(size_t numberOfValues) {
+    while (shouldWaitForBattery()) {
+        DEBUG_PRINTLN("Waiting for charge, updating GPS...");
+
+        updateGps();
+
+        DEBUG_PRINTLN("Sending packet...");
+
+        updateAndHandlePacket(numberOfValues);
+
+        DEBUG_PRINTLN("Sleeping...");
+
+        logPrinter.flush();
+
+        int32_t remaining = (int32_t)300000;
+        while (remaining >= 0) {
+            digitalWrite(13, HIGH);
+            int sleepingFor = wdt_enable(WDT_PERIOD_8X);
+            remaining -= sleepingFor;
+            if (!Serial && sleepingFor > 0) {
+                system_set_sleepmode(SYSTEM_SLEEPMODE_STANDBY);
+                system_sleep();
+            }
+
+            wdt_checkin();
+
+            DEBUG_PRINT(sleepingFor);
+            DEBUG_PRINT(" ");
+            DEBUG_PRINTLN(remaining);
+            logPrinter.flush();
+
+            blink();
+            blink();
+            delay(1000);
+        }
     }
 }
 
