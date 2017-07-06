@@ -34,6 +34,4 @@ void PacketSender::send() {
     else {
         DEBUG_PRINTLN("No radio available");
     }
-
-    Watchdog.disable();
 }
